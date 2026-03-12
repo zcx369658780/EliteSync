@@ -5,6 +5,11 @@ Param(
 
 $ErrorActionPreference = "Stop"
 
+# Supported keys in external env file:
+# GITHUB_REPO_URL, GIT_BRANCH, GIT_USER_NAME, GIT_USER_EMAIL, GITHUB_TOKEN
+# Optional network keys:
+# HTTP_PROXY, HTTPS_PROXY
+
 function Import-EnvFile {
     param([string]$Path)
     if (!(Test-Path $Path)) {
@@ -27,9 +32,18 @@ $branch = if ($env:GIT_BRANCH) { $env:GIT_BRANCH } else { "main" }
 $userName = $env:GIT_USER_NAME
 $userEmail = $env:GIT_USER_EMAIL
 $token = $env:GITHUB_TOKEN
+$httpProxy = $env:HTTP_PROXY
+$httpsProxy = $env:HTTPS_PROXY
 
 if (-not $repoUrl -or -not $userName -or -not $userEmail) {
     throw "Missing required values in ${ConfigPath}: GITHUB_REPO_URL, GIT_USER_NAME, GIT_USER_EMAIL"
+}
+
+if ($httpProxy) {
+    $env:HTTP_PROXY = $httpProxy
+}
+if ($httpsProxy) {
+    $env:HTTPS_PROXY = $httpsProxy
 }
 
 if (!(Test-Path ".git")) {
