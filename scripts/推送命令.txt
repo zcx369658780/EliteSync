@@ -1,0 +1,1 @@
+powershell -ExecutionPolicy Bypass -File .\scripts\publish_to_github.ps1 -CommitMessage "chore: day-end progress"

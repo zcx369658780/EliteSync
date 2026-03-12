@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+*.db
+
+# Local-only GitHub publish secrets/config (do not commit)
+.local/
+ops/github_push.local.env
