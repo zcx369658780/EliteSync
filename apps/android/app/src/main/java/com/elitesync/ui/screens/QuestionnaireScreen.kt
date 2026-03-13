@@ -18,6 +18,7 @@ import com.elitesync.ui.AppViewModel
 @Composable
 fun QuestionnaireScreen(vm: AppViewModel, onNext: () -> Unit) {
     val questions by vm.questions.collectAsState()
+    val questionnaireComplete by vm.questionnaireComplete.collectAsState()
     val status by vm.status.collectAsState()
     val error by vm.error.collectAsState()
     var answer by remember { mutableStateOf("A") }
@@ -33,8 +34,9 @@ fun QuestionnaireScreen(vm: AppViewModel, onNext: () -> Unit) {
             }
         }
         OutlinedTextField(value = answer, onValueChange = { answer = it }, label = { Text("答案示例") })
-        Button(onClick = { vm.saveAnswer(1, answer, false) }) { Text("保存答案") }
-        Button(onClick = onNext) { Text("进入匹配") }
+        Button(onClick = { vm.saveAllAnswers(answer, false) }) { Text("保存全部答案") }
+        Text(if (questionnaireComplete) "问卷状态: 已完成" else "问卷状态: 未完成")
+        Button(onClick = onNext, enabled = questionnaireComplete) { Text("进入匹配") }
         Text("状态: $status")
         if (error.isNotBlank()) Text("错误: $error", color = Color.Red)
     }

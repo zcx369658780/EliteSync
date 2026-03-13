@@ -19,6 +19,8 @@ class MatchApiTest extends TestCase
 
     public function test_current_match_and_confirm_mutual_flow(): void
     {
+        $this->seed();
+
         $userA = User::create([
             'phone' => '13800000001',
             'name' => 'A',
@@ -38,6 +40,23 @@ class MatchApiTest extends TestCase
             'highlights' => '你们都喜欢慢节奏聊天',
             'drop_released' => true,
         ]);
+
+        Sanctum::actingAs($userA);
+        $this->postJson('/api/v1/questionnaire/answers', [
+            'answers' => [
+                ['question_id' => 1, 'answer' => 'A'],
+                ['question_id' => 2, 'answer' => 'B'],
+                ['question_id' => 3, 'answer' => 'A'],
+            ],
+        ])->assertOk();
+        Sanctum::actingAs($userB);
+        $this->postJson('/api/v1/questionnaire/answers', [
+            'answers' => [
+                ['question_id' => 1, 'answer' => 'A'],
+                ['question_id' => 2, 'answer' => 'B'],
+                ['question_id' => 3, 'answer' => 'A'],
+            ],
+        ])->assertOk();
 
         Sanctum::actingAs($userA);
         $this->getJson('/api/v1/matches/current')
@@ -65,5 +84,21 @@ class MatchApiTest extends TestCase
         $this->getJson('/api/v1/matches/history')
             ->assertOk()
             ->assertJsonPath('total', 1);
+    }
+
+    public function test_current_match_returns_404_when_questionnaire_incomplete(): void
+    {
+        $this->seed();
+
+        $user = User::create([
+            'phone' => '13800000003',
+            'name' => 'C',
+            'password' => 'secret123',
+        ]);
+
+        Sanctum::actingAs($user);
+        $this->getJson('/api/v1/matches/current')
+            ->assertStatus(404)
+            ->assertJsonPath('message', 'questionnaire incomplete');
     }
 }

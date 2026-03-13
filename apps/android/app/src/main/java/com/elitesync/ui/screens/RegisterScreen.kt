@@ -17,8 +17,15 @@ import com.elitesync.ui.AppViewModel
 fun RegisterScreen(vm: AppViewModel, onNext: () -> Unit) {
     var phone by remember { mutableStateOf("13800000001") }
     var password by remember { mutableStateOf("123456") }
+    val isLoggedIn by vm.isLoggedIn.collectAsState()
     val status by vm.status.collectAsState()
     val error by vm.error.collectAsState()
+
+    LaunchedEffect(isLoggedIn) {
+        if (isLoggedIn) {
+            onNext()
+        }
+    }
 
     Column(
         modifier = Modifier.fillMaxSize().padding(16.dp),
@@ -29,7 +36,6 @@ fun RegisterScreen(vm: AppViewModel, onNext: () -> Unit) {
         OutlinedTextField(value = password, onValueChange = { password = it }, label = { Text("密码") })
         Button(onClick = { vm.register(phone, password) }) { Text("注册") }
         Button(onClick = { vm.login(phone, password) }) { Text("登录") }
-        Button(onClick = onNext) { Text("进入问卷") }
         Text("状态: $status")
         if (error.isNotBlank()) {
             Text("错误: $error", color = Color.Red)

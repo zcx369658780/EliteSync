@@ -52,6 +52,8 @@ Route::prefix('v1')->group(function () {
             Route::post('/users/{uid}/disable', [AdminController::class, 'disable']);
             Route::get('/verify-queue', [AdminController::class, 'verifyQueue']);
             Route::post('/verify/{uid}', [AdminController::class, 'updateVerify']);
+            Route::post('/dev/run-matching', [AdminController::class, 'devRunMatching']);
+            Route::post('/dev/release-drop', [AdminController::class, 'devReleaseDrop']);
         });
     });
 });

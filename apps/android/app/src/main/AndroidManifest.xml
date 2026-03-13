@@ -10,6 +10,7 @@
         android:theme="@style/Theme.EliteSync">
         <activity
             android:name=".MainActivity"
+            android:theme="@style/Theme.EliteSync.Launch"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\DatingMatch;
+use App\Models\QuestionnaireAnswer;
+use App\Models\QuestionnaireQuestion;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -17,6 +19,15 @@ class MatchController extends Controller
     public function current(Request $request): JsonResponse
     {
         $user = $request->user();
+        $totalQuestions = QuestionnaireQuestion::query()->where('enabled', true)->count();
+        $answeredCount = QuestionnaireAnswer::query()
+            ->where('user_id', $user->id)
+            ->distinct('questionnaire_question_id')
+            ->count('questionnaire_question_id');
+
+        if ($totalQuestions === 0 || $answeredCount < $totalQuestions) {
+            return response()->json(['message' => 'questionnaire incomplete'], 404);
+        }
 
         $match = DatingMatch::query()
             ->where('week_tag', $this->weekTag())

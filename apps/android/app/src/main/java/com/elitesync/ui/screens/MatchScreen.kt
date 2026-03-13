@@ -18,17 +18,26 @@ import com.elitesync.ui.AppViewModel
 @Composable
 fun MatchScreen(vm: AppViewModel, onChat: () -> Unit) {
     val match by vm.currentMatch.collectAsState()
+    val questionnaireComplete by vm.questionnaireComplete.collectAsState()
     val status by vm.status.collectAsState()
     val error by vm.error.collectAsState()
 
-    LaunchedEffect(Unit) { vm.loadCurrentMatch() }
+    LaunchedEffect(Unit) {
+        vm.loadQuestionnaireProgress()
+        vm.loadCurrentMatch()
+    }
 
     Column(
         modifier = Modifier.fillMaxSize().padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Text("每周匹配")
-        Text(match?.let { "匹配对象: ${it.partner_id}\n亮点: ${it.highlights}" } ?: "当前还未到 Drop 时刻或暂无匹配")
+        Text(match?.let { "匹配对象ID: ${it.partner_id}\n亮点: ${it.highlights}" } ?: "当前还未到 Drop 时刻或暂无匹配")
+        Button(
+            onClick = { vm.devPrepareMatchForDemo() },
+            enabled = questionnaireComplete
+        ) { Text("开发联调：生成并发布匹配") }
+        Button(onClick = { vm.loadCurrentMatch() }) { Text("刷新匹配") }
         Button(onClick = { vm.confirmLike(true) }) { Text("喜欢") }
         Button(onClick = { vm.confirmLike(false) }) { Text("略过") }
         Button(onClick = onChat) { Text("进入聊天") }

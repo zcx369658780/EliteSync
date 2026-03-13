@@ -13,6 +13,7 @@ class ChatSocketManager(
     private var socket: WebSocket? = null
 
     fun connect(userId: Int) {
+        socket?.close(1000, "reconnect")
         val req = Request.Builder().url("ws://10.0.2.2:8081/api/v1/messages/ws/$userId").build()
         socket = client.newWebSocket(req, object : WebSocketListener() {
             override fun onMessage(webSocket: WebSocket, text: String) {

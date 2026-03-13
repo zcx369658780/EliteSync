@@ -19,6 +19,9 @@ interface ApiService {
     @POST("/api/v1/questionnaire/answers")
     suspend fun saveAnswers(@Header("Authorization") bearer: String, @Body req: SubmitAnswersReq): SimpleResp
 
+    @GET("/api/v1/questionnaire/progress")
+    suspend fun questionnaireProgress(@Header("Authorization") bearer: String): QuestionnaireProgressResp
+
     @GET("/api/v1/matches/current")
     suspend fun currentMatch(@Header("Authorization") bearer: String): MatchResp
 
@@ -27,6 +30,12 @@ interface ApiService {
 
     @POST("/api/v1/messages")
     suspend fun sendMessage(@Header("Authorization") bearer: String, @Body req: MessageReq): SimpleResp
+
+    @POST("/api/v1/admin/dev/run-matching")
+    suspend fun devRunMatching(@Header("Authorization") bearer: String): SimpleResp
+
+    @POST("/api/v1/admin/dev/release-drop")
+    suspend fun devReleaseDrop(@Header("Authorization") bearer: String): SimpleResp
 
     @GET("/api/v1/messages")
     suspend fun messages(

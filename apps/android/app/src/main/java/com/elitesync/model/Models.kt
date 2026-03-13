@@ -17,6 +17,7 @@ data class Question(
     val options: List<String> = emptyList()
 )
 data class QuestionsResp(val items: List<Question>, val total: Int)
+data class QuestionnaireProgressResp(val answered: Int, val total: Int, val complete: Boolean)
 
 data class AnswerItem(val question_id: Int, val answer: String, val is_draft: Boolean)
 data class SubmitAnswersReq(val answers: List<AnswerItem>)

@@ -85,6 +85,20 @@ Android 客户端默认连接：
 可与 HTTP 服务并行启动：
 - `php artisan serve --host=0.0.0.0 --port=8080`
 
+## 开发态匹配联调（避免匹配页 404）
+
+当本周没有匹配数据时，可手动触发：
+
+```bash
+# 生成当周匹配（按用户ID顺序两两配对）
+curl -X POST http://127.0.0.1:8080/api/v1/admin/dev/run-matching \
+  -H "Authorization: Bearer <token>"
+
+# 发布当周 Drop（让 /matches/current 可见）
+curl -X POST http://127.0.0.1:8080/api/v1/admin/dev/release-drop \
+  -H "Authorization: Bearer <token>"
+```
+
 ## 调试就绪检查（必过）
 
 ```bash

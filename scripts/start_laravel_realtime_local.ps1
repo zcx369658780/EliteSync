@@ -1,6 +1,6 @@
 Param(
     [string]$PhpPath = "C:\tools\php85\php.exe",
-    [string]$Host = "0.0.0.0",
+    [string]$BindHost = "0.0.0.0",
     [int]$HttpPort = 8080,
     [int]$WsPort = 8081
 )
@@ -18,10 +18,10 @@ if (!(Test-Path (Join-Path $backend "artisan"))) {
     exit 1
 }
 
-Write-Host "Starting Laravel HTTP server on http://$Host`:$HttpPort ..."
-Start-Process -FilePath $PhpPath -WorkingDirectory $backend -ArgumentList "artisan","serve","--host=$Host","--port=$HttpPort"
+Write-Host "Starting Laravel HTTP server on http://$BindHost`:$HttpPort ..."
+Start-Process -FilePath $PhpPath -WorkingDirectory $backend -ArgumentList "artisan","serve","--host=$BindHost","--port=$HttpPort"
 
-Write-Host "Starting Chat WebSocket gateway on ws://$Host`:$WsPort ..."
-Start-Process -FilePath $PhpPath -WorkingDirectory $backend -ArgumentList "artisan","chat:ws","--host=$Host","--port=$WsPort"
+Write-Host "Starting Chat WebSocket gateway on ws://$BindHost`:$WsPort ..."
+Start-Process -FilePath $PhpPath -WorkingDirectory $backend -ArgumentList "artisan","chat:ws","--host=$BindHost","--port=$WsPort"
 
 Write-Host "Started. Use Task Manager or Stop-Process to terminate php.exe workers."

@@ -12,19 +12,45 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import com.elitesync.ui.AppViewModel
 import com.elitesync.ws.ChatSocketManager
 
 @Composable
 fun ChatScreen(vm: AppViewModel, socket: ChatSocketManager) {
     val messages by vm.messages.collectAsState()
+    val userId by vm.currentUserId.collectAsState()
     val status by vm.status.collectAsState()
     val error by vm.error.collectAsState()
     var input by remember { mutableStateOf("") }
+    val lifecycleOwner = LocalLifecycleOwner.current
 
     LaunchedEffect(Unit) {
+        userId?.let { socket.connect(it) }
         vm.refreshMessages()
+    }
+
+    LaunchedEffect(userId) {
+        while (isActive) {
+            vm.refreshMessages()
+            delay(2000)
+        }
+    }
+
+    DisposableEffect(lifecycleOwner, userId) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                userId?.let { socket.connect(it) }
+                vm.refreshMessages()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
