@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\DatingMatch;
+use App\Models\QuestionnaireQuestion;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
@@ -11,6 +12,12 @@ use Tests\TestCase;
 class MatchApiTest extends TestCase
 {
     use RefreshDatabase;
+
+    private function fullAnswersPayload(): array
+    {
+        $ids = QuestionnaireQuestion::query()->where('enabled', true)->orderBy('sort_order')->pluck('id');
+        return $ids->map(fn ($id) => ['question_id' => (int) $id, 'answer' => 'A'])->values()->all();
+    }
 
     private function weekTag(): string
     {
@@ -43,19 +50,11 @@ class MatchApiTest extends TestCase
 
         Sanctum::actingAs($userA);
         $this->postJson('/api/v1/questionnaire/answers', [
-            'answers' => [
-                ['question_id' => 1, 'answer' => 'A'],
-                ['question_id' => 2, 'answer' => 'B'],
-                ['question_id' => 3, 'answer' => 'A'],
-            ],
+            'answers' => $this->fullAnswersPayload(),
         ])->assertOk();
         Sanctum::actingAs($userB);
         $this->postJson('/api/v1/questionnaire/answers', [
-            'answers' => [
-                ['question_id' => 1, 'answer' => 'A'],
-                ['question_id' => 2, 'answer' => 'B'],
-                ['question_id' => 3, 'answer' => 'A'],
-            ],
+            'answers' => $this->fullAnswersPayload(),
         ])->assertOk();
 
         Sanctum::actingAs($userA);
@@ -63,12 +62,24 @@ class MatchApiTest extends TestCase
             ->assertOk()
             ->assertJsonPath('match_id', $match->id)
             ->assertJsonPath('partner_id', $userB->id);
+        $this->assertDatabaseHas('app_events', [
+            'event_name' => 'match_exposed',
+            'actor_user_id' => $userA->id,
+            'target_user_id' => $userB->id,
+            'match_id' => $match->id,
+        ]);
 
         Sanctum::actingAs($userA);
         $this->postJson('/api/v1/matches/confirm', [
             'match_id' => $match->id,
             'like' => true,
         ])->assertOk()->assertJsonPath('mutual', false);
+        $this->assertDatabaseHas('app_events', [
+            'event_name' => 'match_confirm',
+            'actor_user_id' => $userA->id,
+            'target_user_id' => $userB->id,
+            'match_id' => $match->id,
+        ]);
 
         Sanctum::actingAs($userB);
         $this->postJson('/api/v1/matches/confirm', [
@@ -100,5 +111,25 @@ class MatchApiTest extends TestCase
         $this->getJson('/api/v1/matches/current')
             ->assertStatus(404)
             ->assertJsonPath('message', 'questionnaire incomplete');
+    }
+
+    public function test_current_match_returns_404_when_no_match_after_questionnaire_complete(): void
+    {
+        $this->seed();
+
+        $user = User::create([
+            'phone' => '13800000004',
+            'name' => 'D',
+            'password' => 'secret123',
+        ]);
+
+        Sanctum::actingAs($user);
+        $this->postJson('/api/v1/questionnaire/answers', [
+            'answers' => $this->fullAnswersPayload(),
+        ])->assertOk();
+
+        $this->getJson('/api/v1/matches/current')
+            ->assertStatus(404)
+            ->assertJsonPath('message', 'no match');
     }
 }

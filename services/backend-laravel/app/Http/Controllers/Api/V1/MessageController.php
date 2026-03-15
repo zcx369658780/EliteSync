@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ChatMessage;
 use App\Models\DatingMatch;
 use App\Models\User;
+use App\Services\EventLogger;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -33,7 +34,7 @@ class MessageController extends Controller
             ->exists();
     }
 
-    public function send(Request $request): JsonResponse
+    public function send(Request $request, EventLogger $events): JsonResponse
     {
         $data = $request->validate([
             'receiver_id' => ['required', 'integer', 'exists:users,id'],
@@ -57,6 +58,13 @@ class MessageController extends Controller
             'receiver_id' => $receiverId,
             'content' => trim($data['content']),
         ]);
+
+        $events->log(
+            eventName: 'message_sent',
+            actorUserId: (int) $user->id,
+            targetUserId: $receiverId,
+            payload: ['message_id' => (int) $message->id]
+        );
 
         return response()->json([
             'id' => $message->id,
@@ -82,6 +90,17 @@ class MessageController extends Controller
         $afterId = (int) ($data['after_id'] ?? 0);
         $limit = (int) ($data['limit'] ?? 50);
         $roomId = $this->roomId((int) $user->id, $peerId);
+
+        // Pulling conversation acts as read receipt for incoming unread messages.
+        ChatMessage::query()
+            ->where('room_id', $roomId)
+            ->where('sender_id', $peerId)
+            ->where('receiver_id', (int) $user->id)
+            ->where('is_read', false)
+            ->update([
+                'is_read' => true,
+                'read_at' => now(),
+            ]);
 
         $items = ChatMessage::query()
             ->where('room_id', $roomId)

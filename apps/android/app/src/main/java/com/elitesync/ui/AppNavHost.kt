@@ -30,6 +30,13 @@ fun AppNavHost(vm: AppViewModel, socket: ChatSocketManager) {
                 onChat = {
                     socket.connect(uid ?: 1)
                     nav.navigate("chat")
+                },
+                onLogout = {
+                    socket.close()
+                    vm.logout()
+                    nav.navigate("register") {
+                        popUpTo("register") { inclusive = true }
+                    }
                 }
             )
         }

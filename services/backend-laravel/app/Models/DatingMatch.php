@@ -15,6 +15,11 @@ class DatingMatch extends Model
         'user_a',
         'user_b',
         'highlights',
+        'explanation_tags',
+        'score_base',
+        'score_final',
+        'score_fair',
+        'penalty_factors',
         'drop_released',
         'like_a',
         'like_b',
@@ -26,6 +31,11 @@ class DatingMatch extends Model
             'drop_released' => 'boolean',
             'like_a' => 'boolean',
             'like_b' => 'boolean',
+            'explanation_tags' => 'array',
+            'penalty_factors' => 'array',
+            'score_base' => 'integer',
+            'score_final' => 'integer',
+            'score_fair' => 'integer',
         ];
     }
 

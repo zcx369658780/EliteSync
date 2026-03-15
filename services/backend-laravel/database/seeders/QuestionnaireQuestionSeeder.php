@@ -4,43 +4,63 @@ namespace Database\Seeders;
 
 use App\Models\QuestionnaireQuestion;
 use Illuminate\Database\Seeder;
+use RuntimeException;
 
 class QuestionnaireQuestionSeeder extends Seeder
 {
     public function run(): void
     {
-        $items = [
-            [
-                'question_key' => 'life_value_1',
-                'content' => '你更看重伴侣的哪一点？',
-                'question_type' => 'single_choice',
-                'options' => ['三观契合', '情绪稳定', '共同成长'],
-                'sort_order' => 1,
-                'enabled' => true,
-            ],
-            [
-                'question_key' => 'date_style_1',
-                'content' => '第一次约会你偏向哪种方式？',
-                'question_type' => 'single_choice',
-                'options' => ['咖啡聊天', '散步看展', '一起吃饭'],
-                'sort_order' => 2,
-                'enabled' => true,
-            ],
-            [
-                'question_key' => 'communication_1',
-                'content' => '当出现分歧时，你通常会怎么做？',
-                'question_type' => 'single_choice',
-                'options' => ['先冷静再沟通', '当下直接沟通', '写下来再交流'],
-                'sort_order' => 3,
-                'enabled' => true,
-            ],
-        ];
+        $jsonPath = realpath(base_path('..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'dating_question_bank_v_1.json'));
+        if (!$jsonPath || !is_file($jsonPath)) {
+            throw new RuntimeException('question bank json not found: dating_question_bank_v_1.json');
+        }
 
-        foreach ($items as $item) {
+        $raw = file_get_contents($jsonPath);
+        $payload = json_decode((string) $raw, true);
+        if (!is_array($payload) || !isset($payload['questions']) || !is_array($payload['questions'])) {
+            throw new RuntimeException('invalid question bank json format');
+        }
+
+        $seenKeys = [];
+        $sortOrder = 1;
+
+        foreach ($payload['questions'] as $q) {
+            $questionKey = (string) ($q['question_id'] ?? '');
+            if ($questionKey === '') {
+                continue;
+            }
+            $seenKeys[] = $questionKey;
+
+            $options = array_map(function (array $opt) {
+                return [
+                    'option_id' => (string) ($opt['option_id'] ?? ''),
+                    'label' => [
+                        'zh' => (string) data_get($opt, 'label.zh', ''),
+                        'en' => (string) data_get($opt, 'label.en', ''),
+                    ],
+                    'score' => (float) ($opt['score'] ?? 0),
+                ];
+            }, (array) ($q['options'] ?? []));
+
             QuestionnaireQuestion::updateOrCreate(
-                ['question_key' => $item['question_key']],
-                $item,
+                ['question_key' => $questionKey],
+                [
+                    'category' => (string) ($q['category'] ?? 'values'),
+                    'content' => (string) data_get($q, 'question_text.zh', ''),
+                    'question_text_zh' => (string) data_get($q, 'question_text.zh', ''),
+                    'question_text_en' => (string) data_get($q, 'question_text.en', ''),
+                    'question_type' => (string) ($q['answer_type'] ?? 'single_choice'),
+                    'acceptable_answer_logic' => (string) ($q['acceptable_answer_logic'] ?? 'multi_select'),
+                    'options' => $options,
+                    'sort_order' => $sortOrder++,
+                    'enabled' => (bool) ($q['active'] ?? true),
+                    'version' => (int) ($q['version'] ?? 1),
+                ]
             );
         }
+
+        QuestionnaireQuestion::query()
+            ->whereNotIn('question_key', $seenKeys)
+            ->delete();
     }
 }

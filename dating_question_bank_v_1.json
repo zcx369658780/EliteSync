@@ -1,0 +1,775 @@
+{
+  "schema_version": "1.0",
+  "question_bank_id": "dating_question_bank_v1",
+  "title": {
+    "zh": "约会 App 双语题库 V1",
+    "en": "Dating App Bilingual Question Bank V1"
+  },
+  "description": {
+    "zh": "按 8 大维度组织的 MVP 题库，可直接用于入库、前后端联调与匹配特征计算。",
+    "en": "An MVP bilingual question bank across 8 dimensions, ready for storage, frontend rendering, and matching feature computation."
+  },
+  "categories": [
+    "values",
+    "relationship_goals",
+    "lifestyle",
+    "social_energy",
+    "communication",
+    "family",
+    "intimacy",
+    "interests"
+  ],
+  "default_importance_mapping": {
+    "0": 0.0,
+    "1": 0.33,
+    "2": 0.66,
+    "3": 1.0
+  },
+  "questions": [
+    {
+      "question_id": "Q_VALUES_001",
+      "category": "values",
+      "question_text": {
+        "zh": "在亲密关系里，你更看重哪一点？",
+        "en": "What matters most to you in a close relationship?"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "multi_select",
+      "options": [
+        {"option_id": "trust", "label": {"zh": "信任与忠诚", "en": "Trust and loyalty"}, "score": 1.0},
+        {"option_id": "growth", "label": {"zh": "共同成长", "en": "Growing together"}, "score": 0.9},
+        {"option_id": "fun", "label": {"zh": "轻松开心", "en": "Fun and ease"}, "score": 0.7},
+        {"option_id": "stability", "label": {"zh": "稳定与安全感", "en": "Stability and security"}, "score": 1.0}
+      ],
+      "importance_mapping": {"0": 0.0, "1": 0.33, "2": 0.66, "3": 1.0},
+      "active": true,
+      "version": 1
+    },
+    {
+      "question_id": "Q_VALUES_002",
+      "category": "values",
+      "question_text": {
+        "zh": "你更认同哪种伴侣关系？",
+        "en": "Which idea of partnership do you agree with most?"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "multi_select",
+      "options": [
+        {"option_id": "team", "label": {"zh": "像队友一样一起经营", "en": "Build life together as a team"}, "score": 1.0},
+        {"option_id": "independent", "label": {"zh": "彼此独立但互相支持", "en": "Stay independent but supportive"}, "score": 0.9},
+        {"option_id": "romantic", "label": {"zh": "重视浪漫和情绪价值", "en": "Prioritize romance and emotional connection"}, "score": 0.8},
+        {"option_id": "spontaneous", "label": {"zh": "顺其自然最重要", "en": "Let things unfold naturally"}, "score": 0.6}
+      ],
+      "importance_mapping": {"0": 0.0, "1": 0.33, "2": 0.66, "3": 1.0},
+      "active": true,
+      "version": 1
+    },
+    {
+      "question_id": "Q_VALUES_003",
+      "category": "values",
+      "question_text": {
+        "zh": "你怎么看待金钱观在关系中的重要性？",
+        "en": "How important is alignment on money values in a relationship?"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "multi_select",
+      "options": [
+        {"option_id": "very_important", "label": {"zh": "非常重要，最好一致", "en": "Very important, strong alignment matters"}, "score": 1.0},
+        {"option_id": "important", "label": {"zh": "比较重要，可以磨合", "en": "Important, but workable"}, "score": 0.8},
+        {"option_id": "neutral", "label": {"zh": "一般，不必太一致", "en": "Neutral, does not need to be very similar"}, "score": 0.5},
+        {"option_id": "not_important", "label": {"zh": "不太重要", "en": "Not very important"}, "score": 0.2}
+      ],
+      "importance_mapping": {"0": 0.0, "1": 0.33, "2": 0.66, "3": 1.0},
+      "active": true,
+      "version": 1
+    },
+    {
+      "question_id": "Q_VALUES_004",
+      "category": "values",
+      "question_text": {
+        "zh": "当关系进入稳定期，你更期待什么？",
+        "en": "Once a relationship becomes stable, what do you hope for most?"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "multi_select",
+      "options": [
+        {"option_id": "future_plan", "label": {"zh": "一起规划未来", "en": "Plan the future together"}, "score": 1.0},
+        {"option_id": "deep_connection", "label": {"zh": "更深层的情感连接", "en": "A deeper emotional bond"}, "score": 0.9},
+        {"option_id": "balanced_space", "label": {"zh": "稳定但保有个人空间", "en": "Stability with personal space"}, "score": 0.8},
+        {"option_id": "keep_exciting", "label": {"zh": "持续新鲜和刺激", "en": "Keep things exciting and fresh"}, "score": 0.7}
+      ],
+      "importance_mapping": {"0": 0.0, "1": 0.33, "2": 0.66, "3": 1.0},
+      "active": true,
+      "version": 1
+    },
+    {
+      "question_id": "Q_VALUES_005",
+      "category": "values",
+      "question_text": {
+        "zh": "你更希望另一半在哪方面最可靠？",
+        "en": "In what way do you most want a partner to be dependable?"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "multi_select",
+      "options": [
+        {"option_id": "emotionally", "label": {"zh": "情绪支持", "en": "Emotional support"}, "score": 1.0},
+        {"option_id": "actions", "label": {"zh": "说到做到", "en": "Following through on actions"}, "score": 1.0},
+        {"option_id": "communication", "label": {"zh": "及时沟通", "en": "Consistent communication"}, "score": 0.9},
+        {"option_id": "daily_life", "label": {"zh": "日常照顾与陪伴", "en": "Care and presence in daily life"}, "score": 0.8}
+      ],
+      "importance_mapping": {"0": 0.0, "1": 0.33, "2": 0.66, "3": 1.0},
+      "active": true,
+      "version": 1
+    },
+
+    {
+      "question_id": "Q_RELATIONSHIP_GOALS_001",
+      "category": "relationship_goals",
+      "question_text": {
+        "zh": "你现在主要想找什么关系？",
+        "en": "What kind of relationship are you primarily looking for right now?"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "multi_select",
+      "options": [
+        {"option_id": "casual", "label": {"zh": "轻松约会", "en": "Casual dating"}, "score": 0.2},
+        {"option_id": "long_term", "label": {"zh": "长期关系", "en": "Long-term relationship"}, "score": 0.8},
+        {"option_id": "marriage", "label": {"zh": "以结婚为目标", "en": "Marriage-minded"}, "score": 1.0}
+      ],
+      "importance_mapping": {"0": 0.0, "1": 0.33, "2": 0.66, "3": 1.0},
+      "active": true,
+      "version": 1
+    },
+    {
+      "question_id": "Q_RELATIONSHIP_GOALS_002",
+      "category": "relationship_goals",
+      "question_text": {
+        "zh": "你希望关系推进节奏更接近哪种？",
+        "en": "Which pace of relationship progression feels right to you?"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "multi_select",
+      "options": [
+        {"option_id": "slow", "label": {"zh": "慢慢了解，顺其自然", "en": "Slow and steady"}, "score": 0.8},
+        {"option_id": "balanced", "label": {"zh": "稳定推进，不拖太久", "en": "A balanced pace"}, "score": 1.0},
+        {"option_id": "fast", "label": {"zh": "合适就尽快推进", "en": "Move quickly if it feels right"}, "score": 0.8}
+      ],
+      "importance_mapping": {"0": 0.0, "1": 0.33, "2": 0.66, "3": 1.0},
+      "active": true,
+      "version": 1
+    },
+    {
+      "question_id": "Q_RELATIONSHIP_GOALS_003",
+      "category": "relationship_goals",
+      "question_text": {
+        "zh": "你希望多久见面一次更舒服？",
+        "en": "How often would you ideally like to see someone you are dating?"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "multi_select",
+      "options": [
+        {"option_id": "weekly_once", "label": {"zh": "每周一次左右", "en": "About once a week"}, "score": 0.7},
+        {"option_id": "weekly_2_3", "label": {"zh": "每周 2~3 次", "en": "2 to 3 times a week"}, "score": 1.0},
+        {"option_id": "almost_daily", "label": {"zh": "如果合适希望更频繁", "en": "Very frequently if it feels right"}, "score": 0.8},
+        {"option_id": "flexible", "label": {"zh": "看双方状态灵活安排", "en": "Flexible depending on both people"}, "score": 0.9}
+      ],
+      "importance_mapping": {"0": 0.0, "1": 0.33, "2": 0.66, "3": 1.0},
+      "active": true,
+      "version": 1
+    },
+    {
+      "question_id": "Q_RELATIONSHIP_GOALS_004",
+      "category": "relationship_goals",
+      "question_text": {
+        "zh": "你更希望在什么基础上确定关系？",
+        "en": "What usually needs to be in place before you define the relationship?"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "multi_select",
+      "options": [
+        {"option_id": "chemistry", "label": {"zh": "强烈心动和化学反应", "en": "Strong chemistry"}, "score": 0.7},
+        {"option_id": "consistency", "label": {"zh": "稳定互动和可靠感", "en": "Consistency and reliability"}, "score": 1.0},
+        {"option_id": "shared_values", "label": {"zh": "价值观和目标一致", "en": "Shared values and goals"}, "score": 1.0},
+        {"option_id": "time", "label": {"zh": "花够时间自然会知道", "en": "Enough time naturally reveals it"}, "score": 0.8}
+      ],
+      "importance_mapping": {"0": 0.0, "1": 0.33, "2": 0.66, "3": 1.0},
+      "active": true,
+      "version": 1
+    },
+    {
+      "question_id": "Q_RELATIONSHIP_GOALS_005",
+      "category": "relationship_goals",
+      "question_text": {
+        "zh": "如果相处不错，你会倾向多久内进入排他关系？",
+        "en": "If things are going well, how soon would you prefer to become exclusive?"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "multi_select",
+      "options": [
+        {"option_id": "under_1m", "label": {"zh": "1 个月内", "en": "Within 1 month"}, "score": 0.8},
+        {"option_id": "1_3m", "label": {"zh": "1~3 个月", "en": "1 to 3 months"}, "score": 1.0},
+        {"option_id": "3_6m", "label": {"zh": "3~6 个月", "en": "3 to 6 months"}, "score": 0.8},
+        {"option_id": "no_preference", "label": {"zh": "没有固定时间", "en": "No fixed timeline"}, "score": 0.6}
+      ],
+      "importance_mapping": {"0": 0.0, "1": 0.33, "2": 0.66, "3": 1.0},
+      "active": true,
+      "version": 1
+    },
+
+    {
+      "question_id": "Q_LIFESTYLE_001",
+      "category": "lifestyle",
+      "question_text": {
+        "zh": "你的作息更接近哪种？",
+        "en": "Which schedule describes you better?"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "multi_select",
+      "options": [
+        {"option_id": "early", "label": {"zh": "早睡早起", "en": "Early bird"}, "score": 1.0},
+        {"option_id": "flexible", "label": {"zh": "比较灵活", "en": "Flexible"}, "score": 0.7},
+        {"option_id": "night", "label": {"zh": "夜猫子", "en": "Night owl"}, "score": 0.3}
+      ],
+      "importance_mapping": {"0": 0.0, "1": 0.33, "2": 0.66, "3": 1.0},
+      "active": true,
+      "version": 1
+    },
+    {
+      "question_id": "Q_LIFESTYLE_002",
+      "category": "lifestyle",
+      "question_text": {
+        "zh": "你对运动的日常习惯更接近哪种？",
+        "en": "Which option best describes your exercise routine?"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "multi_select",
+      "options": [
+        {"option_id": "frequent", "label": {"zh": "每周规律运动", "en": "Regular weekly exercise"}, "score": 1.0},
+        {"option_id": "sometimes", "label": {"zh": "偶尔运动", "en": "Exercise sometimes"}, "score": 0.7},
+        {"option_id": "rarely", "label": {"zh": "很少运动", "en": "Rarely exercise"}, "score": 0.3}
+      ],
+      "importance_mapping": {"0": 0.0, "1": 0.33, "2": 0.66, "3": 1.0},
+      "active": true,
+      "version": 1
+    },
+    {
+      "question_id": "Q_LIFESTYLE_003",
+      "category": "lifestyle",
+      "question_text": {
+        "zh": "你对居住环境更偏好哪种状态？",
+        "en": "What kind of living environment do you prefer?"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "multi_select",
+      "options": [
+        {"option_id": "organized", "label": {"zh": "整洁有秩序", "en": "Neat and organized"}, "score": 1.0},
+        {"option_id": "comfortable", "label": {"zh": "舒适就好，不用太讲究", "en": "Comfortable without being too strict"}, "score": 0.8},
+        {"option_id": "creative_mess", "label": {"zh": "有点随性也没关系", "en": "A bit messy is fine"}, "score": 0.4}
+      ],
+      "importance_mapping": {"0": 0.0, "1": 0.33, "2": 0.66, "3": 1.0},
+      "active": true,
+      "version": 1
+    },
+    {
+      "question_id": "Q_LIFESTYLE_004",
+      "category": "lifestyle",
+      "question_text": {
+        "zh": "你平时对饮酒的态度更接近哪种？",
+        "en": "Which option best describes your attitude toward drinking?"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "multi_select",
+      "options": [
+        {"option_id": "none", "label": {"zh": "基本不喝", "en": "I rarely or never drink"}, "score": 1.0},
+        {"option_id": "social", "label": {"zh": "社交时会喝", "en": "I drink socially"}, "score": 0.8},
+        {"option_id": "regular", "label": {"zh": "较常饮酒", "en": "I drink regularly"}, "score": 0.4}
+      ],
+      "importance_mapping": {"0": 0.0, "1": 0.33, "2": 0.66, "3": 1.0},
+      "active": true,
+      "version": 1
+    },
+    {
+      "question_id": "Q_LIFESTYLE_005",
+      "category": "lifestyle",
+      "question_text": {
+        "zh": "旅行方式上你更像哪种？",
+        "en": "What is your usual travel style?"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "multi_select",
+      "options": [
+        {"option_id": "planner", "label": {"zh": "提前规划型", "en": "Plan ahead"}, "score": 1.0},
+        {"option_id": "balanced", "label": {"zh": "大方向规划，细节灵活", "en": "Plan the basics, stay flexible"}, "score": 0.9},
+        {"option_id": "spontaneous", "label": {"zh": "说走就走型", "en": "Spontaneous traveler"}, "score": 0.6}
+      ],
+      "importance_mapping": {"0": 0.0, "1": 0.33, "2": 0.66, "3": 1.0},
+      "active": true,
+      "version": 1
+    },
+
+    {
+      "question_id": "Q_SOCIAL_ENERGY_001",
+      "category": "social_energy",
+      "question_text": {
+        "zh": "周末理想状态更接近哪种？",
+        "en": "What does your ideal weekend usually feel like?"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "multi_select",
+      "options": [
+        {"option_id": "quiet", "label": {"zh": "安静放松，少安排", "en": "Quiet and low-key"}, "score": 1.0},
+        {"option_id": "balanced", "label": {"zh": "有点安排也有休息", "en": "Balanced between plans and rest"}, "score": 0.9},
+        {"option_id": "busy_social", "label": {"zh": "喜欢聚会和活动", "en": "Busy and social"}, "score": 0.6}
+      ],
+      "importance_mapping": {"0": 0.0, "1": 0.33, "2": 0.66, "3": 1.0},
+      "active": true,
+      "version": 1
+    },
+    {
+      "question_id": "Q_SOCIAL_ENERGY_002",
+      "category": "social_energy",
+      "question_text": {
+        "zh": "大型社交场合会让你感觉如何？",
+        "en": "How do large social gatherings usually make you feel?"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "multi_select",
+      "options": [
+        {"option_id": "energized", "label": {"zh": "会被充电，很开心", "en": "Energized and excited"}, "score": 1.0},
+        {"option_id": "okay_limited", "label": {"zh": "可以参加，但时间不要太久", "en": "Fine in moderation"}, "score": 0.8},
+        {"option_id": "drained", "label": {"zh": "容易耗电，更喜欢小范围相处", "en": "Draining, prefer smaller groups"}, "score": 0.4}
+      ],
+      "importance_mapping": {"0": 0.0, "1": 0.33, "2": 0.66, "3": 1.0},
+      "active": true,
+      "version": 1
+    },
+    {
+      "question_id": "Q_SOCIAL_ENERGY_003",
+      "category": "social_energy",
+      "question_text": {
+        "zh": "你在熟人和陌生人面前通常更像哪种？",
+        "en": "How do you usually come across around familiar people versus strangers?"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "multi_select",
+      "options": [
+        {"option_id": "warm_up", "label": {"zh": "慢热，熟了以后很放松", "en": "Slow to warm up, relaxed later"}, "score": 1.0},
+        {"option_id": "steady", "label": {"zh": "整体比较稳定", "en": "Fairly consistent"}, "score": 0.9},
+        {"option_id": "outgoing", "label": {"zh": "很快就能聊开", "en": "Open up quickly"}, "score": 0.8}
+      ],
+      "importance_mapping": {"0": 0.0, "1": 0.33, "2": 0.66, "3": 1.0},
+      "active": true,
+      "version": 1
+    },
+    {
+      "question_id": "Q_SOCIAL_ENERGY_004",
+      "category": "social_energy",
+      "question_text": {
+        "zh": "连续忙了几天后，你更需要什么？",
+        "en": "After several busy days, what do you usually need most?"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "multi_select",
+      "options": [
+        {"option_id": "alone_time", "label": {"zh": "独处恢复能量", "en": "Time alone to recharge"}, "score": 1.0},
+        {"option_id": "close_person", "label": {"zh": "和亲近的人待一会儿", "en": "Time with someone close"}, "score": 0.9},
+        {"option_id": "go_out", "label": {"zh": "出去玩转换状态", "en": "Going out to reset"}, "score": 0.6}
+      ],
+      "importance_mapping": {"0": 0.0, "1": 0.33, "2": 0.66, "3": 1.0},
+      "active": true,
+      "version": 1
+    },
+    {
+      "question_id": "Q_SOCIAL_ENERGY_005",
+      "category": "social_energy",
+      "question_text": {
+        "zh": "和伴侣相处时，你更喜欢哪种节奏？",
+        "en": "What kind of social rhythm do you prefer with a partner?"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "multi_select",
+      "options": [
+        {"option_id": "mostly_two_person", "label": {"zh": "以两个人相处为主", "en": "Mostly one-on-one time"}, "score": 1.0},
+        {"option_id": "mix", "label": {"zh": "两人世界和朋友局都要有", "en": "A mix of couple time and social time"}, "score": 1.0},
+        {"option_id": "social_couple", "label": {"zh": "希望常一起参加社交活动", "en": "Often socialize together"}, "score": 0.7}
+      ],
+      "importance_mapping": {"0": 0.0, "1": 0.33, "2": 0.66, "3": 1.0},
+      "active": true,
+      "version": 1
+    },
+
+    {
+      "question_id": "Q_COMMUNICATION_001",
+      "category": "communication",
+      "question_text": {
+        "zh": "冲突出现时你更倾向？",
+        "en": "How do you usually handle conflict?"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "multi_select",
+      "options": [
+        {"option_id": "discuss_now", "label": {"zh": "当下沟通", "en": "Discuss immediately"}, "score": 1.0},
+        {"option_id": "cool_then_talk", "label": {"zh": "先冷静再沟通", "en": "Cool down first, then talk"}, "score": 0.9},
+        {"option_id": "avoid", "label": {"zh": "尽量避免冲突", "en": "Avoid conflict if possible"}, "score": 0.3}
+      ],
+      "importance_mapping": {"0": 0.0, "1": 0.33, "2": 0.66, "3": 1.0},
+      "active": true,
+      "version": 1
+    },
+    {
+      "question_id": "Q_COMMUNICATION_002",
+      "category": "communication",
+      "question_text": {
+        "zh": "你平时回复消息的习惯更像哪种？",
+        "en": "Which option best describes your texting habits?"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "multi_select",
+      "options": [
+        {"option_id": "fast", "label": {"zh": "通常回复很快", "en": "Usually reply quickly"}, "score": 1.0},
+        {"option_id": "steady", "label": {"zh": "不一定马上，但会稳定回复", "en": "Not instant, but consistent"}, "score": 1.0},
+        {"option_id": "sporadic", "label": {"zh": "看状态，回复节奏不固定", "en": "Sporadic depending on mood and schedule"}, "score": 0.5}
+      ],
+      "importance_mapping": {"0": 0.0, "1": 0.33, "2": 0.66, "3": 1.0},
+      "active": true,
+      "version": 1
+    },
+    {
+      "question_id": "Q_COMMUNICATION_003",
+      "category": "communication",
+      "question_text": {
+        "zh": "当你不开心时，更希望对方怎么做？",
+        "en": "When you are upset, what do you usually want from a partner?"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "multi_select",
+      "options": [
+        {"option_id": "listen", "label": {"zh": "先认真听我说", "en": "Listen first"}, "score": 1.0},
+        {"option_id": "solve", "label": {"zh": "帮我一起想办法", "en": "Help solve the problem"}, "score": 0.9},
+        {"option_id": "comfort", "label": {"zh": "给我安慰和陪伴", "en": "Offer comfort and presence"}, "score": 1.0},
+        {"option_id": "space", "label": {"zh": "先给我一点空间", "en": "Give me some space first"}, "score": 0.8}
+      ],
+      "importance_mapping": {"0": 0.0, "1": 0.33, "2": 0.66, "3": 1.0},
+      "active": true,
+      "version": 1
+    },
+    {
+      "question_id": "Q_COMMUNICATION_004",
+      "category": "communication",
+      "question_text": {
+        "zh": "你表达喜欢的方式更接近哪种？",
+        "en": "How do you most naturally show affection?"
+      },
+      "answer_type": "multi_choice",
+      "acceptable_answer_logic": "multi_select",
+      "options": [
+        {"option_id": "words", "label": {"zh": "语言表达", "en": "Words"}, "score": 1.0},
+        {"option_id": "time", "label": {"zh": "陪伴时间", "en": "Quality time"}, "score": 1.0},
+        {"option_id": "actions", "label": {"zh": "实际行动", "en": "Acts of care"}, "score": 1.0},
+        {"option_id": "touch", "label": {"zh": "身体接触", "en": "Physical touch"}, "score": 1.0}
+      ],
+      "importance_mapping": {"0": 0.0, "1": 0.33, "2": 0.66, "3": 1.0},
+      "active": true,
+      "version": 1
+    },
+    {
+      "question_id": "Q_COMMUNICATION_005",
+      "category": "communication",
+      "question_text": {
+        "zh": "你更喜欢哪种约会前沟通方式？",
+        "en": "How do you prefer to communicate before meeting for a date?"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "multi_select",
+      "options": [
+        {"option_id": "chat_more", "label": {"zh": "先多聊一些再见面", "en": "Chat more before meeting"}, "score": 1.0},
+        {"option_id": "balanced", "label": {"zh": "简单聊聊，有感觉就见", "en": "A bit of chat, then meet if it feels right"}, "score": 1.0},
+        {"option_id": "meet_soon", "label": {"zh": "尽快见面更有效率", "en": "Meet sooner rather than later"}, "score": 0.7}
+      ],
+      "importance_mapping": {"0": 0.0, "1": 0.33, "2": 0.66, "3": 1.0},
+      "active": true,
+      "version": 1
+    },
+
+    {
+      "question_id": "Q_FAMILY_001",
+      "category": "family",
+      "question_text": {
+        "zh": "你想要孩子吗？",
+        "en": "Do you want children?"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "multi_select",
+      "options": [
+        {"option_id": "yes", "label": {"zh": "想要", "en": "Yes"}, "score": 1.0},
+        {"option_id": "maybe", "label": {"zh": "不确定", "en": "Maybe"}, "score": 0.5},
+        {"option_id": "no", "label": {"zh": "不想要", "en": "No"}, "score": 0.0}
+      ],
+      "importance_mapping": {"0": 0.0, "1": 0.33, "2": 0.66, "3": 1.0},
+      "active": true,
+      "version": 1
+    },
+    {
+      "question_id": "Q_FAMILY_002",
+      "category": "family",
+      "question_text": {
+        "zh": "你希望未来和原生家庭保持怎样的距离？",
+        "en": "How close do you want your future life to be to your family of origin?"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "multi_select",
+      "options": [
+        {"option_id": "very_close", "label": {"zh": "很紧密，常联系常见面", "en": "Very close, frequent contact"}, "score": 1.0},
+        {"option_id": "balanced", "label": {"zh": "亲近但保有边界", "en": "Close but with healthy boundaries"}, "score": 1.0},
+        {"option_id": "independent", "label": {"zh": "相对独立一些", "en": "More independent"}, "score": 0.7}
+      ],
+      "importance_mapping": {"0": 0.0, "1": 0.33, "2": 0.66, "3": 1.0},
+      "active": true,
+      "version": 1
+    },
+    {
+      "question_id": "Q_FAMILY_003",
+      "category": "family",
+      "question_text": {
+        "zh": "你对婚姻的看法更接近哪种？",
+        "en": "Which option best reflects your view on marriage?"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "multi_select",
+      "options": [
+        {"option_id": "important_goal", "label": {"zh": "人生重要目标之一", "en": "An important life goal"}, "score": 1.0},
+        {"option_id": "possible_not_required", "label": {"zh": "有可能，但不是必须", "en": "Possible, but not required"}, "score": 0.7},
+        {"option_id": "not_priority", "label": {"zh": "不是优先目标", "en": "Not a major priority"}, "score": 0.3}
+      ],
+      "importance_mapping": {"0": 0.0, "1": 0.33, "2": 0.66, "3": 1.0},
+      "active": true,
+      "version": 1
+    },
+    {
+      "question_id": "Q_FAMILY_004",
+      "category": "family",
+      "question_text": {
+        "zh": "如果未来有孩子，你更接受哪种养育分工？",
+        "en": "If you have children in the future, what kind of parenting arrangement feels most acceptable?"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "multi_select",
+      "options": [
+        {"option_id": "equal", "label": {"zh": "尽量平均分工", "en": "As equal as possible"}, "score": 1.0},
+        {"option_id": "flexible_role", "label": {"zh": "按双方工作和状态灵活分配", "en": "Flexible based on workload and circumstances"}, "score": 1.0},
+        {"option_id": "traditional", "label": {"zh": "更传统的分工方式", "en": "A more traditional arrangement"}, "score": 0.5}
+      ],
+      "importance_mapping": {"0": 0.0, "1": 0.33, "2": 0.66, "3": 1.0},
+      "active": true,
+      "version": 1
+    },
+    {
+      "question_id": "Q_FAMILY_005",
+      "category": "family",
+      "question_text": {
+        "zh": "你更期待怎样的家庭氛围？",
+        "en": "What kind of family atmosphere do you hope to build?"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "multi_select",
+      "options": [
+        {"option_id": "warm_stable", "label": {"zh": "温暖稳定", "en": "Warm and stable"}, "score": 1.0},
+        {"option_id": "open_expressive", "label": {"zh": "开放表达，什么都能聊", "en": "Open and expressive"}, "score": 0.9},
+        {"option_id": "independent_respectful", "label": {"zh": "尊重独立，边界清晰", "en": "Independent and respectful"}, "score": 0.9},
+        {"option_id": "fun_energetic", "label": {"zh": "轻松有活力", "en": "Fun and energetic"}, "score": 0.8}
+      ],
+      "importance_mapping": {"0": 0.0, "1": 0.33, "2": 0.66, "3": 1.0},
+      "active": true,
+      "version": 1
+    },
+
+    {
+      "question_id": "Q_INTIMACY_001",
+      "category": "intimacy",
+      "question_text": {
+        "zh": "建立亲密感时，你通常更需要什么？",
+        "en": "What do you usually need most to build intimacy?"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "multi_select",
+      "options": [
+        {"option_id": "time", "label": {"zh": "时间和熟悉感", "en": "Time and familiarity"}, "score": 1.0},
+        {"option_id": "emotional_safety", "label": {"zh": "情绪上的安全感", "en": "Emotional safety"}, "score": 1.0},
+        {"option_id": "chemistry", "label": {"zh": "强烈吸引和化学反应", "en": "Strong attraction and chemistry"}, "score": 0.7}
+      ],
+      "importance_mapping": {"0": 0.0, "1": 0.33, "2": 0.66, "3": 1.0},
+      "active": true,
+      "version": 1
+    },
+    {
+      "question_id": "Q_INTIMACY_002",
+      "category": "intimacy",
+      "question_text": {
+        "zh": "你更偏好哪种亲密表达节奏？",
+        "en": "Which pace of physical and emotional closeness feels best to you?"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "multi_select",
+      "options": [
+        {"option_id": "slow", "label": {"zh": "慢一点，更自然安心", "en": "Slower and more gradual"}, "score": 1.0},
+        {"option_id": "balanced", "label": {"zh": "看感觉自然推进", "en": "A balanced natural pace"}, "score": 1.0},
+        {"option_id": "fast", "label": {"zh": "有感觉就可以推进快一些", "en": "Faster if the chemistry is there"}, "score": 0.6}
+      ],
+      "importance_mapping": {"0": 0.0, "1": 0.33, "2": 0.66, "3": 1.0},
+      "active": true,
+      "version": 1
+    },
+    {
+      "question_id": "Q_INTIMACY_003",
+      "category": "intimacy",
+      "question_text": {
+        "zh": "你更希望通过什么方式感受到亲近？",
+        "en": "How do you most like to feel close to someone?"
+      },
+      "answer_type": "multi_choice",
+      "acceptable_answer_logic": "multi_select",
+      "options": [
+        {"option_id": "deep_talk", "label": {"zh": "深度聊天", "en": "Deep conversations"}, "score": 1.0},
+        {"option_id": "quality_time", "label": {"zh": "高质量相处时间", "en": "Quality time"}, "score": 1.0},
+        {"option_id": "affection", "label": {"zh": "亲昵互动", "en": "Affection"}, "score": 1.0},
+        {"option_id": "shared_experience", "label": {"zh": "一起经历事情", "en": "Shared experiences"}, "score": 1.0}
+      ],
+      "importance_mapping": {"0": 0.0, "1": 0.33, "2": 0.66, "3": 1.0},
+      "active": true,
+      "version": 1
+    },
+    {
+      "question_id": "Q_INTIMACY_004",
+      "category": "intimacy",
+      "question_text": {
+        "zh": "在关系中，你对边界的态度更接近哪种？",
+        "en": "Which option best reflects your attitude toward boundaries in a relationship?"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "multi_select",
+      "options": [
+        {"option_id": "clear_boundaries", "label": {"zh": "边界清晰会更安心", "en": "Clear boundaries create safety"}, "score": 1.0},
+        {"option_id": "balanced", "label": {"zh": "亲近和边界都重要", "en": "Both closeness and boundaries matter"}, "score": 1.0},
+        {"option_id": "very_close", "label": {"zh": "越亲密越好，边界不用太强", "en": "The closer the better, fewer boundaries"}, "score": 0.5}
+      ],
+      "importance_mapping": {"0": 0.0, "1": 0.33, "2": 0.66, "3": 1.0},
+      "active": true,
+      "version": 1
+    },
+    {
+      "question_id": "Q_INTIMACY_005",
+      "category": "intimacy",
+      "question_text": {
+        "zh": "你觉得稳定关系中的亲密感主要来自哪里？",
+        "en": "In a stable relationship, where do you think intimacy mostly comes from?"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "multi_select",
+      "options": [
+        {"option_id": "trust_consistency", "label": {"zh": "信任和持续稳定", "en": "Trust and consistency"}, "score": 1.0},
+        {"option_id": "vulnerability", "label": {"zh": "真实表达脆弱和内心", "en": "Being emotionally vulnerable"}, "score": 1.0},
+        {"option_id": "attraction", "label": {"zh": "持续的吸引力", "en": "Sustained attraction"}, "score": 0.7},
+        {"option_id": "shared_life", "label": {"zh": "共同经历和生活默契", "en": "Shared life and mutual understanding"}, "score": 1.0}
+      ],
+      "importance_mapping": {"0": 0.0, "1": 0.33, "2": 0.66, "3": 1.0},
+      "active": true,
+      "version": 1
+    },
+
+    {
+      "question_id": "Q_INTERESTS_001",
+      "category": "interests",
+      "question_text": {
+        "zh": "理想周末更像哪种？",
+        "en": "What does your ideal weekend look like?"
+      },
+      "answer_type": "multi_choice",
+      "acceptable_answer_logic": "multi_select",
+      "options": [
+        {"option_id": "outdoor", "label": {"zh": "户外活动", "en": "Outdoor activities"}, "score": 1.0},
+        {"option_id": "social", "label": {"zh": "聚会社交", "en": "Social gatherings"}, "score": 1.0},
+        {"option_id": "home", "label": {"zh": "宅家放松", "en": "Relaxing at home"}, "score": 1.0},
+        {"option_id": "travel", "label": {"zh": "短途旅行", "en": "Short trips"}, "score": 1.0}
+      ],
+      "importance_mapping": {"0": 0.0, "1": 0.33, "2": 0.66, "3": 1.0},
+      "active": true,
+      "version": 1
+    },
+    {
+      "question_id": "Q_INTERESTS_002",
+      "category": "interests",
+      "question_text": {
+        "zh": "下面哪些活动最容易让你投入？",
+        "en": "Which activities are most likely to fully engage you?"
+      },
+      "answer_type": "multi_choice",
+      "acceptable_answer_logic": "multi_select",
+      "options": [
+        {"option_id": "food", "label": {"zh": "探店美食", "en": "Trying restaurants and food"}, "score": 1.0},
+        {"option_id": "movies", "label": {"zh": "电影/剧集", "en": "Movies and shows"}, "score": 1.0},
+        {"option_id": "fitness", "label": {"zh": "运动健身", "en": "Fitness and sports"}, "score": 1.0},
+        {"option_id": "arts", "label": {"zh": "展览/演出/文化活动", "en": "Arts and cultural events"}, "score": 1.0},
+        {"option_id": "gaming", "label": {"zh": "游戏", "en": "Gaming"}, "score": 1.0}
+      ],
+      "importance_mapping": {"0": 0.0, "1": 0.33, "2": 0.66, "3": 1.0},
+      "active": true,
+      "version": 1
+    },
+    {
+      "question_id": "Q_INTERESTS_003",
+      "category": "interests",
+      "question_text": {
+        "zh": "如果第一次约会，你更偏好哪种形式？",
+        "en": "What kind of first date do you usually prefer?"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "multi_select",
+      "options": [
+        {"option_id": "coffee", "label": {"zh": "咖啡/轻松聊天", "en": "Coffee and conversation"}, "score": 1.0},
+        {"option_id": "meal", "label": {"zh": "一起吃饭", "en": "A meal together"}, "score": 0.9},
+        {"option_id": "walk", "label": {"zh": "散步/户外走走", "en": "A walk or outdoor date"}, "score": 0.9},
+        {"option_id": "activity", "label": {"zh": "做点有互动的活动", "en": "An interactive activity"}, "score": 0.8}
+      ],
+      "importance_mapping": {"0": 0.0, "1": 0.33, "2": 0.66, "3": 1.0},
+      "active": true,
+      "version": 1
+    },
+    {
+      "question_id": "Q_INTERESTS_004",
+      "category": "interests",
+      "question_text": {
+        "zh": "你更喜欢哪类共同兴趣？",
+        "en": "What kind of shared interests do you value most?"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "multi_select",
+      "options": [
+        {"option_id": "daily_life", "label": {"zh": "日常生活型兴趣", "en": "Everyday lifestyle interests"}, "score": 1.0},
+        {"option_id": "adventure", "label": {"zh": "探索体验型兴趣", "en": "Adventure and exploration"}, "score": 0.8},
+        {"option_id": "creative", "label": {"zh": "创意审美型兴趣", "en": "Creative and aesthetic interests"}, "score": 0.8},
+        {"option_id": "intellectual", "label": {"zh": "知识讨论型兴趣", "en": "Intellectual and discussion-based interests"}, "score": 0.9}
+      ],
+      "importance_mapping": {"0": 0.0, "1": 0.33, "2": 0.66, "3": 1.0},
+      "active": true,
+      "version": 1
+    },
+    {
+      "question_id": "Q_INTERESTS_005",
+      "category": "interests",
+      "question_text": {
+        "zh": "你希望伴侣在兴趣上的匹配度更接近哪种？",
+        "en": "How much shared interest overlap do you ideally want with a partner?"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "multi_select",
+      "options": [
+        {"option_id": "high_overlap", "label": {"zh": "最好有很多共同兴趣", "en": "A lot of overlap"}, "score": 1.0},
+        {"option_id": "some_overlap", "label": {"zh": "有一些共同兴趣就很好", "en": "Some overlap is enough"}, "score": 1.0},
+        {"option_id": "different_ok", "label": {"zh": "不同兴趣也没关系", "en": "Different interests are fine"}, "score": 0.7}
+      ],
+      "importance_mapping": {"0": 0.0, "1": 0.33, "2": 0.66, "3": 1.0},
+      "active": true,
+      "version": 1
+    }
+  ]
+}

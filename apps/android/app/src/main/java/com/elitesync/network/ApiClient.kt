@@ -5,8 +5,8 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object ApiClient {
-    // Android 模拟器访问本机服务
-    private const val BASE_URL = "http://10.0.2.2:8080/"
+    // Real device in same LAN accesses local backend host.
+    private const val BASE_URL = "http://192.168.5.4:8080/"
 
     val service: ApiService by lazy {
         val client = OkHttpClient.Builder().build()

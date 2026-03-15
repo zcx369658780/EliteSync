@@ -16,11 +16,17 @@ interface ApiService {
     @GET("/api/v1/questionnaire/questions")
     suspend fun questions(@Header("Authorization") bearer: String): QuestionsResp
 
+    @POST("/api/v1/questionnaire/questions/replace")
+    suspend fun replaceQuestion(@Header("Authorization") bearer: String, @Body req: ReplaceQuestionReq): Question
+
     @POST("/api/v1/questionnaire/answers")
     suspend fun saveAnswers(@Header("Authorization") bearer: String, @Body req: SubmitAnswersReq): SimpleResp
 
     @GET("/api/v1/questionnaire/progress")
     suspend fun questionnaireProgress(@Header("Authorization") bearer: String): QuestionnaireProgressResp
+
+    @GET("/api/v1/questionnaire/profile")
+    suspend fun questionnaireProfile(@Header("Authorization") bearer: String): ProfileResp
 
     @GET("/api/v1/matches/current")
     suspend fun currentMatch(@Header("Authorization") bearer: String): MatchResp

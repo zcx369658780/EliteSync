@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -20,6 +22,7 @@ fun RegisterScreen(vm: AppViewModel, onNext: () -> Unit) {
     val isLoggedIn by vm.isLoggedIn.collectAsState()
     val status by vm.status.collectAsState()
     val error by vm.error.collectAsState()
+    val scrollState = rememberScrollState()
 
     LaunchedEffect(isLoggedIn) {
         if (isLoggedIn) {
@@ -28,7 +31,7 @@ fun RegisterScreen(vm: AppViewModel, onNext: () -> Unit) {
     }
 
     Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
+        modifier = Modifier.fillMaxSize().padding(16.dp).verticalScroll(scrollState),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Text("EliteSync 登录/注册")

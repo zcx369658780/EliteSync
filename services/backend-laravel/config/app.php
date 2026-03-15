@@ -123,4 +123,17 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Admin Phones
+    |--------------------------------------------------------------------------
+    |
+    | Comma-separated phone whitelist for admin/dev APIs.
+    |
+    */
+    'admin_phones' => array_values(array_filter(array_map(
+        static fn (string $v) => trim($v),
+        explode(',', (string) env('ADMIN_PHONES', ''))
+    ))),
+
 ];

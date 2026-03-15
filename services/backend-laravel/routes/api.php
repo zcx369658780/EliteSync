@@ -16,8 +16,10 @@ Route::prefix('v1')->group(function () {
 
     Route::prefix('questionnaire')->middleware('auth:sanctum')->group(function () {
         Route::get('/questions', [QuestionnaireController::class, 'questions']);
+        Route::post('/questions/replace', [QuestionnaireController::class, 'replaceQuestion']);
         Route::post('/answers', [QuestionnaireController::class, 'submitAnswers']);
         Route::get('/progress', [QuestionnaireController::class, 'progress']);
+        Route::get('/profile', [QuestionnaireController::class, 'profile']);
     });
 
     // 兼容旧客户端路径
@@ -47,7 +49,7 @@ Route::prefix('v1')->group(function () {
             Route::get('/ws/{userId}', [MessageController::class, 'websocketStub']);
         });
 
-        Route::prefix('admin')->group(function () {
+        Route::prefix('admin')->middleware('admin.phone')->group(function () {
             Route::get('/users', [AdminController::class, 'users']);
             Route::post('/users/{uid}/disable', [AdminController::class, 'disable']);
             Route::get('/verify-queue', [AdminController::class, 'verifyQueue']);

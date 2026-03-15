@@ -12,11 +12,16 @@ class QuestionnaireQuestion extends Model
 
     protected $fillable = [
         'question_key',
+        'category',
         'content',
+        'question_text_zh',
+        'question_text_en',
         'question_type',
+        'acceptable_answer_logic',
         'options',
         'sort_order',
         'enabled',
+        'version',
     ];
 
     protected function casts(): array
@@ -24,6 +29,7 @@ class QuestionnaireQuestion extends Model
         return [
             'options' => 'array',
             'enabled' => 'boolean',
+            'version' => 'integer',
         ];
     }
 

@@ -43,6 +43,11 @@ class MessageApiTest extends TestCase
             'receiver_id' => $userB->id,
             'content' => 'hello',
         ])->assertOk()->assertJsonPath('ok', true)->json();
+        $this->assertDatabaseHas('app_events', [
+            'event_name' => 'message_sent',
+            'actor_user_id' => $userA->id,
+            'target_user_id' => $userB->id,
+        ]);
 
         $messageId = $send['id'];
 
@@ -59,6 +64,41 @@ class MessageApiTest extends TestCase
 
         $this->getJson('/api/v1/messages?peer_id='.$userA->id)
             ->assertOk()
+            ->assertJsonPath('items.0.is_read', true);
+    }
+
+    public function test_list_auto_marks_incoming_messages_as_read(): void
+    {
+        $userA = User::create([
+            'phone' => '13800000013',
+            'name' => 'A2',
+            'password' => 'secret123',
+        ]);
+
+        $userB = User::create([
+            'phone' => '13800000014',
+            'name' => 'B2',
+            'password' => 'secret123',
+        ]);
+
+        DatingMatch::create([
+            'week_tag' => $this->weekTag(),
+            'user_a' => $userA->id,
+            'user_b' => $userB->id,
+            'drop_released' => true,
+        ]);
+
+        Sanctum::actingAs($userA);
+        $send = $this->postJson('/api/v1/messages', [
+            'receiver_id' => $userB->id,
+            'content' => 'auto read check',
+        ])->assertOk()->json();
+        $messageId = (int) $send['id'];
+
+        Sanctum::actingAs($userB);
+        $this->getJson('/api/v1/messages?peer_id='.$userA->id)
+            ->assertOk()
+            ->assertJsonPath('items.0.id', $messageId)
             ->assertJsonPath('items.0.is_read', true);
     }
 }

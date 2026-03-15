@@ -14,12 +14,20 @@ class QuestionnaireAnswer extends Model
         'user_id',
         'questionnaire_question_id',
         'answer_payload',
+        'selected_answer_json',
+        'acceptable_answers_json',
+        'importance',
+        'version',
     ];
 
     protected function casts(): array
     {
         return [
             'answer_payload' => 'array',
+            'selected_answer_json' => 'array',
+            'acceptable_answers_json' => 'array',
+            'importance' => 'integer',
+            'version' => 'integer',
         ];
     }
 

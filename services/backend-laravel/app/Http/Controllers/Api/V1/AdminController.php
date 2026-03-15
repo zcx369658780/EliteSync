@@ -7,9 +7,10 @@ use App\Models\DatingMatch;
 use App\Models\QuestionnaireAnswer;
 use App\Models\QuestionnaireQuestion;
 use App\Models\User;
+use App\Services\MatchingEngineService;
+use App\Services\PersonalityProfileService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
 
 class AdminController extends Controller
 {
@@ -73,10 +74,14 @@ class AdminController extends Controller
         return response()->json(['ok' => true]);
     }
 
-    public function devRunMatching(): JsonResponse
+    public function devRunMatching(
+        PersonalityProfileService $profileService,
+        MatchingEngineService $matchingEngine
+    ): JsonResponse
     {
         $weekTag = $this->weekTag();
         $totalQuestions = QuestionnaireQuestion::query()->where('enabled', true)->count();
+        $requiredAnswers = max(1, (int) config('questionnaire.required_answer_count', 10));
 
         if ($totalQuestions === 0) {
             return response()->json([
@@ -92,26 +97,30 @@ class AdminController extends Controller
         $eligibleUserIds = QuestionnaireAnswer::query()
             ->select('user_id')
             ->groupBy('user_id')
-            ->havingRaw('COUNT(DISTINCT questionnaire_question_id) >= ?', [$totalQuestions]);
+            ->havingRaw('COUNT(DISTINCT questionnaire_question_id) >= ?', [$requiredAnswers]);
 
         $users = User::query()
             ->where('disabled', false)
             ->whereIn('id', $eligibleUserIds)
             ->orderBy('id')
-            ->get(['id']);
+            ->get(['id', 'created_at', 'updated_at']);
 
         $pairs = 0;
         $createdMatchIds = [];
+        $profiles = [];
+        $usersMeta = [];
+        foreach ($users as $u) {
+            $profiles[(int) $u->id] = $profileService->buildForUser((int) $u->id);
+            $usersMeta[(int) $u->id] = [
+                'created_at' => $u->created_at,
+                'updated_at' => $u->updated_at,
+            ];
+        }
+        $plannedPairs = $matchingEngine->buildPairs($profiles, $usersMeta);
 
-        /** @var Collection<int, User> $chunks */
-        $chunks = $users->chunk(2);
-        foreach ($chunks as $chunk) {
-            if ($chunk->count() < 2) {
-                continue;
-            }
-
-            $a = (int) $chunk[0]->id;
-            $b = (int) $chunk[1]->id;
+        foreach ($plannedPairs as $plannedPair) {
+            $a = (int) $plannedPair['user_a'];
+            $b = (int) $plannedPair['user_b'];
 
             $exists = DatingMatch::query()
                 ->where('week_tag', $weekTag)
@@ -133,7 +142,12 @@ class AdminController extends Controller
                 'week_tag' => $weekTag,
                 'user_a' => $a,
                 'user_b' => $b,
-                'highlights' => '开发态匹配：用于联调',
+                'highlights' => (string) $plannedPair['highlights'],
+                'explanation_tags' => $plannedPair['explanation_tags'] ?? null,
+                'score_base' => $plannedPair['score_base'] ?? null,
+                'score_final' => $plannedPair['score_final'] ?? null,
+                'score_fair' => $plannedPair['score_fair'] ?? null,
+                'penalty_factors' => $plannedPair['penalty_factors'] ?? null,
                 'drop_released' => false,
             ]);
             $pairs++;
