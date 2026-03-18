@@ -19,7 +19,11 @@ fun AppNavHost(vm: AppViewModel, socket: ChatSocketManager) {
 
     NavHost(navController = nav, startDestination = "register") {
         composable("register") {
-            RegisterScreen(vm = vm, onNext = { nav.navigate("questionnaire") })
+            RegisterScreen(vm = vm, onNext = { route ->
+                nav.navigate(route) {
+                    popUpTo("register") { inclusive = false }
+                }
+            })
         }
         composable("questionnaire") {
             QuestionnaireScreen(vm = vm, onNext = { nav.navigate("match") })
@@ -27,6 +31,10 @@ fun AppNavHost(vm: AppViewModel, socket: ChatSocketManager) {
         composable("match") {
             MatchScreen(
                 vm = vm,
+                onRetake = {
+                    vm.resetQuestionnaire()
+                    nav.navigate("questionnaire")
+                },
                 onChat = {
                     socket.connect(uid ?: 1)
                     nav.navigate("chat")

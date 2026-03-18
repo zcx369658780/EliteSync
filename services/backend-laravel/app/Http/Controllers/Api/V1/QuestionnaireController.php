@@ -39,53 +39,96 @@ class QuestionnaireController extends Controller
             ->map(fn ($id) => (int) $id)
             ->all();
 
-        $questions = QuestionnaireQuestion::query()
+        $baseQuery = QuestionnaireQuestion::query()
             ->where('enabled', true)
-            ->whereNotIn('id', $answeredIds)
-            ->inRandomOrder()
-            ->limit($this->sessionQuestionCount())
-            ->get([
-                'id',
-                'question_key',
-                'category',
-                'content',
-                'question_text_zh',
-                'question_text_en',
-                'question_type',
-                'acceptable_answer_logic',
-                'options',
-                'version',
-            ]);
+            ->whereNotIn('id', $answeredIds);
+
+        $sessionCount = $this->sessionQuestionCount();
+        $mix = (array) config('questionnaire.bank_mix_ratio', []);
+        $targets = $this->buildMixTargets($sessionCount, $mix);
+        $questions = collect();
+
+        foreach ($targets as $bank => $count) {
+            if ($count <= 0) {
+                continue;
+            }
+            $part = (clone $baseQuery)
+                ->where('recommended_bank', $bank)
+                ->inRandomOrder()
+                ->limit($count)
+                ->get([
+                    'id',
+                    'question_key',
+                    'category',
+                    'subtopic',
+                    'recommended_bank',
+                    'content',
+                    'question_text_zh',
+                    'question_text_en',
+                    'question_type',
+                    'acceptable_answer_logic',
+                    'options',
+                    'version',
+                ]);
+            $questions = $questions->concat($part);
+        }
+
+        if ($questions->count() < $sessionCount) {
+            $fill = (clone $baseQuery)
+                ->whereNotIn('id', $questions->pluck('id')->all())
+                ->inRandomOrder()
+                ->limit($sessionCount - $questions->count())
+                ->get([
+                    'id',
+                    'question_key',
+                    'category',
+                    'subtopic',
+                    'recommended_bank',
+                    'content',
+                    'question_text_zh',
+                    'question_text_en',
+                    'question_type',
+                    'acceptable_answer_logic',
+                    'options',
+                    'version',
+                ]);
+            $questions = $questions->concat($fill);
+        }
+
+        $questions = $questions->shuffle()->values();
+        $questions = $questions->map(function (QuestionnaireQuestion $q) {
+            return [
+                'id' => $q->id,
+                'question_key' => $q->question_key,
+                'category' => $q->category,
+                'subtopic' => $q->subtopic,
+                'recommended_bank' => $q->recommended_bank,
+                'content' => $q->question_text_zh ?: $q->content,
+                'question_type' => $q->question_type,
+                'acceptable_answer_logic' => $q->acceptable_answer_logic,
+                // legacy field shape for Android V1: plain labels
+                'options' => collect($q->options ?? [])->map(
+                    fn ($opt) => (string) data_get($opt, 'label.zh', '')
+                )->values(),
+                // V2 rich options
+                'option_items' => collect($q->options ?? [])->map(function ($opt) {
+                    return [
+                        'option_id' => (string) data_get($opt, 'option_id', ''),
+                        'label' => [
+                            'zh' => (string) data_get($opt, 'label.zh', ''),
+                            'en' => (string) data_get($opt, 'label.en', ''),
+                        ],
+                        'score' => (float) data_get($opt, 'score', 0),
+                    ];
+                })->values(),
+                'version' => $q->version ?? 1,
+            ];
+        });
 
         $bankTotal = QuestionnaireQuestion::query()->where('enabled', true)->count();
 
         return response()->json([
-            'items' => $questions->map(function (QuestionnaireQuestion $q) {
-                return [
-                    'id' => $q->id,
-                    'question_key' => $q->question_key,
-                    'category' => $q->category,
-                    'content' => $q->question_text_zh ?: $q->content,
-                    'question_type' => $q->question_type,
-                    'acceptable_answer_logic' => $q->acceptable_answer_logic,
-                    // legacy field shape for Android V1: plain labels
-                    'options' => collect($q->options ?? [])->map(
-                        fn ($opt) => (string) data_get($opt, 'label.zh', '')
-                    )->values(),
-                    // V2 rich options
-                    'option_items' => collect($q->options ?? [])->map(function ($opt) {
-                        return [
-                            'option_id' => (string) data_get($opt, 'option_id', ''),
-                            'label' => [
-                                'zh' => (string) data_get($opt, 'label.zh', ''),
-                                'en' => (string) data_get($opt, 'label.en', ''),
-                            ],
-                            'score' => (float) data_get($opt, 'score', 0),
-                        ];
-                    })->values(),
-                    'version' => $q->version ?? 1,
-                ];
-            })->values(),
+            'items' => $questions,
             'total' => $questions->count(),
             'bank_total' => $bankTotal,
             'required' => $this->requiredAnswerCount(),
@@ -234,6 +277,16 @@ class QuestionnaireController extends Controller
         return response()->json($service->buildForUser((int) $user->id));
     }
 
+    public function reset(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        QuestionnaireAnswer::query()
+            ->where('user_id', (int) $user->id)
+            ->delete();
+
+        return response()->json(['ok' => true]);
+    }
+
     private function normalizeSelectedAnswer(array $item): array
     {
         $selected = $item['selected_answer'] ?? null;
@@ -259,5 +312,42 @@ class QuestionnaireController extends Controller
     {
         $importance = (int) ($item['importance'] ?? 2);
         return max(0, min(3, $importance));
+    }
+
+    /**
+     * @param array<string,float|int> $mix
+     * @return array<string,int>
+     */
+    private function buildMixTargets(int $total, array $mix): array
+    {
+        $banks = ['core', 'extended', 'research'];
+        $weights = [];
+        foreach ($banks as $bank) {
+            $weights[$bank] = max(0.0, (float) ($mix[$bank] ?? 0.0));
+        }
+        $sum = array_sum($weights);
+        if ($sum <= 0) {
+            return ['core' => $total, 'extended' => 0, 'research' => 0];
+        }
+
+        $targets = [];
+        $assigned = 0;
+        foreach ($banks as $bank) {
+            $targets[$bank] = (int) floor(($weights[$bank] / $sum) * $total);
+            $assigned += $targets[$bank];
+        }
+        $order = collect($banks)
+            ->sortByDesc(fn ($b) => $weights[$b])
+            ->values()
+            ->all();
+        $idx = 0;
+        while ($assigned < $total) {
+            $bank = $order[$idx % count($order)];
+            $targets[$bank]++;
+            $assigned++;
+            $idx++;
+        }
+
+        return $targets;
     }
 }

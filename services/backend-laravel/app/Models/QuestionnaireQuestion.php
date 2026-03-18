@@ -13,6 +13,8 @@ class QuestionnaireQuestion extends Model
     protected $fillable = [
         'question_key',
         'category',
+        'subtopic',
+        'recommended_bank',
         'content',
         'question_text_zh',
         'question_text_en',

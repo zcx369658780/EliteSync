@@ -10,21 +10,12 @@ class QuestionnaireQuestionSeeder extends Seeder
 {
     public function run(): void
     {
-        $jsonPath = realpath(base_path('..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'dating_question_bank_v_1.json'));
-        if (!$jsonPath || !is_file($jsonPath)) {
-            throw new RuntimeException('question bank json not found: dating_question_bank_v_1.json');
-        }
-
-        $raw = file_get_contents($jsonPath);
-        $payload = json_decode((string) $raw, true);
-        if (!is_array($payload) || !isset($payload['questions']) || !is_array($payload['questions'])) {
-            throw new RuntimeException('invalid question bank json format');
-        }
+        $banks = $this->loadQuestionBanks();
 
         $seenKeys = [];
         $sortOrder = 1;
 
-        foreach ($payload['questions'] as $q) {
+        foreach ($banks as $q) {
             $questionKey = (string) ($q['question_id'] ?? '');
             if ($questionKey === '') {
                 continue;
@@ -46,6 +37,8 @@ class QuestionnaireQuestionSeeder extends Seeder
                 ['question_key' => $questionKey],
                 [
                     'category' => (string) ($q['category'] ?? 'values'),
+                    'subtopic' => (string) ($q['subtopic'] ?? ''),
+                    'recommended_bank' => (string) ($q['recommended_bank'] ?? 'core'),
                     'content' => (string) data_get($q, 'question_text.zh', ''),
                     'question_text_zh' => (string) data_get($q, 'question_text.zh', ''),
                     'question_text_en' => (string) data_get($q, 'question_text.en', ''),
@@ -62,5 +55,52 @@ class QuestionnaireQuestionSeeder extends Seeder
         QuestionnaireQuestion::query()
             ->whereNotIn('question_key', $seenKeys)
             ->delete();
+    }
+
+    /**
+     * @return array<int,array<string,mixed>>
+     */
+    private function loadQuestionBanks(): array
+    {
+        $root = base_path('..'.DIRECTORY_SEPARATOR.'..');
+        $dir = realpath($root.DIRECTORY_SEPARATOR.'question_bank');
+        $files = [];
+        if ($dir && is_dir($dir)) {
+            $files = glob($dir.DIRECTORY_SEPARATOR.'question_bank_*_v1.json') ?: [];
+        }
+
+        // fallback to legacy single file if split banks are absent
+        if (empty($files)) {
+            $legacy = realpath($root.DIRECTORY_SEPARATOR.'dating_question_bank_v_1.json');
+            if ($legacy && is_file($legacy)) {
+                $files = [$legacy];
+            }
+        }
+
+        if (empty($files)) {
+            throw new RuntimeException('question bank json files not found');
+        }
+
+        $all = [];
+        foreach ($files as $file) {
+            $raw = file_get_contents($file);
+            $payload = json_decode((string) $raw, true);
+            if (!is_array($payload) || !isset($payload['questions']) || !is_array($payload['questions'])) {
+                continue;
+            }
+            $inferredBank = str_contains((string) $file, 'extended') ? 'extended'
+                : (str_contains((string) $file, 'research') ? 'research' : 'core');
+            foreach ($payload['questions'] as $q) {
+                if (!isset($q['recommended_bank'])) {
+                    $q['recommended_bank'] = $inferredBank;
+                }
+                $all[] = $q;
+            }
+        }
+
+        if (empty($all)) {
+            throw new RuntimeException('no valid questions loaded from question bank files');
+        }
+        return $all;
     }
 }

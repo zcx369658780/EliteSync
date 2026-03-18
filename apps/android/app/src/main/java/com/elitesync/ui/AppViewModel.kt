@@ -30,6 +30,8 @@ class AppViewModel : ViewModel() {
     val questions: StateFlow<List<Question>> = _questions
     private val _questionnaireComplete = MutableStateFlow(false)
     val questionnaireComplete: StateFlow<Boolean> = _questionnaireComplete
+    private val _questionnaireProgressLoaded = MutableStateFlow(false)
+    val questionnaireProgressLoaded: StateFlow<Boolean> = _questionnaireProgressLoaded
     private val _questionnaireRequired = MutableStateFlow(10)
     val questionnaireRequired: StateFlow<Int> = _questionnaireRequired
     private val _profile = MutableStateFlow(ProfileResp())
@@ -70,6 +72,7 @@ class AppViewModel : ViewModel() {
         _isLoggedIn.value = false
         _questions.value = emptyList()
         _questionnaireComplete.value = false
+        _questionnaireProgressLoaded.value = false
         _questionnaireRequired.value = 10
         _profile.value = ProfileResp()
         _currentMatch.value = null
@@ -104,6 +107,7 @@ class AppViewModel : ViewModel() {
                 _isLoggedIn.value = true
                 _status.value = "登录成功"
                 _error.value = ""
+                loadQuestionnaireProgress()
             }
             .onFailure { setError("登录失败: ${err(it)}") }
     }
@@ -127,11 +131,29 @@ class AppViewModel : ViewModel() {
         runCatching { repo.questionnaireProgress(_token.value) }
             .onSuccess {
                 _questionnaireComplete.value = it.complete
+                _questionnaireProgressLoaded.value = true
                 if (!it.complete) {
                     _matchStateText.value = "问卷未完成"
                 }
                 loadQuestionnaireProfile()
             }
+            .onFailure {
+                _questionnaireProgressLoaded.value = true
+            }
+    }
+
+    fun resetQuestionnaire() = viewModelScope.launch {
+        if (_token.value.isBlank()) return@launch setError("请先登录")
+        _status.value = "重置问卷中..."
+        runCatching { repo.resetQuestionnaire(_token.value) }
+            .onSuccess {
+                _questionnaireComplete.value = false
+                _questionnaireProgressLoaded.value = true
+                _questions.value = emptyList()
+                _status.value = "问卷已重置"
+                _error.value = ""
+            }
+            .onFailure { setError("重置失败: ${err(it)}") }
     }
 
     fun loadQuestionnaireProfile() = viewModelScope.launch {

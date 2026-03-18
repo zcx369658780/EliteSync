@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import com.elitesync.ui.AppViewModel
 
 @Composable
-fun MatchScreen(vm: AppViewModel, onChat: () -> Unit, onLogout: () -> Unit) {
+fun MatchScreen(vm: AppViewModel, onRetake: () -> Unit, onChat: () -> Unit, onLogout: () -> Unit) {
     val match by vm.currentMatch.collectAsState()
     val questionnaireComplete by vm.questionnaireComplete.collectAsState()
     val profile by vm.profile.collectAsState()
@@ -63,6 +63,7 @@ fun MatchScreen(vm: AppViewModel, onChat: () -> Unit, onLogout: () -> Unit) {
             enabled = questionnaireComplete
         ) { Text("开发联调：生成并发布匹配") }
         Button(onClick = { vm.loadCurrentMatch() }) { Text("刷新匹配") }
+        Button(onClick = onRetake) { Text("重新答题") }
         Button(onClick = { vm.confirmLike(true) }) { Text("喜欢") }
         Button(onClick = { vm.confirmLike(false) }) { Text("略过") }
         Button(onClick = onChat) { Text("进入聊天") }

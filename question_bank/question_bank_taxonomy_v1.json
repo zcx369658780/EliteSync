@@ -1,0 +1,110 @@
+{
+  "schema_version": "1.0",
+  "categories": [
+    "values",
+    "relationship_goals",
+    "lifestyle",
+    "social_energy",
+    "communication",
+    "family",
+    "intimacy",
+    "interests"
+  ],
+  "subtopics": {
+    "values": [
+      "commitment",
+      "trust",
+      "life_priorities",
+      "money_values",
+      "loyalty",
+      "integrity"
+    ],
+    "relationship_goals": [
+      "goal_type",
+      "pace",
+      "exclusivity",
+      "future_planning",
+      "seriousness",
+      "dating_intent"
+    ],
+    "lifestyle": [
+      "schedule",
+      "fitness",
+      "travel_style",
+      "drinking",
+      "spending_style",
+      "work_life_balance"
+    ],
+    "social_energy": [
+      "social_frequency",
+      "alone_time",
+      "gatherings",
+      "partner_rhythm",
+      "weekend_energy",
+      "crowd_preference"
+    ],
+    "communication": [
+      "conflict",
+      "texting",
+      "affection_expression",
+      "date_pacing",
+      "feedback_style",
+      "emotional_expression"
+    ],
+    "family": [
+      "children",
+      "marriage_view",
+      "family_boundary",
+      "parenting_style",
+      "elder_care",
+      "holiday_arrangement"
+    ],
+    "intimacy": [
+      "pace",
+      "emotional_safety",
+      "boundaries",
+      "closeness_style",
+      "physical_affection",
+      "vulnerability"
+    ],
+    "interests": [
+      "weekend_style",
+      "activities",
+      "first_date",
+      "overlap_expectation",
+      "hobbies",
+      "learning_style"
+    ]
+  },
+  "answer_types": [
+    "single_choice",
+    "multi_choice"
+  ],
+  "acceptable_answer_logic": [
+    "single_select",
+    "multi_select"
+  ],
+  "sensitivity_levels": [
+    "low",
+    "medium",
+    "high_blocked"
+  ],
+  "recommended_banks": [
+    "core",
+    "extended",
+    "research"
+  ],
+  "question_id_rule": "Q_{CATEGORY}_{SUBTOPIC}_{NNN}",
+  "importance_mapping": {
+    "0": 0.0,
+    "1": 0.33,
+    "2": 0.66,
+    "3": 1.0
+  },
+  "file_ownership": {
+    "question_bank_core_v1.json": "core matching features",
+    "question_bank_extended_v1.json": "extended profiling",
+    "question_bank_research_v1.json": "research and AB tests",
+    "question_bank_taxonomy_v1.json": "metadata and dictionary"
+  }
+}

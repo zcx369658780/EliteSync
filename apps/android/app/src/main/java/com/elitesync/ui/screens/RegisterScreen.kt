@@ -16,17 +16,19 @@ import androidx.compose.ui.unit.dp
 import com.elitesync.ui.AppViewModel
 
 @Composable
-fun RegisterScreen(vm: AppViewModel, onNext: () -> Unit) {
+fun RegisterScreen(vm: AppViewModel, onNext: (String) -> Unit) {
     var phone by remember { mutableStateOf("13800000001") }
     var password by remember { mutableStateOf("123456") }
     val isLoggedIn by vm.isLoggedIn.collectAsState()
+    val questionnaireComplete by vm.questionnaireComplete.collectAsState()
+    val questionnaireProgressLoaded by vm.questionnaireProgressLoaded.collectAsState()
     val status by vm.status.collectAsState()
     val error by vm.error.collectAsState()
     val scrollState = rememberScrollState()
 
-    LaunchedEffect(isLoggedIn) {
-        if (isLoggedIn) {
-            onNext()
+    LaunchedEffect(isLoggedIn, questionnaireProgressLoaded, questionnaireComplete) {
+        if (isLoggedIn && questionnaireProgressLoaded) {
+            onNext(if (questionnaireComplete) "match" else "questionnaire")
         }
     }
 

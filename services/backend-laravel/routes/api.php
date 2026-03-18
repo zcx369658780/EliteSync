@@ -18,6 +18,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/questions', [QuestionnaireController::class, 'questions']);
         Route::post('/questions/replace', [QuestionnaireController::class, 'replaceQuestion']);
         Route::post('/answers', [QuestionnaireController::class, 'submitAnswers']);
+        Route::post('/reset', [QuestionnaireController::class, 'reset']);
         Route::get('/progress', [QuestionnaireController::class, 'progress']);
         Route::get('/profile', [QuestionnaireController::class, 'profile']);
     });

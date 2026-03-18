@@ -29,6 +29,32 @@ class ChatWebsocketServerCommand extends Command
         return null;
     }
 
+    private function prepareWorkermanArgv(): void
+    {
+        $argv = $_SERVER['argv'] ?? [];
+        if (!is_array($argv)) {
+            $argv = [];
+        }
+
+        $lifecycleCommands = ['start', 'stop', 'restart', 'reload', 'status', 'connections'];
+        $hasLifecycle = false;
+        foreach ($argv as $arg) {
+            if (in_array((string) $arg, $lifecycleCommands, true)) {
+                $hasLifecycle = true;
+                break;
+            }
+        }
+
+        // Workerman requires a lifecycle command; default to foreground start for systemd.
+        if (!$hasLifecycle) {
+            $patched = [$argv[0] ?? 'artisan', 'start'];
+            $_SERVER['argv'] = $patched;
+            $_SERVER['argc'] = 2;
+            $GLOBALS['argv'] = $patched;
+            $GLOBALS['argc'] = 2;
+        }
+    }
+
     public function handle(): int
     {
         $host = (string) $this->option('host');
@@ -109,6 +135,7 @@ class ChatWebsocketServerCommand extends Command
 
         $this->info("Chat websocket gateway running at ws://{$host}:{$port}");
         $this->info('Supported paths: /api/v1/messages/ws/{userId} or /ws/{userId}');
+        $this->prepareWorkermanArgv();
         Worker::runAll();
 
         return self::SUCCESS;

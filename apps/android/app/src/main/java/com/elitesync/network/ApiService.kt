@@ -22,6 +22,9 @@ interface ApiService {
     @POST("/api/v1/questionnaire/answers")
     suspend fun saveAnswers(@Header("Authorization") bearer: String, @Body req: SubmitAnswersReq): SimpleResp
 
+    @POST("/api/v1/questionnaire/reset")
+    suspend fun resetQuestionnaire(@Header("Authorization") bearer: String): SimpleResp
+
     @GET("/api/v1/questionnaire/progress")
     suspend fun questionnaireProgress(@Header("Authorization") bearer: String): QuestionnaireProgressResp
 

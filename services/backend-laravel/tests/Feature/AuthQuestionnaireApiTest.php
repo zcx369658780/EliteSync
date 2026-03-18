@@ -24,8 +24,8 @@ class AuthQuestionnaireApiTest extends TestCase
         $questions = $this->getJson('/api/v1/questionnaire/questions', [
             'Authorization' => 'Bearer '.$token,
         ])->assertOk()
-            ->assertJsonPath('total', 10)
-            ->assertJsonPath('required', 10)
+            ->assertJsonPath('total', 20)
+            ->assertJsonPath('required', 20)
             ->json();
 
         $exclude = collect($questions['items'] ?? [])->pluck('id')->all();

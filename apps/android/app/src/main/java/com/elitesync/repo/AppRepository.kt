@@ -11,6 +11,7 @@ class AppRepository {
     suspend fun questions(token: String) = api.questions("Bearer $token")
     suspend fun replaceQuestion(token: String, excludeIds: List<Int>) = api.replaceQuestion("Bearer $token", ReplaceQuestionReq(excludeIds))
     suspend fun saveAnswers(token: String, answers: List<AnswerItem>) = api.saveAnswers("Bearer $token", SubmitAnswersReq(answers))
+    suspend fun resetQuestionnaire(token: String) = api.resetQuestionnaire("Bearer $token")
     suspend fun questionnaireProgress(token: String) = api.questionnaireProgress("Bearer $token")
     suspend fun questionnaireProfile(token: String) = api.questionnaireProfile("Bearer $token")
     suspend fun currentMatch(token: String) = api.currentMatch("Bearer $token")
