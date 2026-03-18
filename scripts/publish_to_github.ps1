@@ -72,8 +72,8 @@ if (-not $hasChanges) {
 git commit -m $CommitMessage
 
 if ($token) {
-    $authUrl = $repoUrl -replace "^https://", ("https://x-access-token:{0}@" -f $token)
-    git push -u $authUrl $branch
+    $extraHeader = ("AUTHORIZATION: bearer {0}" -f $token)
+    git -c http.https://github.com/.extraheader="$extraHeader" push -u origin $branch
 } else {
     git push -u origin $branch
 }

@@ -28,3 +28,4 @@ services/backend-laravel/bootstrap/cache/*.php
 # Env and secrets
 *.env.local
 *.secret
+*.keystore

@@ -1,0 +1,150 @@
+Param(
+    [string]$Host = "101.133.161.203",
+    [string]$User = "root",
+    [string]$KeyPath = "$env:USERPROFILE\.ssh\CodexKey.pem",
+    [string]$RemoteRoot = "/opt/elitesync",
+    [switch]$ValidateLocal,
+    [switch]$SkipComposer,
+    [switch]$SkipMigrate,
+    [switch]$RunSeeder,
+    [switch]$SkipServiceRestart
+)
+
+$ErrorActionPreference = "Stop"
+
+function Assert-Tool([string]$Name) {
+    if (-not (Get-Command $Name -ErrorAction SilentlyContinue)) {
+        throw "Missing required command: $Name"
+    }
+}
+
+function Run-Step([string]$Title, [scriptblock]$Action) {
+    Write-Host "==> $Title"
+    & $Action
+    Write-Host "OK: $Title"
+}
+
+Assert-Tool "ssh"
+Assert-Tool "scp"
+
+if (-not (Test-Path $KeyPath)) {
+    throw "SSH key not found: $KeyPath"
+}
+
+$repoRoot = (Resolve-Path "$PSScriptRoot\..").Path
+$backendDir = Join-Path $repoRoot "services\backend-laravel"
+$questionBankDir = Join-Path $repoRoot "question_bank"
+$infraNginx = Join-Path $repoRoot "infra\elitesync-nginx.conf"
+$infraWsSvc = Join-Path $repoRoot "infra\elitesync-ws.service"
+
+if ($ValidateLocal) {
+    Run-Step "Local backend quick check (artisan about)" {
+        Push-Location $backendDir
+        try {
+            php artisan about | Out-Null
+        }
+        finally {
+            Pop-Location
+        }
+    }
+}
+
+Run-Step "Ensure remote directories" {
+    ssh -o BatchMode=yes -o StrictHostKeyChecking=no -i $KeyPath "$User@$Host" `
+        "mkdir -p $RemoteRoot/services $RemoteRoot/question_bank $RemoteRoot/infra"
+}
+
+Run-Step "Upload backend source" {
+    scp -o StrictHostKeyChecking=no -i $KeyPath -r `
+        "$backendDir" `
+        "$User@${Host}:$RemoteRoot/services/"
+}
+
+Run-Step "Upload question bank" {
+    scp -o StrictHostKeyChecking=no -i $KeyPath -r `
+        "$questionBankDir" `
+        "$User@${Host}:$RemoteRoot/"
+}
+
+if (Test-Path $infraNginx) {
+    Run-Step "Upload nginx config" {
+        scp -o StrictHostKeyChecking=no -i $KeyPath `
+            "$infraNginx" `
+            "$User@${Host}:/etc/nginx/sites-available/elitesync.conf"
+    }
+}
+
+if (Test-Path $infraWsSvc) {
+    Run-Step "Upload websocket systemd unit" {
+        scp -o StrictHostKeyChecking=no -i $KeyPath `
+            "$infraWsSvc" `
+            "$User@${Host}:/etc/systemd/system/elitesync-ws.service"
+    }
+}
+
+$doComposer = if ($SkipComposer) { "0" } else { "1" }
+$doMigrate = if ($SkipMigrate) { "0" } else { "1" }
+$doSeeder = if ($RunSeeder) { "1" } else { "0" }
+$restart = if ($SkipServiceRestart) { "0" } else { "1" }
+
+$remoteScript = @"
+set -euo pipefail
+cd $RemoteRoot/services/backend-laravel
+
+if [ "$doComposer" = "1" ]; then
+  export COMPOSER_ALLOW_SUPERUSER=1
+  composer install --no-interaction --prefer-dist --optimize-autoloader
+fi
+
+php artisan optimize:clear
+
+if [ "$doMigrate" = "1" ]; then
+  php artisan migrate --force
+fi
+
+if [ "$doSeeder" = "1" ]; then
+  php artisan db:seed --class=QuestionnaireQuestionSeeder --force
+fi
+
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+
+chown -R www-data:www-data storage bootstrap/cache || true
+chmod -R ug+rwX storage bootstrap/cache || true
+
+if [ -f /etc/nginx/sites-available/elitesync.conf ]; then
+  rm -f /etc/nginx/sites-enabled/default || true
+  ln -sf /etc/nginx/sites-available/elitesync.conf /etc/nginx/sites-enabled/elitesync.conf
+  nginx -t
+fi
+
+if [ "$restart" = "1" ]; then
+  systemctl daemon-reload
+  systemctl restart php8.4-fpm
+  systemctl restart nginx
+  systemctl restart elitesync-ws
+fi
+
+systemctl is-active php8.4-fpm
+systemctl is-active nginx
+systemctl is-active elitesync-ws
+curl -sS -o /dev/null -w '%{http_code}\n' http://127.0.0.1/up
+"@
+
+$tmpFile = Join-Path $env:TEMP "elitesync_remote_deploy.sh"
+Set-Content -Path $tmpFile -Value $remoteScript -Encoding ascii
+
+Run-Step "Upload and run remote deploy script" {
+    scp -o StrictHostKeyChecking=no -i $KeyPath `
+        "$tmpFile" `
+        "$User@${Host}:/tmp/elitesync_remote_deploy.sh"
+
+    ssh -o BatchMode=yes -o StrictHostKeyChecking=no -i $KeyPath "$User@$Host" `
+        "bash /tmp/elitesync_remote_deploy.sh"
+}
+
+Write-Host ""
+Write-Host "Deploy completed."
+Write-Host "API: http://$Host"
+Write-Host "Health: http://$Host/up"
