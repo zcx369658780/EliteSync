@@ -9,8 +9,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
     Route::prefix('auth')->group(function () {
-        Route::post('/register', [AuthController::class, 'register']);
-        Route::post('/login', [AuthController::class, 'login']);
+        Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:auth');
+        Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:auth');
         Route::post('/refresh', [AuthController::class, 'refresh'])->middleware('auth:sanctum');
     });
 
@@ -44,8 +44,8 @@ Route::prefix('v1')->group(function () {
         });
 
         Route::prefix('messages')->group(function () {
-            Route::post('', [MessageController::class, 'send']);
-            Route::get('', [MessageController::class, 'list']);
+            Route::post('', [MessageController::class, 'send'])->middleware('throttle:messages');
+            Route::get('', [MessageController::class, 'list'])->middleware('throttle:messages');
             Route::post('/read/{messageId}', [MessageController::class, 'markRead']);
             Route::get('/ws/{userId}', [MessageController::class, 'websocketStub']);
         });
@@ -59,4 +59,4 @@ Route::prefix('v1')->group(function () {
             Route::post('/dev/release-drop', [AdminController::class, 'devReleaseDrop']);
         });
     });
-});
+})->middleware('secure.transport');

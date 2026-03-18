@@ -1,5 +1,5 @@
 Param(
-    [string]$Host = "101.133.161.203",
+    [string]$ServerHost = "101.133.161.203",
     [string]$User = "root",
     [string]$KeyPath = "$env:USERPROFILE\.ssh\CodexKey.pem",
     [string]$RemoteRoot = "/opt/elitesync",
@@ -50,27 +50,37 @@ if ($ValidateLocal) {
 }
 
 Run-Step "Ensure remote directories" {
-    ssh -o BatchMode=yes -o StrictHostKeyChecking=no -i $KeyPath "$User@$Host" `
+    ssh -o BatchMode=yes -o StrictHostKeyChecking=no -i $KeyPath "$User@$ServerHost" `
         "mkdir -p $RemoteRoot/services $RemoteRoot/question_bank $RemoteRoot/infra"
+}
+
+Run-Step "Backup remote .env (if exists)" {
+    ssh -o BatchMode=yes -o StrictHostKeyChecking=no -i $KeyPath "$User@$ServerHost" `
+        "if [ -f $RemoteRoot/services/backend-laravel/.env ]; then cp $RemoteRoot/services/backend-laravel/.env /tmp/elitesync_backend.env.bak; fi"
 }
 
 Run-Step "Upload backend source" {
     scp -o StrictHostKeyChecking=no -i $KeyPath -r `
         "$backendDir" `
-        "$User@${Host}:$RemoteRoot/services/"
+        "$User@${ServerHost}:$RemoteRoot/services/"
+}
+
+Run-Step "Restore remote .env" {
+    ssh -o BatchMode=yes -o StrictHostKeyChecking=no -i $KeyPath "$User@$ServerHost" `
+        "if [ -f /tmp/elitesync_backend.env.bak ]; then mv /tmp/elitesync_backend.env.bak $RemoteRoot/services/backend-laravel/.env; fi"
 }
 
 Run-Step "Upload question bank" {
     scp -o StrictHostKeyChecking=no -i $KeyPath -r `
         "$questionBankDir" `
-        "$User@${Host}:$RemoteRoot/"
+        "$User@${ServerHost}:$RemoteRoot/"
 }
 
 if (Test-Path $infraNginx) {
     Run-Step "Upload nginx config" {
         scp -o StrictHostKeyChecking=no -i $KeyPath `
             "$infraNginx" `
-            "$User@${Host}:/etc/nginx/sites-available/elitesync.conf"
+            "$User@${ServerHost}:/etc/nginx/sites-available/elitesync.conf"
     }
 }
 
@@ -78,7 +88,7 @@ if (Test-Path $infraWsSvc) {
     Run-Step "Upload websocket systemd unit" {
         scp -o StrictHostKeyChecking=no -i $KeyPath `
             "$infraWsSvc" `
-            "$User@${Host}:/etc/systemd/system/elitesync-ws.service"
+            "$User@${ServerHost}:/etc/systemd/system/elitesync-ws.service"
     }
 }
 
@@ -138,13 +148,13 @@ Set-Content -Path $tmpFile -Value $remoteScript -Encoding ascii
 Run-Step "Upload and run remote deploy script" {
     scp -o StrictHostKeyChecking=no -i $KeyPath `
         "$tmpFile" `
-        "$User@${Host}:/tmp/elitesync_remote_deploy.sh"
+        "$User@${ServerHost}:/tmp/elitesync_remote_deploy.sh"
 
-    ssh -o BatchMode=yes -o StrictHostKeyChecking=no -i $KeyPath "$User@$Host" `
+    ssh -o BatchMode=yes -o StrictHostKeyChecking=no -i $KeyPath "$User@$ServerHost" `
         "bash /tmp/elitesync_remote_deploy.sh"
 }
 
 Write-Host ""
 Write-Host "Deploy completed."
-Write-Host "API: http://$Host"
-Write-Host "Health: http://$Host/up"
+Write-Host "API: http://$ServerHost"
+Write-Host "Health: http://$ServerHost/up"

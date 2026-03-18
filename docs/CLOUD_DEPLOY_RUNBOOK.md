@@ -27,7 +27,7 @@ Run from repo root:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\scripts\deploy_aliyun_backend.ps1 `
-  -Host 101.133.161.203 `
+  -ServerHost 101.133.161.203 `
   -User root `
   -KeyPath C:\Users\zcxve\.ssh\CodexKey.pem `
   -ValidateLocal `
@@ -39,14 +39,14 @@ powershell -ExecutionPolicy Bypass -File .\scripts\deploy_aliyun_backend.ps1 `
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\scripts\deploy_aliyun_backend.ps1 `
-  -Host 101.133.161.203 -User root -KeyPath C:\Users\zcxve\.ssh\CodexKey.pem
+  -ServerHost 101.133.161.203 -User root -KeyPath C:\Users\zcxve\.ssh\CodexKey.pem
 ```
 
 - Skip migrations:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\scripts\deploy_aliyun_backend.ps1 `
-  -Host 101.133.161.203 -User root -KeyPath C:\Users\zcxve\.ssh\CodexKey.pem `
+  -ServerHost 101.133.161.203 -User root -KeyPath C:\Users\zcxve\.ssh\CodexKey.pem `
   -SkipMigrate
 ```
 
@@ -54,7 +54,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\deploy_aliyun_backend.ps1 `
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\scripts\deploy_aliyun_backend.ps1 `
-  -Host 101.133.161.203 -User root -KeyPath C:\Users\zcxve\.ssh\CodexKey.pem `
+  -ServerHost 101.133.161.203 -User root -KeyPath C:\Users\zcxve\.ssh\CodexKey.pem `
   -SkipComposer
 ```
 

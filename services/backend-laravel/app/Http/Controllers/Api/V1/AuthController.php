@@ -8,6 +8,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Validation\Rules\Password;
 
 class AuthController extends Controller
 {
@@ -15,7 +16,7 @@ class AuthController extends Controller
     {
         $data = $request->validate([
             'phone' => ['required', 'string', 'max:32', 'unique:users,phone'],
-            'password' => ['required', 'string', 'min:6'],
+            'password' => ['required', 'string', Password::min(8)->letters()->numbers()],
             'name' => ['nullable', 'string', 'max:255'],
         ]);
 

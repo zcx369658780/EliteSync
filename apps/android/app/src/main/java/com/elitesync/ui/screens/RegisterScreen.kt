@@ -18,7 +18,7 @@ import com.elitesync.ui.AppViewModel
 @Composable
 fun RegisterScreen(vm: AppViewModel, onNext: (String) -> Unit) {
     var phone by remember { mutableStateOf("13800000001") }
-    var password by remember { mutableStateOf("123456") }
+    var password by remember { mutableStateOf("12345678") }
     val isLoggedIn by vm.isLoggedIn.collectAsState()
     val questionnaireComplete by vm.questionnaireComplete.collectAsState()
     val questionnaireProgressLoaded by vm.questionnaireProgressLoaded.collectAsState()

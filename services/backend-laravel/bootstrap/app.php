@@ -19,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->append(\App\Http\Middleware\RequestTraceMiddleware::class);
         $middleware->alias([
             'admin.phone' => \App\Http\Middleware\EnsureAdminPhone::class,
+            'secure.transport' => \App\Http\Middleware\EnsureSecureTransport::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
