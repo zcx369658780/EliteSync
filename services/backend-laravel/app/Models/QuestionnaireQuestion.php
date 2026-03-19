@@ -15,6 +15,7 @@ class QuestionnaireQuestion extends Model
         'category',
         'subtopic',
         'recommended_bank',
+        'quality_tier',
         'content',
         'question_text_zh',
         'question_text_en',

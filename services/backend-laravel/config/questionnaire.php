@@ -8,4 +8,6 @@ return [
         'extended' => 0.30,
         'research' => 0.20,
     ],
+    // production default: prioritize better discrimination questions
+    'allowed_quality_tiers' => ['high', 'normal'],
 ];

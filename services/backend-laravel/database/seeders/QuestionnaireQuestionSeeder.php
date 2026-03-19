@@ -29,6 +29,11 @@ class QuestionnaireQuestionSeeder extends Seeder
                         'zh' => (string) data_get($opt, 'label.zh', ''),
                         'en' => (string) data_get($opt, 'label.en', ''),
                     ],
+                    'evaluation_standard' => [
+                        'code' => (string) data_get($opt, 'evaluation_standard.code', ''),
+                        'zh' => (string) data_get($opt, 'evaluation_standard.zh', ''),
+                        'en' => (string) data_get($opt, 'evaluation_standard.en', ''),
+                    ],
                     'score' => (float) ($opt['score'] ?? 0),
                 ];
             }, (array) ($q['options'] ?? []));
@@ -39,6 +44,7 @@ class QuestionnaireQuestionSeeder extends Seeder
                     'category' => (string) ($q['category'] ?? 'values'),
                     'subtopic' => (string) ($q['subtopic'] ?? ''),
                     'recommended_bank' => (string) ($q['recommended_bank'] ?? 'core'),
+                    'quality_tier' => (string) ($q['quality_tier'] ?? 'normal'),
                     'content' => (string) data_get($q, 'question_text.zh', ''),
                     'question_text_zh' => (string) data_get($q, 'question_text.zh', ''),
                     'question_text_en' => (string) data_get($q, 'question_text.en', ''),

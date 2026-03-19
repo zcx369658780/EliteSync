@@ -41,6 +41,7 @@ class QuestionnaireController extends Controller
 
         $baseQuery = QuestionnaireQuestion::query()
             ->where('enabled', true)
+            ->whereIn('quality_tier', $this->allowedQualityTiers())
             ->whereNotIn('id', $answeredIds);
 
         $sessionCount = $this->sessionQuestionCount();
@@ -62,6 +63,7 @@ class QuestionnaireController extends Controller
                     'category',
                     'subtopic',
                     'recommended_bank',
+                    'quality_tier',
                     'content',
                     'question_text_zh',
                     'question_text_en',
@@ -84,6 +86,7 @@ class QuestionnaireController extends Controller
                     'category',
                     'subtopic',
                     'recommended_bank',
+                    'quality_tier',
                     'content',
                     'question_text_zh',
                     'question_text_en',
@@ -95,6 +98,31 @@ class QuestionnaireController extends Controller
             $questions = $questions->concat($fill);
         }
 
+        if ($questions->count() < $sessionCount) {
+            $fallback = QuestionnaireQuestion::query()
+                ->where('enabled', true)
+                ->whereNotIn('id', $questions->pluck('id')->all())
+                ->whereNotIn('id', $answeredIds)
+                ->inRandomOrder()
+                ->limit($sessionCount - $questions->count())
+                ->get([
+                    'id',
+                    'question_key',
+                    'category',
+                    'subtopic',
+                    'recommended_bank',
+                    'quality_tier',
+                    'content',
+                    'question_text_zh',
+                    'question_text_en',
+                    'question_type',
+                    'acceptable_answer_logic',
+                    'options',
+                    'version',
+                ]);
+            $questions = $questions->concat($fallback);
+        }
+
         $questions = $questions->shuffle()->values();
         $questions = $questions->map(function (QuestionnaireQuestion $q) {
             return [
@@ -103,6 +131,7 @@ class QuestionnaireController extends Controller
                 'category' => $q->category,
                 'subtopic' => $q->subtopic,
                 'recommended_bank' => $q->recommended_bank,
+                'quality_tier' => $q->quality_tier,
                 'content' => $q->question_text_zh ?: $q->content,
                 'question_type' => $q->question_type,
                 'acceptable_answer_logic' => $q->acceptable_answer_logic,
@@ -117,6 +146,11 @@ class QuestionnaireController extends Controller
                         'label' => [
                             'zh' => (string) data_get($opt, 'label.zh', ''),
                             'en' => (string) data_get($opt, 'label.en', ''),
+                        ],
+                        'evaluation_standard' => [
+                            'code' => (string) data_get($opt, 'evaluation_standard.code', ''),
+                            'zh' => (string) data_get($opt, 'evaluation_standard.zh', ''),
+                            'en' => (string) data_get($opt, 'evaluation_standard.en', ''),
                         ],
                         'score' => (float) data_get($opt, 'score', 0),
                     ];
@@ -160,12 +194,16 @@ class QuestionnaireController extends Controller
 
         $next = QuestionnaireQuestion::query()
             ->where('enabled', true)
+            ->whereIn('quality_tier', $this->allowedQualityTiers())
             ->whereNotIn('id', $excludeIds)
             ->inRandomOrder()
             ->first([
                 'id',
                 'question_key',
                 'category',
+                'subtopic',
+                'recommended_bank',
+                'quality_tier',
                 'content',
                 'question_text_zh',
                 'question_type',
@@ -175,6 +213,27 @@ class QuestionnaireController extends Controller
             ]);
 
         if (!$next) {
+            $next = QuestionnaireQuestion::query()
+                ->where('enabled', true)
+                ->whereNotIn('id', $excludeIds)
+                ->inRandomOrder()
+                ->first([
+                    'id',
+                    'question_key',
+                    'category',
+                    'subtopic',
+                    'recommended_bank',
+                    'quality_tier',
+                    'content',
+                    'question_text_zh',
+                    'question_type',
+                    'acceptable_answer_logic',
+                    'options',
+                    'version',
+                ]);
+        }
+
+        if (!$next) {
             return response()->json(['message' => 'no replacement question'], 404);
         }
 
@@ -182,6 +241,9 @@ class QuestionnaireController extends Controller
             'id' => $next->id,
             'question_key' => $next->question_key,
             'category' => $next->category,
+            'subtopic' => $next->subtopic,
+            'recommended_bank' => $next->recommended_bank,
+            'quality_tier' => $next->quality_tier,
             'content' => $next->question_text_zh ?: $next->content,
             'question_type' => $next->question_type,
             'acceptable_answer_logic' => $next->acceptable_answer_logic,
@@ -194,6 +256,11 @@ class QuestionnaireController extends Controller
                     'label' => [
                         'zh' => (string) data_get($opt, 'label.zh', ''),
                         'en' => (string) data_get($opt, 'label.en', ''),
+                    ],
+                    'evaluation_standard' => [
+                        'code' => (string) data_get($opt, 'evaluation_standard.code', ''),
+                        'zh' => (string) data_get($opt, 'evaluation_standard.zh', ''),
+                        'en' => (string) data_get($opt, 'evaluation_standard.en', ''),
                     ],
                     'score' => (float) data_get($opt, 'score', 0),
                 ];
@@ -349,5 +416,17 @@ class QuestionnaireController extends Controller
         }
 
         return $targets;
+    }
+
+    /**
+     * @return array<int,string>
+     */
+    private function allowedQualityTiers(): array
+    {
+        $tiers = array_values(array_filter(
+            array_map('strval', (array) config('questionnaire.allowed_quality_tiers', ['high', 'normal']))
+        ));
+
+        return empty($tiers) ? ['high', 'normal'] : $tiers;
     }
 }
