@@ -1,0 +1,27 @@
+# Docs Index
+
+## Start Here
+- `HANDOFF_CURRENT.md`: 当前交接入口（最新状态、命令、下一步）
+- `PROJECT_INTRO.md`: 新成员项目介绍
+
+## Plans
+- `plans/DEVELOPMENT_PLAN_UPDATED.md`: 当前开发计划基线
+
+## Runbooks
+- `runbooks/CLOUD_DEPLOY_RUNBOOK.md`: 本地改动部署到阿里云
+- `runbooks/HTTPS_WSS_CUTOVER.md`: 域名可用后 HTTPS/WSS 切换
+- `runbooks/DEMO_RUNBOOK_2026Q1.md`: 会议演示流程
+- `runbooks/REGRESSION_CHECKLIST_2026Q1.md`: 回归测试清单
+- `runbooks/BACKEND_WINDOWS_RUNBOOK.md`: Windows 后端运行说明
+- `runbooks/TROUBLESHOOTING_LOCAL.md`: 常见问题排查
+
+## Reference
+- `reference/API_P0_CONTRACT.md`
+- `reference/BRANCH_PROTECTION_RECOMMENDATION.md`
+- `reference/dating_system_design_integrated.md`
+- `reference/dating_system_design_supplement_for_codex.md`
+- `reference/DEMO_PERSONA_USERS.md`
+- `reference/GITHUB_PUSH_NETWORK_MODE.md`
+
+## Archive
+- `archive/legacy_2026-03/`: 历史版本文档归档（保留，不作为当前执行入口）

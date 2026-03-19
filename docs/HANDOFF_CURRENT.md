@@ -55,11 +55,11 @@ powershell -ExecutionPolicy Bypass -File .\scripts\enable_https_wss_aliyun.ps1 \
 
 ## 5. 当前应优先查看的文档
 - `docs/PROJECT_INTRO.md`：给新成员的项目介绍
-- `docs/DEVELOPMENT_PLAN_UPDATED.md`：最新开发计划基线
-- `docs/CLOUD_DEPLOY_RUNBOOK.md`：云端部署标准流程
-- `docs/HTTPS_WSS_CUTOVER.md`：HTTPS/WSS 切换清单
-- `docs/DEMO_RUNBOOK_2026Q1.md`：会议演示流程
-- `docs/REGRESSION_CHECKLIST_2026Q1.md`：回归测试清单
+- `docs/plans/DEVELOPMENT_PLAN_UPDATED.md`：最新开发计划基线
+- `docs/runbooks/CLOUD_DEPLOY_RUNBOOK.md`：云端部署标准流程
+- `docs/runbooks/HTTPS_WSS_CUTOVER.md`：HTTPS/WSS 切换清单
+- `docs/runbooks/DEMO_RUNBOOK_2026Q1.md`：会议演示流程
+- `docs/runbooks/REGRESSION_CHECKLIST_2026Q1.md`：回归测试清单
 
 ## 6. 本轮清理说明
 - 旧阶段文档、旧交接文档、旧联调文档已移动至：
