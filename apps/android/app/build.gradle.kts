@@ -25,8 +25,14 @@ android {
     }
 
     buildTypes {
+        debug {
+            buildConfigField("String", "API_BASE_URL", "\"http://101.133.161.203/\"")
+            buildConfigField("String", "WS_BASE_URL", "\"ws://101.133.161.203:8081/\"")
+        }
         release {
             isMinifyEnabled = false
+            buildConfigField("String", "API_BASE_URL", "\"https://slowdate.top/\"")
+            buildConfigField("String", "WS_BASE_URL", "\"wss://slowdate.top/\"")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
