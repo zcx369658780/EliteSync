@@ -222,4 +222,48 @@ class AdminApiTest extends TestCase
         $this->assertNotEmpty($resp['by_tag'] ?? []);
         $this->assertNotEmpty($resp['reasons'] ?? []);
     }
+
+    public function test_prune_low_drop_questions_supports_dry_run_and_apply(): void
+    {
+        $this->seed();
+
+        $admin = User::create([
+            'phone' => '13800000151',
+            'name' => 'admin5',
+            'password' => 'secret123',
+            'verify_status' => 'approved',
+        ]);
+
+        Config::set('app.admin_phones', [$admin->phone]);
+        Sanctum::actingAs($admin);
+
+        $initial = QuestionnaireQuestion::query()
+            ->where('enabled', true)
+            ->where('quality_tag', 'low_drop')
+            ->count();
+        $this->assertGreaterThan(0, $initial);
+
+        $dryRun = $this->postJson('/api/v1/admin/questionnaire/prune-low-drop', [
+            'dry_run' => true,
+        ])->assertOk()->json();
+
+        $this->assertTrue((bool) ($dryRun['ok'] ?? false));
+        $this->assertTrue((bool) ($dryRun['dry_run'] ?? false));
+        $this->assertSame($initial, (int) ($dryRun['candidates'] ?? -1));
+        $this->assertSame(0, (int) ($dryRun['updated'] ?? -1));
+
+        $apply = $this->postJson('/api/v1/admin/questionnaire/prune-low-drop', [
+            'dry_run' => false,
+        ])->assertOk()->json();
+
+        $this->assertTrue((bool) ($apply['ok'] ?? false));
+        $this->assertFalse((bool) ($apply['dry_run'] ?? true));
+        $this->assertSame($initial, (int) ($apply['updated'] ?? -1));
+
+        $after = QuestionnaireQuestion::query()
+            ->where('enabled', true)
+            ->where('quality_tag', 'low_drop')
+            ->count();
+        $this->assertSame(0, $after);
+    }
 }

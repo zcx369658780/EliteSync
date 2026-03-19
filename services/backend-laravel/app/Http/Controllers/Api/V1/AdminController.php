@@ -217,4 +217,50 @@ class AdminController extends Controller
             'low_drop_reasons' => $dropReasons,
         ]);
     }
+
+    public function pruneLowDropQuestions(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'dry_run' => ['nullable', 'boolean'],
+            'reasons' => ['nullable', 'array'],
+            'reasons.*' => ['string', 'max:64'],
+        ]);
+
+        $dryRun = (bool) ($data['dry_run'] ?? true);
+        $reasons = array_values(array_filter(array_map('strval', (array) ($data['reasons'] ?? []))));
+
+        $base = QuestionnaireQuestion::query()
+            ->where('enabled', true)
+            ->where('quality_tag', 'low_drop');
+
+        if (!empty($reasons)) {
+            $base->whereIn('quality_reason', $reasons);
+        }
+
+        $byReason = (clone $base)
+            ->select(['quality_reason', DB::raw('COUNT(*) as c')])
+            ->groupBy('quality_reason')
+            ->orderByDesc('c')
+            ->get()
+            ->map(fn ($r) => [
+                'quality_reason' => (string) $r->quality_reason,
+                'count' => (int) $r->c,
+            ])
+            ->values();
+
+        $candidates = (int) (clone $base)->count();
+        $updated = 0;
+        if (!$dryRun && $candidates > 0) {
+            $updated = $base->update(['enabled' => false]);
+        }
+
+        return response()->json([
+            'ok' => true,
+            'dry_run' => $dryRun,
+            'candidates' => $candidates,
+            'updated' => (int) $updated,
+            'reasons' => $reasons,
+            'by_reason' => $byReason,
+        ]);
+    }
 }
