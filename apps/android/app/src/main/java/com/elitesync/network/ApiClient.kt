@@ -6,7 +6,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object ApiClient {
-    private const val FALLBACK_BASE_URL = "http://101.133.161.203/"
+    private const val FALLBACK_BASE_URL = "https://slowdate.top/"
     private val baseUrl: String = BuildConfig.API_BASE_URL.ifBlank { FALLBACK_BASE_URL }
 
     val service: ApiService by lazy {

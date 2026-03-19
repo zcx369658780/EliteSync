@@ -32,17 +32,17 @@ server {
 
     location ^~ /api/v1/messages/ws/ {
         proxy_http_version 1.1;
-        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Upgrade @@DOLLAR@@http_upgrade;
         proxy_set_header Connection "upgrade";
-        proxy_set_header Host \$host;
-        proxy_set_header X-Real-IP \$remote_addr;
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_set_header Host @@DOLLAR@@host;
+        proxy_set_header X-Real-IP @@DOLLAR@@remote_addr;
+        proxy_set_header X-Forwarded-For @@DOLLAR@@proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto @@DOLLAR@@scheme;
         proxy_pass http://127.0.0.1:8081;
     }
 
     location / {
-        try_files \$uri \$uri/ /index.php?\$query_string;
+        try_files @@DOLLAR@@uri @@DOLLAR@@uri/ /index.php?@@DOLLAR@@query_string;
     }
 
     location ~ \\.php$ {
@@ -82,7 +82,7 @@ systemctl restart php8.4-fpm nginx elitesync-ws
 curl -sS -o /dev/null -w '%{http_code}\n' https://DOMAIN_VALUE/up
 "@
 
-$remoteScript = $remoteScript.Replace("DOMAIN_VALUE", $Domain).Replace("EMAIL_VALUE", $Email).Replace("PROJECT_VALUE", $ProjectRoot)
+$remoteScript = $remoteScript.Replace("DOMAIN_VALUE", $Domain).Replace("EMAIL_VALUE", $Email).Replace("PROJECT_VALUE", $ProjectRoot).Replace("@@DOLLAR@@", "$")
 
 $tmp = Join-Path $env:TEMP "elitesync_https_enable.sh"
 Set-Content -Path $tmp -Value $remoteScript -Encoding ascii

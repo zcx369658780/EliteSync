@@ -12,7 +12,7 @@ class ChatSocketManager(
 ) {
     private val client = OkHttpClient()
     private var socket: WebSocket? = null
-    private val wsBaseUrl: String = BuildConfig.WS_BASE_URL.ifBlank { "ws://101.133.161.203:8081/" }
+    private val wsBaseUrl: String = BuildConfig.WS_BASE_URL.ifBlank { "wss://slowdate.top/" }
 
     fun connect(userId: Int) {
         socket?.close(1000, "reconnect")
