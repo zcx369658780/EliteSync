@@ -191,4 +191,35 @@ class AdminApiTest extends TestCase
             ->assertStatus(403)
             ->assertJsonPath('message', 'admin access required');
     }
+
+    public function test_question_quality_stats_endpoint_returns_reason_breakdown(): void
+    {
+        $this->seed();
+
+        $admin = User::create([
+            'phone' => '13800000141',
+            'name' => 'admin4',
+            'password' => 'secret123',
+            'verify_status' => 'approved',
+        ]);
+
+        Config::set('app.admin_phones', [$admin->phone]);
+        Sanctum::actingAs($admin);
+
+        $resp = $this->getJson('/api/v1/admin/questionnaire/quality-stats')
+            ->assertOk()
+            ->assertJsonStructure([
+                'total',
+                'by_tier',
+                'by_tag',
+                'reasons' => [['quality_tier', 'quality_tag', 'quality_reason', 'count']],
+                'low_drop_reasons',
+            ])
+            ->json();
+
+        $this->assertGreaterThan(0, (int) ($resp['total'] ?? 0));
+        $this->assertNotEmpty($resp['by_tier'] ?? []);
+        $this->assertNotEmpty($resp['by_tag'] ?? []);
+        $this->assertNotEmpty($resp['reasons'] ?? []);
+    }
 }

@@ -52,6 +52,7 @@ Route::prefix('v1')->group(function () {
 
         Route::prefix('admin')->middleware('admin.phone')->group(function () {
             Route::get('/users', [AdminController::class, 'users']);
+            Route::get('/questionnaire/quality-stats', [AdminController::class, 'questionQualityStats']);
             Route::post('/users/{uid}/disable', [AdminController::class, 'disable']);
             Route::get('/verify-queue', [AdminController::class, 'verifyQueue']);
             Route::post('/verify/{uid}', [AdminController::class, 'updateVerify']);

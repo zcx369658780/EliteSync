@@ -11,6 +11,7 @@ use App\Services\MatchingEngineService;
 use App\Services\PersonalityProfileService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
 {
@@ -174,6 +175,46 @@ class AdminController extends Controller
             'ok' => true,
             'week_tag' => $weekTag,
             'released' => $updated,
+        ]);
+    }
+
+    public function questionQualityStats(): JsonResponse
+    {
+        $base = QuestionnaireQuestion::query()->where('enabled', true);
+
+        $totalsByTier = (clone $base)
+            ->selectRaw('quality_tier, COUNT(*) as c')
+            ->groupBy('quality_tier')
+            ->pluck('c', 'quality_tier');
+
+        $totalsByTag = (clone $base)
+            ->selectRaw('quality_tag, COUNT(*) as c')
+            ->groupBy('quality_tag')
+            ->pluck('c', 'quality_tag');
+
+        $reasons = (clone $base)
+            ->select(['quality_tier', 'quality_tag', 'quality_reason', DB::raw('COUNT(*) as c')])
+            ->groupBy('quality_tier', 'quality_tag', 'quality_reason')
+            ->orderByDesc('c')
+            ->get()
+            ->map(fn ($r) => [
+                'quality_tier' => (string) $r->quality_tier,
+                'quality_tag' => (string) $r->quality_tag,
+                'quality_reason' => (string) $r->quality_reason,
+                'count' => (int) $r->c,
+            ])
+            ->values();
+
+        $dropReasons = $reasons
+            ->filter(fn ($r) => $r['quality_tag'] === 'low_drop')
+            ->values();
+
+        return response()->json([
+            'total' => (int) $base->count(),
+            'by_tier' => $totalsByTier,
+            'by_tag' => $totalsByTag,
+            'reasons' => $reasons,
+            'low_drop_reasons' => $dropReasons,
         ]);
     }
 }

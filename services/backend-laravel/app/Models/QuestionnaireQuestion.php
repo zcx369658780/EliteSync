@@ -17,6 +17,7 @@ class QuestionnaireQuestion extends Model
         'recommended_bank',
         'quality_tier',
         'quality_tag',
+        'quality_reason',
         'content',
         'question_text_zh',
         'question_text_en',
