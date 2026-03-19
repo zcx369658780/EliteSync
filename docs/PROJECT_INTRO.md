@@ -71,5 +71,6 @@ EliteSync 是一个“慢约会”应用，核心闭环：
 ---
 如需查看完整历史规划与阶段报告：
 - `docs/plans/DEVELOPMENT_PLAN_UPDATED.md`
-- `docs/STAGE_B_COMPLETION_REPORT.md`
-- `docs/STAGE_C_HANDOVER.md`
+- `docs/HANDOFF_CURRENT.md`
+- `docs/archive/legacy_2026-03/STAGE_B_COMPLETION_REPORT.md`
+- `docs/archive/legacy_2026-03/STAGE_C_HANDOVER.md`
