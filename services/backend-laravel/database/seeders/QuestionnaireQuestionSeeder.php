@@ -45,6 +45,7 @@ class QuestionnaireQuestionSeeder extends Seeder
                     'subtopic' => (string) ($q['subtopic'] ?? ''),
                     'recommended_bank' => (string) ($q['recommended_bank'] ?? 'core'),
                     'quality_tier' => (string) ($q['quality_tier'] ?? 'normal'),
+                    'quality_tag' => (string) ($q['quality_tag'] ?? 'pass'),
                     'content' => (string) data_get($q, 'question_text.zh', ''),
                     'question_text_zh' => (string) data_get($q, 'question_text.zh', ''),
                     'question_text_en' => (string) data_get($q, 'question_text.en', ''),

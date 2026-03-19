@@ -42,6 +42,7 @@ class QuestionnaireController extends Controller
         $baseQuery = QuestionnaireQuestion::query()
             ->where('enabled', true)
             ->whereIn('quality_tier', $this->allowedQualityTiers())
+            ->whereIn('quality_tag', $this->primaryQualityTags())
             ->whereNotIn('id', $answeredIds);
 
         $sessionCount = $this->sessionQuestionCount();
@@ -64,6 +65,7 @@ class QuestionnaireController extends Controller
                     'subtopic',
                     'recommended_bank',
                     'quality_tier',
+                    'quality_tag',
                     'content',
                     'question_text_zh',
                     'question_text_en',
@@ -87,6 +89,7 @@ class QuestionnaireController extends Controller
                     'subtopic',
                     'recommended_bank',
                     'quality_tier',
+                    'quality_tag',
                     'content',
                     'question_text_zh',
                     'question_text_en',
@@ -101,6 +104,7 @@ class QuestionnaireController extends Controller
         if ($questions->count() < $sessionCount) {
             $fallback = QuestionnaireQuestion::query()
                 ->where('enabled', true)
+                ->whereIn('quality_tag', $this->fallbackQualityTags())
                 ->whereNotIn('id', $questions->pluck('id')->all())
                 ->whereNotIn('id', $answeredIds)
                 ->inRandomOrder()
@@ -112,6 +116,7 @@ class QuestionnaireController extends Controller
                     'subtopic',
                     'recommended_bank',
                     'quality_tier',
+                    'quality_tag',
                     'content',
                     'question_text_zh',
                     'question_text_en',
@@ -132,6 +137,7 @@ class QuestionnaireController extends Controller
                 'subtopic' => $q->subtopic,
                 'recommended_bank' => $q->recommended_bank,
                 'quality_tier' => $q->quality_tier,
+                'quality_tag' => $q->quality_tag,
                 'content' => $q->question_text_zh ?: $q->content,
                 'question_type' => $q->question_type,
                 'acceptable_answer_logic' => $q->acceptable_answer_logic,
@@ -195,6 +201,7 @@ class QuestionnaireController extends Controller
         $next = QuestionnaireQuestion::query()
             ->where('enabled', true)
             ->whereIn('quality_tier', $this->allowedQualityTiers())
+            ->whereIn('quality_tag', $this->primaryQualityTags())
             ->whereNotIn('id', $excludeIds)
             ->inRandomOrder()
             ->first([
@@ -204,6 +211,7 @@ class QuestionnaireController extends Controller
                 'subtopic',
                 'recommended_bank',
                 'quality_tier',
+                'quality_tag',
                 'content',
                 'question_text_zh',
                 'question_type',
@@ -215,6 +223,7 @@ class QuestionnaireController extends Controller
         if (!$next) {
             $next = QuestionnaireQuestion::query()
                 ->where('enabled', true)
+                ->whereIn('quality_tag', $this->fallbackQualityTags())
                 ->whereNotIn('id', $excludeIds)
                 ->inRandomOrder()
                 ->first([
@@ -224,6 +233,7 @@ class QuestionnaireController extends Controller
                     'subtopic',
                     'recommended_bank',
                     'quality_tier',
+                    'quality_tag',
                     'content',
                     'question_text_zh',
                     'question_type',
@@ -244,6 +254,7 @@ class QuestionnaireController extends Controller
             'subtopic' => $next->subtopic,
             'recommended_bank' => $next->recommended_bank,
             'quality_tier' => $next->quality_tier,
+            'quality_tag' => $next->quality_tag,
             'content' => $next->question_text_zh ?: $next->content,
             'question_type' => $next->question_type,
             'acceptable_answer_logic' => $next->acceptable_answer_logic,
@@ -428,5 +439,29 @@ class QuestionnaireController extends Controller
         ));
 
         return empty($tiers) ? ['high', 'normal'] : $tiers;
+    }
+
+    /**
+     * @return array<int,string>
+     */
+    private function primaryQualityTags(): array
+    {
+        $tags = array_values(array_filter(
+            array_map('strval', (array) config('questionnaire.primary_quality_tags', ['pass', 'low_keep']))
+        ));
+
+        return empty($tags) ? ['pass', 'low_keep'] : $tags;
+    }
+
+    /**
+     * @return array<int,string>
+     */
+    private function fallbackQualityTags(): array
+    {
+        $tags = array_values(array_filter(
+            array_map('strval', (array) config('questionnaire.fallback_quality_tags', ['pass', 'low_keep', 'low_drop']))
+        ));
+
+        return empty($tags) ? ['pass', 'low_keep', 'low_drop'] : $tags;
     }
 }

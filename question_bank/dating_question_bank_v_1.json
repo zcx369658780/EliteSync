@@ -77,10 +77,12 @@
       },
       "active": true,
       "version": 1,
-      "quality_tier": "normal",
+      "quality_tier": "low",
       "quality_meta": {
-        "reason": "standard_discrimination"
-      }
+        "reason": "borderline_discrimination",
+        "quality_tag": "low_keep"
+      },
+      "quality_tag": "low_keep"
     },
     {
       "question_id": "Q_VALUES_002",
@@ -135,8 +137,10 @@
       "version": 1,
       "quality_tier": "normal",
       "quality_meta": {
-        "reason": "standard_discrimination"
-      }
+        "reason": "standard_discrimination",
+        "quality_tag": "pass"
+      },
+      "quality_tag": "pass"
     },
     {
       "question_id": "Q_VALUES_003",
@@ -191,8 +195,10 @@
       "version": 1,
       "quality_tier": "high",
       "quality_meta": {
-        "reason": "high_discrimination"
-      }
+        "reason": "high_discrimination",
+        "quality_tag": "pass"
+      },
+      "quality_tag": "pass"
     },
     {
       "question_id": "Q_VALUES_004",
@@ -245,10 +251,12 @@
       },
       "active": true,
       "version": 1,
-      "quality_tier": "normal",
+      "quality_tier": "low",
       "quality_meta": {
-        "reason": "standard_discrimination"
-      }
+        "reason": "borderline_discrimination",
+        "quality_tag": "low_keep"
+      },
+      "quality_tag": "low_keep"
     },
     {
       "question_id": "Q_VALUES_005",
@@ -303,8 +311,10 @@
       "version": 1,
       "quality_tier": "low",
       "quality_meta": {
-        "reason": "low_discrimination"
-      }
+        "reason": "low_discrimination",
+        "quality_tag": "low_drop"
+      },
+      "quality_tag": "low_drop"
     },
     {
       "question_id": "Q_RELATIONSHIP_GOALS_001",
@@ -351,8 +361,10 @@
       "version": 1,
       "quality_tier": "normal",
       "quality_meta": {
-        "reason": "standard_discrimination"
-      }
+        "reason": "standard_discrimination",
+        "quality_tag": "pass"
+      },
+      "quality_tag": "pass"
     },
     {
       "question_id": "Q_RELATIONSHIP_GOALS_002",
@@ -399,8 +411,10 @@
       "version": 1,
       "quality_tier": "low",
       "quality_meta": {
-        "reason": "low_discrimination"
-      }
+        "reason": "low_discrimination",
+        "quality_tag": "low_drop"
+      },
+      "quality_tag": "low_drop"
     },
     {
       "question_id": "Q_RELATIONSHIP_GOALS_003",
@@ -453,10 +467,12 @@
       },
       "active": true,
       "version": 1,
-      "quality_tier": "normal",
+      "quality_tier": "low",
       "quality_meta": {
-        "reason": "standard_discrimination"
-      }
+        "reason": "borderline_discrimination",
+        "quality_tag": "low_keep"
+      },
+      "quality_tag": "low_keep"
     },
     {
       "question_id": "Q_RELATIONSHIP_GOALS_004",
@@ -509,10 +525,12 @@
       },
       "active": true,
       "version": 1,
-      "quality_tier": "normal",
+      "quality_tier": "low",
       "quality_meta": {
-        "reason": "standard_discrimination"
-      }
+        "reason": "borderline_discrimination",
+        "quality_tag": "low_keep"
+      },
+      "quality_tag": "low_keep"
     },
     {
       "question_id": "Q_RELATIONSHIP_GOALS_005",
@@ -567,8 +585,10 @@
       "version": 1,
       "quality_tier": "normal",
       "quality_meta": {
-        "reason": "standard_discrimination"
-      }
+        "reason": "standard_discrimination",
+        "quality_tag": "pass"
+      },
+      "quality_tag": "pass"
     },
     {
       "question_id": "Q_LIFESTYLE_001",
@@ -615,8 +635,10 @@
       "version": 1,
       "quality_tier": "normal",
       "quality_meta": {
-        "reason": "standard_discrimination"
-      }
+        "reason": "standard_discrimination",
+        "quality_tag": "pass"
+      },
+      "quality_tag": "pass"
     },
     {
       "question_id": "Q_LIFESTYLE_002",
@@ -663,8 +685,10 @@
       "version": 1,
       "quality_tier": "normal",
       "quality_meta": {
-        "reason": "standard_discrimination"
-      }
+        "reason": "standard_discrimination",
+        "quality_tag": "pass"
+      },
+      "quality_tag": "pass"
     },
     {
       "question_id": "Q_LIFESTYLE_003",
@@ -711,8 +735,10 @@
       "version": 1,
       "quality_tier": "normal",
       "quality_meta": {
-        "reason": "standard_discrimination"
-      }
+        "reason": "standard_discrimination",
+        "quality_tag": "pass"
+      },
+      "quality_tag": "pass"
     },
     {
       "question_id": "Q_LIFESTYLE_004",
@@ -759,8 +785,10 @@
       "version": 1,
       "quality_tier": "normal",
       "quality_meta": {
-        "reason": "standard_discrimination"
-      }
+        "reason": "standard_discrimination",
+        "quality_tag": "pass"
+      },
+      "quality_tag": "pass"
     },
     {
       "question_id": "Q_LIFESTYLE_005",
@@ -807,8 +835,10 @@
       "version": 1,
       "quality_tier": "normal",
       "quality_meta": {
-        "reason": "standard_discrimination"
-      }
+        "reason": "standard_discrimination",
+        "quality_tag": "pass"
+      },
+      "quality_tag": "pass"
     },
     {
       "question_id": "Q_SOCIAL_ENERGY_001",
@@ -855,8 +885,10 @@
       "version": 1,
       "quality_tier": "normal",
       "quality_meta": {
-        "reason": "standard_discrimination"
-      }
+        "reason": "standard_discrimination",
+        "quality_tag": "pass"
+      },
+      "quality_tag": "pass"
     },
     {
       "question_id": "Q_SOCIAL_ENERGY_002",
@@ -903,8 +935,10 @@
       "version": 1,
       "quality_tier": "normal",
       "quality_meta": {
-        "reason": "standard_discrimination"
-      }
+        "reason": "standard_discrimination",
+        "quality_tag": "pass"
+      },
+      "quality_tag": "pass"
     },
     {
       "question_id": "Q_SOCIAL_ENERGY_003",
@@ -951,8 +985,10 @@
       "version": 1,
       "quality_tier": "low",
       "quality_meta": {
-        "reason": "low_discrimination"
-      }
+        "reason": "low_discrimination",
+        "quality_tag": "low_drop"
+      },
+      "quality_tag": "low_drop"
     },
     {
       "question_id": "Q_SOCIAL_ENERGY_004",
@@ -999,8 +1035,10 @@
       "version": 1,
       "quality_tier": "normal",
       "quality_meta": {
-        "reason": "standard_discrimination"
-      }
+        "reason": "standard_discrimination",
+        "quality_tag": "pass"
+      },
+      "quality_tag": "pass"
     },
     {
       "question_id": "Q_SOCIAL_ENERGY_005",
@@ -1045,10 +1083,12 @@
       },
       "active": true,
       "version": 1,
-      "quality_tier": "normal",
+      "quality_tier": "low",
       "quality_meta": {
-        "reason": "standard_discrimination"
-      }
+        "reason": "borderline_discrimination",
+        "quality_tag": "low_keep"
+      },
+      "quality_tag": "low_keep"
     },
     {
       "question_id": "Q_COMMUNICATION_001",
@@ -1095,8 +1135,10 @@
       "version": 1,
       "quality_tier": "normal",
       "quality_meta": {
-        "reason": "standard_discrimination"
-      }
+        "reason": "standard_discrimination",
+        "quality_tag": "pass"
+      },
+      "quality_tag": "pass"
     },
     {
       "question_id": "Q_COMMUNICATION_002",
@@ -1143,8 +1185,10 @@
       "version": 1,
       "quality_tier": "normal",
       "quality_meta": {
-        "reason": "standard_discrimination"
-      }
+        "reason": "standard_discrimination",
+        "quality_tag": "pass"
+      },
+      "quality_tag": "pass"
     },
     {
       "question_id": "Q_COMMUNICATION_003",
@@ -1199,8 +1243,10 @@
       "version": 1,
       "quality_tier": "low",
       "quality_meta": {
-        "reason": "low_discrimination"
-      }
+        "reason": "low_discrimination",
+        "quality_tag": "low_drop"
+      },
+      "quality_tag": "low_drop"
     },
     {
       "question_id": "Q_COMMUNICATION_004",
@@ -1255,8 +1301,10 @@
       "version": 1,
       "quality_tier": "low",
       "quality_meta": {
-        "reason": "low_discrimination"
-      }
+        "reason": "low_discrimination",
+        "quality_tag": "low_drop"
+      },
+      "quality_tag": "low_drop"
     },
     {
       "question_id": "Q_COMMUNICATION_005",
@@ -1301,10 +1349,12 @@
       },
       "active": true,
       "version": 1,
-      "quality_tier": "normal",
+      "quality_tier": "low",
       "quality_meta": {
-        "reason": "standard_discrimination"
-      }
+        "reason": "borderline_discrimination",
+        "quality_tag": "low_keep"
+      },
+      "quality_tag": "low_keep"
     },
     {
       "question_id": "Q_FAMILY_001",
@@ -1351,8 +1401,10 @@
       "version": 1,
       "quality_tier": "low",
       "quality_meta": {
-        "reason": "low_discrimination"
-      }
+        "reason": "neutral_option_present",
+        "quality_tag": "low_keep"
+      },
+      "quality_tag": "low_keep"
     },
     {
       "question_id": "Q_FAMILY_002",
@@ -1397,10 +1449,12 @@
       },
       "active": true,
       "version": 1,
-      "quality_tier": "normal",
+      "quality_tier": "low",
       "quality_meta": {
-        "reason": "standard_discrimination"
-      }
+        "reason": "borderline_discrimination",
+        "quality_tag": "low_keep"
+      },
+      "quality_tag": "low_keep"
     },
     {
       "question_id": "Q_FAMILY_003",
@@ -1447,8 +1501,10 @@
       "version": 1,
       "quality_tier": "normal",
       "quality_meta": {
-        "reason": "standard_discrimination"
-      }
+        "reason": "standard_discrimination",
+        "quality_tag": "pass"
+      },
+      "quality_tag": "pass"
     },
     {
       "question_id": "Q_FAMILY_004",
@@ -1495,8 +1551,10 @@
       "version": 1,
       "quality_tier": "normal",
       "quality_meta": {
-        "reason": "standard_discrimination"
-      }
+        "reason": "standard_discrimination",
+        "quality_tag": "pass"
+      },
+      "quality_tag": "pass"
     },
     {
       "question_id": "Q_FAMILY_005",
@@ -1551,8 +1609,10 @@
       "version": 1,
       "quality_tier": "low",
       "quality_meta": {
-        "reason": "low_discrimination"
-      }
+        "reason": "low_discrimination",
+        "quality_tag": "low_drop"
+      },
+      "quality_tag": "low_drop"
     },
     {
       "question_id": "Q_INTIMACY_001",
@@ -1597,10 +1657,12 @@
       },
       "active": true,
       "version": 1,
-      "quality_tier": "normal",
+      "quality_tier": "low",
       "quality_meta": {
-        "reason": "standard_discrimination"
-      }
+        "reason": "borderline_discrimination",
+        "quality_tag": "low_keep"
+      },
+      "quality_tag": "low_keep"
     },
     {
       "question_id": "Q_INTIMACY_002",
@@ -1647,8 +1709,10 @@
       "version": 1,
       "quality_tier": "normal",
       "quality_meta": {
-        "reason": "standard_discrimination"
-      }
+        "reason": "standard_discrimination",
+        "quality_tag": "pass"
+      },
+      "quality_tag": "pass"
     },
     {
       "question_id": "Q_INTIMACY_003",
@@ -1703,8 +1767,10 @@
       "version": 1,
       "quality_tier": "low",
       "quality_meta": {
-        "reason": "low_discrimination"
-      }
+        "reason": "low_discrimination",
+        "quality_tag": "low_drop"
+      },
+      "quality_tag": "low_drop"
     },
     {
       "question_id": "Q_INTIMACY_004",
@@ -1751,8 +1817,10 @@
       "version": 1,
       "quality_tier": "normal",
       "quality_meta": {
-        "reason": "standard_discrimination"
-      }
+        "reason": "standard_discrimination",
+        "quality_tag": "pass"
+      },
+      "quality_tag": "pass"
     },
     {
       "question_id": "Q_INTIMACY_005",
@@ -1805,10 +1873,12 @@
       },
       "active": true,
       "version": 1,
-      "quality_tier": "normal",
+      "quality_tier": "low",
       "quality_meta": {
-        "reason": "standard_discrimination"
-      }
+        "reason": "borderline_discrimination",
+        "quality_tag": "low_keep"
+      },
+      "quality_tag": "low_keep"
     },
     {
       "question_id": "Q_INTERESTS_001",
@@ -1863,8 +1933,10 @@
       "version": 1,
       "quality_tier": "low",
       "quality_meta": {
-        "reason": "low_discrimination"
-      }
+        "reason": "low_discrimination",
+        "quality_tag": "low_drop"
+      },
+      "quality_tag": "low_drop"
     },
     {
       "question_id": "Q_INTERESTS_002",
@@ -1927,8 +1999,10 @@
       "version": 1,
       "quality_tier": "low",
       "quality_meta": {
-        "reason": "low_discrimination"
-      }
+        "reason": "low_discrimination",
+        "quality_tag": "low_drop"
+      },
+      "quality_tag": "low_drop"
     },
     {
       "question_id": "Q_INTERESTS_003",
@@ -1983,8 +2057,10 @@
       "version": 1,
       "quality_tier": "low",
       "quality_meta": {
-        "reason": "low_discrimination"
-      }
+        "reason": "low_discrimination",
+        "quality_tag": "low_drop"
+      },
+      "quality_tag": "low_drop"
     },
     {
       "question_id": "Q_INTERESTS_004",
@@ -2039,8 +2115,10 @@
       "version": 1,
       "quality_tier": "low",
       "quality_meta": {
-        "reason": "low_discrimination"
-      }
+        "reason": "low_discrimination",
+        "quality_tag": "low_drop"
+      },
+      "quality_tag": "low_drop"
     },
     {
       "question_id": "Q_INTERESTS_005",
@@ -2085,10 +2163,12 @@
       },
       "active": true,
       "version": 1,
-      "quality_tier": "normal",
+      "quality_tier": "low",
       "quality_meta": {
-        "reason": "standard_discrimination"
-      }
+        "reason": "borderline_discrimination",
+        "quality_tag": "low_keep"
+      },
+      "quality_tag": "low_keep"
     }
   ]
 }
