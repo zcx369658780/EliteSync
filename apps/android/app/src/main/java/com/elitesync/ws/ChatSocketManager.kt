@@ -1,5 +1,6 @@
 package com.elitesync.ws
 
+import com.elitesync.BuildConfig
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.WebSocket
@@ -11,10 +12,12 @@ class ChatSocketManager(
 ) {
     private val client = OkHttpClient()
     private var socket: WebSocket? = null
+    private val wsBaseUrl: String = BuildConfig.WS_BASE_URL.ifBlank { "ws://101.133.161.203:8081/" }
 
     fun connect(userId: Int) {
         socket?.close(1000, "reconnect")
-        val req = Request.Builder().url("ws://101.133.161.203:8081/api/v1/messages/ws/$userId").build()
+        val wsUrl = wsBaseUrl.trimEnd('/') + "/api/v1/messages/ws/$userId"
+        val req = Request.Builder().url(wsUrl).build()
         socket = client.newWebSocket(req, object : WebSocketListener() {
             override fun onMessage(webSocket: WebSocket, text: String) {
                 val content = runCatching {
