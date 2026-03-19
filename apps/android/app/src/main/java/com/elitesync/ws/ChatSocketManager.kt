@@ -1,6 +1,7 @@
 package com.elitesync.ws
 
 import com.elitesync.BuildConfig
+import com.elitesync.network.DomainDns
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.WebSocket
@@ -10,7 +11,9 @@ import org.json.JSONObject
 class ChatSocketManager(
     private val onText: (String) -> Unit
 ) {
-    private val client = OkHttpClient()
+    private val client = OkHttpClient.Builder()
+        .dns(DomainDns)
+        .build()
     private var socket: WebSocket? = null
     private val wsBaseUrl: String = BuildConfig.WS_BASE_URL.ifBlank { "wss://slowdate.top/" }
 

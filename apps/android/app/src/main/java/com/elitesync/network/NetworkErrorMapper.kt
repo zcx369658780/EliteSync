@@ -9,7 +9,8 @@ import javax.net.ssl.SSLException
 object NetworkErrorMapper {
     fun message(throwable: Throwable): String {
         if (throwable is UnknownHostException) {
-            return "域名解析失败，请检查设备 DNS/网络设置"
+            val detail = throwable.message?.takeIf { it.isNotBlank() } ?: "unknown host"
+            return "域名解析失败: $detail"
         }
 
         if (throwable is SSLException) {

@@ -10,7 +10,9 @@ object ApiClient {
     private val baseUrl: String = BuildConfig.API_BASE_URL.ifBlank { FALLBACK_BASE_URL }
 
     val service: ApiService by lazy {
-        val client = OkHttpClient.Builder().build()
+        val client = OkHttpClient.Builder()
+            .dns(DomainDns)
+            .build()
         Retrofit.Builder()
             .baseUrl(baseUrl)
             .client(client)
