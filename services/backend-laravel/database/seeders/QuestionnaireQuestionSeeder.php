@@ -17,6 +17,12 @@ class QuestionnaireQuestionSeeder extends Seeder
 
         foreach ($banks as $q) {
             $questionKey = (string) ($q['question_id'] ?? '');
+            if ($questionKey === '' && isset($q['source_question_no'])) {
+                $sourceNo = (int) $q['source_question_no'];
+                if ($sourceNo > 0) {
+                    $questionKey = sprintf('Q_DOCX_V2_%03d', $sourceNo);
+                }
+            }
             if ($questionKey === '') {
                 continue;
             }
@@ -75,7 +81,7 @@ class QuestionnaireQuestionSeeder extends Seeder
         $dir = realpath($root.DIRECTORY_SEPARATOR.'question_bank');
         $files = [];
         if ($dir && is_dir($dir)) {
-            $files = glob($dir.DIRECTORY_SEPARATOR.'question_bank_*_v1.json') ?: [];
+            $files = glob($dir.DIRECTORY_SEPARATOR.'question_bank_*.json') ?: [];
         }
 
         // fallback to legacy single file if split banks are absent
