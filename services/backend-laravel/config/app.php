@@ -136,4 +136,18 @@ return [
         explode(',', (string) env('ADMIN_PHONES', ''))
     ))),
 
+    /*
+    |----------------------------------------------------------------------
+    | Public Dev Matching Endpoints
+    |----------------------------------------------------------------------
+    |
+    | Whether non-admin authenticated users can trigger dev matching APIs:
+    | /api/v1/admin/dev/run-matching and /api/v1/admin/dev/release-drop
+    |
+    */
+    'allow_public_dev_matching' => filter_var(
+        env('ALLOW_PUBLIC_DEV_MATCHING', 'true'),
+        FILTER_VALIDATE_BOOL
+    ),
+
 ];
