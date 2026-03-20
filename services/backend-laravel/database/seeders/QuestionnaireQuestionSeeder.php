@@ -29,6 +29,7 @@ class QuestionnaireQuestionSeeder extends Seeder
                         'zh' => (string) data_get($opt, 'label.zh', ''),
                         'en' => (string) data_get($opt, 'label.en', ''),
                     ],
+                    'dimension_weights' => (array) ($opt['dimension_weights'] ?? []),
                     'evaluation_standard' => [
                         'code' => (string) data_get($opt, 'evaluation_standard.code', ''),
                         'zh' => (string) data_get($opt, 'evaluation_standard.zh', ''),

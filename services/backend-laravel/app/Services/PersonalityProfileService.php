@@ -48,7 +48,7 @@ class PersonalityProfileService
             }
         }
 
-        $normalized = $this->normalizeScores($raw, $dimensions, $scoringMap);
+        $normalized = $this->normalizeScores($raw, $dimensions, $scoringMap, $questions->all());
         $summary = $this->summary($normalized, $dimensions);
 
         return [
@@ -60,22 +60,9 @@ class PersonalityProfileService
         ];
     }
 
-    private function normalizeScores(array $raw, array $dimensions, array $scoringMap): array
+    private function normalizeScores(array $raw, array $dimensions, array $scoringMap, array $questions): array
     {
-        $ranges = [];
-        foreach (array_keys($dimensions) as $dim) {
-            $min = 0.0;
-            $max = 0.0;
-            foreach ($scoringMap as $options) {
-                $vals = [];
-                foreach ($options as $optScore) {
-                    $vals[] = (float) ($optScore[$dim] ?? 0);
-                }
-                $min += min($vals ?: [0.0]);
-                $max += max($vals ?: [0.0]);
-            }
-            $ranges[$dim] = [$min, $max];
-        }
+        $ranges = $this->computeRanges($dimensions, $scoringMap, $questions);
 
         $normalized = [];
         foreach ($raw as $dim => $value) {
@@ -88,6 +75,50 @@ class PersonalityProfileService
         }
 
         return $normalized;
+    }
+
+    private function computeRanges(array $dimensions, array $scoringMap, array $questions): array
+    {
+        $ranges = [];
+        foreach (array_keys($dimensions) as $dim) {
+            $ranges[$dim] = [0.0, 0.0];
+        }
+
+        foreach ($questions as $question) {
+            $rowSet = [];
+
+            $options = (array) ($question->options ?? []);
+            foreach ($options as $opt) {
+                $weights = data_get($opt, 'dimension_weights');
+                if (is_array($weights) && !empty($weights)) {
+                    $rowSet[] = $weights;
+                }
+            }
+
+            if (empty($rowSet)) {
+                $legacyRows = (array) ($scoringMap[$question->question_key] ?? []);
+                foreach ($legacyRows as $legacy) {
+                    if (is_array($legacy)) {
+                        $rowSet[] = $legacy;
+                    }
+                }
+            }
+
+            if (empty($rowSet)) {
+                continue;
+            }
+
+            foreach (array_keys($dimensions) as $dim) {
+                $vals = [];
+                foreach ($rowSet as $row) {
+                    $vals[] = (float) ($row[$dim] ?? 0.0);
+                }
+                $ranges[$dim][0] += min($vals);
+                $ranges[$dim][1] += max($vals);
+            }
+        }
+
+        return $ranges;
     }
 
     private function summary(array $vector, array $dimensions): array
@@ -117,6 +148,7 @@ class PersonalityProfileService
     private function fallbackScoreRow(array $options, string $value): array
     {
         $opt = strtoupper(trim($value));
+        $matched = null;
         if (!in_array($opt, ['A', 'B', 'C', 'D'], true)) {
             foreach (array_values($options) as $idx => $item) {
                 $candidates = [];
@@ -129,17 +161,33 @@ class PersonalityProfileService
                 }
                 if (in_array($value, $candidates, true)) {
                     $opt = ['A', 'B', 'C', 'D'][$idx] ?? 'C';
+                    $matched = $item;
                     break;
                 }
             }
         }
 
+        if ($matched === null) {
+            foreach (array_values($options) as $item) {
+                if ((string) data_get($item, 'option_id', '') === $opt) {
+                    $matched = $item;
+                    break;
+                }
+            }
+        }
+        if (is_array($matched)) {
+            $weights = data_get($matched, 'dimension_weights');
+            if (is_array($weights) && !empty($weights)) {
+                return $weights;
+            }
+        }
+
         return match ($opt) {
-            'A' => ['attachment_security' => 1, 'planning_style' => 1],
-            'B' => ['emotional_stability' => 1, 'communication_directness' => 1],
-            'C' => ['social_energy' => 1],
-            'D' => ['social_energy' => -1, 'communication_directness' => -1],
-            default => ['emotional_stability' => 0],
+            'A' => ['attachment_security' => 0.6, 'communication_clarity' => 0.5],
+            'B' => ['emotional_regulation' => 0.5, 'planning_reliability' => 0.4],
+            'C' => ['social_initiative' => 0.4, 'openness_exploration' => 0.3],
+            'D' => ['attachment_security' => -0.4, 'rejection_resilience' => -0.5],
+            default => ['emotional_regulation' => 0.0],
         };
     }
 }

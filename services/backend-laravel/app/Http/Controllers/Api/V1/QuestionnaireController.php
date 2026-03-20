@@ -141,6 +141,10 @@ class QuestionnaireController extends Controller
                 'content' => $q->question_text_zh ?: $q->content,
                 'question_type' => $q->question_type,
                 'acceptable_answer_logic' => $q->acceptable_answer_logic,
+                'measured_dimensions' => collect($q->options ?? [])
+                    ->flatMap(fn ($opt) => array_keys((array) data_get($opt, 'dimension_weights', [])))
+                    ->unique()
+                    ->values(),
                 // legacy field shape for Android V1: plain labels
                 'options' => collect($q->options ?? [])->map(
                     fn ($opt) => (string) data_get($opt, 'label.zh', '')
@@ -158,6 +162,7 @@ class QuestionnaireController extends Controller
                             'zh' => (string) data_get($opt, 'evaluation_standard.zh', ''),
                             'en' => (string) data_get($opt, 'evaluation_standard.en', ''),
                         ],
+                        'dimension_weights' => (array) data_get($opt, 'dimension_weights', []),
                         'score' => (float) data_get($opt, 'score', 0),
                     ];
                 })->values(),
@@ -258,6 +263,10 @@ class QuestionnaireController extends Controller
             'content' => $next->question_text_zh ?: $next->content,
             'question_type' => $next->question_type,
             'acceptable_answer_logic' => $next->acceptable_answer_logic,
+            'measured_dimensions' => collect($next->options ?? [])
+                ->flatMap(fn ($opt) => array_keys((array) data_get($opt, 'dimension_weights', [])))
+                ->unique()
+                ->values(),
             'options' => collect($next->options ?? [])->map(
                 fn ($opt) => (string) data_get($opt, 'label.zh', '')
             )->values(),
@@ -273,6 +282,7 @@ class QuestionnaireController extends Controller
                         'zh' => (string) data_get($opt, 'evaluation_standard.zh', ''),
                         'en' => (string) data_get($opt, 'evaluation_standard.en', ''),
                     ],
+                    'dimension_weights' => (array) data_get($opt, 'dimension_weights', []),
                     'score' => (float) data_get($opt, 'score', 0),
                 ];
             })->values(),
