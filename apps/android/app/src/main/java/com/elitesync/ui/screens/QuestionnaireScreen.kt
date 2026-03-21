@@ -1,21 +1,20 @@
 package com.elitesync.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import com.elitesync.ui.AppViewModel
+import com.elitesync.ui.components.GlassScrollPage
+import com.elitesync.ui.components.StarryOptionCard
+import com.elitesync.ui.components.StarryPrimaryButton
+import com.elitesync.ui.components.StarrySecondaryButton
 
 @Composable
 fun QuestionnaireScreen(vm: AppViewModel, onNext: () -> Unit) {
@@ -28,7 +27,6 @@ fun QuestionnaireScreen(vm: AppViewModel, onNext: () -> Unit) {
     val selectedMap = remember { mutableStateMapOf<Int, List<String>>() } // ordered: first is more important
     val submittedIds = remember { mutableStateListOf<Int>() }
     val seenQuestionIds = remember { mutableStateListOf<Int>() }
-    val scrollState = rememberScrollState()
 
     LaunchedEffect(Unit) { vm.loadQuestions() }
     LaunchedEffect(questions) {
@@ -44,6 +42,12 @@ fun QuestionnaireScreen(vm: AppViewModel, onNext: () -> Unit) {
 
     val currentQuestion = questions.getOrNull(currentIndex)
     val allAnsweredLocal = submittedIds.size >= questionnaireRequired
+    val progressTarget = (submittedIds.size.toFloat() / questionnaireRequired.coerceAtLeast(1)).coerceIn(0f, 1f)
+    val progress by animateFloatAsState(
+        targetValue = progressTarget,
+        animationSpec = tween(260),
+        label = "questionProgress"
+    )
     val submitAndGoNext: (Int, List<String>, Int) -> Unit = { questionId, selected, version ->
         if (selected.isNotEmpty()) {
             vm.saveAnswerV2(
@@ -62,25 +66,32 @@ fun QuestionnaireScreen(vm: AppViewModel, onNext: () -> Unit) {
         }
     }
 
-    Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp).verticalScroll(scrollState),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        Text("问卷（单击大按钮即可作答）")
+    GlassScrollPage(title = "问卷（单击大按钮即可作答）", status = status, error = error) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Button(
+            StarrySecondaryButton(
+                text = "◀ 上一题",
                 onClick = { if (currentIndex > 0) currentIndex-- },
-                enabled = currentIndex > 0
-            ) { Text("◀ 上一题") }
+                enabled = currentIndex > 0,
+                modifier = Modifier.fillMaxWidth(0.30f)
+            )
             Text("进度: ${submittedIds.size}/$questionnaireRequired")
-            Button(
+            StarrySecondaryButton(
+                text = "下一题 ▶",
                 onClick = { if (currentIndex < questions.lastIndex) currentIndex++ },
-                enabled = currentIndex < questions.lastIndex
-            ) { Text("下一题 ▶") }
+                enabled = currentIndex < questions.lastIndex,
+                modifier = Modifier.fillMaxWidth(0.30f)
+            )
         }
+        LinearProgressIndicator(
+            progress = { progress },
+            modifier = Modifier.fillMaxWidth(),
+            color = Color(0xFF7FA9FF),
+            trackColor = Color(0x55334B71)
+        )
+        Text("完成度：${(progress * 100).toInt()}%")
 
         if (currentQuestion != null) {
             Text("${currentIndex + 1}. ${currentQuestion.content}")
@@ -94,8 +105,10 @@ fun QuestionnaireScreen(vm: AppViewModel, onNext: () -> Unit) {
                 val optionCode = optionCode(idx)
                 val label = option.label.zh ?: option.option_id
                 val selectedIndex = selected.indexOf(option.option_id)
-                Button(
-                    modifier = Modifier.fillMaxWidth().height(56.dp),
+                StarryOptionCard(
+                    text = "$optionCode. $label",
+                    selected = selectedIndex >= 0,
+                    pickOrder = if (selectedIndex >= 0) selectedIndex else null,
                     onClick = {
                         val now = selectedMap[currentQuestion.id].orEmpty().toMutableList()
                         if (now.contains(option.option_id)) {
@@ -115,14 +128,7 @@ fun QuestionnaireScreen(vm: AppViewModel, onNext: () -> Unit) {
                             submitAndGoNext(currentQuestion.id, now, currentQuestion.version ?: 1)
                         }
                     }
-                ) {
-                    val pickTag = when (selectedIndex) {
-                        0 -> "① "
-                        1 -> "② "
-                        else -> ""
-                    }
-                    Text((if (selectedIndex >= 0) "✓ " else "") + pickTag + "$optionCode. $label")
-                }
+                )
             }
             Text(
                 if (currentQuestion.question_type == "multi_choice") {
@@ -134,21 +140,21 @@ fun QuestionnaireScreen(vm: AppViewModel, onNext: () -> Unit) {
             if (currentQuestion.question_type == "multi_choice" && remainingPickForMulti == 1) {
                 Text("还需再选 1 项", color = Color(0xFFD32F2F))
             }
-            Button(
+            StarrySecondaryButton(
+                text = "换一题（未做过）",
                 modifier = Modifier.fillMaxWidth(),
                 onClick = {
                     val exclude = (seenQuestionIds.toSet() + selectedMap.keys + currentQuestion.id).toList()
                     vm.replaceQuestion(currentQuestion.id, exclude)
-                }
-            ) { Text("换一题（未做过）") }
+                },
+                loading = status.contains("换题中")
+            )
         } else {
             Text("题目加载中或已完成全部作答")
         }
 
         Text(if (questionnaireComplete) "问卷状态: 已完成" else "问卷状态: 未完成")
-        Button(onClick = onNext, enabled = questionnaireComplete || allAnsweredLocal) { Text("进入匹配") }
-        Text("状态: $status")
-        if (error.isNotBlank()) Text("错误: $error", color = Color.Red)
+        StarryPrimaryButton(text = "进入匹配", onClick = onNext, enabled = questionnaireComplete || allAnsweredLocal)
     }
 }
 

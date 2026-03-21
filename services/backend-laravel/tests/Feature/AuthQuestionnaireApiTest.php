@@ -17,6 +17,8 @@ class AuthQuestionnaireApiTest extends TestCase
             'phone' => '13800138000',
             'password' => 'secret123',
             'name' => 'zcxve',
+            'birthday' => '1998-08-15',
+            'realname_verified' => true,
         ])->assertCreated()->json();
 
         $token = $register['access_token'];
@@ -75,6 +77,8 @@ class AuthQuestionnaireApiTest extends TestCase
             'phone' => '13800138111',
             'password' => 'secret123',
             'name' => 'v2-user',
+            'birthday' => '1999-09-16',
+            'realname_verified' => true,
         ])->assertCreated()->json();
 
         $token = $register['access_token'];

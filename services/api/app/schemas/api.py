@@ -43,3 +43,8 @@ class MatchConfirmReq(BaseModel):
 class MessageReq(BaseModel):
     receiver_id: int
     content: str
+
+
+class BasicProfileReq(BaseModel):
+    birthday: str | None = None
+    name: str | None = None

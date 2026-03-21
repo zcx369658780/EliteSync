@@ -17,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->append(\App\Http\Middleware\RequestTraceMiddleware::class);
+        $middleware->prependToGroup('api', \App\Http\Middleware\ForceJsonResponse::class);
         $middleware->alias([
             'admin.phone' => \App\Http\Middleware\EnsureAdminPhone::class,
             'secure.transport' => \App\Http\Middleware\EnsureSecureTransport::class,

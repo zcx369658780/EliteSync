@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from app.db import engine, SessionLocal
 from app.models.base import Base
 from app.models.entities import Question, Match
-from app.routers import auth, questionnaire, match, chat, profile_admin
+from app.routers import auth, questionnaire, match, chat, profile_admin, profile_basic
 from app.services.matching import run_weekly_matching, week_tag
 
 app = FastAPI(title="EliteSync API P0")
@@ -51,3 +51,4 @@ app.include_router(questionnaire.router)
 app.include_router(match.router)
 app.include_router(chat.router)
 app.include_router(profile_admin.router)
+app.include_router(profile_basic.router)

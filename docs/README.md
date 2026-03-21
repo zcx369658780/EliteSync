@@ -1,7 +1,7 @@
 # Docs Index
 
 ## Start Here
-- `HANDOFF_CURRENT.md`: 当前交接入口（最新状态、命令、下一步）
+- `HANDOFF_CURRENT_20260319.md`: 当前交接入口（最新状态、命令、下一步）
 - `PROJECT_INTRO.md`: 新成员项目介绍
 
 ## Plans

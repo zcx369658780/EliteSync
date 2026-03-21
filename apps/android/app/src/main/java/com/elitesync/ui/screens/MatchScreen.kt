@@ -1,21 +1,14 @@
 package com.elitesync.ui.screens
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import com.elitesync.ui.AppViewModel
+import com.elitesync.ui.components.GlassScrollPage
+import com.elitesync.ui.components.StarryPrimaryButton
+import com.elitesync.ui.components.StarrySecondaryButton
 
 @Composable
 fun MatchScreen(vm: AppViewModel, onRetake: () -> Unit, onChat: () -> Unit, onLogout: () -> Unit) {
@@ -25,18 +18,12 @@ fun MatchScreen(vm: AppViewModel, onRetake: () -> Unit, onChat: () -> Unit, onLo
     val matchStateText by vm.matchStateText.collectAsState()
     val status by vm.status.collectAsState()
     val error by vm.error.collectAsState()
-    val scrollState = rememberScrollState()
-
     LaunchedEffect(Unit) {
         vm.loadQuestionnaireProgress()
         vm.loadCurrentMatch()
     }
 
-    Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp).verticalScroll(scrollState),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        Text("每周匹配")
+    GlassScrollPage(title = "每周匹配", status = status, error = error) {
         Text("状态: $matchStateText")
         Text("我的倾向: ${profile.summary.label}")
         Text(
@@ -58,17 +45,16 @@ fun MatchScreen(vm: AppViewModel, onRetake: () -> Unit, onChat: () -> Unit, onLo
             }
             "匹配对象ID: ${it.partner_id}\n匹配理由: $tags\n$scoreLine\n$penaltyLine"
         } ?: "当前无可展示的匹配对象")
-        Button(
+        StarrySecondaryButton(
+            text = "开发联调：生成并发布匹配",
             onClick = { vm.devPrepareMatchForDemo() },
             enabled = questionnaireComplete
-        ) { Text("开发联调：生成并发布匹配") }
-        Button(onClick = { vm.loadCurrentMatch() }) { Text("刷新匹配") }
-        Button(onClick = onRetake) { Text("重新答题") }
-        Button(onClick = { vm.confirmLike(true) }) { Text("喜欢") }
-        Button(onClick = { vm.confirmLike(false) }) { Text("略过") }
-        Button(onClick = onChat) { Text("进入聊天") }
-        Button(onClick = onLogout) { Text("退出登录") }
-        Text("状态: $status")
-        if (error.isNotBlank()) Text("错误: $error", color = Color.Red)
+        )
+        StarrySecondaryButton(text = "刷新匹配", onClick = { vm.loadCurrentMatch() })
+        StarrySecondaryButton(text = "重新答题", onClick = onRetake)
+        StarryPrimaryButton(text = "喜欢", onClick = { vm.confirmLike(true) })
+        StarrySecondaryButton(text = "略过", onClick = { vm.confirmLike(false) })
+        StarryPrimaryButton(text = "进入聊天", onClick = onChat)
+        StarrySecondaryButton(text = "退出登录", onClick = onLogout)
     }
 }

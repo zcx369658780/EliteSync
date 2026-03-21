@@ -19,9 +19,22 @@ class User extends Authenticatable
         'name',
         'email',
         'phone',
+        'birthday',
+        'gender',
+        'city',
+        'relationship_goal',
         'password',
         'verify_status',
+        'realname_verified',
         'disabled',
+        'public_zodiac_sign',
+        'public_mbti',
+        'public_personality',
+        'private_bazi',
+        'private_natal_chart',
+        'private_birth_place',
+        'private_birth_lat',
+        'private_birth_lng',
     ];
 
     /**
@@ -39,8 +52,12 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'birthday' => 'date',
             'password' => 'hashed',
             'disabled' => 'boolean',
+            'realname_verified' => 'boolean',
+            'public_personality' => 'array',
+            'private_natal_chart' => 'array',
         ];
     }
 }

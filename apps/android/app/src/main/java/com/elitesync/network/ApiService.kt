@@ -31,6 +31,18 @@ interface ApiService {
     @GET("/api/v1/questionnaire/profile")
     suspend fun questionnaireProfile(@Header("Authorization") bearer: String): ProfileResp
 
+    @GET("/api/v1/profile/basic")
+    suspend fun basicProfile(@Header("Authorization") bearer: String): BasicProfileResp
+
+    @POST("/api/v1/profile/basic")
+    suspend fun saveBasicProfile(@Header("Authorization") bearer: String, @Body req: BasicProfileReq): SimpleResp
+
+    @GET("/api/v1/profile/astro")
+    suspend fun astroProfile(@Header("Authorization") bearer: String): AstroProfileResp
+
+    @POST("/api/v1/profile/astro")
+    suspend fun saveAstroProfile(@Header("Authorization") bearer: String, @Body req: AstroProfilePayload): SimpleResp
+
     @GET("/api/v1/matches/current")
     suspend fun currentMatch(@Header("Authorization") bearer: String): MatchResp
 

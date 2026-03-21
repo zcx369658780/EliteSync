@@ -2,8 +2,10 @@
 
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\AdminController;
+use App\Http\Controllers\Api\V1\AstroProfileController;
 use App\Http\Controllers\Api\V1\MatchController;
 use App\Http\Controllers\Api\V1\MessageController;
+use App\Http\Controllers\Api\V1\ProfileController;
 use App\Http\Controllers\Api\V1\QuestionnaireController;
 use Illuminate\Support\Facades\Route;
 
@@ -30,6 +32,13 @@ Route::prefix('v1')->group(function () {
     });
 
     Route::middleware('auth:sanctum')->group(function () {
+        Route::prefix('profile')->group(function () {
+            Route::get('/basic', [ProfileController::class, 'basic']);
+            Route::post('/basic', [ProfileController::class, 'saveBasic']);
+            Route::get('/astro', [AstroProfileController::class, 'show']);
+            Route::post('/astro', [AstroProfileController::class, 'save']);
+        });
+
         Route::prefix('matches')->group(function () {
             Route::get('/current', [MatchController::class, 'current']);
             Route::post('/confirm', [MatchController::class, 'confirm']);

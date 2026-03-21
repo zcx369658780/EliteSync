@@ -5,11 +5,11 @@
 使用规则：
 - 本目录文档不作为当前执行基线。
 - 当前开发与交接请优先使用：
-  - `docs/HANDOFF_CURRENT.md`
+  - `docs/HANDOFF_CURRENT_20260319.md`
   - `docs/plans/DEVELOPMENT_PLAN_UPDATED.md`
   - `docs/runbooks/`
 
 典型历史文件：
 - 旧阶段计划/报告（如 `STAGE_A_ACCEPTANCE.md`, `STAGE_B_PLAN.md`）
-- 旧交接文档（如 `HANDOFF.md`, `HANDOVER_CLI.md`）
+- 旧交接文档（如 `HANDOFF_20260318.md`, `HANDOVER_CLI_20260312.md`）
 - 早期实验记录（如 `NGROK_LOCAL_STAGING.md`）
