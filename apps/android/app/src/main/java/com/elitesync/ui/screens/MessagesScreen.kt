@@ -12,6 +12,7 @@ import com.elitesync.ui.AppViewModel
 import com.elitesync.ui.components.GlassScrollPage
 import com.elitesync.ui.components.StarryListItemCard
 import com.elitesync.ui.components.StarryPrimaryButton
+import com.elitesync.ui.components.StarrySectionCard
 
 @Composable
 fun MessagesScreen(vm: AppViewModel, onOpenChat: () -> Unit) {
@@ -23,12 +24,13 @@ fun MessagesScreen(vm: AppViewModel, onOpenChat: () -> Unit) {
     }
 
     GlassScrollPage(title = "消息", status = status) {
-        Text("当前会话（占位）")
-        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-            messages.takeLast(20).forEach { msg ->
-                StarryListItemCard(text = msg)
+        StarrySectionCard(title = "当前会话") {
+            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                messages.takeLast(20).forEach { msg ->
+                    StarryListItemCard(text = msg)
+                }
             }
+            StarryPrimaryButton(text = "进入聊天详情", onClick = onOpenChat)
         }
-        StarryPrimaryButton(text = "进入聊天详情", onClick = onOpenChat)
     }
 }

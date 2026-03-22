@@ -11,19 +11,10 @@ import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -48,7 +39,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -60,8 +50,11 @@ import com.elitesync.ui.AppViewModel
 import com.elitesync.ui.components.RealtimeConstellationSky
 import com.elitesync.ui.components.SkyPreset
 import com.elitesync.ui.components.StarryPrimaryButton
+import com.elitesync.ui.components.StarrySectionCard
 import com.elitesync.ui.components.StarrySecondaryButton
+import com.elitesync.ui.components.StarryStatusBanner
 import com.elitesync.ui.components.StarryTextField
+import com.elitesync.ui.components.StatusTone
 import com.elitesync.ui.components.rememberAnimatedGlobalStarPan
 import com.elitesync.ui.components.starryPanGesture
 import com.google.android.gms.location.LocationServices
@@ -92,27 +85,10 @@ fun RegisterScreen(vm: AppViewModel, onNext: (String) -> Unit) {
     val isLoggedIn by vm.isLoggedIn.collectAsState()
     val questionnaireComplete by vm.questionnaireComplete.collectAsState()
     val questionnaireProgressLoaded by vm.questionnaireProgressLoaded.collectAsState()
+    val liteMode by vm.litePerformanceMode.collectAsState()
     val status by vm.status.collectAsState()
     val error by vm.error.collectAsState()
     val scrollState = rememberScrollState()
-    val panelReveal by animateFloatAsState(
-        targetValue = if (showAuthPanel) 1f else 0f,
-        animationSpec = tween(durationMillis = 700),
-        label = "panelReveal"
-    )
-    val logoPulse = rememberInfiniteTransition(label = "logoPulse")
-    val logoScale by logoPulse.animateFloat(
-        initialValue = 0.997f,
-        targetValue = 1.007f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(
-                durationMillis = 2600,
-                easing = FastOutSlowInEasing
-            ),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "logoScale"
-    )
     val (panX, panY) = rememberAnimatedGlobalStarPan()
 
     fun saveSkyLocation(lat: Double, lng: Double) {
@@ -238,6 +214,7 @@ fun RegisterScreen(vm: AppViewModel, onNext: (String) -> Unit) {
             latitude = skyLat,
             longitude = skyLng,
             preset = SkyPreset.LOGIN,
+            lowPerformanceMode = liteMode,
             panExternalX = panX,
             panExternalY = panY
         )
@@ -258,7 +235,7 @@ fun RegisterScreen(vm: AppViewModel, onNext: (String) -> Unit) {
 
 AnimatedVisibility(
     visible = !showAuthPanel,
-    enter = fadeIn() + scaleIn(),
+    enter = fadeIn(),
     exit = fadeOut(),
     modifier = Modifier.fillMaxSize()
 ) {
@@ -296,12 +273,7 @@ AnimatedVisibility(
                     painter = painterResource(id = R.drawable.logo),
                     contentDescription = "慢约会 Logo",
                     contentScale = ContentScale.Fit,
-                    modifier = Modifier
-                        .size(180.dp)
-                        .graphicsLayer {
-                            scaleX = logoScale
-                            scaleY = logoScale
-                        }
+                    modifier = Modifier.size(170.dp)
                 )
             }
             Spacer(modifier = Modifier.height(4.dp))
@@ -345,56 +317,44 @@ AnimatedVisibility(
                     val isLoginLoading = status.contains("登录中")
                     val phoneError = localError.contains("手机号格式错误")
                     val passwordError = localError.contains("密码格式错误")
-                    fun stagedModifier(index: Int): Modifier {
-                        val a = ((panelReveal - index * 0.08f) / 0.42f).coerceIn(0f, 1f)
-                        return Modifier.graphicsLayer {
-                            alpha = a
-                            translationY = (1f - a) * 20f
-                        }
+                    Text("慢约会 登录/注册", color = Color.White)
+                    StarrySectionCard(title = "账号信息") {
+                        StarryTextField(
+                            value = phone,
+                            onValueChange = { phone = it },
+                            label = "手机号",
+                            isError = phoneError,
+                            errorMessage = if (phoneError) localError else null
+                        )
+                        StarryTextField(
+                            value = password,
+                            onValueChange = { password = it },
+                            label = "密码",
+                            isError = passwordError,
+                            errorMessage = if (passwordError) localError else null,
+                            isPassword = true
+                        )
+                        Text(
+                            text = "账号规则：11位大陆手机号；密码至少8位且包含字母+数字。",
+                            color = Color(0xFFAAC2F2)
+                        )
                     }
-
-                    Text("慢约会 登录/注册", color = Color.White, modifier = stagedModifier(0))
-                    StarryTextField(
-                        value = phone,
-                        onValueChange = { phone = it },
-                        label = "手机号",
-                        isError = phoneError,
-                        errorMessage = if (phoneError) localError else null,
-                        modifier = stagedModifier(1)
-                    )
-                    StarryTextField(
-                        value = password,
-                        onValueChange = { password = it },
-                        label = "密码",
-                        isError = passwordError,
-                        errorMessage = if (passwordError) localError else null,
-                        isPassword = true,
-                        modifier = stagedModifier(2)
-                    )
-                    Text(
-                        text = "密码格式：至少8位，且必须包含字母和数字",
-                        color = Color(0xFFB8CBF2),
-                        modifier = stagedModifier(3)
-                    )
-                    Text(
-                        text = "账号规则：11位大陆手机号（1开头）；密码规则：至少8位，必须包含字母+数字。",
-                        color = Color(0xFFAAC2F2),
-                        modifier = stagedModifier(4)
-                    )
-                    StarrySecondaryButton(
-                        text = if (realnameVerified) "实名认证（模拟）：已通过" else "实名认证（模拟）：点击通过",
-                        modifier = stagedModifier(5),
-                        onClick = {
-                            realnameVerified = true
-                            localError = ""
-                        }
-                    )
-                    StarryPrimaryButton(text = "注册", modifier = stagedModifier(6), onClick = { doRegister() }, loading = isRegisterLoading)
-                    StarryPrimaryButton(text = "登录", modifier = stagedModifier(7), onClick = { doLogin() }, loading = isLoginLoading)
-                    Text("状态: $status", color = Color(0xFFE6EEFF), modifier = stagedModifier(8))
+                    StarrySectionCard(title = "认证与操作") {
+                        StarrySecondaryButton(
+                            text = if (realnameVerified) "实名认证（模拟）：已通过" else "实名认证（模拟）：点击通过",
+                            onClick = {
+                                realnameVerified = true
+                                localError = ""
+                            }
+                        )
+                        StarryPrimaryButton(text = "登录", onClick = { doLogin() }, loading = isLoginLoading)
+                        StarrySecondaryButton(text = "注册", onClick = { doRegister() }, loading = isRegisterLoading)
+                    }
                     val displayError = if (localError.isNotBlank()) localError else error
                     if (displayError.isNotBlank()) {
-                        Text("错误: $displayError", color = Color(0xFFFF8E8E), modifier = stagedModifier(9))
+                        StarryStatusBanner(text = "错误：$displayError", tone = StatusTone.Error)
+                    } else {
+                        StarryStatusBanner(text = "状态：$status", tone = StatusTone.Info)
                     }
                 }
             }

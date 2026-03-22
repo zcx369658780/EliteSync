@@ -29,6 +29,7 @@ import com.elitesync.ui.AppViewModel
 import com.elitesync.ui.components.GlassScrollPage
 import com.elitesync.ui.components.StarryListItemCard
 import com.elitesync.ui.components.StarryPrimaryButton
+import com.elitesync.ui.components.StarrySectionCard
 import com.elitesync.ui.components.StarrySecondaryButton
 import com.elitesync.ui.components.StarryTextField
 
@@ -58,35 +59,38 @@ fun DiscoverScreen(vm: AppViewModel, onOpenMapPicker: () -> Unit) {
     }
 
     GlassScrollPage(title = "发现", status = status, error = error) {
-        Text("同城/附近能力（列表模式，地图接口已接入）")
-        StarryPrimaryButton(text = "获取当前位置", loading = locating, onClick = {
-            val granted = ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-            if (granted) {
-                requestCurrentLocation(context) { lat, lng ->
-                    if (lat != null && lng != null) {
-                        vm.reverseGeocodeCurrent(lat, lng)
-                    } else {
-                        vm.locationUnavailable()
+        StarrySectionCard(title = "当前位置") {
+            StarryPrimaryButton(text = "获取当前位置", loading = locating, onClick = {
+                val granted = ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED
+                if (granted) {
+                    requestCurrentLocation(context) { lat, lng ->
+                        if (lat != null && lng != null) {
+                            vm.reverseGeocodeCurrent(lat, lng)
+                        } else {
+                            vm.locationUnavailable()
+                        }
                     }
+                } else {
+                    launcher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
                 }
-            } else {
-                launcher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-            }
-        })
-        Text(
-            currentPlace?.let {
-                "当前位置：${it.name} (${it.location.lat}, ${it.location.lng})"
-            } ?: "当前位置：未获取"
-        )
-        StarryTextField(value = query, onValueChange = { query = it }, label = "搜索地点（用于同城/附近）")
-        StarrySecondaryButton(text = "搜索地点", loading = searching, onClick = { vm.searchPlaces(query) })
-        StarrySecondaryButton(text = "打开内置百度地图选点", onClick = onOpenMapPicker)
-        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-            places.take(20).forEach { p ->
-                StarryListItemCard(text = "${p.name} ${p.city}${p.district} (${p.location.lat}, ${p.location.lng})")
+            })
+            Text(
+                currentPlace?.let {
+                    "当前位置：${it.name}（${it.city}${it.district}）"
+                } ?: "当前位置：未获取"
+            )
+            StarrySecondaryButton(text = "打开内置百度地图选点", onClick = onOpenMapPicker)
+        }
+        StarrySectionCard(title = "地点搜索") {
+            StarryTextField(value = query, onValueChange = { query = it }, label = "搜索地点（用于同城/附近）")
+            StarrySecondaryButton(text = "搜索地点", loading = searching, onClick = { vm.searchPlaces(query) })
+            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                places.take(20).forEach { p ->
+                    StarryListItemCard(text = "${p.name} ${p.city}${p.district}")
+                }
             }
         }
     }

@@ -29,6 +29,7 @@ import com.elitesync.ui.components.GlassScrollPage
 import com.elitesync.ui.components.StarryDateDropdownField
 import com.elitesync.ui.components.StarryOptionCard
 import com.elitesync.ui.components.StarryPrimaryButton
+import com.elitesync.ui.components.StarrySectionCard
 import com.elitesync.ui.components.StarrySecondaryButton
 import com.elitesync.ui.components.StarryTextField
 import com.elitesync.ui.components.StarryDropdownField
@@ -52,7 +53,6 @@ fun BasicProfileScreen(vm: AppViewModel, onBack: () -> Unit) {
     val currentGoal by vm.currentRelationshipGoal.collectAsState()
     val currentPlace by vm.currentPlace.collectAsState()
     val status by vm.status.collectAsState()
-    val error by vm.error.collectAsState()
     val locating = status.contains("定位解析中") || status.contains("定位中")
 
     val goalOptions = mapOf(
@@ -94,68 +94,70 @@ fun BasicProfileScreen(vm: AppViewModel, onBack: () -> Unit) {
     }
 
     GlassScrollPage(title = "基础资料") {
-        StarryTextField(value = nickname, onValueChange = { nickname = it }, label = "昵称")
-        Text("性别（必选）", color = Color(0xFFE6EEFF))
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            StarryOptionCard(
-                text = "男",
-                selected = gender == "male",
-                modifier = Modifier.weight(1f),
-                onClick = { gender = "male" }
-            )
-            StarryOptionCard(
-                text = "女",
-                selected = gender == "female",
-                modifier = Modifier.weight(1f),
-                onClick = { gender = "female" }
-            )
-        }
-        StarryDateDropdownField(value = birthday, onValueChange = { birthday = it }, label = "生日（下拉选择）")
-        Text("城市（自动GPS定位）", color = Color(0xFFE6EEFF))
-        StarrySecondaryButton(
-            text = if (city.isBlank()) "自动获取城市" else "重新定位城市",
-            loading = locating,
-            onClick = {
-                val granted = ContextCompat.checkSelfPermission(
-                    context,
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                ) == PackageManager.PERMISSION_GRANTED
-                if (granted) {
-                    requestCurrentLocation(context) { lat, lng ->
-                        if (lat != null && lng != null) vm.reverseGeocodeCurrent(lat, lng)
-                        else vm.locationUnavailable()
-                    }
-                } else {
-                    locationLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-                }
-            }
-        )
-        Text(if (city.isBlank()) "当前城市：未获取" else "当前城市：$city")
-
-        StarryDropdownField(
-            label = "婚恋目标",
-            valueText = goalOptions[goal] ?: "请选择",
-            options = goalOptions.values.toList(),
-            onSelect = { label ->
-                goal = goalOptions.entries.firstOrNull { it.value == label }?.key ?: ""
-            }
-        )
-        StarryPrimaryButton(
-            text = "保存",
-            onClick = {
-                vm.saveBasicProfile(
-                    birthday = birthday,
-                    name = nickname.ifBlank { null },
-                    gender = gender,
-                    city = city,
-                    relationshipGoal = goal
+        StarrySectionCard(title = "基本信息") {
+            StarryTextField(value = nickname, onValueChange = { nickname = it }, label = "昵称")
+            Text("性别（必选）", color = Color(0xFFE6EEFF))
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                StarryOptionCard(
+                    text = "男",
+                    selected = gender == "male",
+                    modifier = Modifier.weight(1f),
+                    onClick = { gender = "male" }
+                )
+                StarryOptionCard(
+                    text = "女",
+                    selected = gender == "female",
+                    modifier = Modifier.weight(1f),
+                    onClick = { gender = "female" }
                 )
             }
-        )
-        StarrySecondaryButton(text = "返回", onClick = onBack)
-        Text("状态: $status", color = Color(0xFFE6EEFF))
-        if (error.isNotBlank()) {
-            Text("错误: $error", color = Color(0xFFFF8E8E))
+            StarryDateDropdownField(value = birthday, onValueChange = { birthday = it }, label = "生日（下拉选择）")
+        }
+        StarrySectionCard(title = "城市与婚恋目标") {
+            Text("城市（自动GPS定位）", color = Color(0xFFE6EEFF))
+            StarrySecondaryButton(
+                text = if (city.isBlank()) "自动获取城市" else "重新定位城市",
+                loading = locating,
+                onClick = {
+                    val granted = ContextCompat.checkSelfPermission(
+                        context,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    ) == PackageManager.PERMISSION_GRANTED
+                    if (granted) {
+                        requestCurrentLocation(context) { lat, lng ->
+                            if (lat != null && lng != null) vm.reverseGeocodeCurrent(lat, lng)
+                            else vm.locationUnavailable()
+                        }
+                    } else {
+                        locationLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                    }
+                }
+            )
+            Text(if (city.isBlank()) "当前城市：未获取" else "当前城市：$city")
+
+            StarryDropdownField(
+                label = "婚恋目标",
+                valueText = goalOptions[goal] ?: "请选择",
+                options = goalOptions.values.toList(),
+                onSelect = { label ->
+                    goal = goalOptions.entries.firstOrNull { it.value == label }?.key ?: ""
+                }
+            )
+        }
+        StarrySectionCard {
+            StarryPrimaryButton(
+                text = "保存",
+                onClick = {
+                    vm.saveBasicProfile(
+                        birthday = birthday,
+                        name = nickname.ifBlank { null },
+                        gender = gender,
+                        city = city,
+                        relationshipGoal = goal
+                    )
+                }
+            )
+            StarrySecondaryButton(text = "返回", onClick = onBack)
         }
     }
 }

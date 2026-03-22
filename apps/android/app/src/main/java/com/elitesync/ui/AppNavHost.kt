@@ -1,6 +1,5 @@
 package com.elitesync.ui
 
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -8,40 +7,22 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.clickable
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.Alignment
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.animation.core.animateDpAsState
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.elitesync.ui.components.EliteSyncBottomTabs
 import com.elitesync.ui.components.StarryAppBackground
+import com.elitesync.ui.components.NavTabSpec
 import com.elitesync.ui.components.ProvideUiFeedbackSettings
 import com.elitesync.ui.components.ProvideUiPerformanceSettings
 import com.elitesync.ui.components.UiFeedbackSettings
@@ -62,9 +43,7 @@ import com.elitesync.ui.screens.QuestionnaireScreen
 import com.elitesync.ui.screens.RecommendScreen
 import com.elitesync.ui.screens.RegisterScreen
 import com.elitesync.ws.ChatSocketManager
-import kotlinx.coroutines.delay
 
-private data class MainTab(val label: String, val route: String)
 private val MAIN_TAB_ORDER = mapOf(
     "main/recommend" to 0,
     "main/match" to 1,
@@ -85,30 +64,16 @@ fun AppNavHost(vm: AppViewModel, socket: ChatSocketManager) {
     val currentPlace by vm.currentPlace.collectAsState()
     val birthPlace by vm.birthPlace.collectAsState()
     val tabs = listOf(
-        MainTab("推荐", "main/recommend"),
-        MainTab("匹配", "main/match"),
-        MainTab("消息", "main/messages"),
-        MainTab("发现", "main/discover"),
-        MainTab("我的", "main/me")
+        NavTabSpec("推荐", "main/recommend"),
+        NavTabSpec("匹配", "main/match"),
+        NavTabSpec("消息", "main/messages"),
+        NavTabSpec("发现", "main/discover"),
+        NavTabSpec("我的", "main/me")
     )
 
     val backStackEntry by nav.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
     val showMainTabs = tabs.any { it.route == currentRoute }
-
-    var routePulseVisible by remember { mutableStateOf(false) }
-    LaunchedEffect(currentRoute) {
-        if (currentRoute != null) {
-            routePulseVisible = true
-            delay(190)
-            routePulseVisible = false
-        }
-    }
-    val pulseAlpha by animateFloatAsState(
-        targetValue = if (routePulseVisible) 0.24f else 0f,
-        animationSpec = tween(240),
-        label = "routePulseAlpha"
-    )
 
     ProvideUiPerformanceSettings(
         settings = UiPerformanceSettings(
@@ -125,59 +90,15 @@ fun AppNavHost(vm: AppViewModel, socket: ChatSocketManager) {
         containerColor = Color.Transparent,
         bottomBar = {
             if (showMainTabs) {
-                BoxWithConstraints(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 12.dp, vertical = 10.dp)
-                        .height(58.dp)
-                        .clip(RoundedCornerShape(18.dp))
-                        .background(Color(0xAA101B32))
-                ) {
-                    val selectedIndex = tabs.indexOfFirst { it.route == currentRoute }.coerceAtLeast(0)
-                    val tabWidth = maxWidth / tabs.size
-                    val indicatorOffset by animateDpAsState(
-                        targetValue = tabWidth * selectedIndex,
-                        animationSpec = tween(240),
-                        label = "navIndicatorOffset"
-                    )
-
-                    Box(
-                        modifier = Modifier
-                            .padding(6.dp)
-                            .fillMaxHeight()
-                            .fillMaxWidth(1f / tabs.size)
-                            .graphicsLayer {
-                                translationX = indicatorOffset.toPx()
-                            }
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(
-                                Brush.horizontalGradient(
-                                    listOf(Color(0x664EA5FF), Color(0x554BD0C9), Color(0x664EA5FF))
-                                )
-                            )
-                    )
-
-                    Row(modifier = Modifier.fillMaxSize()) {
-                        tabs.forEach { tab ->
-                            val selected = currentRoute == tab.route
-                            Box(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .fillMaxSize()
-                                    .clickable {
-                                        nav.navigate(tab.route) { launchSingleTop = true }
-                                    },
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text = tab.label,
-                                    color = if (selected) Color.White else Color(0xFF93A9D8),
-                                    textAlign = TextAlign.Center
-                                )
-                            }
+                EliteSyncBottomTabs(
+                    tabs = tabs,
+                    currentRoute = currentRoute,
+                    onTabClick = { route ->
+                        nav.navigate(route) {
+                            launchSingleTop = true
                         }
                     }
-                }
+                )
             }
         }
     ) { innerPadding ->
@@ -367,19 +288,6 @@ fun AppNavHost(vm: AppViewModel, socket: ChatSocketManager) {
                 }
             }
 
-            if (pulseAlpha > 0f && currentRoute != "register") {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .graphicsLayer(alpha = pulseAlpha)
-                        .background(
-                            Brush.radialGradient(
-                                colors = listOf(Color(0x66BFD8FF), Color.Transparent),
-                                radius = 780f
-                            )
-                        )
-                )
-            }
         }
     }
     }

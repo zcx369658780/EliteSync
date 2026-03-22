@@ -14,6 +14,7 @@ import com.elitesync.ui.AppViewModel
 import com.elitesync.ui.components.GlassScrollPage
 import com.elitesync.ui.components.StarryListItemCard
 import com.elitesync.ui.components.StarryPrimaryButton
+import com.elitesync.ui.components.StarrySectionCard
 import com.elitesync.ui.components.StarryTextField
 import com.elitesync.ws.ChatSocketManager
 
@@ -50,15 +51,19 @@ fun ChatScreen(vm: AppViewModel, socket: ChatSocketManager) {
     }
 
     GlassScrollPage(title = "聊天", status = status, error = error) {
-        LazyColumn(modifier = androidx.compose.ui.Modifier.height(320.dp)) {
-            items(messages) { StarryListItemCard(text = it) }
+        StarrySectionCard(title = "会话") {
+            LazyColumn(modifier = androidx.compose.ui.Modifier.height(320.dp)) {
+                items(messages) { StarryListItemCard(text = it) }
+            }
         }
-        StarryTextField(value = input, onValueChange = { input = it }, label = "消息", singleLine = false)
-        StarryPrimaryButton(text = "发送", onClick = {
-            vm.sendMessage(input)
-            input = ""
-            socket.heartbeat()
-            vm.refreshMessages()
-        })
+        StarrySectionCard(title = "发送消息") {
+            StarryTextField(value = input, onValueChange = { input = it }, label = "消息", singleLine = false)
+            StarryPrimaryButton(text = "发送", onClick = {
+                vm.sendMessage(input)
+                input = ""
+                socket.heartbeat()
+                vm.refreshMessages()
+            })
+        }
     }
 }

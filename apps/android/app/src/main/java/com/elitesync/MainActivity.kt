@@ -11,7 +11,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.remember
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -20,6 +19,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.elitesync.ui.AppNavHost
 import com.elitesync.ui.AppViewModel
+import com.elitesync.ui.components.EliteSyncColors
 import com.elitesync.ws.ChatSocketManager
 
 class MainActivity : ComponentActivity() {
@@ -29,14 +29,14 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val appDarkScheme = darkColorScheme(
-                primary = Color(0xFF8EB8FF),
-                onPrimary = Color(0xFF03162D),
-                secondary = Color(0xFF7ED8D3),
-                onSecondary = Color(0xFF032523),
-                background = Color(0xFF080B1B),
-                surface = Color(0xFF121C32),
-                onSurface = Color(0xFFE8EEFF),
-                onBackground = Color(0xFFE8EEFF)
+                primary = EliteSyncColors.BrandPrimary,
+                onPrimary = EliteSyncColors.TextPrimary,
+                secondary = EliteSyncColors.Info,
+                onSecondary = EliteSyncColors.TextPrimary,
+                background = EliteSyncColors.BgBase,
+                surface = EliteSyncColors.BgDepth,
+                onSurface = EliteSyncColors.TextPrimary,
+                onBackground = EliteSyncColors.TextPrimary
             )
             val appTypography = Typography(
                 headlineLarge = TextStyle(

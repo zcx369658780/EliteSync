@@ -14,6 +14,7 @@ import com.elitesync.ui.AppViewModel
 import com.elitesync.ui.components.GlassScrollPage
 import com.elitesync.ui.components.StarryOptionCard
 import com.elitesync.ui.components.StarryPrimaryButton
+import com.elitesync.ui.components.StarrySectionCard
 import com.elitesync.ui.components.StarrySecondaryButton
 
 @Composable
@@ -67,94 +68,99 @@ fun QuestionnaireScreen(vm: AppViewModel, onNext: () -> Unit) {
     }
 
     GlassScrollPage(title = "问卷（单击大按钮即可作答）", status = status, error = error) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            StarrySecondaryButton(
-                text = "◀ 上一题",
-                onClick = { if (currentIndex > 0) currentIndex-- },
-                enabled = currentIndex > 0,
-                modifier = Modifier.fillMaxWidth(0.30f)
-            )
-            Text("进度: ${submittedIds.size}/$questionnaireRequired")
-            StarrySecondaryButton(
-                text = "下一题 ▶",
-                onClick = { if (currentIndex < questions.lastIndex) currentIndex++ },
-                enabled = currentIndex < questions.lastIndex,
-                modifier = Modifier.fillMaxWidth(0.30f)
-            )
-        }
-        LinearProgressIndicator(
-            progress = { progress },
-            modifier = Modifier.fillMaxWidth(),
-            color = Color(0xFF7FA9FF),
-            trackColor = Color(0x55334B71)
-        )
-        Text("完成度：${(progress * 100).toInt()}%")
-
-        if (currentQuestion != null) {
-            Text("${currentIndex + 1}. ${currentQuestion.content}")
-            val options = currentQuestion.option_items
-            val maxPick = if (currentQuestion.question_type == "multi_choice") 2 else 1
-            val selected = selectedMap[currentQuestion.id].orEmpty()
-            val remainingPickForMulti = if (currentQuestion.question_type == "multi_choice") {
-                (2 - selected.size).coerceAtLeast(0)
-            } else 0
-            options.forEachIndexed { idx, option ->
-                val optionCode = optionCode(idx)
-                val label = option.label.zh ?: option.option_id
-                val selectedIndex = selected.indexOf(option.option_id)
-                StarryOptionCard(
-                    text = "$optionCode. $label",
-                    selected = selectedIndex >= 0,
-                    pickOrder = if (selectedIndex >= 0) selectedIndex else null,
-                    onClick = {
-                        val now = selectedMap[currentQuestion.id].orEmpty().toMutableList()
-                        if (now.contains(option.option_id)) {
-                            now.remove(option.option_id)
-                        } else if (maxPick == 1) {
-                            now.clear()
-                            now.add(option.option_id)
-                        } else {
-                            if (now.size < 2) {
-                                now.add(option.option_id)
-                            }
-                        }
-                        selectedMap[currentQuestion.id] = now
-                        if (currentQuestion.question_type != "multi_choice" && now.size == 1) {
-                            submitAndGoNext(currentQuestion.id, now, currentQuestion.version ?: 1)
-                        } else if (currentQuestion.question_type == "multi_choice" && now.size >= 2) {
-                            submitAndGoNext(currentQuestion.id, now, currentQuestion.version ?: 1)
-                        }
-                    }
+        StarrySectionCard(title = "进度") {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                StarrySecondaryButton(
+                    text = "◀ 上一题",
+                    onClick = { if (currentIndex > 0) currentIndex-- },
+                    enabled = currentIndex > 0,
+                    modifier = Modifier.fillMaxWidth(0.30f)
+                )
+                Text("进度: ${submittedIds.size}/$questionnaireRequired")
+                StarrySecondaryButton(
+                    text = "下一题 ▶",
+                    onClick = { if (currentIndex < questions.lastIndex) currentIndex++ },
+                    enabled = currentIndex < questions.lastIndex,
+                    modifier = Modifier.fillMaxWidth(0.30f)
                 )
             }
-            Text(
-                if (currentQuestion.question_type == "multi_choice") {
-                    "提示：多选题最多选两项，先选最重要(①)，再选次重要(②)；选到第二项后会自动进入下一题。"
-                } else {
-                    "提示：单选题选择一项后会自动进入下一题；可用“上一题”返回修改。"
-                }
-            )
-            if (currentQuestion.question_type == "multi_choice" && remainingPickForMulti == 1) {
-                Text("还需再选 1 项", color = Color(0xFFD32F2F))
-            }
-            StarrySecondaryButton(
-                text = "换一题（未做过）",
+            LinearProgressIndicator(
+                progress = { progress },
                 modifier = Modifier.fillMaxWidth(),
-                onClick = {
-                    val exclude = (seenQuestionIds.toSet() + selectedMap.keys + currentQuestion.id).toList()
-                    vm.replaceQuestion(currentQuestion.id, exclude)
-                },
-                loading = status.contains("换题中")
+                color = Color(0xFF7FA9FF),
+                trackColor = Color(0x55334B71)
             )
-        } else {
-            Text("题目加载中或已完成全部作答")
+            Text("完成度：${(progress * 100).toInt()}%")
         }
 
-        Text(if (questionnaireComplete) "问卷状态: 已完成" else "问卷状态: 未完成")
-        StarryPrimaryButton(text = "进入匹配", onClick = onNext, enabled = questionnaireComplete || allAnsweredLocal)
+        StarrySectionCard(title = "当前题目") {
+            if (currentQuestion != null) {
+                Text("${currentIndex + 1}. ${currentQuestion.content}")
+                val options = currentQuestion.option_items
+                val maxPick = if (currentQuestion.question_type == "multi_choice") 2 else 1
+                val selected = selectedMap[currentQuestion.id].orEmpty()
+                val remainingPickForMulti = if (currentQuestion.question_type == "multi_choice") {
+                    (2 - selected.size).coerceAtLeast(0)
+                } else 0
+                options.forEachIndexed { idx, option ->
+                    val optionCode = optionCode(idx)
+                    val label = option.label.zh ?: option.option_id
+                    val selectedIndex = selected.indexOf(option.option_id)
+                    StarryOptionCard(
+                        text = "$optionCode. $label",
+                        selected = selectedIndex >= 0,
+                        pickOrder = if (selectedIndex >= 0) selectedIndex else null,
+                        onClick = {
+                            val now = selectedMap[currentQuestion.id].orEmpty().toMutableList()
+                            if (now.contains(option.option_id)) {
+                                now.remove(option.option_id)
+                            } else if (maxPick == 1) {
+                                now.clear()
+                                now.add(option.option_id)
+                            } else {
+                                if (now.size < 2) {
+                                    now.add(option.option_id)
+                                }
+                            }
+                            selectedMap[currentQuestion.id] = now
+                            if (currentQuestion.question_type != "multi_choice" && now.size == 1) {
+                                submitAndGoNext(currentQuestion.id, now, currentQuestion.version ?: 1)
+                            } else if (currentQuestion.question_type == "multi_choice" && now.size >= 2) {
+                                submitAndGoNext(currentQuestion.id, now, currentQuestion.version ?: 1)
+                            }
+                        }
+                    )
+                }
+                Text(
+                    if (currentQuestion.question_type == "multi_choice") {
+                        "提示：多选题最多选两项，先选最重要(①)，再选次重要(②)；选到第二项后会自动进入下一题。"
+                    } else {
+                        "提示：单选题选择一项后会自动进入下一题；可用“上一题”返回修改。"
+                    }
+                )
+                if (currentQuestion.question_type == "multi_choice" && remainingPickForMulti == 1) {
+                    Text("还需再选 1 项", color = Color(0xFFD32F2F))
+                }
+                StarrySecondaryButton(
+                    text = "换一题（未做过）",
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+                        val exclude = (seenQuestionIds.toSet() + selectedMap.keys + currentQuestion.id).toList()
+                        vm.replaceQuestion(currentQuestion.id, exclude)
+                    },
+                    loading = status.contains("换题中")
+                )
+            } else {
+                Text("题目加载中或已完成全部作答")
+            }
+        }
+        StarrySectionCard(title = "完成") {
+            Text(if (questionnaireComplete) "问卷状态: 已完成" else "问卷状态: 未完成")
+            StarryPrimaryButton(text = "进入匹配", onClick = onNext, enabled = questionnaireComplete || allAnsweredLocal)
+        }
     }
 }
 

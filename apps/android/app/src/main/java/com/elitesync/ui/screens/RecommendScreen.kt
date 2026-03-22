@@ -9,6 +9,7 @@ import androidx.compose.runtime.getValue
 import com.elitesync.ui.AppViewModel
 import com.elitesync.ui.components.GlassScrollPage
 import com.elitesync.ui.components.StarryPrimaryButton
+import com.elitesync.ui.components.StarrySectionCard
 import com.elitesync.ui.components.StarrySecondaryButton
 
 @Composable
@@ -23,19 +24,23 @@ fun RecommendScreen(vm: AppViewModel, onQuestionnaire: () -> Unit, onGoMatch: ()
     }
 
     GlassScrollPage(title = "推荐", status = status, error = error) {
-        Text(if (questionnaireComplete) "建档状态：已完成" else "建档状态：未完成")
-        Text("我的倾向：${profile.summary.label}")
-        Text(
-            if (profile.summary.highlights.isEmpty()) {
-                "完成建档问卷后将显示匹配理由和推荐解释。"
-            } else {
-                "画像摘要：${profile.summary.highlights.joinToString("；")}"
-            }
-        )
-        StarrySecondaryButton(
-            text = if (questionnaireComplete) "重新建档/答题" else "开始建档/答题",
-            onClick = onQuestionnaire
-        )
-        StarryPrimaryButton(text = "进入匹配", onClick = onGoMatch, enabled = questionnaireComplete)
+        StarrySectionCard(title = "建档摘要") {
+            Text(if (questionnaireComplete) "建档状态：已完成" else "建档状态：未完成")
+            Text("我的倾向：${profile.summary.label}")
+            Text(
+                if (profile.summary.highlights.isEmpty()) {
+                    "完成建档问卷后将显示匹配理由和推荐解释。"
+                } else {
+                    "画像摘要：${profile.summary.highlights.joinToString("；")}"
+                }
+            )
+        }
+        StarrySectionCard(title = "下一步") {
+            StarrySecondaryButton(
+                text = if (questionnaireComplete) "重新建档/答题" else "开始建档/答题",
+                onClick = onQuestionnaire
+            )
+            StarryPrimaryButton(text = "进入匹配", onClick = onGoMatch, enabled = questionnaireComplete)
+        }
     }
 }
