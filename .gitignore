@@ -29,3 +29,7 @@ services/backend-laravel/bootstrap/cache/*.php
 *.env.local
 *.secret
 *.keystore
+
+# Local diagnostics and cloud snapshots
+logs_*/
+backups/aliyun_backend_*/
