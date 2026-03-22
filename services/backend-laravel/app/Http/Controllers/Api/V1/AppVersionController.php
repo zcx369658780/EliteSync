@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\AppReleaseVersion;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Throwable;
 
 class AppVersionController extends Controller
 {
@@ -23,13 +24,19 @@ class AppVersionController extends Controller
         $clientVersion = (string) $data['version_name'];
         $clientCode = (int) ($data['version_code'] ?? 0);
 
-        $release = AppReleaseVersion::query()
-            ->where('platform', $platform)
-            ->where('channel', $channel)
-            ->where('is_active', true)
-            ->orderByDesc('version_code')
-            ->orderByDesc('id')
-            ->first();
+        $release = null;
+        try {
+            $release = AppReleaseVersion::query()
+                ->where('platform', $platform)
+                ->where('channel', $channel)
+                ->where('is_active', true)
+                ->orderByDesc('version_code')
+                ->orderByDesc('id')
+                ->first();
+        } catch (Throwable) {
+            // Fallback to config-only mode when DB is temporarily unavailable.
+            $release = null;
+        }
 
         $default = config("app_update.$platform", []);
         $latestVersionName = (string) ($release->version_name ?? ($default['latest_version_name'] ?? $clientVersion));
@@ -89,4 +96,3 @@ class AppVersionController extends Controller
         return [0, 0, 0];
     }
 }
-
