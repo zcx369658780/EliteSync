@@ -1,0 +1,4078 @@
+{
+  "schema_version": "2.0",
+  "question_bank_id": "question_bank_core_v1",
+  "title": {
+    "zh": "慢约会题库 core v2",
+    "en": "慢约会题库 core v2"
+  },
+  "description": {
+    "zh": "V2 多维联合测量题库",
+    "en": "V2 multi-dimensional bank"
+  },
+  "categories": [
+    "communication",
+    "family",
+    "intimacy",
+    "lifestyle",
+    "relationship_goals",
+    "social_energy"
+  ],
+  "default_importance_mapping": {
+    "0": 0.0,
+    "1": 0.33,
+    "2": 0.66,
+    "3": 1.0
+  },
+  "questions": [
+    {
+      "question_id": "Q_REL_V2_001",
+      "category": "communication",
+      "subtopic": "delayed_reply",
+      "question_text": {
+        "zh": "你连续两次发出邀请，对方回复都很慢且没有解释。你更可能怎么做？",
+        "en": ""
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "communication_clarity",
+        "attachment_security",
+        "rejection_resilience",
+        "autonomy_boundary"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "直接问清楚，同时给对方解释空间",
+            "en": ""
+          },
+          "dimension_weights": {
+            "communication_clarity": 0.7,
+            "attachment_security": 0.46,
+            "rejection_resilience": 0.24,
+            "autonomy_boundary": -0.36
+          },
+          "score": 1.0
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "先降低联系频率，观察对方是否会主动",
+            "en": ""
+          },
+          "dimension_weights": {
+            "communication_clarity": 0.31,
+            "attachment_security": 0.59,
+            "rejection_resilience": -0.26,
+            "autonomy_boundary": 0.11
+          },
+          "score": 0.6
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "立刻追问是不是对我没兴趣",
+            "en": ""
+          },
+          "dimension_weights": {
+            "communication_clarity": -0.15,
+            "attachment_security": 0.3,
+            "rejection_resilience": 0.76,
+            "autonomy_boundary": -0.3
+          },
+          "score": 0.2
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "发一句轻松的话，把选择权交给对方",
+            "en": ""
+          },
+          "dimension_weights": {
+            "communication_clarity": -0.45,
+            "attachment_security": -0.14,
+            "rejection_resilience": 0.19,
+            "autonomy_boundary": 0.64
+          },
+          "score": -0.2
+        }
+      ],
+      "importance_mapping": {
+        "0": 0.0,
+        "1": 0.33,
+        "2": 0.66,
+        "3": 1.0
+      },
+      "sensitivity_level": "low",
+      "recommended_bank": "core",
+      "tags": [
+        "communication",
+        "delayed_reply",
+        "v2",
+        "dating",
+        "compatibility"
+      ],
+      "active": true,
+      "version": 2,
+      "quality_tier": "high",
+      "quality_meta": {
+        "reason": "v2_multi_dim_unique_weights",
+        "quality_tag": "pass"
+      },
+      "quality_tag": "pass"
+    },
+    {
+      "question_id": "Q_REL_V2_002",
+      "category": "lifestyle",
+      "subtopic": "last_minute_cancellation",
+      "question_text": {
+        "zh": "约会当天对方临时取消，说工作突发状况。你通常会怎么处理？",
+        "en": ""
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "emotional_regulation",
+        "planning_reliability",
+        "empathy_responsiveness",
+        "autonomy_boundary",
+        "conflict_repair"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "先确认对方情况，再一起改时间",
+            "en": ""
+          },
+          "dimension_weights": {
+            "emotional_regulation": 0.7,
+            "planning_reliability": 0.39,
+            "empathy_responsiveness": 0.26,
+            "autonomy_boundary": -0.2,
+            "conflict_repair": 0.11
+          },
+          "score": 1.0
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "嘴上说没事，但心里会记一笔",
+            "en": ""
+          },
+          "dimension_weights": {
+            "emotional_regulation": 0.27,
+            "planning_reliability": 0.74,
+            "empathy_responsiveness": -0.23,
+            "autonomy_boundary": 0.09,
+            "conflict_repair": -0.43
+          },
+          "score": 0.6
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "明确表达影响，要求下次提前沟通",
+            "en": ""
+          },
+          "dimension_weights": {
+            "emotional_regulation": -0.1,
+            "planning_reliability": 0.27,
+            "empathy_responsiveness": 0.82,
+            "autonomy_boundary": -0.23,
+            "conflict_repair": 0.11
+          },
+          "score": 0.2
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "直接结束这次安排，后续再看",
+            "en": ""
+          },
+          "dimension_weights": {
+            "emotional_regulation": -0.58,
+            "planning_reliability": -0.18,
+            "empathy_responsiveness": 0.3,
+            "autonomy_boundary": 0.68,
+            "conflict_repair": -0.41
+          },
+          "score": -0.2
+        }
+      ],
+      "importance_mapping": {
+        "0": 0.0,
+        "1": 0.33,
+        "2": 0.66,
+        "3": 1.0
+      },
+      "sensitivity_level": "low",
+      "recommended_bank": "core",
+      "tags": [
+        "lifestyle",
+        "last_minute_cancellation",
+        "v2",
+        "dating",
+        "compatibility"
+      ],
+      "active": true,
+      "version": 2,
+      "quality_tier": "high",
+      "quality_meta": {
+        "reason": "v2_multi_dim_unique_weights",
+        "quality_tag": "pass"
+      },
+      "quality_tag": "pass"
+    },
+    {
+      "question_id": "Q_REL_V2_003",
+      "category": "family",
+      "subtopic": "family_pressure",
+      "question_text": {
+        "zh": "对方因家庭压力情绪崩溃。你的第一反应更接近哪一种？",
+        "en": ""
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "empathy_responsiveness",
+        "emotional_regulation",
+        "attachment_security",
+        "intimacy_disclosure",
+        "conflict_repair"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "先安抚情绪，再问是想被安慰还是想解决",
+            "en": ""
+          },
+          "dimension_weights": {
+            "empathy_responsiveness": 0.7,
+            "emotional_regulation": 0.45,
+            "attachment_security": 0.2,
+            "intimacy_disclosure": -0.3,
+            "conflict_repair": 0.12
+          },
+          "score": 1.0
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "先给很多建议，希望尽快走出情绪",
+            "en": ""
+          },
+          "dimension_weights": {
+            "empathy_responsiveness": 0.29,
+            "emotional_regulation": 0.72,
+            "attachment_security": -0.38,
+            "intimacy_disclosure": 0.07,
+            "conflict_repair": -0.51
+          },
+          "score": 0.6
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "安静陪伴，但不主动深聊细节",
+            "en": ""
+          },
+          "dimension_weights": {
+            "empathy_responsiveness": -0.2,
+            "emotional_regulation": 0.42,
+            "attachment_security": 0.73,
+            "intimacy_disclosure": -0.21,
+            "conflict_repair": 0.07
+          },
+          "score": 0.2
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "怕说错话，先回避这个话题",
+            "en": ""
+          },
+          "dimension_weights": {
+            "empathy_responsiveness": -0.51,
+            "emotional_regulation": -0.23,
+            "attachment_security": 0.2,
+            "intimacy_disclosure": 0.53,
+            "conflict_repair": -0.4
+          },
+          "score": -0.2
+        }
+      ],
+      "importance_mapping": {
+        "0": 0.0,
+        "1": 0.33,
+        "2": 0.66,
+        "3": 1.0
+      },
+      "sensitivity_level": "low",
+      "recommended_bank": "core",
+      "tags": [
+        "family",
+        "family_pressure",
+        "v2",
+        "dating",
+        "compatibility"
+      ],
+      "active": true,
+      "version": 2,
+      "quality_tier": "high",
+      "quality_meta": {
+        "reason": "v2_multi_dim_unique_weights",
+        "quality_tag": "pass"
+      },
+      "quality_tag": "pass"
+    },
+    {
+      "question_id": "Q_REL_V2_004",
+      "category": "relationship_goals",
+      "subtopic": "contact_with_ex",
+      "question_text": {
+        "zh": "前任在你生日发来祝福。你更可能如何处理？",
+        "en": ""
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "attachment_security",
+        "communication_clarity",
+        "autonomy_boundary",
+        "commitment_readiness"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "主动告知正在接触的人，并说明处理方式",
+            "en": ""
+          },
+          "dimension_weights": {
+            "attachment_security": 0.7,
+            "communication_clarity": 0.45,
+            "autonomy_boundary": 0.15,
+            "commitment_readiness": -0.25
+          },
+          "score": 1.0
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "礼貌回复后结束，不专门提这件事",
+            "en": ""
+          },
+          "dimension_weights": {
+            "attachment_security": 0.19,
+            "communication_clarity": 0.74,
+            "autonomy_boundary": -0.24,
+            "commitment_readiness": 0.17
+          },
+          "score": 0.6
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "只要不暧昧，就不主动告诉对方",
+            "en": ""
+          },
+          "dimension_weights": {
+            "attachment_security": -0.14,
+            "communication_clarity": 0.41,
+            "autonomy_boundary": 0.76,
+            "commitment_readiness": -0.27
+          },
+          "score": 0.2
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "不回复并一次性立清边界",
+            "en": ""
+          },
+          "dimension_weights": {
+            "attachment_security": -0.46,
+            "communication_clarity": -0.13,
+            "autonomy_boundary": 0.15,
+            "commitment_readiness": 0.63
+          },
+          "score": -0.2
+        }
+      ],
+      "importance_mapping": {
+        "0": 0.0,
+        "1": 0.33,
+        "2": 0.66,
+        "3": 1.0
+      },
+      "sensitivity_level": "low",
+      "recommended_bank": "core",
+      "tags": [
+        "relationship_goals",
+        "contact_with_ex",
+        "v2",
+        "dating",
+        "compatibility"
+      ],
+      "active": true,
+      "version": 2,
+      "quality_tier": "high",
+      "quality_meta": {
+        "reason": "v2_multi_dim_unique_weights",
+        "quality_tag": "pass"
+      },
+      "quality_tag": "pass"
+    },
+    {
+      "question_id": "Q_REL_V2_005",
+      "category": "lifestyle",
+      "subtopic": "tired_weekend",
+      "question_text": {
+        "zh": "工作一周后很累，但周末有期待已久的约会。你会怎么安排？",
+        "en": ""
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "social_initiative",
+        "openness_exploration",
+        "emotional_regulation"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "选安静但有新鲜感的地点，缩短时长",
+            "en": ""
+          },
+          "dimension_weights": {
+            "social_initiative": 0.74,
+            "openness_exploration": 0.36,
+            "emotional_regulation": 0.25
+          },
+          "score": 1.0
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "诚实说状态不好，改约下周",
+            "en": ""
+          },
+          "dimension_weights": {
+            "social_initiative": 0.21,
+            "openness_exploration": 0.7,
+            "emotional_regulation": -0.31
+          },
+          "score": 0.6
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "照常见面，但让对方主导安排",
+            "en": ""
+          },
+          "dimension_weights": {
+            "social_initiative": -0.14,
+            "openness_exploration": 0.41,
+            "emotional_regulation": 0.77
+          },
+          "score": 0.2
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "直接取消，不想解释太多",
+            "en": ""
+          },
+          "dimension_weights": {
+            "social_initiative": -0.48,
+            "openness_exploration": -0.18,
+            "emotional_regulation": 0.2
+          },
+          "score": -0.2
+        }
+      ],
+      "importance_mapping": {
+        "0": 0.0,
+        "1": 0.33,
+        "2": 0.66,
+        "3": 1.0
+      },
+      "sensitivity_level": "low",
+      "recommended_bank": "core",
+      "tags": [
+        "lifestyle",
+        "tired_weekend",
+        "v2",
+        "dating",
+        "compatibility"
+      ],
+      "active": true,
+      "version": 2,
+      "quality_tier": "high",
+      "quality_meta": {
+        "reason": "v2_multi_dim_unique_weights",
+        "quality_tag": "pass"
+      },
+      "quality_tag": "pass"
+    },
+    {
+      "question_id": "Q_REL_V2_006",
+      "category": "lifestyle",
+      "subtopic": "trip_budget",
+      "question_text": {
+        "zh": "两人计划旅行时消费观差异很大。你更可能怎么处理？",
+        "en": ""
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "planning_reliability",
+        "reciprocity_investment",
+        "autonomy_boundary",
+        "openness_exploration",
+        "commitment_readiness"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "先定预算上限，再一起删减项目",
+            "en": ""
+          },
+          "dimension_weights": {
+            "planning_reliability": 0.76,
+            "reciprocity_investment": 0.49,
+            "autonomy_boundary": 0.09,
+            "openness_exploration": -0.29,
+            "commitment_readiness": 0.03
+          },
+          "score": 1.0
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "旅行难得，愿意多花一点换体验",
+            "en": ""
+          },
+          "dimension_weights": {
+            "planning_reliability": 0.3,
+            "reciprocity_investment": 0.72,
+            "autonomy_boundary": -0.4,
+            "openness_exploration": 0.17,
+            "commitment_readiness": -0.46
+          },
+          "score": 0.6
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "倾向各花各的，不强行统一标准",
+            "en": ""
+          },
+          "dimension_weights": {
+            "planning_reliability": -0.25,
+            "reciprocity_investment": 0.31,
+            "autonomy_boundary": 0.78,
+            "openness_exploration": -0.33,
+            "commitment_readiness": 0.2
+          },
+          "score": 0.2
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "若长期谈不拢，会重新评估关系",
+            "en": ""
+          },
+          "dimension_weights": {
+            "planning_reliability": -0.46,
+            "reciprocity_investment": -0.21,
+            "autonomy_boundary": 0.25,
+            "openness_exploration": 0.53,
+            "commitment_readiness": -0.31
+          },
+          "score": -0.2
+        }
+      ],
+      "importance_mapping": {
+        "0": 0.0,
+        "1": 0.33,
+        "2": 0.66,
+        "3": 1.0
+      },
+      "sensitivity_level": "low",
+      "recommended_bank": "core",
+      "tags": [
+        "lifestyle",
+        "trip_budget",
+        "v2",
+        "dating",
+        "compatibility"
+      ],
+      "active": true,
+      "version": 2,
+      "quality_tier": "high",
+      "quality_meta": {
+        "reason": "v2_multi_dim_unique_weights",
+        "quality_tag": "pass"
+      },
+      "quality_tag": "pass"
+    },
+    {
+      "question_id": "Q_REL_V2_007",
+      "category": "relationship_goals",
+      "subtopic": "city_choice",
+      "question_text": {
+        "zh": "你们相处不错，但工作机会让双方可能去不同城市。你更可能怎么做？",
+        "en": ""
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "commitment_readiness",
+        "planning_reliability",
+        "autonomy_boundary",
+        "attachment_security"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "把职业和生活成本摊开，先做过渡方案",
+            "en": ""
+          },
+          "dimension_weights": {
+            "commitment_readiness": 0.8,
+            "planning_reliability": 0.49,
+            "autonomy_boundary": 0.11,
+            "attachment_security": -0.27
+          },
+          "score": 1.0
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "优先机会更稀缺的一方",
+            "en": ""
+          },
+          "dimension_weights": {
+            "commitment_readiness": 0.24,
+            "planning_reliability": 0.74,
+            "autonomy_boundary": -0.37,
+            "attachment_security": 0.09
+          },
+          "score": 0.6
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "先各自发展，不急着做大调整",
+            "en": ""
+          },
+          "dimension_weights": {
+            "commitment_readiness": -0.19,
+            "planning_reliability": 0.28,
+            "autonomy_boundary": 0.66,
+            "attachment_security": -0.23
+          },
+          "score": 0.2
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "优先保住自己的生活节奏",
+            "en": ""
+          },
+          "dimension_weights": {
+            "commitment_readiness": -0.57,
+            "planning_reliability": -0.22,
+            "autonomy_boundary": 0.19,
+            "attachment_security": 0.54
+          },
+          "score": -0.2
+        }
+      ],
+      "importance_mapping": {
+        "0": 0.0,
+        "1": 0.33,
+        "2": 0.66,
+        "3": 1.0
+      },
+      "sensitivity_level": "low",
+      "recommended_bank": "core",
+      "tags": [
+        "relationship_goals",
+        "city_choice",
+        "v2",
+        "dating",
+        "compatibility"
+      ],
+      "active": true,
+      "version": 2,
+      "quality_tier": "high",
+      "quality_meta": {
+        "reason": "v2_multi_dim_unique_weights",
+        "quality_tag": "pass"
+      },
+      "quality_tag": "pass"
+    },
+    {
+      "question_id": "Q_REL_V2_008",
+      "category": "social_energy",
+      "subtopic": "meet_close_friends",
+      "question_text": {
+        "zh": "第一次把对方介绍给你最熟的朋友时，你通常会怎么做？",
+        "en": ""
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "social_initiative",
+        "intimacy_disclosure",
+        "attachment_security"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "提前做介绍，主动帮双方接话",
+            "en": ""
+          },
+          "dimension_weights": {
+            "social_initiative": 0.76,
+            "intimacy_disclosure": 0.34,
+            "attachment_security": 0.2
+          },
+          "score": 1.0
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "顺其自然，不刻意安排流程",
+            "en": ""
+          },
+          "dimension_weights": {
+            "social_initiative": 0.16,
+            "intimacy_disclosure": 0.64,
+            "attachment_security": -0.27
+          },
+          "score": 0.6
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "先观察对方状态，再决定介绍深度",
+            "en": ""
+          },
+          "dimension_weights": {
+            "social_initiative": -0.1,
+            "intimacy_disclosure": 0.32,
+            "attachment_security": 0.73
+          },
+          "score": 0.2
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "尽量把不同圈层分开，不混在一起",
+            "en": ""
+          },
+          "dimension_weights": {
+            "social_initiative": -0.44,
+            "intimacy_disclosure": -0.23,
+            "attachment_security": 0.21
+          },
+          "score": -0.2
+        }
+      ],
+      "importance_mapping": {
+        "0": 0.0,
+        "1": 0.33,
+        "2": 0.66,
+        "3": 1.0
+      },
+      "sensitivity_level": "low",
+      "recommended_bank": "core",
+      "tags": [
+        "social_energy",
+        "meet_close_friends",
+        "v2",
+        "dating",
+        "compatibility"
+      ],
+      "active": true,
+      "version": 2,
+      "quality_tier": "high",
+      "quality_meta": {
+        "reason": "v2_multi_dim_unique_weights",
+        "quality_tag": "pass"
+      },
+      "quality_tag": "pass"
+    },
+    {
+      "question_id": "Q_REL_V2_009",
+      "category": "communication",
+      "subtopic": "social_media_boundary",
+      "question_text": {
+        "zh": "对方希望公开你们的关系到社交平台。你的第一反应更接近哪一种？",
+        "en": ""
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "autonomy_boundary",
+        "communication_clarity",
+        "attachment_security",
+        "commitment_readiness"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "先聊清彼此需求，再决定公开范围",
+            "en": ""
+          },
+          "dimension_weights": {
+            "autonomy_boundary": 0.71,
+            "communication_clarity": 0.44,
+            "attachment_security": 0.15,
+            "commitment_readiness": -0.24
+          },
+          "score": 1.0
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "可配合公开，但不会太主动",
+            "en": ""
+          },
+          "dimension_weights": {
+            "autonomy_boundary": 0.15,
+            "communication_clarity": 0.67,
+            "attachment_security": -0.24,
+            "commitment_readiness": 0.04
+          },
+          "score": 0.6
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "感情是私事，不希望被平台定义",
+            "en": ""
+          },
+          "dimension_weights": {
+            "autonomy_boundary": -0.12,
+            "communication_clarity": 0.27,
+            "attachment_security": 0.81,
+            "commitment_readiness": -0.23
+          },
+          "score": 0.2
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "若对方执着公开，会怀疑关系稳定性",
+            "en": ""
+          },
+          "dimension_weights": {
+            "autonomy_boundary": -0.56,
+            "communication_clarity": -0.16,
+            "attachment_security": 0.24,
+            "commitment_readiness": 0.64
+          },
+          "score": -0.2
+        }
+      ],
+      "importance_mapping": {
+        "0": 0.0,
+        "1": 0.33,
+        "2": 0.66,
+        "3": 1.0
+      },
+      "sensitivity_level": "low",
+      "recommended_bank": "core",
+      "tags": [
+        "communication",
+        "social_media_boundary",
+        "v2",
+        "dating",
+        "compatibility"
+      ],
+      "active": true,
+      "version": 2,
+      "quality_tier": "high",
+      "quality_meta": {
+        "reason": "v2_multi_dim_unique_weights",
+        "quality_tag": "pass"
+      },
+      "quality_tag": "pass"
+    },
+    {
+      "question_id": "Q_REL_V2_010",
+      "category": "communication",
+      "subtopic": "shutdown_after_argument",
+      "question_text": {
+        "zh": "争执后对方沉默数小时。你更可能怎么处理？",
+        "en": ""
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "emotional_regulation",
+        "conflict_repair",
+        "attachment_security",
+        "communication_clarity",
+        "rejection_resilience"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "给冷静时间并约定具体沟通时间",
+            "en": ""
+          },
+          "dimension_weights": {
+            "emotional_regulation": 0.75,
+            "conflict_repair": 0.5,
+            "attachment_security": 0.18,
+            "communication_clarity": -0.29,
+            "rejection_resilience": 0.08
+          },
+          "score": 1.0
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "持续发消息，直到对方回应",
+            "en": ""
+          },
+          "dimension_weights": {
+            "emotional_regulation": 0.27,
+            "conflict_repair": 0.74,
+            "attachment_security": -0.33,
+            "communication_clarity": 0.1,
+            "rejection_resilience": -0.51
+          },
+          "score": 0.6
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "既然沉默，我也不再主动解决",
+            "en": ""
+          },
+          "dimension_weights": {
+            "emotional_regulation": -0.16,
+            "conflict_repair": 0.39,
+            "attachment_security": 0.74,
+            "communication_clarity": -0.37,
+            "rejection_resilience": 0.03
+          },
+          "score": 0.2
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "先整理感受，再发核心问题",
+            "en": ""
+          },
+          "dimension_weights": {
+            "emotional_regulation": -0.45,
+            "conflict_repair": -0.23,
+            "attachment_security": 0.2,
+            "communication_clarity": 0.53,
+            "rejection_resilience": -0.25
+          },
+          "score": -0.2
+        }
+      ],
+      "importance_mapping": {
+        "0": 0.0,
+        "1": 0.33,
+        "2": 0.66,
+        "3": 1.0
+      },
+      "sensitivity_level": "low",
+      "recommended_bank": "core",
+      "tags": [
+        "communication",
+        "shutdown_after_argument",
+        "v2",
+        "dating",
+        "compatibility"
+      ],
+      "active": true,
+      "version": 2,
+      "quality_tier": "high",
+      "quality_meta": {
+        "reason": "v2_multi_dim_unique_weights",
+        "quality_tag": "pass"
+      },
+      "quality_tag": "pass"
+    },
+    {
+      "question_id": "Q_REL_V2_011",
+      "category": "intimacy",
+      "subtopic": "embarrassing_story",
+      "question_text": {
+        "zh": "对方问你是否有很少对外提及的尴尬经历。你通常会怎么回应？",
+        "en": ""
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "intimacy_disclosure",
+        "attachment_security",
+        "rejection_resilience"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "讲一件真实但边界安全的经历",
+            "en": ""
+          },
+          "dimension_weights": {
+            "intimacy_disclosure": 0.76,
+            "attachment_security": 0.36,
+            "rejection_resilience": 0.17
+          },
+          "score": 1.0
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "会说，但用玩笑带过去",
+            "en": ""
+          },
+          "dimension_weights": {
+            "intimacy_disclosure": 0.17,
+            "attachment_security": 0.59,
+            "rejection_resilience": -0.33
+          },
+          "score": 0.6
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "先保留，等更熟再讲",
+            "en": ""
+          },
+          "dimension_weights": {
+            "intimacy_disclosure": -0.15,
+            "attachment_security": 0.31,
+            "rejection_resilience": 0.73
+          },
+          "score": 0.2
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "转移话题，避免这类试探",
+            "en": ""
+          },
+          "dimension_weights": {
+            "intimacy_disclosure": -0.58,
+            "attachment_security": -0.13,
+            "rejection_resilience": 0.13
+          },
+          "score": -0.2
+        }
+      ],
+      "importance_mapping": {
+        "0": 0.0,
+        "1": 0.33,
+        "2": 0.66,
+        "3": 1.0
+      },
+      "sensitivity_level": "low",
+      "recommended_bank": "core",
+      "tags": [
+        "intimacy",
+        "embarrassing_story",
+        "v2",
+        "dating",
+        "compatibility"
+      ],
+      "active": true,
+      "version": 2,
+      "quality_tier": "high",
+      "quality_meta": {
+        "reason": "v2_multi_dim_unique_weights",
+        "quality_tag": "pass"
+      },
+      "quality_tag": "pass"
+    },
+    {
+      "question_id": "Q_REL_V2_012",
+      "category": "lifestyle",
+      "subtopic": "travel_delay",
+      "question_text": {
+        "zh": "出行遇到突发延误，计划被打乱。你通常更接近哪种反应？",
+        "en": ""
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "emotional_regulation",
+        "planning_reliability",
+        "openness_exploration",
+        "conflict_repair"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "列出备选方案后再决策",
+            "en": ""
+          },
+          "dimension_weights": {
+            "emotional_regulation": 0.65,
+            "planning_reliability": 0.47,
+            "openness_exploration": 0.26,
+            "conflict_repair": -0.33
+          },
+          "score": 1.0
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "把意外当新体验继续玩",
+            "en": ""
+          },
+          "dimension_weights": {
+            "emotional_regulation": 0.15,
+            "planning_reliability": 0.66,
+            "openness_exploration": -0.32,
+            "conflict_repair": 0.06
+          },
+          "score": 0.6
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "会烦躁，但尽量不甩情绪",
+            "en": ""
+          },
+          "dimension_weights": {
+            "emotional_regulation": -0.16,
+            "planning_reliability": 0.31,
+            "openness_exploration": 0.72,
+            "conflict_repair": -0.31
+          },
+          "score": 0.2
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "若是对方失误，会当场表达不满",
+            "en": ""
+          },
+          "dimension_weights": {
+            "emotional_regulation": -0.52,
+            "planning_reliability": -0.27,
+            "openness_exploration": 0.17,
+            "conflict_repair": 0.67
+          },
+          "score": -0.2
+        }
+      ],
+      "importance_mapping": {
+        "0": 0.0,
+        "1": 0.33,
+        "2": 0.66,
+        "3": 1.0
+      },
+      "sensitivity_level": "low",
+      "recommended_bank": "core",
+      "tags": [
+        "lifestyle",
+        "travel_delay",
+        "v2",
+        "dating",
+        "compatibility"
+      ],
+      "active": true,
+      "version": 2,
+      "quality_tier": "high",
+      "quality_meta": {
+        "reason": "v2_multi_dim_unique_weights",
+        "quality_tag": "pass"
+      },
+      "quality_tag": "pass"
+    },
+    {
+      "question_id": "Q_REL_V2_013",
+      "category": "family",
+      "subtopic": "care_when_ill",
+      "question_text": {
+        "zh": "对方生病而你也很忙时，你通常如何安排投入？",
+        "en": ""
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "reciprocity_investment",
+        "empathy_responsiveness",
+        "planning_reliability",
+        "autonomy_boundary"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "调整安排，保证必要照顾和同步",
+            "en": ""
+          },
+          "dimension_weights": {
+            "reciprocity_investment": 0.72,
+            "empathy_responsiveness": 0.38,
+            "planning_reliability": 0.15,
+            "autonomy_boundary": -0.26
+          },
+          "score": 1.0
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "会关心，也会说明自己能力边界",
+            "en": ""
+          },
+          "dimension_weights": {
+            "reciprocity_investment": 0.3,
+            "empathy_responsiveness": 0.58,
+            "planning_reliability": -0.29,
+            "autonomy_boundary": 0.16
+          },
+          "score": 0.6
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "更多提供方法和资源，不投入太多陪伴",
+            "en": ""
+          },
+          "dimension_weights": {
+            "reciprocity_investment": -0.18,
+            "empathy_responsiveness": 0.37,
+            "planning_reliability": 0.81,
+            "autonomy_boundary": -0.24
+          },
+          "score": 0.2
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "关系未稳定前，不会明显打乱节奏",
+            "en": ""
+          },
+          "dimension_weights": {
+            "reciprocity_investment": -0.55,
+            "empathy_responsiveness": -0.2,
+            "planning_reliability": 0.17,
+            "autonomy_boundary": 0.53
+          },
+          "score": -0.2
+        }
+      ],
+      "importance_mapping": {
+        "0": 0.0,
+        "1": 0.33,
+        "2": 0.66,
+        "3": 1.0
+      },
+      "sensitivity_level": "low",
+      "recommended_bank": "core",
+      "tags": [
+        "family",
+        "care_when_ill",
+        "v2",
+        "dating",
+        "compatibility"
+      ],
+      "active": true,
+      "version": 2,
+      "quality_tier": "high",
+      "quality_meta": {
+        "reason": "v2_multi_dim_unique_weights",
+        "quality_tag": "pass"
+      },
+      "quality_tag": "pass"
+    },
+    {
+      "question_id": "Q_REL_V2_014",
+      "category": "relationship_goals",
+      "subtopic": "define_relationship",
+      "question_text": {
+        "zh": "对方提出想把关系说清楚。你通常会怎么回应？",
+        "en": ""
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "commitment_readiness",
+        "communication_clarity",
+        "attachment_security",
+        "autonomy_boundary"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "愿意谈，在稳定后明确关系",
+            "en": ""
+          },
+          "dimension_weights": {
+            "commitment_readiness": 0.78,
+            "communication_clarity": 0.41,
+            "attachment_security": 0.16,
+            "autonomy_boundary": -0.33
+          },
+          "score": 1.0
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "先问清期待，再决定是否独占",
+            "en": ""
+          },
+          "dimension_weights": {
+            "commitment_readiness": 0.25,
+            "communication_clarity": 0.66,
+            "attachment_security": -0.35,
+            "autonomy_boundary": 0.18
+          },
+          "score": 0.6
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "觉得现在太早，更看重自然相处",
+            "en": ""
+          },
+          "dimension_weights": {
+            "commitment_readiness": -0.25,
+            "communication_clarity": 0.41,
+            "attachment_security": 0.68,
+            "autonomy_boundary": -0.29
+          },
+          "score": 0.2
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "对推进太快会本能后退",
+            "en": ""
+          },
+          "dimension_weights": {
+            "commitment_readiness": -0.55,
+            "communication_clarity": -0.12,
+            "attachment_security": 0.31,
+            "autonomy_boundary": 0.6
+          },
+          "score": -0.2
+        }
+      ],
+      "importance_mapping": {
+        "0": 0.0,
+        "1": 0.33,
+        "2": 0.66,
+        "3": 1.0
+      },
+      "sensitivity_level": "low",
+      "recommended_bank": "core",
+      "tags": [
+        "relationship_goals",
+        "define_relationship",
+        "v2",
+        "dating",
+        "compatibility"
+      ],
+      "active": true,
+      "version": 2,
+      "quality_tier": "high",
+      "quality_meta": {
+        "reason": "v2_multi_dim_unique_weights",
+        "quality_tag": "pass"
+      },
+      "quality_tag": "pass"
+    },
+    {
+      "question_id": "Q_REL_V2_015",
+      "category": "social_energy",
+      "subtopic": "party_pacing",
+      "question_text": {
+        "zh": "聚会时你和对方社交状态不一致。你通常如何处理节奏？",
+        "en": ""
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "social_initiative",
+        "empathy_responsiveness",
+        "autonomy_boundary"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "先陪对方适应，再决定一起或分开行动",
+            "en": ""
+          },
+          "dimension_weights": {
+            "social_initiative": 0.75,
+            "empathy_responsiveness": 0.44,
+            "autonomy_boundary": 0.25
+          },
+          "score": 1.0
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "主动带节奏，不让场子冷下来",
+            "en": ""
+          },
+          "dimension_weights": {
+            "social_initiative": 0.21,
+            "empathy_responsiveness": 0.68,
+            "autonomy_boundary": -0.28
+          },
+          "score": 0.6
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "给彼此自由，不要求全程绑定",
+            "en": ""
+          },
+          "dimension_weights": {
+            "social_initiative": -0.18,
+            "empathy_responsiveness": 0.33,
+            "autonomy_boundary": 0.7
+          },
+          "score": 0.2
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "若对方明显不适，会提前离场",
+            "en": ""
+          },
+          "dimension_weights": {
+            "social_initiative": -0.54,
+            "empathy_responsiveness": -0.2,
+            "autonomy_boundary": 0.29
+          },
+          "score": -0.2
+        }
+      ],
+      "importance_mapping": {
+        "0": 0.0,
+        "1": 0.33,
+        "2": 0.66,
+        "3": 1.0
+      },
+      "sensitivity_level": "low",
+      "recommended_bank": "core",
+      "tags": [
+        "social_energy",
+        "party_pacing",
+        "v2",
+        "dating",
+        "compatibility"
+      ],
+      "active": true,
+      "version": 2,
+      "quality_tier": "high",
+      "quality_meta": {
+        "reason": "v2_multi_dim_unique_weights",
+        "quality_tag": "pass"
+      },
+      "quality_tag": "pass"
+    },
+    {
+      "question_id": "Q_REL_V2_016",
+      "category": "communication",
+      "subtopic": "forgotten_date",
+      "question_text": {
+        "zh": "对方忘了一个对你很重要的日子。你通常会怎么反应？",
+        "en": ""
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "conflict_repair",
+        "emotional_regulation",
+        "planning_reliability",
+        "attachment_security"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "直接表达失望，并给补救机会",
+            "en": ""
+          },
+          "dimension_weights": {
+            "conflict_repair": 0.74,
+            "emotional_regulation": 0.4,
+            "planning_reliability": 0.17,
+            "attachment_security": -0.3
+          },
+          "score": 1.0
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "口头没事，实际会降低期待",
+            "en": ""
+          },
+          "dimension_weights": {
+            "conflict_repair": 0.28,
+            "emotional_regulation": 0.73,
+            "planning_reliability": -0.28,
+            "attachment_security": 0.1
+          },
+          "score": 0.6
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "先看对方平时整体是否用心",
+            "en": ""
+          },
+          "dimension_weights": {
+            "conflict_repair": -0.1,
+            "emotional_regulation": 0.41,
+            "planning_reliability": 0.66,
+            "attachment_security": -0.35
+          },
+          "score": 0.2
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "若反复发生，会视作重视度不足",
+            "en": ""
+          },
+          "dimension_weights": {
+            "conflict_repair": -0.44,
+            "emotional_regulation": -0.27,
+            "planning_reliability": 0.27,
+            "attachment_security": 0.68
+          },
+          "score": -0.2
+        }
+      ],
+      "importance_mapping": {
+        "0": 0.0,
+        "1": 0.33,
+        "2": 0.66,
+        "3": 1.0
+      },
+      "sensitivity_level": "low",
+      "recommended_bank": "core",
+      "tags": [
+        "communication",
+        "forgotten_date",
+        "v2",
+        "dating",
+        "compatibility"
+      ],
+      "active": true,
+      "version": 2,
+      "quality_tier": "high",
+      "quality_meta": {
+        "reason": "v2_multi_dim_unique_weights",
+        "quality_tag": "pass"
+      },
+      "quality_tag": "pass"
+    },
+    {
+      "question_id": "Q_REL_V2_017",
+      "category": "communication",
+      "subtopic": "daily_checkin",
+      "question_text": {
+        "zh": "稳定联系阶段，你对每天报备式联系的态度更接近哪一种？",
+        "en": ""
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "intimacy_disclosure",
+        "communication_clarity",
+        "autonomy_boundary",
+        "attachment_security"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "喜欢简短稳定的日常同步",
+            "en": ""
+          },
+          "dimension_weights": {
+            "intimacy_disclosure": 0.79,
+            "communication_clarity": 0.49,
+            "autonomy_boundary": 0.1,
+            "attachment_security": -0.3
+          },
+          "score": 1.0
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "想到什么说什么，不想任务化",
+            "en": ""
+          },
+          "dimension_weights": {
+            "intimacy_disclosure": 0.3,
+            "communication_clarity": 0.61,
+            "autonomy_boundary": -0.23,
+            "attachment_security": 0.18
+          },
+          "score": 0.6
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "可配合，但不希望规则太细",
+            "en": ""
+          },
+          "dimension_weights": {
+            "intimacy_disclosure": -0.19,
+            "communication_clarity": 0.31,
+            "autonomy_boundary": 0.79,
+            "attachment_security": -0.31
+          },
+          "score": 0.2
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "频繁报备会让我有被管理感",
+            "en": ""
+          },
+          "dimension_weights": {
+            "intimacy_disclosure": -0.59,
+            "communication_clarity": -0.2,
+            "autonomy_boundary": 0.26,
+            "attachment_security": 0.64
+          },
+          "score": -0.2
+        }
+      ],
+      "importance_mapping": {
+        "0": 0.0,
+        "1": 0.33,
+        "2": 0.66,
+        "3": 1.0
+      },
+      "sensitivity_level": "low",
+      "recommended_bank": "core",
+      "tags": [
+        "communication",
+        "daily_checkin",
+        "v2",
+        "dating",
+        "compatibility"
+      ],
+      "active": true,
+      "version": 2,
+      "quality_tier": "high",
+      "quality_meta": {
+        "reason": "v2_multi_dim_unique_weights",
+        "quality_tag": "pass"
+      },
+      "quality_tag": "pass"
+    },
+    {
+      "question_id": "Q_REL_V2_018",
+      "category": "family",
+      "subtopic": "supporting_parents_financially",
+      "question_text": {
+        "zh": "若一方需长期支持原生家庭经济，这会影响共同生活。你更可能怎么处理？",
+        "en": ""
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "reciprocity_investment",
+        "planning_reliability",
+        "autonomy_boundary",
+        "empathy_responsiveness",
+        "commitment_readiness"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "先讲清家庭责任，再调整共同计划",
+            "en": ""
+          },
+          "dimension_weights": {
+            "reciprocity_investment": 0.79,
+            "planning_reliability": 0.36,
+            "autonomy_boundary": 0.18,
+            "empathy_responsiveness": -0.2,
+            "commitment_readiness": 0.15
+          },
+          "score": 1.0
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "可以理解，但不默认共同承担",
+            "en": ""
+          },
+          "dimension_weights": {
+            "reciprocity_investment": 0.3,
+            "planning_reliability": 0.72,
+            "autonomy_boundary": -0.32,
+            "empathy_responsiveness": 0.14,
+            "commitment_readiness": -0.42
+          },
+          "score": 0.6
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "若长期挤压生活，会谨慎推进关系",
+            "en": ""
+          },
+          "dimension_weights": {
+            "reciprocity_investment": -0.19,
+            "planning_reliability": 0.37,
+            "autonomy_boundary": 0.79,
+            "empathy_responsiveness": -0.3,
+            "commitment_readiness": 0.13
+          },
+          "score": 0.2
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "先一起扛住当前压力，再谈长期",
+            "en": ""
+          },
+          "dimension_weights": {
+            "reciprocity_investment": -0.59,
+            "planning_reliability": -0.24,
+            "autonomy_boundary": 0.28,
+            "empathy_responsiveness": 0.61,
+            "commitment_readiness": -0.42
+          },
+          "score": -0.2
+        }
+      ],
+      "importance_mapping": {
+        "0": 0.0,
+        "1": 0.33,
+        "2": 0.66,
+        "3": 1.0
+      },
+      "sensitivity_level": "low",
+      "recommended_bank": "core",
+      "tags": [
+        "family",
+        "supporting_parents_financially",
+        "v2",
+        "dating",
+        "compatibility"
+      ],
+      "active": true,
+      "version": 2,
+      "quality_tier": "high",
+      "quality_meta": {
+        "reason": "v2_multi_dim_unique_weights",
+        "quality_tag": "pass"
+      },
+      "quality_tag": "pass"
+    },
+    {
+      "question_id": "Q_REL_V2_019",
+      "category": "communication",
+      "subtopic": "feedback_on_habit",
+      "question_text": {
+        "zh": "你发现对方某个习惯已影响相处感受。你更可能怎么反馈？",
+        "en": ""
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "communication_clarity",
+        "empathy_responsiveness",
+        "conflict_repair",
+        "rejection_resilience"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "用具体场景说明影响，并给替代建议",
+            "en": ""
+          },
+          "dimension_weights": {
+            "communication_clarity": 0.72,
+            "empathy_responsiveness": 0.46,
+            "conflict_repair": 0.13,
+            "rejection_resilience": -0.31
+          },
+          "score": 1.0
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "会提醒，但语气尽量温和",
+            "en": ""
+          },
+          "dimension_weights": {
+            "communication_clarity": 0.32,
+            "empathy_responsiveness": 0.71,
+            "conflict_repair": -0.39,
+            "rejection_resilience": 0.15
+          },
+          "score": 0.6
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "先忍着，实在受不了再说",
+            "en": ""
+          },
+          "dimension_weights": {
+            "communication_clarity": -0.22,
+            "empathy_responsiveness": 0.28,
+            "conflict_repair": 0.74,
+            "rejection_resilience": -0.3
+          },
+          "score": 0.2
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "不想改造别人，合不来就拉开距离",
+            "en": ""
+          },
+          "dimension_weights": {
+            "communication_clarity": -0.52,
+            "empathy_responsiveness": -0.13,
+            "conflict_repair": 0.14,
+            "rejection_resilience": 0.62
+          },
+          "score": -0.2
+        }
+      ],
+      "importance_mapping": {
+        "0": 0.0,
+        "1": 0.33,
+        "2": 0.66,
+        "3": 1.0
+      },
+      "sensitivity_level": "low",
+      "recommended_bank": "core",
+      "tags": [
+        "communication",
+        "feedback_on_habit",
+        "v2",
+        "dating",
+        "compatibility"
+      ],
+      "active": true,
+      "version": 2,
+      "quality_tier": "high",
+      "quality_meta": {
+        "reason": "v2_multi_dim_unique_weights",
+        "quality_tag": "pass"
+      },
+      "quality_tag": "pass"
+    },
+    {
+      "question_id": "Q_REL_V2_020",
+      "category": "relationship_goals",
+      "subtopic": "children_timeline",
+      "question_text": {
+        "zh": "聊到是否要孩子和时间线时，你通常更接近哪种态度？",
+        "en": ""
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "commitment_readiness",
+        "planning_reliability",
+        "attachment_security",
+        "autonomy_boundary",
+        "communication_clarity"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "先把时间线、经济和分工谈清楚",
+            "en": ""
+          },
+          "dimension_weights": {
+            "commitment_readiness": 0.72,
+            "planning_reliability": 0.52,
+            "attachment_security": 0.12,
+            "autonomy_boundary": -0.2,
+            "communication_clarity": 0.01
+          },
+          "score": 1.0
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "先对齐方向，但不想过早锁死",
+            "en": ""
+          },
+          "dimension_weights": {
+            "commitment_readiness": 0.3,
+            "planning_reliability": 0.75,
+            "attachment_security": -0.36,
+            "autonomy_boundary": 0.16,
+            "communication_clarity": -0.43
+          },
+          "score": 0.6
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "若尚未想好，会如实说明不承诺",
+            "en": ""
+          },
+          "dimension_weights": {
+            "commitment_readiness": -0.16,
+            "planning_reliability": 0.35,
+            "attachment_security": 0.74,
+            "autonomy_boundary": -0.31,
+            "communication_clarity": 0.08
+          },
+          "score": 0.2
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "一聊到这个话题就想回避",
+            "en": ""
+          },
+          "dimension_weights": {
+            "commitment_readiness": -0.52,
+            "planning_reliability": -0.25,
+            "attachment_security": 0.27,
+            "autonomy_boundary": 0.67,
+            "communication_clarity": -0.28
+          },
+          "score": -0.2
+        }
+      ],
+      "importance_mapping": {
+        "0": 0.0,
+        "1": 0.33,
+        "2": 0.66,
+        "3": 1.0
+      },
+      "sensitivity_level": "low",
+      "recommended_bank": "core",
+      "tags": [
+        "relationship_goals",
+        "children_timeline",
+        "v2",
+        "dating",
+        "compatibility"
+      ],
+      "active": true,
+      "version": 2,
+      "quality_tier": "high",
+      "quality_meta": {
+        "reason": "v2_multi_dim_unique_weights",
+        "quality_tag": "pass"
+      },
+      "quality_tag": "pass"
+    },
+    {
+      "question_id": "Q_REL_V2_021",
+      "category": "communication",
+      "subtopic": "unplanned_location_change",
+      "question_text": {
+        "zh": "快到见面时间时，对方突然把地点换了，而且事先没有和你商量。你更可能怎么做？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "communication_clarity",
+        "planning_reliability",
+        "emotional_regulation",
+        "autonomy_boundary"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "我会先确认原因，再把自己的时间安排说清楚。"
+          },
+          "dimension_weights": {
+            "communication_clarity": 0.72,
+            "planning_reliability": 0.64,
+            "emotional_regulation": 0.31,
+            "autonomy_boundary": 0.18
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "我会配合改地点，但会默默观察这种情况会不会再发生。"
+          },
+          "dimension_weights": {
+            "communication_clarity": -0.14,
+            "planning_reliability": 0.08,
+            "emotional_regulation": -0.27,
+            "autonomy_boundary": 0.46
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "我会直接表达不高兴，觉得这种临时改变不够尊重人。"
+          },
+          "dimension_weights": {
+            "communication_clarity": 0.37,
+            "planning_reliability": -0.33,
+            "emotional_regulation": -0.58,
+            "autonomy_boundary": 0.12
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "我会接受这次安排，但会顺便把以后提前沟通的期待讲明白。"
+          },
+          "dimension_weights": {
+            "communication_clarity": 0.61,
+            "planning_reliability": 0.42,
+            "emotional_regulation": 0.24,
+            "autonomy_boundary": -0.11
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "question_id": "Q_REL_V2_022",
+      "category": "communication",
+      "subtopic": "joke_in_public",
+      "question_text": {
+        "zh": "朋友聚会时，对方拿你的短处开玩笑，周围人都笑了。你通常会怎么处理？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "emotional_regulation",
+        "communication_clarity",
+        "conflict_repair",
+        "attachment_security"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "我会先把场面过完，之后私下认真说这件事让我不舒服。"
+          },
+          "dimension_weights": {
+            "emotional_regulation": 0.54,
+            "communication_clarity": 0.76,
+            "conflict_repair": 0.48,
+            "attachment_security": 0.29
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "我会当场跟着笑，但心里会慢慢拉开距离。"
+          },
+          "dimension_weights": {
+            "emotional_regulation": -0.06,
+            "communication_clarity": -0.18,
+            "conflict_repair": -0.31,
+            "attachment_security": -0.27
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "我会在现场直接纠正，不想让玩笑继续下去。"
+          },
+          "dimension_weights": {
+            "emotional_regulation": -0.22,
+            "communication_clarity": 0.63,
+            "conflict_repair": 0.17,
+            "attachment_security": -0.41
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "我会装作没事，但之后会观察对方是不是一直这样。"
+          },
+          "dimension_weights": {
+            "emotional_regulation": -0.11,
+            "communication_clarity": -0.29,
+            "conflict_repair": -0.52,
+            "attachment_security": -0.24
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "question_id": "Q_REL_V2_023",
+      "category": "intimacy",
+      "subtopic": "video_call_frequency",
+      "question_text": {
+        "zh": "关系刚升温时，对方希望和你更频繁地视频通话。你的反应更接近哪一种？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "intimacy_disclosure",
+        "autonomy_boundary",
+        "attachment_security",
+        "communication_clarity"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "我愿意，但会一起商量一个双方都舒服的频率。"
+          },
+          "dimension_weights": {
+            "intimacy_disclosure": 0.47,
+            "autonomy_boundary": 0.22,
+            "attachment_security": 0.39,
+            "communication_clarity": 0.61
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "我更喜欢想到再打，不想把联系排成固定任务。"
+          },
+          "dimension_weights": {
+            "intimacy_disclosure": 0.18,
+            "autonomy_boundary": 0.56,
+            "attachment_security": 0.12,
+            "communication_clarity": -0.07
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "如果对方提得太频繁，我会本能地往后退一点。"
+          },
+          "dimension_weights": {
+            "intimacy_disclosure": -0.24,
+            "autonomy_boundary": 0.68,
+            "attachment_security": -0.36,
+            "communication_clarity": -0.15
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "我会接受短一点、轻松一点的日常视频，保持稳定联系。"
+          },
+          "dimension_weights": {
+            "intimacy_disclosure": 0.52,
+            "autonomy_boundary": 0.09,
+            "attachment_security": 0.44,
+            "communication_clarity": 0.33
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "question_id": "Q_REL_V2_024",
+      "category": "lifestyle",
+      "subtopic": "new_activity_invitation",
+      "question_text": {
+        "zh": "对方邀请你一起参加一个你完全不熟悉的活动。你通常会怎么回应？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "social_initiative",
+        "openness_exploration",
+        "empathy_responsiveness"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "我会乐意尝试，也会顺便了解这件事为什么对对方重要。"
+          },
+          "dimension_weights": {
+            "social_initiative": 0.74,
+            "openness_exploration": 0.58,
+            "empathy_responsiveness": 0.31
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "我会去，但更希望由对方带着我进入状态。"
+          },
+          "dimension_weights": {
+            "social_initiative": 0.12,
+            "openness_exploration": 0.36,
+            "empathy_responsiveness": 0.27
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "我愿意短暂试试，但大概率还是会回到自己熟悉的节奏。"
+          },
+          "dimension_weights": {
+            "social_initiative": -0.08,
+            "openness_exploration": 0.19,
+            "empathy_responsiveness": -0.21
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "我通常会直接拒绝，不太想把约会时间放在这种尝鲜上。"
+          },
+          "dimension_weights": {
+            "social_initiative": -0.42,
+            "openness_exploration": -0.55,
+            "empathy_responsiveness": -0.17
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "question_id": "Q_REL_V2_025",
+      "category": "communication",
+      "subtopic": "forgotten_transfer",
+      "question_text": {
+        "zh": "你们一起吃饭后，对方一直忘记把说好的那部分钱转给你。你更可能怎么处理？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "planning_reliability",
+        "communication_clarity",
+        "rejection_resilience",
+        "conflict_repair"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "我会直接提醒，并把金额和场景说清楚。"
+          },
+          "dimension_weights": {
+            "planning_reliability": 0.71,
+            "communication_clarity": 0.66,
+            "rejection_resilience": 0.24,
+            "conflict_repair": 0.43
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "我会先等几天，再找个自然的机会提一下。"
+          },
+          "dimension_weights": {
+            "planning_reliability": 0.33,
+            "communication_clarity": 0.17,
+            "rejection_resilience": 0.29,
+            "conflict_repair": 0.08
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "我多半不会说，觉得为这点钱开口很别扭。"
+          },
+          "dimension_weights": {
+            "planning_reliability": -0.18,
+            "communication_clarity": -0.27,
+            "rejection_resilience": -0.34,
+            "conflict_repair": -0.41
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "我会把这件事当成是否靠谱的信号，顺便认真谈一次。"
+          },
+          "dimension_weights": {
+            "planning_reliability": 0.12,
+            "communication_clarity": 0.52,
+            "rejection_resilience": -0.48,
+            "conflict_repair": -0.19
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "question_id": "Q_REL_V2_026",
+      "category": "intimacy",
+      "subtopic": "past_low_point",
+      "question_text": {
+        "zh": "聊到过去最难熬的一段时间时，你通常会怎么回应对方的好奇？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "intimacy_disclosure",
+        "empathy_responsiveness",
+        "rejection_resilience",
+        "attachment_security"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "我会讲一段真实经历，也会认真听对方为什么想了解。"
+          },
+          "dimension_weights": {
+            "intimacy_disclosure": 0.68,
+            "empathy_responsiveness": 0.57,
+            "rejection_resilience": 0.26,
+            "attachment_security": 0.41
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "我会主要听对方说，自己只透露一点点。"
+          },
+          "dimension_weights": {
+            "intimacy_disclosure": 0.12,
+            "empathy_responsiveness": 0.49,
+            "rejection_resilience": 0.18,
+            "attachment_security": 0.23
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "我会用轻松的方式带过去，不想让气氛变得太沉。"
+          },
+          "dimension_weights": {
+            "intimacy_disclosure": -0.09,
+            "empathy_responsiveness": 0.14,
+            "rejection_resilience": 0.33,
+            "attachment_security": -0.18
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "我一般会回避这种话题，除非已经非常信任对方。"
+          },
+          "dimension_weights": {
+            "intimacy_disclosure": -0.46,
+            "empathy_responsiveness": -0.22,
+            "rejection_resilience": -0.31,
+            "attachment_security": -0.27
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "question_id": "Q_REL_V2_027",
+      "category": "family",
+      "subtopic": "holiday_family_schedule",
+      "question_text": {
+        "zh": "节日安排时，双方家庭都希望你们多待在自己那边。你更可能怎么协调？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "commitment_readiness",
+        "planning_reliability",
+        "empathy_responsiveness",
+        "autonomy_boundary",
+        "reciprocity_investment"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "我会把双方需求摊开谈，再做一个尽量平衡的安排。"
+          },
+          "dimension_weights": {
+            "commitment_readiness": 0.62,
+            "planning_reliability": 0.71,
+            "empathy_responsiveness": 0.48,
+            "autonomy_boundary": 0.19,
+            "reciprocity_investment": 0.54
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "我会倾向今年先各自陪家人，减少不必要的拉扯。"
+          },
+          "dimension_weights": {
+            "commitment_readiness": 0.18,
+            "planning_reliability": 0.27,
+            "empathy_responsiveness": 0.22,
+            "autonomy_boundary": 0.73,
+            "reciprocity_investment": 0.16
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "如果对方那边压力更大，我愿意让自己的安排先退一步。"
+          },
+          "dimension_weights": {
+            "commitment_readiness": 0.41,
+            "planning_reliability": 0.33,
+            "empathy_responsiveness": 0.69,
+            "autonomy_boundary": -0.12,
+            "reciprocity_investment": 0.58
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "要是双方家庭都太强势，我会减少参与，先保住自己的节奏。"
+          },
+          "dimension_weights": {
+            "commitment_readiness": -0.21,
+            "planning_reliability": 0.14,
+            "empathy_responsiveness": -0.17,
+            "autonomy_boundary": 0.66,
+            "reciprocity_investment": -0.28
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "question_id": "Q_REL_V2_028",
+      "category": "lifestyle",
+      "subtopic": "partner_hobby_invitation",
+      "question_text": {
+        "zh": "对方很想带你进入一个自己长期投入的兴趣爱好。你通常会怎么回应？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "openness_exploration",
+        "social_initiative",
+        "autonomy_boundary",
+        "intimacy_disclosure"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "我会认真试一次，也会主动问这件事为什么这么吸引对方。"
+          },
+          "dimension_weights": {
+            "openness_exploration": 0.77,
+            "social_initiative": 0.46,
+            "autonomy_boundary": 0.18,
+            "intimacy_disclosure": 0.29
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "我愿意体验，但还是会保留自己的主场和习惯。"
+          },
+          "dimension_weights": {
+            "openness_exploration": 0.39,
+            "social_initiative": 0.17,
+            "autonomy_boundary": 0.63,
+            "intimacy_disclosure": 0.11
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "我会支持对方继续投入，但不一定想经常一起参加。"
+          },
+          "dimension_weights": {
+            "openness_exploration": 0.21,
+            "social_initiative": -0.08,
+            "autonomy_boundary": 0.58,
+            "intimacy_disclosure": 0.04
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "我会有些抗拒，担心自己的时间被这种安排占掉太多。"
+          },
+          "dimension_weights": {
+            "openness_exploration": -0.33,
+            "social_initiative": -0.27,
+            "autonomy_boundary": 0.71,
+            "intimacy_disclosure": -0.12
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "question_id": "Q_REL_V2_029",
+      "category": "communication",
+      "subtopic": "late_night_emotional_message",
+      "question_text": {
+        "zh": "你忙到很晚时，对方突然发来一条明显情绪低落的消息。你通常会怎么处理？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "empathy_responsiveness",
+        "planning_reliability",
+        "reciprocity_investment",
+        "emotional_regulation"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "我会先回复并说明自己什么时候能认真陪对方聊。"
+          },
+          "dimension_weights": {
+            "empathy_responsiveness": 0.72,
+            "planning_reliability": 0.61,
+            "reciprocity_investment": 0.54,
+            "emotional_regulation": 0.33
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "我会简单安抚，并约好第二天尽快继续说。"
+          },
+          "dimension_weights": {
+            "empathy_responsiveness": 0.31,
+            "planning_reliability": 0.68,
+            "reciprocity_investment": 0.24,
+            "emotional_regulation": 0.42
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "我会发一句安慰的话，但不会继续深聊下去。"
+          },
+          "dimension_weights": {
+            "empathy_responsiveness": 0.14,
+            "planning_reliability": -0.09,
+            "reciprocity_investment": -0.18,
+            "emotional_regulation": 0.07
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "我会觉得这时候来找我有点负担，通常会先放着不回。"
+          },
+          "dimension_weights": {
+            "empathy_responsiveness": -0.29,
+            "planning_reliability": -0.36,
+            "reciprocity_investment": -0.44,
+            "emotional_regulation": -0.21
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "question_id": "Q_REL_V2_030",
+      "category": "relationship_goals",
+      "subtopic": "first_shared_expense",
+      "question_text": {
+        "zh": "你们第一次要共同承担一笔稍大的支出时，你更可能怎么处理？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "reciprocity_investment",
+        "communication_clarity",
+        "commitment_readiness",
+        "planning_reliability",
+        "autonomy_boundary"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "我会先把承担比例、收入差异和后续安排一起谈清楚。"
+          },
+          "dimension_weights": {
+            "reciprocity_investment": 0.66,
+            "communication_clarity": 0.74,
+            "commitment_readiness": 0.51,
+            "planning_reliability": 0.43,
+            "autonomy_boundary": 0.12
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "我会倾向平分，觉得这样最省事也最不容易有心理负担。"
+          },
+          "dimension_weights": {
+            "reciprocity_investment": 0.28,
+            "communication_clarity": 0.17,
+            "commitment_readiness": 0.09,
+            "planning_reliability": 0.36,
+            "autonomy_boundary": 0.58
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "谁更坚持要这笔支出，谁就多承担一点，我会这样理解。"
+          },
+          "dimension_weights": {
+            "reciprocity_investment": 0.11,
+            "communication_clarity": 0.39,
+            "commitment_readiness": -0.08,
+            "planning_reliability": 0.14,
+            "autonomy_boundary": 0.27
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "在关系还没更明确之前，我会尽量避免这种共同支出。"
+          },
+          "dimension_weights": {
+            "reciprocity_investment": -0.24,
+            "communication_clarity": 0.22,
+            "commitment_readiness": -0.41,
+            "planning_reliability": 0.19,
+            "autonomy_boundary": 0.63
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "question_id": "Q_REL_V2_031",
+      "category": "communication",
+      "subtopic": "read_no_reply",
+      "question_text": {
+        "zh": "你发出一条认真消息后，对方很快已读，但一直没有回复。你更可能怎么做？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "communication_clarity",
+        "rejection_resilience",
+        "attachment_security",
+        "emotional_regulation"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "我会等一会儿，再直接问对方是不是现在不方便回复。"
+          },
+          "dimension_weights": {
+            "communication_clarity": 0.76,
+            "rejection_resilience": 0.42,
+            "attachment_security": 0.31,
+            "emotional_regulation": 0.18
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "我会先放一晚，不急着下结论。"
+          },
+          "dimension_weights": {
+            "communication_clarity": 0.22,
+            "rejection_resilience": 0.61,
+            "attachment_security": 0.27,
+            "emotional_regulation": 0.36
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "我会开始反复想是不是自己哪里说错了。"
+          },
+          "dimension_weights": {
+            "communication_clarity": -0.14,
+            "rejection_resilience": -0.57,
+            "attachment_security": -0.63,
+            "emotional_regulation": -0.28
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "我会先停下来，不想再主动推进。"
+          },
+          "dimension_weights": {
+            "communication_clarity": -0.21,
+            "rejection_resilience": 0.18,
+            "attachment_security": -0.33,
+            "emotional_regulation": 0.07
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "question_id": "Q_REL_V2_032",
+      "category": "lifestyle",
+      "subtopic": "weekend_rhythm_difference",
+      "question_text": {
+        "zh": "你们周末节奏差异很大：一个想排满活动，一个更想休息。你更可能怎么协调？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "planning_reliability",
+        "autonomy_boundary",
+        "reciprocity_investment",
+        "commitment_readiness"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "我会把固定相处时间先定下来，剩下的时间各自安排。"
+          },
+          "dimension_weights": {
+            "planning_reliability": 0.74,
+            "autonomy_boundary": 0.21,
+            "reciprocity_investment": 0.48,
+            "commitment_readiness": 0.55
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "我会更倾向顺其自然，想到再约，不想把周末变得太规整。"
+          },
+          "dimension_weights": {
+            "planning_reliability": 0.11,
+            "autonomy_boundary": 0.68,
+            "reciprocity_investment": 0.06,
+            "commitment_readiness": 0.14
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "如果关系值得，我愿意主动调自己的节奏去配合。"
+          },
+          "dimension_weights": {
+            "planning_reliability": 0.33,
+            "autonomy_boundary": -0.12,
+            "reciprocity_investment": 0.71,
+            "commitment_readiness": 0.47
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "我会觉得这种协调成本太高，可能会放慢关系推进。"
+          },
+          "dimension_weights": {
+            "planning_reliability": -0.18,
+            "autonomy_boundary": 0.52,
+            "reciprocity_investment": -0.27,
+            "commitment_readiness": -0.41
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "question_id": "Q_REL_V2_033",
+      "category": "intimacy",
+      "subtopic": "receiving_compliment",
+      "question_text": {
+        "zh": "对方认真夸你某个很私人的优点时，你通常会怎么回应？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "intimacy_disclosure",
+        "attachment_security",
+        "communication_clarity"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "我会接住这份夸奖，也会顺着聊一点自己的真实感受。"
+          },
+          "dimension_weights": {
+            "intimacy_disclosure": 0.72,
+            "attachment_security": 0.41,
+            "communication_clarity": 0.36
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "我会笑着接受，但不会往下展开太多。"
+          },
+          "dimension_weights": {
+            "intimacy_disclosure": 0.18,
+            "attachment_security": 0.27,
+            "communication_clarity": 0.09
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "我会开个玩笑把这件事带过去。"
+          },
+          "dimension_weights": {
+            "intimacy_disclosure": -0.14,
+            "attachment_security": -0.21,
+            "communication_clarity": 0.24
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "我会有点怀疑，对方是不是只是礼貌地说好听话。"
+          },
+          "dimension_weights": {
+            "intimacy_disclosure": -0.27,
+            "attachment_security": -0.46,
+            "communication_clarity": -0.08
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "question_id": "Q_REL_V2_034",
+      "category": "family",
+      "subtopic": "family_doubt_partner",
+      "question_text": {
+        "zh": "家人对你正在接触的人提出了明显质疑。你更可能怎么处理？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "attachment_security",
+        "autonomy_boundary",
+        "conflict_repair",
+        "empathy_responsiveness"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "我会把家人的顾虑整理清楚，再和对方认真讨论。"
+          },
+          "dimension_weights": {
+            "attachment_security": 0.58,
+            "autonomy_boundary": 0.24,
+            "conflict_repair": 0.61,
+            "empathy_responsiveness": 0.37
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "我会先自己消化这些意见，继续观察，不急着转述。"
+          },
+          "dimension_weights": {
+            "attachment_security": 0.12,
+            "autonomy_boundary": 0.33,
+            "conflict_repair": 0.09,
+            "empathy_responsiveness": 0.18
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "我会先明确站在对方这边，也会和家人把边界说清楚。"
+          },
+          "dimension_weights": {
+            "attachment_security": 0.41,
+            "autonomy_boundary": 0.77,
+            "conflict_repair": 0.22,
+            "empathy_responsiveness": -0.11
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "我会尽量不把这些意见带进关系里，避免多一层冲突。"
+          },
+          "dimension_weights": {
+            "attachment_security": -0.18,
+            "autonomy_boundary": 0.29,
+            "conflict_repair": -0.37,
+            "empathy_responsiveness": 0.14
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "question_id": "Q_REL_V2_035",
+      "category": "social_energy",
+      "subtopic": "group_trip_with_partner",
+      "question_text": {
+        "zh": "你计划和朋友出去玩，对方也想加入这次行程。你通常会怎么安排？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "social_initiative",
+        "empathy_responsiveness",
+        "autonomy_boundary",
+        "openness_exploration"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "我会主动安排大家见面，也会照顾对方是否适应这个圈子。"
+          },
+          "dimension_weights": {
+            "social_initiative": 0.71,
+            "empathy_responsiveness": 0.54,
+            "autonomy_boundary": 0.16,
+            "openness_exploration": 0.42
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "我会邀请对方来，但让TA自由决定参与到什么程度。"
+          },
+          "dimension_weights": {
+            "social_initiative": 0.36,
+            "empathy_responsiveness": 0.33,
+            "autonomy_boundary": 0.62,
+            "openness_exploration": 0.24
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "我会更倾向把伴侣和朋友活动分开，不想混在一起太久。"
+          },
+          "dimension_weights": {
+            "social_initiative": 0.08,
+            "empathy_responsiveness": -0.12,
+            "autonomy_boundary": 0.69,
+            "openness_exploration": 0.17
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "我通常不太想把两个圈子并在一起，容易觉得麻烦。"
+          },
+          "dimension_weights": {
+            "social_initiative": -0.29,
+            "empathy_responsiveness": -0.21,
+            "autonomy_boundary": 0.58,
+            "openness_exploration": -0.34
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "question_id": "Q_REL_V2_036",
+      "category": "communication",
+      "subtopic": "recurring_lateness",
+      "question_text": {
+        "zh": "对方不是偶尔，而是连续几次都迟到。你通常会怎么处理？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "planning_reliability",
+        "communication_clarity",
+        "conflict_repair",
+        "emotional_regulation"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "我会把这件事当成一个模式来谈，和对方一起想具体改法。"
+          },
+          "dimension_weights": {
+            "planning_reliability": 0.73,
+            "communication_clarity": 0.68,
+            "conflict_repair": 0.51,
+            "emotional_regulation": 0.22
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "我会每次都轻轻提醒，希望对方自己意识到。"
+          },
+          "dimension_weights": {
+            "planning_reliability": 0.29,
+            "communication_clarity": 0.24,
+            "conflict_repair": 0.11,
+            "emotional_regulation": 0.07
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "我会一直忍着，直到某次彻底忍不住。"
+          },
+          "dimension_weights": {
+            "planning_reliability": -0.18,
+            "communication_clarity": 0.31,
+            "conflict_repair": -0.27,
+            "emotional_regulation": -0.56
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "我会减少依赖这种安排，避免把重要计划交给对方。"
+          },
+          "dimension_weights": {
+            "planning_reliability": 0.14,
+            "communication_clarity": -0.09,
+            "conflict_repair": -0.34,
+            "emotional_regulation": 0.19
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "question_id": "Q_REL_V2_037",
+      "category": "relationship_goals",
+      "subtopic": "busy_work_period",
+      "question_text": {
+        "zh": "对方进入一段特别忙的工作期，明显没有以前那么能投入关系。你更可能怎么做？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "reciprocity_investment",
+        "emotional_regulation",
+        "attachment_security",
+        "planning_reliability"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "我会先问清楚这段时间最需要什么支持，再一起调整相处节奏。"
+          },
+          "dimension_weights": {
+            "reciprocity_investment": 0.69,
+            "emotional_regulation": 0.44,
+            "attachment_security": 0.52,
+            "planning_reliability": 0.31
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "我会给空间，但保留基本联系，让关系不至于断掉。"
+          },
+          "dimension_weights": {
+            "reciprocity_investment": 0.28,
+            "emotional_regulation": 0.57,
+            "attachment_security": 0.33,
+            "planning_reliability": 0.12
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "我会开始试探对方到底还在不在意这段关系。"
+          },
+          "dimension_weights": {
+            "reciprocity_investment": -0.16,
+            "emotional_regulation": -0.42,
+            "attachment_security": -0.58,
+            "planning_reliability": -0.09
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "我也会把自己的投入往回收一点，避免失衡。"
+          },
+          "dimension_weights": {
+            "reciprocity_investment": -0.24,
+            "emotional_regulation": 0.18,
+            "attachment_security": -0.31,
+            "planning_reliability": 0.06
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "question_id": "Q_REL_V2_038",
+      "category": "lifestyle",
+      "subtopic": "cleanliness_difference",
+      "question_text": {
+        "zh": "你们对整洁程度的要求差异明显，尤其在一起待久了会很容易看出来。你更可能怎么处理？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "planning_reliability",
+        "conflict_repair",
+        "communication_clarity",
+        "autonomy_boundary"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "我会在情绪积累前就把具体不舒服的点说清楚。"
+          },
+          "dimension_weights": {
+            "planning_reliability": 0.67,
+            "conflict_repair": 0.53,
+            "communication_clarity": 0.74,
+            "autonomy_boundary": 0.21
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "我会偶尔自己收一下，不想把小事变成讨论。"
+          },
+          "dimension_weights": {
+            "planning_reliability": 0.14,
+            "conflict_repair": -0.18,
+            "communication_clarity": -0.22,
+            "autonomy_boundary": -0.07
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "我会把自己的底线说出来，但不要求对方和我完全一样。"
+          },
+          "dimension_weights": {
+            "planning_reliability": 0.41,
+            "conflict_repair": 0.19,
+            "communication_clarity": 0.48,
+            "autonomy_boundary": 0.72
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "我会慢慢减少一起久待的机会，省得总被这件事消耗。"
+          },
+          "dimension_weights": {
+            "planning_reliability": -0.09,
+            "conflict_repair": -0.31,
+            "communication_clarity": -0.24,
+            "autonomy_boundary": 0.36
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "question_id": "Q_REL_V2_039",
+      "category": "intimacy",
+      "subtopic": "physical_pace_difference",
+      "question_text": {
+        "zh": "当你发现彼此在亲密推进速度上的期待不一致时，你通常会怎么处理？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "attachment_security",
+        "autonomy_boundary",
+        "communication_clarity",
+        "commitment_readiness"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "我会直接说自己的节奏，也会认真问对方的想法。"
+          },
+          "dimension_weights": {
+            "attachment_security": 0.51,
+            "autonomy_boundary": 0.47,
+            "communication_clarity": 0.78,
+            "commitment_readiness": 0.29
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "我会倾向慢一点，让舒服感自己长出来。"
+          },
+          "dimension_weights": {
+            "attachment_security": 0.42,
+            "autonomy_boundary": 0.18,
+            "communication_clarity": 0.22,
+            "commitment_readiness": 0.36
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "我可能会先顺着走，之后再看看自己有没有不舒服。"
+          },
+          "dimension_weights": {
+            "attachment_security": -0.21,
+            "autonomy_boundary": -0.17,
+            "communication_clarity": -0.33,
+            "commitment_readiness": 0.08
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "一旦我觉得被推着走，就会明显往后退。"
+          },
+          "dimension_weights": {
+            "attachment_security": -0.38,
+            "autonomy_boundary": 0.71,
+            "communication_clarity": 0.14,
+            "commitment_readiness": -0.26
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "question_id": "Q_REL_V2_040",
+      "category": "relationship_goals",
+      "subtopic": "future_trip_commitment",
+      "question_text": {
+        "zh": "对方提议半年后一起安排一段更长的旅行。你通常会怎么回应？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "commitment_readiness",
+        "communication_clarity",
+        "openness_exploration",
+        "planning_reliability",
+        "rejection_resilience"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "我会先把预算、时间和期待谈清楚，再决定要不要定下来。"
+          },
+          "dimension_weights": {
+            "commitment_readiness": 0.58,
+            "communication_clarity": 0.72,
+            "openness_exploration": 0.33,
+            "planning_reliability": 0.61,
+            "rejection_resilience": 0.24
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "我会先接受大方向，细节以后再慢慢补。"
+          },
+          "dimension_weights": {
+            "commitment_readiness": 0.41,
+            "communication_clarity": 0.18,
+            "openness_exploration": 0.47,
+            "planning_reliability": 0.12,
+            "rejection_resilience": 0.09
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "我会觉得这个计划有点太早，更希望保留机动空间。"
+          },
+          "dimension_weights": {
+            "commitment_readiness": -0.19,
+            "communication_clarity": 0.22,
+            "openness_exploration": 0.36,
+            "planning_reliability": -0.08,
+            "rejection_resilience": 0.31
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "如果对方总是聊得太远，我会担心自己跟不上这种期待。"
+          },
+          "dimension_weights": {
+            "commitment_readiness": -0.33,
+            "communication_clarity": -0.14,
+            "openness_exploration": 0.17,
+            "planning_reliability": -0.21,
+            "rejection_resilience": -0.42
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "question_id": "Q_REL_V2_041",
+      "category": "communication",
+      "subtopic": "slow_apology",
+      "question_text": {
+        "zh": "对方做了一件让你不舒服的事，但过了很久才来道歉。你更可能怎么处理？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "conflict_repair",
+        "communication_clarity",
+        "attachment_security",
+        "emotional_regulation"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "我会认真听对方怎么想，也把自己真正介意的点说清楚。"
+          },
+          "dimension_weights": {
+            "conflict_repair": 0.71,
+            "communication_clarity": 0.64,
+            "attachment_security": 0.32,
+            "emotional_regulation": 0.18
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "只要对方态度诚恳，我会先让这件事过去。"
+          },
+          "dimension_weights": {
+            "conflict_repair": 0.24,
+            "communication_clarity": 0.17,
+            "attachment_security": -0.08,
+            "emotional_regulation": 0.41
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "我会觉得这份道歉来得太晚，很难再投入信任。"
+          },
+          "dimension_weights": {
+            "conflict_repair": -0.19,
+            "communication_clarity": -0.27,
+            "attachment_security": -0.54,
+            "emotional_regulation": -0.36
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "我会接受道歉，但会顺便拉开一点距离继续观察。"
+          },
+          "dimension_weights": {
+            "conflict_repair": 0.33,
+            "communication_clarity": -0.11,
+            "attachment_security": -0.22,
+            "emotional_regulation": 0.26
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "question_id": "Q_REL_V2_042",
+      "category": "lifestyle",
+      "subtopic": "sleep_schedule_difference",
+      "question_text": {
+        "zh": "你们作息差异很大，一个习惯早睡，一个常常熬夜。你更可能怎么协调？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "planning_reliability",
+        "autonomy_boundary",
+        "reciprocity_investment",
+        "emotional_regulation"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "我会先把固定能一起相处的时间段定下来。"
+          },
+          "dimension_weights": {
+            "planning_reliability": 0.68,
+            "autonomy_boundary": 0.27,
+            "reciprocity_investment": 0.44,
+            "emotional_regulation": 0.19
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "我可以配合一点，但还是希望保留自己的节奏。"
+          },
+          "dimension_weights": {
+            "planning_reliability": 0.21,
+            "autonomy_boundary": 0.61,
+            "reciprocity_investment": 0.08,
+            "emotional_regulation": 0.33
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "如果长期互相影响睡眠，我会觉得相处成本有点高。"
+          },
+          "dimension_weights": {
+            "planning_reliability": -0.12,
+            "autonomy_boundary": 0.53,
+            "reciprocity_investment": -0.19,
+            "emotional_regulation": -0.27
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "我愿意先试着调整自己，再看这种安排能不能稳定下来。"
+          },
+          "dimension_weights": {
+            "planning_reliability": 0.14,
+            "autonomy_boundary": -0.08,
+            "reciprocity_investment": -0.31,
+            "emotional_regulation": 0.47
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "question_id": "Q_REL_V2_043",
+      "category": "intimacy",
+      "subtopic": "sharing_childhood_story",
+      "question_text": {
+        "zh": "聊天时，对方突然讲起自己小时候一段很尴尬的经历。你通常会怎么回应？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "intimacy_disclosure",
+        "attachment_security",
+        "empathy_responsiveness"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "我会接住这份坦诚，也分享一点自己的类似经历。"
+          },
+          "dimension_weights": {
+            "intimacy_disclosure": 0.73,
+            "attachment_security": 0.41,
+            "empathy_responsiveness": 0.28
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "我会认真听，但更多是让对方继续说。"
+          },
+          "dimension_weights": {
+            "intimacy_disclosure": 0.22,
+            "attachment_security": 0.18,
+            "empathy_responsiveness": 0.36
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "我会用轻松方式回应，不想让气氛太沉。"
+          },
+          "dimension_weights": {
+            "intimacy_disclosure": -0.09,
+            "attachment_security": -0.27,
+            "empathy_responsiveness": 0.14
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "我会有点不知所措，通常不会顺着往深处聊。"
+          },
+          "dimension_weights": {
+            "intimacy_disclosure": -0.31,
+            "attachment_security": -0.48,
+            "empathy_responsiveness": -0.17
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "question_id": "Q_REL_V2_044",
+      "category": "family",
+      "subtopic": "holiday_gift_expectation",
+      "question_text": {
+        "zh": "逢年过节时，双方家庭对送礼方式的期待差异很大。你更可能怎么处理？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "reciprocity_investment",
+        "planning_reliability",
+        "autonomy_boundary",
+        "communication_clarity"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "我会先把预算和礼数边界谈清楚，再一起决定。"
+          },
+          "dimension_weights": {
+            "reciprocity_investment": 0.62,
+            "planning_reliability": 0.71,
+            "autonomy_boundary": 0.24,
+            "communication_clarity": 0.53
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "我会尽量照顾两边感受，但不想把事情弄得太正式。"
+          },
+          "dimension_weights": {
+            "reciprocity_investment": 0.19,
+            "planning_reliability": 0.33,
+            "autonomy_boundary": 0.58,
+            "communication_clarity": 0.11
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "如果要求太多，我会明确说哪些部分我不想配合。"
+          },
+          "dimension_weights": {
+            "reciprocity_investment": -0.08,
+            "planning_reliability": 0.27,
+            "autonomy_boundary": 0.42,
+            "communication_clarity": -0.21
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "我会倾向少参与这类来回拉扯，避免被消耗。"
+          },
+          "dimension_weights": {
+            "reciprocity_investment": -0.26,
+            "planning_reliability": -0.14,
+            "autonomy_boundary": 0.49,
+            "communication_clarity": -0.37
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "question_id": "Q_REL_V2_045",
+      "category": "social_energy",
+      "subtopic": "joining_colleague_dinner",
+      "question_text": {
+        "zh": "对方邀请你参加一场以同事为主的饭局。你通常会怎么回应？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "social_initiative",
+        "openness_exploration",
+        "attachment_security",
+        "autonomy_boundary"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "我会愿意去，也会主动认识几个人。"
+          },
+          "dimension_weights": {
+            "social_initiative": 0.69,
+            "openness_exploration": 0.54,
+            "attachment_security": 0.31,
+            "autonomy_boundary": 0.16
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "我会参加，但更希望由对方带着我进入节奏。"
+          },
+          "dimension_weights": {
+            "social_initiative": 0.28,
+            "openness_exploration": 0.33,
+            "attachment_security": 0.22,
+            "autonomy_boundary": 0.47
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "我可以短暂露面，但不太想把自己完全放进那个场域。"
+          },
+          "dimension_weights": {
+            "social_initiative": 0.07,
+            "openness_exploration": -0.12,
+            "attachment_security": -0.19,
+            "autonomy_boundary": 0.58
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "我通常会拒绝，觉得这种局面对我来说太费劲。"
+          },
+          "dimension_weights": {
+            "social_initiative": -0.24,
+            "openness_exploration": -0.31,
+            "attachment_security": -0.16,
+            "autonomy_boundary": 0.42
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "question_id": "Q_REL_V2_046",
+      "category": "communication",
+      "subtopic": "borrowed_book_not_returned",
+      "question_text": {
+        "zh": "对方借走你一本很在意的书，却一直没有主动还。你更可能怎么处理？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "communication_clarity",
+        "conflict_repair",
+        "rejection_resilience",
+        "planning_reliability"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "我会直接提醒，也把这本书对我的意义说清楚。"
+          },
+          "dimension_weights": {
+            "communication_clarity": 0.74,
+            "conflict_repair": 0.52,
+            "rejection_resilience": 0.29,
+            "planning_reliability": 0.61
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "我会找个自然的机会顺口提一下。"
+          },
+          "dimension_weights": {
+            "communication_clarity": 0.31,
+            "conflict_repair": 0.18,
+            "rejection_resilience": 0.27,
+            "planning_reliability": 0.11
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "我多半会一直拖着不说，心里却越来越在意。"
+          },
+          "dimension_weights": {
+            "communication_clarity": -0.14,
+            "conflict_repair": -0.22,
+            "rejection_resilience": -0.37,
+            "planning_reliability": -0.08
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "我会把这件事当成靠谱程度的信号，顺便认真聊一次。"
+          },
+          "dimension_weights": {
+            "communication_clarity": 0.17,
+            "conflict_repair": -0.11,
+            "rejection_resilience": 0.06,
+            "planning_reliability": -0.28
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "question_id": "Q_REL_V2_047",
+      "category": "relationship_goals",
+      "subtopic": "partner_career_shift",
+      "question_text": {
+        "zh": "对方突然认真考虑裸辞换赛道，并开始和你讨论这件事。你更可能怎么回应？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "commitment_readiness",
+        "empathy_responsiveness",
+        "planning_reliability",
+        "autonomy_boundary",
+        "emotional_regulation"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "我会先听清对方真正想要什么，再一起看现实方案。"
+          },
+          "dimension_weights": {
+            "commitment_readiness": 0.58,
+            "empathy_responsiveness": 0.46,
+            "planning_reliability": 0.72,
+            "autonomy_boundary": 0.19,
+            "emotional_regulation": 0.31
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "我会支持尝试，但前提是风险和节奏要说清楚。"
+          },
+          "dimension_weights": {
+            "commitment_readiness": 0.27,
+            "empathy_responsiveness": 0.33,
+            "planning_reliability": 0.18,
+            "autonomy_boundary": 0.54,
+            "emotional_regulation": 0.11
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "如果对方太冲动，我会明确表示自己并不放心。"
+          },
+          "dimension_weights": {
+            "commitment_readiness": -0.09,
+            "empathy_responsiveness": 0.14,
+            "planning_reliability": -0.27,
+            "autonomy_boundary": 0.41,
+            "emotional_regulation": -0.18
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "我会觉得这不是我该卷进去承担的事，先把边界拉清。"
+          },
+          "dimension_weights": {
+            "commitment_readiness": -0.26,
+            "empathy_responsiveness": -0.12,
+            "planning_reliability": 0.07,
+            "autonomy_boundary": 0.63,
+            "emotional_regulation": -0.34
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "question_id": "Q_REL_V2_048",
+      "category": "lifestyle",
+      "subtopic": "phone_use_during_date",
+      "question_text": {
+        "zh": "约会吃饭时，对方总在看手机回工作消息。你通常会怎么处理？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "communication_clarity",
+        "emotional_regulation",
+        "empathy_responsiveness",
+        "autonomy_boundary"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "我会直接问是不是今天工作特别特殊，也表达自己的感受。"
+          },
+          "dimension_weights": {
+            "communication_clarity": 0.61,
+            "emotional_regulation": 0.47,
+            "empathy_responsiveness": 0.38,
+            "autonomy_boundary": 0.12
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "我会先理解一下，但希望之后有更完整的相处时间。"
+          },
+          "dimension_weights": {
+            "communication_clarity": 0.22,
+            "emotional_regulation": 0.29,
+            "empathy_responsiveness": 0.14,
+            "autonomy_boundary": 0.53
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "我会不太高兴，但通常不会当场提出来。"
+          },
+          "dimension_weights": {
+            "communication_clarity": -0.18,
+            "emotional_regulation": -0.33,
+            "empathy_responsiveness": -0.24,
+            "autonomy_boundary": 0.17
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "我会顺势把注意力收回来，不再期待这次约会能聊得很深。"
+          },
+          "dimension_weights": {
+            "communication_clarity": 0.16,
+            "emotional_regulation": -0.11,
+            "empathy_responsiveness": -0.29,
+            "autonomy_boundary": 0.44
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "question_id": "Q_REL_V2_049",
+      "category": "intimacy",
+      "subtopic": "asking_about_breakup_reason",
+      "question_text": {
+        "zh": "对方认真问起你上一段关系为什么结束。你通常会怎么回应？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "intimacy_disclosure",
+        "communication_clarity",
+        "rejection_resilience",
+        "attachment_security"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "我会讲真实原因，也会说明自己从那段关系学到了什么。"
+          },
+          "dimension_weights": {
+            "intimacy_disclosure": 0.66,
+            "communication_clarity": 0.59,
+            "rejection_resilience": 0.24,
+            "attachment_security": 0.37
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "我会说个大概，但会把细节留到更熟的时候。"
+          },
+          "dimension_weights": {
+            "intimacy_disclosure": 0.21,
+            "communication_clarity": 0.18,
+            "rejection_resilience": 0.31,
+            "attachment_security": 0.09
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "我会尽量简单带过，不太想把过去搬进现在。"
+          },
+          "dimension_weights": {
+            "intimacy_disclosure": -0.08,
+            "communication_clarity": -0.17,
+            "rejection_resilience": -0.29,
+            "attachment_security": -0.36
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "如果对方追问得太细，我会开始怀疑这种好奇是不是一种试探。"
+          },
+          "dimension_weights": {
+            "intimacy_disclosure": 0.14,
+            "communication_clarity": 0.42,
+            "rejection_resilience": -0.11,
+            "attachment_security": -0.22
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "question_id": "Q_REL_V2_050",
+      "category": "relationship_goals",
+      "subtopic": "trial_living_together",
+      "question_text": {
+        "zh": "对方提出想先试着一起住一段时间，看看彼此是否合适。你更可能怎么回应？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "commitment_readiness",
+        "autonomy_boundary",
+        "planning_reliability",
+        "reciprocity_investment",
+        "conflict_repair"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "我会先把费用、空间、习惯分工都谈清楚，再决定要不要试。"
+          },
+          "dimension_weights": {
+            "commitment_readiness": 0.64,
+            "autonomy_boundary": 0.22,
+            "planning_reliability": 0.58,
+            "reciprocity_investment": 0.47,
+            "conflict_repair": 0.31
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "我愿意尝试，但会保留自己的独处空间和退出余地。"
+          },
+          "dimension_weights": {
+            "commitment_readiness": 0.28,
+            "autonomy_boundary": 0.49,
+            "planning_reliability": 0.33,
+            "reciprocity_investment": 0.17,
+            "conflict_repair": 0.09
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "我会觉得有点快，想先维持现在的相处方式。"
+          },
+          "dimension_weights": {
+            "commitment_readiness": -0.14,
+            "autonomy_boundary": 0.56,
+            "planning_reliability": -0.08,
+            "reciprocity_investment": -0.23,
+            "conflict_repair": -0.31
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "如果对方一直推进这件事，我会更在意自己的边界会不会被压缩。"
+          },
+          "dimension_weights": {
+            "commitment_readiness": 0.11,
+            "autonomy_boundary": 0.72,
+            "planning_reliability": 0.19,
+            "reciprocity_investment": -0.17,
+            "conflict_repair": -0.09
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    }
+  ]
+}

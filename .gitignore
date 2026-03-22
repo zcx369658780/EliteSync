@@ -1,0 +1,31 @@
+__pycache__/
+*.pyc
+*.db
+
+# Local-only GitHub publish secrets/config (do not commit)
+.local/
+ops/github_push.local.env
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.idea/
+*.iml
+
+# Android build outputs and local caches
+apps/android/.gradle/
+apps/android/.idea/
+apps/android/build/
+apps/android/**/build/
+local.properties
+
+# Laravel runtime/cache artifacts
+services/backend-laravel/vendor/
+services/backend-laravel/storage/*.key
+services/backend-laravel/storage/logs/*.log
+services/backend-laravel/bootstrap/cache/*.php
+
+# Env and secrets
+*.env.local
+*.secret
+*.keystore

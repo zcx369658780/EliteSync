@@ -1,0 +1,266 @@
+<?php
+
+namespace App\Http\Controllers\Api\V1;
+
+use App\Http\Controllers\Controller;
+use App\Models\DatingMatch;
+use App\Models\QuestionnaireAnswer;
+use App\Models\QuestionnaireQuestion;
+use App\Models\User;
+use App\Services\MatchingEngineService;
+use App\Services\PersonalityProfileService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
+class AdminController extends Controller
+{
+    private function weekTag(): string
+    {
+        return now()->utc()->format('Y-\\WW');
+    }
+
+    public function users(): JsonResponse
+    {
+        $items = User::query()
+            ->orderBy('id')
+            ->get(['id', 'phone', 'name', 'disabled', 'verify_status']);
+
+        return response()->json([
+            'items' => $items,
+            'total' => $items->count(),
+        ]);
+    }
+
+    public function verifyQueue(): JsonResponse
+    {
+        $items = User::query()
+            ->where('verify_status', '!=', 'approved')
+            ->orderBy('id')
+            ->get(['id', 'phone', 'name', 'verify_status']);
+
+        return response()->json([
+            'items' => $items,
+            'total' => $items->count(),
+        ]);
+    }
+
+    public function updateVerify(Request $request, int $uid): JsonResponse
+    {
+        $data = $request->validate([
+            'status' => ['required', 'string', 'in:pending,approved,rejected'],
+        ]);
+
+        $user = User::find($uid);
+        if (!$user) {
+            return response()->json(['message' => 'user not found'], 404);
+        }
+
+        $user->verify_status = $data['status'];
+        $user->save();
+
+        return response()->json(['ok' => true]);
+    }
+
+    public function disable(int $uid): JsonResponse
+    {
+        $user = User::find($uid);
+        if (!$user) {
+            return response()->json(['message' => 'user not found'], 404);
+        }
+
+        $user->disabled = true;
+        $user->save();
+
+        return response()->json(['ok' => true]);
+    }
+
+    public function devRunMatching(
+        PersonalityProfileService $profileService,
+        MatchingEngineService $matchingEngine
+    ): JsonResponse
+    {
+        $weekTag = $this->weekTag();
+        $totalQuestions = QuestionnaireQuestion::query()->where('enabled', true)->count();
+        $requiredAnswers = max(1, (int) config('questionnaire.required_answer_count', 10));
+
+        if ($totalQuestions === 0) {
+            return response()->json([
+                'ok' => true,
+                'week_tag' => $weekTag,
+                'pairs' => 0,
+                'eligible_users' => 0,
+                'message' => 'no enabled questions',
+                'match_ids' => [],
+            ]);
+        }
+
+        $eligibleUserIds = QuestionnaireAnswer::query()
+            ->select('user_id')
+            ->groupBy('user_id')
+            ->havingRaw('COUNT(DISTINCT questionnaire_question_id) >= ?', [$requiredAnswers]);
+
+        $users = User::query()
+            ->where('disabled', false)
+            ->whereIn('id', $eligibleUserIds)
+            ->orderBy('id')
+            ->get(['id', 'created_at', 'updated_at']);
+
+        $pairs = 0;
+        $createdMatchIds = [];
+        $profiles = [];
+        $usersMeta = [];
+        foreach ($users as $u) {
+            $profiles[(int) $u->id] = $profileService->buildForUser((int) $u->id);
+            $usersMeta[(int) $u->id] = [
+                'created_at' => $u->created_at,
+                'updated_at' => $u->updated_at,
+            ];
+        }
+        $plannedPairs = $matchingEngine->buildPairs($profiles, $usersMeta);
+
+        foreach ($plannedPairs as $plannedPair) {
+            $a = (int) $plannedPair['user_a'];
+            $b = (int) $plannedPair['user_b'];
+
+            $exists = DatingMatch::query()
+                ->where('week_tag', $weekTag)
+                ->where(function ($q) use ($a, $b) {
+                    $q->where(function ($pair) use ($a, $b) {
+                        $pair->where('user_a', $a)->where('user_b', $b);
+                    })->orWhere(function ($pair) use ($a, $b) {
+                        $pair->where('user_a', $b)->where('user_b', $a);
+                    });
+                })
+                ->first();
+
+            if ($exists) {
+                $createdMatchIds[] = $exists->id;
+                continue;
+            }
+
+            $match = DatingMatch::create([
+                'week_tag' => $weekTag,
+                'user_a' => $a,
+                'user_b' => $b,
+                'highlights' => (string) $plannedPair['highlights'],
+                'explanation_tags' => $plannedPair['explanation_tags'] ?? null,
+                'score_base' => $plannedPair['score_base'] ?? null,
+                'score_final' => $plannedPair['score_final'] ?? null,
+                'score_fair' => $plannedPair['score_fair'] ?? null,
+                'penalty_factors' => $plannedPair['penalty_factors'] ?? null,
+                'drop_released' => false,
+            ]);
+            $pairs++;
+            $createdMatchIds[] = $match->id;
+        }
+
+        return response()->json([
+            'ok' => true,
+            'week_tag' => $weekTag,
+            'pairs' => $pairs,
+            'eligible_users' => $users->count(),
+            'match_ids' => $createdMatchIds,
+        ]);
+    }
+
+    public function devReleaseDrop(): JsonResponse
+    {
+        $weekTag = $this->weekTag();
+        $updated = DatingMatch::query()
+            ->where('week_tag', $weekTag)
+            ->update(['drop_released' => true]);
+
+        return response()->json([
+            'ok' => true,
+            'week_tag' => $weekTag,
+            'released' => $updated,
+        ]);
+    }
+
+    public function questionQualityStats(): JsonResponse
+    {
+        $base = QuestionnaireQuestion::query()->where('enabled', true);
+
+        $totalsByTier = (clone $base)
+            ->selectRaw('quality_tier, COUNT(*) as c')
+            ->groupBy('quality_tier')
+            ->pluck('c', 'quality_tier');
+
+        $totalsByTag = (clone $base)
+            ->selectRaw('quality_tag, COUNT(*) as c')
+            ->groupBy('quality_tag')
+            ->pluck('c', 'quality_tag');
+
+        $reasons = (clone $base)
+            ->select(['quality_tier', 'quality_tag', 'quality_reason', DB::raw('COUNT(*) as c')])
+            ->groupBy('quality_tier', 'quality_tag', 'quality_reason')
+            ->orderByDesc('c')
+            ->get()
+            ->map(fn ($r) => [
+                'quality_tier' => (string) $r->quality_tier,
+                'quality_tag' => (string) $r->quality_tag,
+                'quality_reason' => (string) $r->quality_reason,
+                'count' => (int) $r->c,
+            ])
+            ->values();
+
+        $dropReasons = $reasons
+            ->filter(fn ($r) => $r['quality_tag'] === 'low_drop')
+            ->values();
+
+        return response()->json([
+            'total' => (int) $base->count(),
+            'by_tier' => $totalsByTier,
+            'by_tag' => $totalsByTag,
+            'reasons' => $reasons,
+            'low_drop_reasons' => $dropReasons,
+        ]);
+    }
+
+    public function pruneLowDropQuestions(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'dry_run' => ['nullable', 'boolean'],
+            'reasons' => ['nullable', 'array'],
+            'reasons.*' => ['string', 'max:64'],
+        ]);
+
+        $dryRun = (bool) ($data['dry_run'] ?? true);
+        $reasons = array_values(array_filter(array_map('strval', (array) ($data['reasons'] ?? []))));
+
+        $base = QuestionnaireQuestion::query()
+            ->where('enabled', true)
+            ->where('quality_tag', 'low_drop');
+
+        if (!empty($reasons)) {
+            $base->whereIn('quality_reason', $reasons);
+        }
+
+        $byReason = (clone $base)
+            ->select(['quality_reason', DB::raw('COUNT(*) as c')])
+            ->groupBy('quality_reason')
+            ->orderByDesc('c')
+            ->get()
+            ->map(fn ($r) => [
+                'quality_reason' => (string) $r->quality_reason,
+                'count' => (int) $r->c,
+            ])
+            ->values();
+
+        $candidates = (int) (clone $base)->count();
+        $updated = 0;
+        if (!$dryRun && $candidates > 0) {
+            $updated = $base->update(['enabled' => false]);
+        }
+
+        return response()->json([
+            'ok' => true,
+            'dry_run' => $dryRun,
+            'candidates' => $candidates,
+            'updated' => (int) $updated,
+            'reasons' => $reasons,
+            'by_reason' => $byReason,
+        ]);
+    }
+}

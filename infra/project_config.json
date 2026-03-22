@@ -1,0 +1,31 @@
+{
+  "document_naming": {
+    "enabled": true,
+    "extensions": [
+      ".md",
+      ".pptx",
+      ".docx",
+      ".txt"
+    ],
+    "suffix_pattern": "_yyyyMMdd",
+    "suffix_regex": "_\\d{8}$",
+    "date_source_for_existing_files": "git_first_commit_date",
+    "date_source_for_new_files": "current_local_date",
+    "target_directories": [
+      "docs",
+      "."
+    ],
+    "exclude_files": [
+      "README.md",
+      "readme_P0.md",
+      "LICENSE"
+    ],
+    "exclude_directories": [
+      ".git",
+      "node_modules",
+      "vendor",
+      "backups",
+      "phpMyAdmin-5.2.3"
+    ]
+  }
+}

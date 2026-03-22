@@ -1,0 +1,16 @@
+[Unit]
+Description=EliteSync Laravel WebSocket Service
+After=network.target redis-server.service mariadb.service
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/opt/elitesync/services/backend-laravel
+Environment=APP_ENV=production
+ExecStart=/usr/bin/php /opt/elitesync/services/backend-laravel/artisan chat:ws --host=127.0.0.1 --port=8081
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target
