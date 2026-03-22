@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\V1\AdminController;
 use App\Http\Controllers\Api\V1\AppVersionController;
 use App\Http\Controllers\Api\V1\AstroProfileController;
 use App\Http\Controllers\Api\V1\MatchController;
+use App\Http\Controllers\Api\V1\MbtiProfileController;
 use App\Http\Controllers\Api\V1\MessageController;
 use App\Http\Controllers\Api\V1\ProfileController;
 use App\Http\Controllers\Api\V1\QuestionnaireController;
@@ -42,6 +43,9 @@ Route::prefix('v1')->group(function () {
             Route::post('/basic', [ProfileController::class, 'saveBasic']);
             Route::get('/astro', [AstroProfileController::class, 'show']);
             Route::post('/astro', [AstroProfileController::class, 'save']);
+            Route::get('/mbti/quiz', [MbtiProfileController::class, 'quiz']);
+            Route::post('/mbti/submit', [MbtiProfileController::class, 'submit']);
+            Route::get('/mbti/result', [MbtiProfileController::class, 'result']);
         });
 
         Route::prefix('matches')->group(function () {

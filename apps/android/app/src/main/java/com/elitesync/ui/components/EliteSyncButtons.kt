@@ -28,11 +28,18 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
+enum class StarryButtonLevel {
+    L1Back,
+    L2Primary,
+    L3Secondary
+}
+
 @Composable
-fun StarryPrimaryButton(
+private fun StarryActionButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    level: StarryButtonLevel = StarryButtonLevel.L3Secondary,
     enabled: Boolean = true,
     loading: Boolean = false
 ) {
@@ -43,13 +50,23 @@ fun StarryPrimaryButton(
     val scale by animateFloatAsState(
         targetValue = if (pressed) 0.97f else 1f,
         animationSpec = tween(160),
-        label = "primaryButtonScale"
+        label = "actionButtonScale"
     )
     val active = enabled && !loading
+    val palette = when (level) {
+        StarryButtonLevel.L1Back -> StarryButtons.Back
+        StarryButtonLevel.L2Primary -> StarryButtons.Primary
+        StarryButtonLevel.L3Secondary -> StarryButtons.Secondary
+    }
     val bg by animateColorAsState(
-        targetValue = btnBgColor(StarryButtons.Primary, active, pressed),
+        targetValue = btnBgColor(palette, active, pressed),
         animationSpec = tween(220),
-        label = "primaryButtonBg"
+        label = "actionButtonBg"
+    )
+    val border by animateColorAsState(
+        targetValue = btnBorderColor(palette, active, pressed),
+        animationSpec = tween(220),
+        label = "actionButtonBorder"
     )
     Box(
         modifier = modifier
@@ -62,7 +79,7 @@ fun StarryPrimaryButton(
                 alpha = if (active) 1f else 0.55f
             }
             .background(bg)
-            .border(1.dp, Color(0x7ABBCDF2), RoundedCornerShape(EliteSyncShapes.ControlRadius))
+            .border(1.dp, border, RoundedCornerShape(EliteSyncShapes.ControlRadius))
             .clickable(
                 enabled = active,
                 interactionSource = interactionSource,
@@ -77,19 +94,37 @@ fun StarryPrimaryButton(
         if (loading) {
             Row {
                 CircularProgressIndicator(
-                    color = StarryButtons.Primary.content,
+                    color = palette.content,
                     strokeWidth = 2.dp
                 )
-                Text("处理中...", color = StarryButtons.Primary.content, fontWeight = FontWeight.SemiBold)
+                Text("处理中...", color = palette.content, fontWeight = FontWeight.SemiBold)
             }
         } else {
             Text(
                 text,
-                color = if (active) StarryButtons.Primary.content else StarryButtons.Primary.contentDisabled,
+                color = if (active) palette.content else palette.contentDisabled,
                 fontWeight = FontWeight.SemiBold
             )
         }
     }
+}
+
+@Composable
+fun StarryPrimaryButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    loading: Boolean = false
+) {
+    StarryActionButton(
+        text = text,
+        onClick = onClick,
+        modifier = modifier,
+        enabled = enabled,
+        loading = loading,
+        level = StarryButtonLevel.L2Primary
+    )
 }
 
 @Composable
@@ -100,48 +135,30 @@ fun StarrySecondaryButton(
     enabled: Boolean = true,
     loading: Boolean = false
 ) {
-    val settings = LocalUiFeedbackSettings.current
-    val haptic = LocalHapticFeedback.current
-    val interactionSource = remember { MutableInteractionSource() }
-    val pressed by interactionSource.collectIsPressedAsState()
-    val scale by animateFloatAsState(
-        targetValue = if (pressed) 0.975f else 1f,
-        animationSpec = tween(160),
-        label = "secondaryButtonScale"
+    StarryActionButton(
+        text = text,
+        onClick = onClick,
+        modifier = modifier,
+        enabled = enabled,
+        loading = loading,
+        level = StarryButtonLevel.L3Secondary
     )
-    val active = enabled && !loading
-    val bg by animateColorAsState(
-        targetValue = btnBgColor(StarryButtons.Secondary, active, pressed),
-        animationSpec = tween(220),
-        label = "secondaryButtonBg"
+}
+
+@Composable
+fun StarryBackButton(
+    text: String = "返回",
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    loading: Boolean = false
+) {
+    StarryActionButton(
+        text = text,
+        onClick = onClick,
+        modifier = modifier,
+        enabled = enabled,
+        loading = loading,
+        level = StarryButtonLevel.L1Back
     )
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .heightIn(min = EliteSyncDimens.ButtonHeight)
-            .clip(RoundedCornerShape(EliteSyncShapes.ControlRadius))
-            .graphicsLayer {
-                scaleX = scale
-                scaleY = scale
-                alpha = if (active) 1f else 0.55f
-            }
-            .background(bg)
-            .border(1.dp, EliteSyncColors.BorderSubtle, RoundedCornerShape(EliteSyncShapes.ControlRadius))
-            .clickable(
-                enabled = active,
-                interactionSource = interactionSource,
-                indication = null
-            ) {
-                if (settings.hapticEnabled) haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                if (settings.clickSoundEnabled) StarryClickSound.play()
-                onClick()
-            }
-            .padding(horizontal = EliteSyncDimens.Space16, vertical = EliteSyncDimens.Space12)
-    ) {
-        Text(
-            if (loading) "处理中..." else text,
-            color = if (active) StarryButtons.Secondary.content else StarryButtons.Secondary.contentDisabled,
-            fontWeight = FontWeight.Medium
-        )
-    }
 }

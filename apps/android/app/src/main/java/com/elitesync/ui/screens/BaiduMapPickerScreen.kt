@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -29,6 +28,8 @@ import com.baidu.mapapi.map.DotOptions
 import com.baidu.mapapi.map.MapStatusUpdateFactory
 import com.baidu.mapapi.map.MapView
 import com.baidu.mapapi.model.LatLng
+import com.elitesync.ui.components.StarryBackButton
+import com.elitesync.ui.components.StarryPrimaryButton
 
 @Composable
 fun BaiduMapPickerScreen(
@@ -115,21 +116,23 @@ fun BaiduMapPickerScreen(
         Text(
             selected?.let { "已选：${it.latitude}, ${it.longitude}" } ?: "已选：无"
         )
-        Button(
+        StarryBackButton(
+            text = "返回",
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 6.dp),
             onClick = onBack
-        ) { Text("返回") }
-        Button(
+        )
+        StarryPrimaryButton(
+            text = "确认使用该位置",
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 12.dp),
             enabled = selected != null,
             onClick = {
-                val point = selected ?: return@Button
+                val point = selected ?: return@StarryPrimaryButton
                 onConfirm(point.latitude, point.longitude)
             }
-        ) { Text("确认使用该位置") }
+        )
     }
 }

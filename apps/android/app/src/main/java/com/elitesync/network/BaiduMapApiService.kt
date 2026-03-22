@@ -37,6 +37,18 @@ data class BaiduReverseResp(
     val result: BaiduReverseResultDto? = null
 )
 
+data class BaiduGeocodingResultDto(
+    val location: BaiduLocationDto? = null,
+    val precise: Int? = null,
+    val confidence: Int? = null,
+    val level: String? = null
+)
+
+data class BaiduGeocodingResp(
+    val status: Int? = null,
+    val result: BaiduGeocodingResultDto? = null
+)
+
 interface BaiduMapApiService {
     @GET("/place/v2/suggestion")
     suspend fun suggestion(
@@ -54,5 +66,13 @@ interface BaiduMapApiService {
         @Query("output") output: String = "json",
         @Query("ak") ak: String
     ): BaiduReverseResp
+
+    @GET("/geocoding/v3")
+    suspend fun geocoding(
+        @Query("address") address: String,
+        @Query("city") city: String? = null,
+        @Query("output") output: String = "json",
+        @Query("ak") ak: String
+    ): BaiduGeocodingResp
 }
 

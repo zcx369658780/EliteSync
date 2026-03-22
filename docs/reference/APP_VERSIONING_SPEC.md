@@ -22,8 +22,8 @@
 
 ## 当前版本
 
-- 当前版本：`0.01.01`
-- 含义：`开发阶段 (major=0)` + `Alpha 阶段 (minor=01)` + `第 1 个版本 (patch=01)`
+- 当前版本：`0.01.05`
+- 含义：`开发阶段 (major=0)` + `Alpha 阶段 (minor=01)` + `第 5 个版本 (patch=05)`
 
 ## Android 映射规则
 
@@ -44,4 +44,3 @@ Android `versionCode` 使用数值映射：
   - `version_name`: 当前版本号（如 `0.01.01`）
   - `version_code`: 当前版本码（如 `101`）
   - `channel`: 可选，默认 `stable`
-

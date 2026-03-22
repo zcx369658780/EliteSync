@@ -6,7 +6,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.elitesync.ui.AppViewModel
 import com.elitesync.ui.components.GlassScrollPage
-import com.elitesync.ui.components.StarryPrimaryButton
+import com.elitesync.ui.components.StarryBackButton
 import com.elitesync.ui.components.StarrySectionCard
 import com.elitesync.ui.components.StarrySecondaryButton
 
@@ -36,7 +36,7 @@ fun MeSettingsScreen(
                 onClick = { vm.toggleLitePerformanceMode() }
             )
             Text("说明：开启后会降低星空背景动态层与纹理负载，适配低性能设备。")
-            StarryPrimaryButton(text = "返回", onClick = onBack)
+            StarryBackButton(onClick = onBack)
         }
     }
 }

@@ -30,12 +30,14 @@ import com.elitesync.ui.components.UiPerformanceSettings
 import com.elitesync.ui.components.starryPanGesture
 import com.elitesync.ui.screens.BaiduMapPickerScreen
 import com.elitesync.ui.screens.BasicProfileScreen
+import com.elitesync.ui.screens.AboutScreen
 import com.elitesync.ui.screens.ChatScreen
 import com.elitesync.ui.screens.DiscoverScreen
 import com.elitesync.ui.screens.MatchScreen
 import com.elitesync.ui.screens.MeScreen
 import com.elitesync.ui.screens.MeSettingsScreen
 import com.elitesync.ui.screens.MessagesScreen
+import com.elitesync.ui.screens.MbtiQuizScreen
 import com.elitesync.ui.screens.OnboardingHubScreen
 import com.elitesync.ui.screens.PreferencesScreen
 import com.elitesync.ui.screens.ProfileInsightsScreen
@@ -62,7 +64,6 @@ fun AppNavHost(vm: AppViewModel, socket: ChatSocketManager) {
     val clickSoundEnabled by vm.clickSoundEnabled.collectAsState()
     val litePerformanceMode by vm.litePerformanceMode.collectAsState()
     val currentPlace by vm.currentPlace.collectAsState()
-    val birthPlace by vm.birthPlace.collectAsState()
     val tabs = listOf(
         NavTabSpec("推荐", "main/recommend"),
         NavTabSpec("匹配", "main/match"),
@@ -240,6 +241,7 @@ fun AppNavHost(vm: AppViewModel, socket: ChatSocketManager) {
                         onBasicProfile = { nav.navigate("onboarding/basic") },
                         onQuestionnaire = { nav.navigate("onboarding/hub") },
                         onInsights = { nav.navigate("profile/insights") },
+                        onAbout = { nav.navigate("main/me/about") },
                         onSettings = { nav.navigate("main/me/settings") },
                         onLogout = {
                             socket.close()
@@ -253,10 +255,19 @@ fun AppNavHost(vm: AppViewModel, socket: ChatSocketManager) {
                 composable("main/me/settings") {
                     MeSettingsScreen(vm = vm, onBack = { nav.popBackStack() })
                 }
+                composable("main/me/about") {
+                    AboutScreen(vm = vm, onBack = { nav.popBackStack() })
+                }
                 composable("profile/insights") {
                     ProfileInsightsScreen(
                         vm = vm,
-                        onOpenMapPicker = { nav.navigate("map/pick/birth") }
+                        onOpenMbtiQuiz = { nav.navigate("profile/mbti/quiz") }
+                    )
+                }
+                composable("profile/mbti/quiz") {
+                    MbtiQuizScreen(
+                        vm = vm,
+                        onBack = { nav.popBackStack() }
                     )
                 }
                 composable("map/pick/current") {
@@ -267,18 +278,6 @@ fun AppNavHost(vm: AppViewModel, socket: ChatSocketManager) {
                         onBack = { nav.popBackStack() },
                         onConfirm = { lat, lng ->
                             vm.reverseGeocodeCurrent(lat, lng)
-                            nav.popBackStack()
-                        }
-                    )
-                }
-                composable("map/pick/birth") {
-                    BaiduMapPickerScreen(
-                        title = "选择出生地",
-                        initialLat = birthPlace?.location?.lat,
-                        initialLng = birthPlace?.location?.lng,
-                        onBack = { nav.popBackStack() },
-                        onConfirm = { lat, lng ->
-                            vm.reverseGeocodeBirth(lat, lng)
                             nav.popBackStack()
                         }
                     )

@@ -52,6 +52,21 @@ interface ApiService {
     @POST("/api/v1/profile/astro")
     suspend fun saveAstroProfile(@Header("Authorization") bearer: String, @Body req: AstroProfilePayload): SimpleResp
 
+    @GET("/api/v1/profile/mbti/quiz")
+    suspend fun mbtiQuiz(
+        @Header("Authorization") bearer: String,
+        @Query("version") version: String = "lite3_v1"
+    ): MbtiQuizResp
+
+    @POST("/api/v1/profile/mbti/submit")
+    suspend fun submitMbti(
+        @Header("Authorization") bearer: String,
+        @Body req: MbtiSubmitReq
+    ): MbtiSubmitResp
+
+    @GET("/api/v1/profile/mbti/result")
+    suspend fun mbtiResult(@Header("Authorization") bearer: String): MbtiResultResp
+
     @GET("/api/v1/matches/current")
     suspend fun currentMatch(@Header("Authorization") bearer: String): MatchResp
 

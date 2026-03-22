@@ -26,6 +26,19 @@ class EliteSyncApp : Application() {
             runCatching { System.loadLibrary(lib) }
                 .onFailure { Log.w(TAG, "loadLibrary failed: $lib -> ${it.message}") }
         }
+        val ak = BuildConfig.BAIDU_MAP_AK
+        if (ak.isNotBlank()) {
+            runCatching {
+                val m = SDKInitializer::class.java.getDeclaredMethod("setApiKey", String::class.java)
+                m.isAccessible = true
+                m.invoke(null, ak)
+                Log.i(TAG, "SDKInitializer.setApiKey invoked by reflection")
+            }.onFailure {
+                Log.w(TAG, "setApiKey reflection unavailable: ${it.message}")
+            }
+        } else {
+            Log.e(TAG, "BAIDU_MAP_AK is blank in BuildConfig")
+        }
         SDKInitializer.setAgreePrivacy(this, true)
         SDKInitializer.initialize(this)
         SDKInitializer.setCoordType(CoordType.BD09LL)

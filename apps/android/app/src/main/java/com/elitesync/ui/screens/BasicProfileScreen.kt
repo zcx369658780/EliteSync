@@ -6,7 +6,12 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
+import android.location.Address
+import android.location.Geocoder
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
@@ -25,6 +30,7 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.elitesync.ui.AppViewModel
+import com.elitesync.ui.components.StarryBackButton
 import com.elitesync.ui.components.GlassScrollPage
 import com.elitesync.ui.components.StarryDateDropdownField
 import com.elitesync.ui.components.StarryOptionCard
@@ -37,6 +43,7 @@ import androidx.compose.material3.Text
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import java.util.Locale
 
 @Composable
 fun BasicProfileScreen(vm: AppViewModel, onBack: () -> Unit) {
@@ -53,7 +60,9 @@ fun BasicProfileScreen(vm: AppViewModel, onBack: () -> Unit) {
     val currentGoal by vm.currentRelationshipGoal.collectAsState()
     val currentPlace by vm.currentPlace.collectAsState()
     val status by vm.status.collectAsState()
-    val locating = status.contains("定位解析中") || status.contains("定位中")
+    val error by vm.error.collectAsState()
+    var localLocating by remember { mutableStateOf(false) }
+    val locating = localLocating || status.contains("定位解析中") || status.contains("定位中")
 
     val goalOptions = mapOf(
         "marriage" to "结婚",
@@ -62,13 +71,31 @@ fun BasicProfileScreen(vm: AppViewModel, onBack: () -> Unit) {
     )
 
     val locationLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission()
-    ) { granted ->
+        contract = ActivityResultContracts.RequestMultiplePermissions()
+    ) { grantMap ->
+        val granted = grantMap[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
+            grantMap[Manifest.permission.ACCESS_COARSE_LOCATION] == true
         if (granted) {
+            localLocating = true
             requestCurrentLocation(context) { lat, lng ->
-                if (lat != null && lng != null) vm.reverseGeocodeCurrent(lat, lng)
-                else vm.locationUnavailable()
+                if (lat != null && lng != null) {
+                    resolveCityFromGps(context, lat, lng) { detected ->
+                        localLocating = false
+                        if (!detected.isNullOrBlank()) {
+                            city = detected
+                            vm.cityResolvedFromLocation(detected)
+                        } else {
+                            vm.cityUnresolvedFromLocation()
+                        }
+                    }
+                } else {
+                    localLocating = false
+                    vm.locationUnavailable()
+                }
             }
+        } else {
+            localLocating = false
+            vm.locationUnavailable()
         }
     }
 
@@ -84,16 +111,32 @@ fun BasicProfileScreen(vm: AppViewModel, onBack: () -> Unit) {
         if (gender.isBlank()) {
             gender = currentGender
         }
-        if (city.isBlank()) city = currentCity
+        if (city.isBlank()) {
+            city = if (currentCity.contains("未解析城市")) "" else currentCity
+        }
         if (goal.isBlank()) goal = currentGoal
     }
 
     LaunchedEffect(currentPlace) {
-        val c = currentPlace?.city.orEmpty()
+        val place = currentPlace
+        val c = listOf(
+            place?.city.orEmpty(),
+            place?.district.orEmpty()
+        ).firstOrNull { it.isNotBlank() }.orEmpty()
         if (c.isNotBlank()) city = c
     }
 
-    GlassScrollPage(title = "基础资料") {
+    LaunchedEffect(status) {
+        if (!status.contains("定位")) {
+            localLocating = false
+        }
+    }
+
+    GlassScrollPage(
+        title = "基础资料",
+        status = status,
+        error = error
+    ) {
         StarrySectionCard(title = "基本信息") {
             StarryTextField(value = nickname, onValueChange = { nickname = it }, label = "昵称")
             Text("性别（必选）", color = Color(0xFFE6EEFF))
@@ -114,26 +157,60 @@ fun BasicProfileScreen(vm: AppViewModel, onBack: () -> Unit) {
             StarryDateDropdownField(value = birthday, onValueChange = { birthday = it }, label = "生日（下拉选择）")
         }
         StarrySectionCard(title = "城市与婚恋目标") {
-            Text("城市（自动GPS定位）", color = Color(0xFFE6EEFF))
+            Text("城市信息（自动GPS定位）", color = Color(0xFFE6EEFF))
             StarrySecondaryButton(
                 text = if (city.isBlank()) "自动获取城市" else "重新定位城市",
                 loading = locating,
                 onClick = {
+                    if (city.contains("未解析城市")) city = ""
                     val granted = ContextCompat.checkSelfPermission(
                         context,
                         Manifest.permission.ACCESS_FINE_LOCATION
-                    ) == PackageManager.PERMISSION_GRANTED
+                    ) == PackageManager.PERMISSION_GRANTED ||
+                        ContextCompat.checkSelfPermission(
+                            context,
+                            Manifest.permission.ACCESS_COARSE_LOCATION
+                        ) == PackageManager.PERMISSION_GRANTED
                     if (granted) {
+                        localLocating = true
                         requestCurrentLocation(context) { lat, lng ->
-                            if (lat != null && lng != null) vm.reverseGeocodeCurrent(lat, lng)
-                            else vm.locationUnavailable()
+                            if (lat != null && lng != null) {
+                                resolveCityFromGps(context, lat, lng) { detected ->
+                                    localLocating = false
+                                    if (!detected.isNullOrBlank()) {
+                                        city = detected
+                                        vm.cityResolvedFromLocation(detected)
+                                    } else {
+                                        vm.cityUnresolvedFromLocation()
+                                    }
+                                }
+                            } else {
+                                localLocating = false
+                                vm.locationUnavailable()
+                            }
                         }
                     } else {
-                        locationLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                        locationLauncher.launch(
+                            arrayOf(
+                                Manifest.permission.ACCESS_FINE_LOCATION,
+                                Manifest.permission.ACCESS_COARSE_LOCATION
+                            )
+                        )
                     }
                 }
             )
+            StarryTextField(
+                value = city,
+                onValueChange = { city = it },
+                label = "城市（可手动填写）"
+            )
             Text(if (city.isBlank()) "当前城市：未获取" else "当前城市：$city")
+            currentPlace?.let {
+                Text(
+                    text = "定位结果：${it.name}（${it.city}${it.district}）",
+                    color = Color(0xFFB9CCEE)
+                )
+            }
 
             StarryDropdownField(
                 label = "婚恋目标",
@@ -157,7 +234,7 @@ fun BasicProfileScreen(vm: AppViewModel, onBack: () -> Unit) {
                     )
                 }
             )
-            StarrySecondaryButton(text = "返回", onClick = onBack)
+            StarryBackButton(onClick = onBack)
         }
     }
 }
@@ -187,13 +264,93 @@ private fun requestCurrentLocation(context: Context, onResult: (Double?, Double?
     }
 
     val fused = LocationServices.getFusedLocationProviderClient(context)
-    val cts = CancellationTokenSource()
-    fused.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, cts.token).addOnSuccessListener { loc ->
-        if (loc != null) onResult(loc.latitude, loc.longitude)
-        else requestSystemCurrentLocation(context, onResult)
-    }.addOnFailureListener {
-        requestSystemCurrentLocation(context, onResult)
+    // First try cached last location for fast UX.
+    fused.lastLocation
+        .addOnSuccessListener { last ->
+            if (last != null) {
+                Log.d("BasicProfileScreen", "lastLocation hit: ${last.latitude}, ${last.longitude}")
+                onResult(last.latitude, last.longitude)
+                return@addOnSuccessListener
+            }
+            val cts = CancellationTokenSource()
+            fused.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, cts.token)
+                .addOnSuccessListener { loc ->
+                    if (loc != null) {
+                        Log.d("BasicProfileScreen", "getCurrentLocation hit: ${loc.latitude}, ${loc.longitude}")
+                        onResult(loc.latitude, loc.longitude)
+                    } else {
+                        Log.d("BasicProfileScreen", "getCurrentLocation null, fallback system")
+                        requestSystemCurrentLocation(context, onResult)
+                    }
+                }
+                .addOnFailureListener { e ->
+                    Log.w("BasicProfileScreen", "getCurrentLocation failed: ${e.message}")
+                    requestSystemCurrentLocation(context, onResult)
+                }
+        }
+        .addOnFailureListener { e ->
+            Log.w("BasicProfileScreen", "lastLocation failed: ${e.message}")
+            requestSystemCurrentLocation(context, onResult)
+        }
+}
+
+private fun resolveCityFromGps(
+    context: Context,
+    lat: Double,
+    lng: Double,
+    onResult: (String?) -> Unit
+) {
+    if (!Geocoder.isPresent()) {
+        onResult(null)
+        return
     }
+    val geocoder = Geocoder(context, Locale.SIMPLIFIED_CHINESE)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        geocoder.getFromLocation(lat, lng, 1, object : Geocoder.GeocodeListener {
+            override fun onGeocode(addresses: MutableList<Address>) {
+                val city = extractCityFromAddresses(addresses)
+                onResult(city)
+            }
+
+            override fun onError(errorMessage: String?) {
+                Log.w("BasicProfileScreen", "Geocoder error: $errorMessage")
+                onResult(null)
+            }
+        })
+    } else {
+        Thread {
+            val city = runCatching {
+                geocoder.getFromLocation(lat, lng, 1)?.let { extractCityFromAddresses(it) }
+            }.getOrNull()
+            Handler(Looper.getMainLooper()).post { onResult(city) }
+        }.start()
+    }
+}
+
+private fun extractCityFromAddresses(addresses: List<Address>): String? {
+    val first = addresses.firstOrNull() ?: return null
+    val candidates = listOfNotNull(
+        first.locality,
+        first.subAdminArea,
+        first.adminArea,
+        first.featureName,
+        first.getAddressLine(0)
+    ).map { it.trim() }.filter { it.isNotBlank() }
+
+    for (raw in candidates) {
+        val parsed = parseCityName(raw)
+        if (!parsed.isNullOrBlank()) return parsed
+    }
+    return null
+}
+
+private fun parseCityName(raw: String): String? {
+    val direct = Regex("([\\u4e00-\\u9fa5]{2,12}(市|自治州|地区|盟))").find(raw)?.groupValues?.get(1)
+    if (!direct.isNullOrBlank()) return direct
+    // Last resort: take first few chars as requested.
+    val cleaned = raw.replace("中国", "").replace("中华人民共和国", "").trim()
+    if (cleaned.isBlank()) return null
+    return cleaned.take(4)
 }
 
 @SuppressLint("MissingPermission")

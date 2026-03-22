@@ -9,14 +9,17 @@
     <application
         android:name=".EliteSyncApp"
         android:allowBackup="true"
-        android:icon="@drawable/logo"
-        android:roundIcon="@drawable/logo"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:label="EliteSync"
         android:networkSecurityConfig="@xml/network_security_config"
         android:supportsRtl="true"
         android:theme="@style/Theme.EliteSync">
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
+            android:value="${BAIDU_MAP_AK}" />
+        <meta-data
+            android:name="com.baidu.android.lbs.API_KEY"
             android:value="${BAIDU_MAP_AK}" />
         <activity
             android:name=".MainActivity"

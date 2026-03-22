@@ -16,6 +16,7 @@ fun MeScreen(
     onBasicProfile: () -> Unit,
     onQuestionnaire: () -> Unit,
     onInsights: () -> Unit,
+    onAbout: () -> Unit,
     onSettings: () -> Unit,
     onLogout: () -> Unit
 ) {
@@ -32,6 +33,7 @@ fun MeScreen(
         }
         StarrySectionCard(title = "系统与服务") {
             StarrySecondaryButton(text = "设置", onClick = onSettings)
+            StarrySecondaryButton(text = "关于", onClick = onAbout)
             StarrySecondaryButton(text = "会员中心（占位）", onClick = { })
             StarrySecondaryButton(text = "订单与支付（占位）", onClick = { })
         }

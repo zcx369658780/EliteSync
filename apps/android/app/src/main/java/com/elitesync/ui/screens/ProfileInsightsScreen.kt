@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -23,7 +24,7 @@ import com.elitesync.ui.components.StarrySecondaryButton
 import com.elitesync.ui.components.StarryTextField
 
 @Composable
-fun ProfileInsightsScreen(vm: AppViewModel, onOpenMapPicker: () -> Unit) {
+fun ProfileInsightsScreen(vm: AppViewModel, onOpenMbtiQuiz: () -> Unit) {
     val birthday by vm.currentUserBirthday.collectAsState()
     val birthTime by vm.insightsBirthTime.collectAsState()
     val mbti by vm.insightsMbti.collectAsState()
@@ -35,6 +36,9 @@ fun ProfileInsightsScreen(vm: AppViewModel, onOpenMapPicker: () -> Unit) {
     val error by vm.error.collectAsState()
     val searching = status.contains("地点搜索中")
     val computing = status.contains("画像计算")
+    LaunchedEffect(Unit) {
+        vm.loadMbtiResult()
+    }
     GlassScrollPage(title = "扩展画像（算法版）", status = status, error = error) {
         StarrySectionCard(title = "输入参数") {
             Text("基于出生时间 + 出生地经纬度，计算星座 / 八字 / 基础星盘。")
@@ -42,24 +46,21 @@ fun ProfileInsightsScreen(vm: AppViewModel, onOpenMapPicker: () -> Unit) {
             StarryTextField(value = birthTime, onValueChange = { vm.updateInsightsBirthTime(it) }, label = "出生时间（HH:mm）")
             StarryTextField(value = birthQuery, onValueChange = { vm.updateInsightsBirthQuery(it) }, label = "出生地搜索（城市/区县/地点）")
             StarrySecondaryButton(text = "搜索出生地", loading = searching, onClick = { vm.searchPlaces(birthQuery) })
-            StarrySecondaryButton(text = "打开内置百度地图选出生地", onClick = onOpenMapPicker)
+            places.take(10).forEach { p ->
+                StarryListItemCard(
+                    text = "${p.name} ${p.city}${p.district}",
+                    onClick = { vm.setBirthPlace(p) },
+                    modifier = Modifier.padding(vertical = 2.dp)
+                )
+            }
             Text(
                 birthPlace?.let {
                     "已选出生地：${it.name} (${it.location.lat}, ${it.location.lng})"
                 } ?: "已选出生地：未选择"
             )
-            StarryTextField(value = mbti, onValueChange = { vm.updateInsightsMbti(it) }, label = "MBTI（如 INFP）")
+            StarrySecondaryButton(text = "开始MBTI测试（3题）", onClick = onOpenMbtiQuiz)
+            Text("当前MBTI：${if (mbti.isBlank()) "未测试" else mbti}")
             StarryPrimaryButton(text = "计算星座/星盘/生辰八字", loading = computing, onClick = { vm.computeAstroProfile() })
-        }
-
-        StarrySectionCard(title = "搜索结果（点击即选中）") {
-            places.take(10).forEach { p ->
-                StarryListItemCard(
-                    text = "${p.name} ${p.city}${p.district}",
-                    onClick = { vm.setBirthPlace(p) },
-                    modifier = androidx.compose.ui.Modifier.padding(vertical = 2.dp)
-                )
-            }
         }
 
         StarrySectionCard(title = "结果预览") {

@@ -10,6 +10,27 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
+  release-gate-quick:
+    name: Release Gate (Quick)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Run Quick Release Gate
+        shell: pwsh
+        run: |
+          ./scripts/release_gate_alpha.ps1 -QuickUpdateOnly
+
+      - name: Upload Gate Logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-gate-logs
+          path: |
+            docs/devlogs/RELEASE_GATE_LOG.md
+            docs/devlogs/SMOKE_LOG.md
+
   backend-tests:
     name: Backend Laravel Tests
     runs-on: ubuntu-latest

@@ -16,6 +16,7 @@ import com.baidu.mapapi.search.sug.SuggestionSearchOption
 import com.elitesync.network.ApiClient
 import com.elitesync.network.BaiduMapClient
 import kotlinx.coroutines.suspendCancellableCoroutine
+import android.util.Log
 import kotlin.coroutines.resume
 
 class AppRepository {
@@ -54,6 +55,10 @@ class AppRepository {
     suspend fun questionnaireProfile(token: String) = api.questionnaireProfile("Bearer $token")
     suspend fun astroProfile(token: String) = api.astroProfile("Bearer $token")
     suspend fun saveAstroProfile(token: String, payload: AstroProfilePayload) = api.saveAstroProfile("Bearer $token", payload)
+    suspend fun mbtiQuiz(token: String, version: String = "lite3_v1") = api.mbtiQuiz("Bearer $token", version)
+    suspend fun submitMbti(token: String, version: String, answers: List<MbtiAnswerItem>) =
+        api.submitMbti("Bearer $token", MbtiSubmitReq(version, answers))
+    suspend fun mbtiResult(token: String) = api.mbtiResult("Bearer $token")
     suspend fun currentMatch(token: String) = api.currentMatch("Bearer $token")
     suspend fun confirmMatch(token: String, matchId: Int, like: Boolean) = api.confirmMatch("Bearer $token", MatchConfirmReq(matchId, like))
     suspend fun sendMessage(token: String, receiverId: Int, content: String) = api.sendMessage("Bearer $token", MessageReq(receiverId, content))
@@ -62,24 +67,78 @@ class AppRepository {
     suspend fun loadMessages(token: String, peerId: Int, afterId: Int = 0) = api.messages("Bearer $token", peerId, afterId)
 
     suspend fun searchPlaces(query: String, region: String = "全国"): List<MapPlace> {
+        if (query.isBlank()) return emptyList()
+
         val sdkResult = searchPlacesBySdk(query, region)
-        if (sdkResult.isNotEmpty()) return sdkResult
+        if (sdkResult.isNotEmpty()) {
+            Log.i("AppRepository", "searchPlaces sdk hit=${sdkResult.size} query=$query region=$region")
+            return sdkResult
+        }
 
         val ak = BuildConfig.BAIDU_MAP_AK
-        if (ak.isBlank()) return emptyList()
-        val resp = baidu.suggestion(query = query, region = region, ak = ak)
-        if (resp.status != 0) return emptyList()
-        return resp.result.mapNotNull { item ->
-            val lat = item.location?.lat ?: return@mapNotNull null
-            val lng = item.location?.lng ?: return@mapNotNull null
-            MapPlace(
-                name = item.name.orEmpty(),
-                address = item.address.orEmpty(),
-                city = item.city.orEmpty(),
-                district = item.district.orEmpty(),
-                location = MapPoint(lat = lat, lng = lng)
+        if (ak.isBlank()) {
+            Log.e("AppRepository", "searchPlaces aborted: BAIDU_MAP_AK blank")
+            return emptyList()
+        }
+        val regionCandidates = buildList {
+            val r = region.trim()
+            if (r.isNotBlank()) add(r)
+            add("中国")
+            add("全国")
+            add("北京")
+            add("上海")
+        }.distinct()
+
+        val merged = linkedMapOf<String, MapPlace>()
+        for (r in regionCandidates) {
+            val resp = runCatching { baidu.suggestion(query = query, region = r, ak = ak) }.getOrNull() ?: continue
+            if (resp.status != 0) {
+                Log.w("AppRepository", "searchPlaces suggestion status=${resp.status} region=$r query=$query")
+                continue
+            }
+            resp.result.forEach { item ->
+                val lat = item.location?.lat ?: return@forEach
+                val lng = item.location?.lng ?: return@forEach
+                val place = MapPlace(
+                    name = item.name.orEmpty(),
+                    address = item.address.orEmpty(),
+                    city = item.city.orEmpty(),
+                    district = item.district.orEmpty(),
+                    location = MapPoint(lat = lat, lng = lng)
+                )
+                val key = "${place.name}|${place.location.lat}|${place.location.lng}"
+                merged.putIfAbsent(key, place)
+            }
+            if (merged.size >= 10) break
+        }
+        if (merged.isNotEmpty()) {
+            Log.i("AppRepository", "searchPlaces http suggestion hit=${merged.size} query=$query region=$region")
+            return merged.values.toList()
+        }
+
+        // Last fallback: convert address text into one geocode point, so user can still select it.
+        for (r in regionCandidates) {
+            val geo = runCatching { baidu.geocoding(address = query, city = r, ak = ak) }.getOrNull() ?: continue
+            if (geo.status != 0) {
+                Log.w("AppRepository", "searchPlaces geocoding status=${geo.status} city=$r query=$query")
+                continue
+            }
+            val loc = geo.result?.location ?: continue
+            val lat = loc.lat ?: continue
+            val lng = loc.lng ?: continue
+            Log.i("AppRepository", "searchPlaces geocoding fallback hit query=$query city=$r")
+            return listOf(
+                MapPlace(
+                    name = query,
+                    address = query,
+                    city = if (r == "全国") "" else r,
+                    district = "",
+                    location = MapPoint(lat = lat, lng = lng)
+                )
             )
         }
+        Log.w("AppRepository", "searchPlaces empty query=$query region=$region")
+        return emptyList()
     }
 
     suspend fun reverseGeocode(lat: Double, lng: Double): MapPlace? {
@@ -88,15 +147,32 @@ class AppRepository {
 
         val ak = BuildConfig.BAIDU_MAP_AK
         if (ak.isBlank()) return null
-        val resp = baidu.reverseGeocoding(location = "$lat,$lng", ak = ak)
-        if (resp.status != 0) return null
+        val primary = reverseGeocodeByHttp(lat, lng, ak, "wgs84ll")
+        if (primary != null) return primary
+        val fallback = reverseGeocodeByHttp(lat, lng, ak, "gcj02ll")
+        if (fallback != null) return fallback
+        Log.w("AppRepository", "reverseGeocode empty for $lat,$lng on both coordtypes")
+        return null
+    }
+
+    private suspend fun reverseGeocodeByHttp(
+        lat: Double,
+        lng: Double,
+        ak: String,
+        coordType: String
+    ): MapPlace? {
+        val resp = baidu.reverseGeocoding(location = "$lat,$lng", coordType = coordType, ak = ak)
+        if ((resp.status ?: -1) != 0) {
+            Log.w("AppRepository", "reverseGeocodeByHttp status=${resp.status} coordType=$coordType")
+            return null
+        }
         val r = resp.result ?: return null
         val city = r.addressComponent?.city.orEmpty()
         val district = r.addressComponent?.district.orEmpty()
         val title = r.sematic_description?.takeIf { it.isNotBlank() }
             ?: r.formatted_address.orEmpty()
         return MapPlace(
-            name = title,
+            name = title.ifBlank { "定位结果" },
             address = r.formatted_address.orEmpty(),
             city = city,
             district = district,

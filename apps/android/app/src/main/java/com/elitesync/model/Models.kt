@@ -188,3 +188,42 @@ data class AppVersionCheckResp(
     val changelog: String = "",
     val sha256: String = ""
 )
+
+data class MbtiQuizQuestion(
+    val question_id: Int,
+    val content: String,
+    val option_a_text: String,
+    val option_b_text: String
+)
+
+data class MbtiQuizResp(
+    val version_code: String,
+    val total: Int,
+    val items: List<MbtiQuizQuestion>
+)
+
+data class MbtiAnswerItem(
+    val question_id: Int,
+    val option: String
+)
+
+data class MbtiSubmitReq(
+    val version_code: String,
+    val answers: List<MbtiAnswerItem>
+)
+
+data class MbtiSubmitResp(
+    val ok: Boolean = false,
+    val result: String = "",
+    val letters: Map<String, String> = emptyMap(),
+    val scores: Map<String, Int> = emptyMap(),
+    val confidence: Map<String, Double> = emptyMap()
+)
+
+data class MbtiResultResp(
+    val exists: Boolean = false,
+    val result: String? = null,
+    val updated_at: String? = null,
+    val scores: Map<String, Int>? = null,
+    val confidence: Map<String, Double>? = null
+)

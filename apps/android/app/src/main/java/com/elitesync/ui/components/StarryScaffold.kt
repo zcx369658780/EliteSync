@@ -42,38 +42,63 @@ internal data class BtnStateColors(
     val normal: Color,
     val pressed: Color,
     val disabled: Color,
+    val borderNormal: Color,
+    val borderPressed: Color,
+    val borderDisabled: Color,
     val content: Color,
     val contentDisabled: Color
 )
 
 internal object StarryButtons {
+    val Back = BtnStateColors(
+        normal = Color(0xFF121A2E),
+        pressed = Color(0xFF1A2440),
+        disabled = Color(0xFF0F1526),
+        borderNormal = Color(0xFF2A3554),
+        borderPressed = Color(0xFF3A4A72),
+        borderDisabled = Color(0xFF1D2740),
+        content = Color(0xFFC9D6FF),
+        contentDisabled = Color(0xFF5B678A)
+    )
     val Primary = BtnStateColors(
-        normal = Color(0xFF5F84C5),
-        pressed = Color(0xFF4E74B2),
-        disabled = Color(0xFF31435F),
-        content = EliteSyncColors.TextPrimary,
-        contentDisabled = EliteSyncColors.TextTertiary
+        normal = Color(0xFF4DA3FF),
+        pressed = Color(0xFF2F7DDB),
+        disabled = Color(0xFF1B2438),
+        borderNormal = Color.Transparent,
+        borderPressed = Color.Transparent,
+        borderDisabled = Color.Transparent,
+        content = Color(0xFF061326),
+        contentDisabled = Color(0xFF5C6A86)
     )
     val Secondary = BtnStateColors(
-        normal = Color(0xFF24344E),
-        pressed = Color(0xFF1F2D44),
-        disabled = Color(0xFF172235),
-        content = EliteSyncColors.TextPrimary,
-        contentDisabled = EliteSyncColors.TextTertiary
+        normal = Color(0xFF141D33),
+        pressed = Color(0xFF1D2945),
+        disabled = Color(0xFF10182B),
+        borderNormal = Color(0xFF3C4E78),
+        borderPressed = Color(0xFF5871A8),
+        borderDisabled = Color(0xFF273552),
+        content = Color(0xFFAFC4FF),
+        contentDisabled = Color(0xFF5A6787)
     )
     val Option = BtnStateColors(
-        normal = Color(0xFF1F2F45),
-        pressed = Color(0xFF192639),
-        disabled = Color(0xFF141F2F),
-        content = Color(0xFFD4E1F3),
-        contentDisabled = Color(0xFF5B6B84)
+        normal = Color(0xFF0E1528),
+        pressed = Color(0xFF17223A),
+        disabled = Color(0xFF0B1120),
+        borderNormal = Color(0xFF1F2B47),
+        borderPressed = Color(0xFF32456F),
+        borderDisabled = Color(0xFF18233B),
+        content = Color(0xFF9FB0D6),
+        contentDisabled = Color(0xFF4F5C7C)
     )
     val ListItem = BtnStateColors(
-        normal = Color(0xFF162235),
-        pressed = Color(0xFF1B2A42),
-        disabled = Color(0xFF111A29),
-        content = Color(0xFFC9D8EC),
-        contentDisabled = Color(0xFF55657E)
+        normal = Color(0xFF0E1528),
+        pressed = Color(0xFF17223A),
+        disabled = Color(0xFF0B1120),
+        borderNormal = Color(0xFF1F2B47),
+        borderPressed = Color(0xFF32456F),
+        borderDisabled = Color(0xFF18233B),
+        content = Color(0xFF9FB0D6),
+        contentDisabled = Color(0xFF4F5C7C)
     )
 }
 
@@ -111,6 +136,16 @@ internal fun btnBgColor(
     else -> palette.normal
 }
 
+internal fun btnBorderColor(
+    palette: BtnStateColors,
+    active: Boolean,
+    pressed: Boolean
+): Color = when {
+    !active -> palette.borderDisabled
+    pressed -> palette.borderPressed
+    else -> palette.borderNormal
+}
+
 @Composable
 fun StarryListItemCard(
     text: String,
@@ -135,9 +170,15 @@ fun StarryListItemCard(
             .fillMaxWidth()
             .heightIn(min = 56.dp)
             .clip(RoundedCornerShape(EliteSyncShapes.ListItemRadius))
-            .padding(horizontal = EliteSyncDimens.Space4, vertical = 8.dp)
+            .border(
+                width = 1.dp,
+                color = StarryButtons.ListItem.borderNormal,
+                shape = RoundedCornerShape(EliteSyncShapes.ListItemRadius)
+            )
+            .background(StarryButtons.ListItem.normal)
+            .padding(horizontal = EliteSyncDimens.Space12, vertical = 12.dp)
     ) {
-        Text(text = text, color = EliteSyncColors.TextSecondary)
+        Text(text = text, color = StarryButtons.ListItem.content)
     }
 }
 
@@ -178,6 +219,11 @@ fun StarryOptionCard(
             }
             .clip(RoundedCornerShape(14.dp))
             .background(bg)
+            .border(
+                width = 1.dp,
+                color = if (selected) StarryButtons.Option.borderPressed else StarryButtons.Option.borderNormal,
+                shape = RoundedCornerShape(14.dp)
+            )
             .clickable(
                 interactionSource = interactionSource,
                 indication = null

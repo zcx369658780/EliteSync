@@ -8,11 +8,14 @@ import com.elitesync.astro.AstroProfileResult
 import com.elitesync.model.AstroProfilePayload
 import com.elitesync.model.AstroProfileRecord
 import com.elitesync.model.AnswerItem
+import com.elitesync.model.MbtiAnswerItem
 import com.elitesync.model.MatchResp
+import com.elitesync.model.MbtiQuizQuestion
 import com.elitesync.model.ProfileResp
 import com.elitesync.model.Question
 import com.elitesync.network.NetworkErrorMapper
 import com.elitesync.repo.AppRepository
+import java.time.LocalDateTime
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -22,6 +25,7 @@ import java.time.format.DateTimeFormatter
 
 class AppViewModel : ViewModel() {
     private val repo = AppRepository()
+    private val unresolvedCityPlaceholder = "已定位（未解析城市）"
 
     private val _token = MutableStateFlow("")
     val token: StateFlow<String> = _token
@@ -73,6 +77,14 @@ class AppViewModel : ViewModel() {
     val insightsBirthTime: StateFlow<String> = _insightsBirthTime
     private val _insightsMbti = MutableStateFlow("")
     val insightsMbti: StateFlow<String> = _insightsMbti
+    private val _mbtiQuizVersion = MutableStateFlow("lite3_v1")
+    val mbtiQuizVersion: StateFlow<String> = _mbtiQuizVersion
+    private val _mbtiQuestions = MutableStateFlow<List<MbtiQuizQuestion>>(emptyList())
+    val mbtiQuestions: StateFlow<List<MbtiQuizQuestion>> = _mbtiQuestions
+    private val _mbtiAnswers = MutableStateFlow<Map<Int, String>>(emptyMap())
+    val mbtiAnswers: StateFlow<Map<Int, String>> = _mbtiAnswers
+    private val _mbtiConfidence = MutableStateFlow<Map<String, Double>>(emptyMap())
+    val mbtiConfidence: StateFlow<Map<String, Double>> = _mbtiConfidence
     private val _insightsBirthQuery = MutableStateFlow("")
     val insightsBirthQuery: StateFlow<String> = _insightsBirthQuery
     private val _insightsResult = MutableStateFlow<AstroProfileResult?>(null)
@@ -85,6 +97,10 @@ class AppViewModel : ViewModel() {
     val error: StateFlow<String> = _error
     private val _appUpdateInfo = MutableStateFlow<com.elitesync.model.AppVersionCheckResp?>(null)
     val appUpdateInfo: StateFlow<com.elitesync.model.AppVersionCheckResp?> = _appUpdateInfo
+    private val _appUpdateCheckMessage = MutableStateFlow("")
+    val appUpdateCheckMessage: StateFlow<String> = _appUpdateCheckMessage
+    private val _appUpdateLastCheckedAt = MutableStateFlow("")
+    val appUpdateLastCheckedAt: StateFlow<String> = _appUpdateLastCheckedAt
     private val _hapticEnabled = MutableStateFlow(false)
     val hapticEnabled: StateFlow<Boolean> = _hapticEnabled
     private val _clickSoundEnabled = MutableStateFlow(true)
@@ -103,7 +119,10 @@ class AppViewModel : ViewModel() {
         _error.value = ""
     }
 
-    fun checkAppUpdate() = viewModelScope.launch {
+    fun checkAppUpdate(reportMessage: Boolean = false) = viewModelScope.launch {
+        val checkedAt = LocalDateTime.now()
+            .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+        _appUpdateLastCheckedAt.value = checkedAt
         runCatching {
             repo.checkAppVersion(
                 versionName = BuildConfig.VERSION_NAME,
@@ -111,12 +130,48 @@ class AppViewModel : ViewModel() {
             )
         }.onSuccess { resp ->
             _appUpdateInfo.value = if (resp.has_update && resp.download_url.isNotBlank()) resp else null
+            if (reportMessage) {
+                _appUpdateCheckMessage.value = buildString {
+                    append("服务端最新版本：${resp.latest_version_name}")
+                    append("（最小支持：${resp.min_supported_version_name}）")
+                    append("\n更新类型：")
+                    append(if (resp.has_update) if (resp.force_update) "强制更新" else "可选更新" else "已是最新")
+                    append("\n检查时间：$checkedAt")
+                }
+            }
+        }.onFailure {
+            if (reportMessage) {
+                _appUpdateCheckMessage.value = "检查更新失败：${err(it)}\n检查时间：$checkedAt"
+            }
         }
+    }
+
+    fun clearAppUpdateCheckMessage() {
+        _appUpdateCheckMessage.value = ""
     }
 
     fun dismissAppUpdatePrompt() {
         if (_appUpdateInfo.value?.force_update == true) return
         _appUpdateInfo.value = null
+    }
+
+    fun buildUpdateDiagnosticText(): String {
+        val update = _appUpdateInfo.value
+        return buildString {
+            appendLine("当前版本：${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})")
+            appendLine("API_BASE_URL：${BuildConfig.API_BASE_URL}")
+            appendLine("WS_BASE_URL：${BuildConfig.WS_BASE_URL}")
+            appendLine("上次检查：${_appUpdateLastCheckedAt.value.ifBlank { "未检查" }}")
+            if (update != null) {
+                appendLine("服务端版本：${update.latest_version_name} (${update.latest_version_code})")
+                appendLine("最小支持：${update.min_supported_version_name}")
+                appendLine("是否更新：${if (update.has_update) "是" else "否"}")
+                appendLine("是否强更：${if (update.force_update) "是" else "否"}")
+                appendLine("下载地址：${update.download_url}")
+            } else {
+                appendLine("服务端版本：未获取或当前已是最新")
+            }
+        }.trim()
     }
 
     fun toggleHapticEnabled() {
@@ -134,6 +189,17 @@ class AppViewModel : ViewModel() {
     fun locationUnavailable() {
         _status.value = "未获取到设备定位"
         _error.value = "未获取到设备定位，请确认已开启定位服务；模拟器请先在 Extended Controls 设置经纬度。"
+    }
+
+    fun cityResolvedFromLocation(city: String) {
+        _currentUserCity.value = city
+        _status.value = "定位成功"
+        _error.value = ""
+    }
+
+    fun cityUnresolvedFromLocation() {
+        _status.value = "定位成功（未解析城市）"
+        _error.value = ""
     }
 
     fun addIncomingMessage(msg: String) {
@@ -164,6 +230,10 @@ class AppViewModel : ViewModel() {
         _birthPlace.value = null
         _insightsBirthTime.value = ""
         _insightsMbti.value = ""
+        _mbtiQuizVersion.value = "lite3_v1"
+        _mbtiQuestions.value = emptyList()
+        _mbtiAnswers.value = emptyMap()
+        _mbtiConfidence.value = emptyMap()
         _insightsBirthQuery.value = ""
         _insightsResult.value = null
         _error.value = ""
@@ -207,6 +277,7 @@ class AppViewModel : ViewModel() {
                 _error.value = ""
                 loadBasicProfile()
                 loadAstroProfileCache()
+                loadMbtiResult()
                 loadQuestionnaireProgress()
             }
             .onFailure { setError("登录失败: ${err(it)}") }
@@ -220,6 +291,8 @@ class AppViewModel : ViewModel() {
                 _currentUserBirthday.value = it.birthday.orEmpty()
                 _currentUserGender.value = it.gender.orEmpty()
                 _currentUserCity.value = it.city.orEmpty()
+                    .takeUnless { c -> c.contains("未解析城市") || c == unresolvedCityPlaceholder }
+                    .orEmpty()
                 _currentRelationshipGoal.value = it.relationship_goal.orEmpty()
             }
     }
@@ -232,9 +305,27 @@ class AppViewModel : ViewModel() {
         relationshipGoal: String
     ) = viewModelScope.launch {
         if (_token.value.isBlank()) return@launch setError("请先登录")
-        if (gender != "male" && gender != "female") return@launch setError("请选择性别（男/女）")
-        if (city.isBlank()) return@launch setError("请先获取城市定位")
-        if (relationshipGoal !in setOf("marriage", "dating", "friendship")) return@launch setError("请选择婚恋目标")
+        val normalizedCity = city.trim()
+            .takeUnless { it.contains("未解析城市") || it == unresolvedCityPlaceholder }
+            .orEmpty()
+        // Always allow local save; server sync requires complete fields.
+        _currentUserName.value = name.orEmpty()
+        _currentUserBirthday.value = birthday.trim()
+        _currentUserGender.value = gender
+        _currentUserCity.value = normalizedCity
+        _currentRelationshipGoal.value = relationshipGoal
+
+        val canSyncServer =
+            gender in setOf("male", "female") &&
+                normalizedCity.isNotBlank() &&
+                relationshipGoal in setOf("marriage", "dating", "friendship")
+
+        if (!canSyncServer) {
+            _status.value = "基础资料已本地保存（可稍后补全后再同步）"
+            _error.value = ""
+            return@launch
+        }
+
         _status.value = "保存基础资料中..."
         runCatching {
             repo.saveBasicProfile(
@@ -242,16 +333,11 @@ class AppViewModel : ViewModel() {
                 birthday = birthday.trim().ifBlank { null },
                 name = name,
                 gender = gender,
-                city = city,
+                city = normalizedCity,
                 relationshipGoal = relationshipGoal
             )
         }
             .onSuccess {
-                _currentUserName.value = name.orEmpty()
-                _currentUserBirthday.value = birthday.trim()
-                _currentUserGender.value = gender
-                _currentUserCity.value = city
-                _currentRelationshipGoal.value = relationshipGoal
                 _status.value = "基础资料已保存"
                 _error.value = ""
             }
@@ -260,11 +346,6 @@ class AppViewModel : ViewModel() {
                 if (mapped.contains("route", ignoreCase = true) &&
                     mapped.contains("profile/basic", ignoreCase = true)
                 ) {
-                    _currentUserName.value = name.orEmpty()
-                    _currentUserBirthday.value = birthday.trim()
-                    _currentUserGender.value = gender
-                    _currentUserCity.value = city
-                    _currentRelationshipGoal.value = relationshipGoal
                     _status.value = "基础资料已本地更新（服务端待升级）"
                     _error.value = ""
                 } else {
@@ -497,9 +578,43 @@ class AppViewModel : ViewModel() {
     fun reverseGeocodeCurrent(lat: Double, lng: Double) = viewModelScope.launch {
         _status.value = "定位解析中..."
         runCatching { repo.reverseGeocode(lat, lng) }
-            .onSuccess {
-                _currentPlace.value = it
-                _status.value = if (it != null) "定位成功" else "定位解析无结果"
+            .onSuccess { initial ->
+                var resolved = initial
+
+                // Fallback: reuse the same place suggestion search pipeline used by insights screen.
+                if (resolved == null || resolved.city.isBlank()) {
+                    val queryCandidates = listOf(
+                        initial?.name.orEmpty(),
+                        initial?.address.orEmpty()
+                    ).filter { it.isNotBlank() }.distinct()
+
+                    for (query in queryCandidates) {
+                        val searched = runCatching { repo.searchPlaces(query) }.getOrDefault(emptyList())
+                        val hit = searched.firstOrNull { it.city.isNotBlank() || it.district.isNotBlank() }
+                        if (hit != null) {
+                            val base = resolved
+                            resolved = if (base == null) {
+                                hit
+                            } else {
+                                base.copy(
+                                    city = hit.city.ifBlank { base.city },
+                                    district = hit.district.ifBlank { base.district }
+                                )
+                            }
+                            break
+                        }
+                    }
+                }
+
+                _currentPlace.value = resolved ?: com.elitesync.model.MapPlace(
+                    name = "定位成功",
+                    address = "lat=$lat,lng=$lng",
+                    city = "",
+                    district = "",
+                    location = com.elitesync.model.MapPoint(lat, lng)
+                )
+                val finalCity = _currentPlace.value?.city.orEmpty()
+                _status.value = if (finalCity.isNotBlank()) "定位成功" else "定位成功（未解析城市）"
                 _error.value = ""
             }
             .onFailure { setError("定位解析失败: ${err(it)}") }
@@ -525,8 +640,13 @@ class AppViewModel : ViewModel() {
         _insightsBirthTime.value = v
     }
 
-    fun updateInsightsMbti(v: String) {
-        _insightsMbti.value = v.uppercase()
+    fun chooseMbtiAnswer(questionId: Int, option: String) {
+        if (option != "A" && option != "B") return
+        _mbtiAnswers.value = _mbtiAnswers.value.toMutableMap().apply { put(questionId, option) }
+    }
+
+    fun resetMbtiQuizAnswers() {
+        _mbtiAnswers.value = emptyMap()
     }
 
     fun updateInsightsBirthQuery(v: String) {
@@ -553,6 +673,61 @@ class AppViewModel : ViewModel() {
                 }
                 _insightsResult.value = cached.toAstroResult()
             }
+    }
+
+    fun loadMbtiResult() = viewModelScope.launch {
+        val token = _token.value
+        if (token.isBlank()) return@launch
+        runCatching { repo.mbtiResult(token) }
+            .onSuccess { resp ->
+                if (resp.exists && !resp.result.isNullOrBlank()) {
+                    _insightsMbti.value = resp.result
+                    _mbtiConfidence.value = resp.confidence ?: emptyMap()
+                }
+            }
+    }
+
+    fun loadMbtiQuiz(version: String = "lite3_v1") = viewModelScope.launch {
+        val token = _token.value
+        if (token.isBlank()) return@launch setError("请先登录")
+        _status.value = "加载MBTI题目中..."
+        runCatching { repo.mbtiQuiz(token, version) }
+            .onSuccess { resp ->
+                _mbtiQuizVersion.value = resp.version_code
+                _mbtiQuestions.value = resp.items
+                if (_mbtiAnswers.value.keys.none { qid -> resp.items.any { it.question_id == qid } }) {
+                    _mbtiAnswers.value = emptyMap()
+                }
+                _status.value = "MBTI题目已加载(${resp.total}题)"
+                _error.value = ""
+            }
+            .onFailure { setError("加载MBTI题目失败: ${err(it)}") }
+    }
+
+    fun submitMbtiQuiz() = viewModelScope.launch {
+        val token = _token.value
+        if (token.isBlank()) return@launch setError("请先登录")
+        val qs = _mbtiQuestions.value
+        if (qs.isEmpty()) return@launch setError("请先加载MBTI题目")
+        val answersMap = _mbtiAnswers.value
+        if (answersMap.size < qs.size) return@launch setError("请先完成全部MBTI题目")
+
+        val answers = qs.map { q ->
+            MbtiAnswerItem(question_id = q.question_id, option = answersMap[q.question_id] ?: "")
+        }
+        if (answers.any { it.option != "A" && it.option != "B" }) {
+            return@launch setError("存在未作答题目")
+        }
+
+        _status.value = "MBTI结果计算中..."
+        runCatching { repo.submitMbti(token, _mbtiQuizVersion.value, answers) }
+            .onSuccess { resp ->
+                _insightsMbti.value = resp.result
+                _mbtiConfidence.value = resp.confidence
+                _status.value = "MBTI测试完成（已保存）"
+                _error.value = ""
+            }
+            .onFailure { setError("提交MBTI失败: ${err(it)}") }
     }
 
     fun computeAstroProfile() = viewModelScope.launch {

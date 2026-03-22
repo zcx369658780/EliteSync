@@ -15,7 +15,7 @@
 - [ ] Privacy/auth impact reviewed (no public leak of private profile data)
 - [ ] Critical user flow verified (register/login/profile/astro path)
 - [ ] Map/navigation state retention verified (no form reset on return)
-- [ ] CI passed (`backend-tests`, `android-build`)
+- [ ] CI passed (`release-gate-quick`, `backend-tests`, `android-build`)
 
 ## Verification
 ### Local
@@ -23,6 +23,9 @@
   - [ ] `php artisan test`
 - Android:
   - [ ] `./gradlew :app:assembleDebug` (or `gradlew.bat` on Windows)
+- Gate:
+  - [ ] `powershell -ExecutionPolicy Bypass -File .\scripts\release_gate_alpha.ps1 -QuickUpdateOnly`
+  - [ ] (Before release) `powershell -ExecutionPolicy Bypass -File .\scripts\release_gate_alpha.ps1 -Phone 13800000022 -Password "******"`
 
 ### Manual Smoke
 - [ ] Login / register works
