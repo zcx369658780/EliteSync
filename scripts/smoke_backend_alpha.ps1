@@ -11,12 +11,17 @@ Param(
 $ErrorActionPreference = "Stop"
 
 $curlCmd = $null
-$curlExe = Get-Command "curl.exe" -ErrorAction SilentlyContinue
-if ($null -ne $curlExe) {
-    $curlCmd = $curlExe.Source
+
+# Prefer Windows curl.exe when available; otherwise use first curl application found.
+$curlExe = @(Get-Command "curl.exe" -ErrorAction SilentlyContinue)
+if ($curlExe.Count -gt 0 -and -not [string]::IsNullOrWhiteSpace([string]$curlExe[0].Source)) {
+    $curlCmd = [string]$curlExe[0].Source
 }
-elseif (Get-Command "curl" -CommandType Application -ErrorAction SilentlyContinue) {
-    $curlCmd = (Get-Command "curl" -CommandType Application -ErrorAction SilentlyContinue).Source
+else {
+    $curlCandidates = @(Get-Command "curl" -CommandType Application -All -ErrorAction SilentlyContinue)
+    if ($curlCandidates.Count -gt 0 -and -not [string]::IsNullOrWhiteSpace([string]$curlCandidates[0].Source)) {
+        $curlCmd = [string]$curlCandidates[0].Source
+    }
 }
 
 function Invoke-CurlText {
