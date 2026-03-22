@@ -1,5 +1,6 @@
 package com.elitesync.ui
 
+import com.elitesync.BuildConfig
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.elitesync.astro.AstroCalculator
@@ -82,6 +83,8 @@ class AppViewModel : ViewModel() {
 
     private val _error = MutableStateFlow("")
     val error: StateFlow<String> = _error
+    private val _appUpdateInfo = MutableStateFlow<com.elitesync.model.AppVersionCheckResp?>(null)
+    val appUpdateInfo: StateFlow<com.elitesync.model.AppVersionCheckResp?> = _appUpdateInfo
     private val _hapticEnabled = MutableStateFlow(false)
     val hapticEnabled: StateFlow<Boolean> = _hapticEnabled
     private val _clickSoundEnabled = MutableStateFlow(true)
@@ -98,6 +101,22 @@ class AppViewModel : ViewModel() {
 
     fun clearError() {
         _error.value = ""
+    }
+
+    fun checkAppUpdate() = viewModelScope.launch {
+        runCatching {
+            repo.checkAppVersion(
+                versionName = BuildConfig.VERSION_NAME,
+                versionCode = BuildConfig.VERSION_CODE
+            )
+        }.onSuccess { resp ->
+            _appUpdateInfo.value = if (resp.has_update && resp.download_url.isNotBlank()) resp else null
+        }
+    }
+
+    fun dismissAppUpdatePrompt() {
+        if (_appUpdateInfo.value?.force_update == true) return
+        _appUpdateInfo.value = null
     }
 
     fun toggleHapticEnabled() {

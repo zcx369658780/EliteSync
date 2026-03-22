@@ -22,6 +22,9 @@ class AppRepository {
     private val api = ApiClient.service
     private val baidu = BaiduMapClient.service
 
+    suspend fun checkAppVersion(versionName: String, versionCode: Int, platform: String = "android", channel: String = "stable") =
+        api.checkAppVersion(platform = platform, versionName = versionName, versionCode = versionCode, channel = channel)
+
     suspend fun register(phone: String, password: String, birthday: String?, realnameVerified: Boolean) =
         api.register(RegisterReq(phone, password, birthday, realnameVerified))
     suspend fun saveBasicProfile(

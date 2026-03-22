@@ -173,3 +173,18 @@ data class BasicProfileResp(
     val relationship_goal: String? = null,
     val realname_verified: Boolean? = null
 )
+
+data class AppVersionCheckResp(
+    val platform: String = "android",
+    val channel: String = "stable",
+    val client_version_name: String = "",
+    val client_version_code: Int = 0,
+    val latest_version_name: String = "",
+    val latest_version_code: Int = 0,
+    val min_supported_version_name: String = "",
+    val has_update: Boolean = false,
+    val force_update: Boolean = false,
+    val download_url: String = "",
+    val changelog: String = "",
+    val sha256: String = ""
+)

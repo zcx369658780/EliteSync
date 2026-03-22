@@ -5,8 +5,17 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
+import retrofit2.http.Query
 
 interface ApiService {
+    @GET("/api/v1/app/version/check")
+    suspend fun checkAppVersion(
+        @Query("platform") platform: String,
+        @Query("version_name") versionName: String,
+        @Query("version_code") versionCode: Int,
+        @Query("channel") channel: String = "stable"
+    ): AppVersionCheckResp
+
     @POST("/api/v1/auth/register")
     suspend fun register(@Body req: RegisterReq): TokenResp
 

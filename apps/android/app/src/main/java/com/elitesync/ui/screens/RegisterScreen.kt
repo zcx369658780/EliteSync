@@ -4,9 +4,11 @@ import androidx.compose.foundation.layout.size
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
+import android.net.Uri
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -28,6 +30,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -46,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.elitesync.R
+import com.elitesync.BuildConfig
 import com.elitesync.ui.AppViewModel
 import com.elitesync.ui.components.RealtimeConstellationSky
 import com.elitesync.ui.components.SkyPreset
@@ -88,6 +93,7 @@ fun RegisterScreen(vm: AppViewModel, onNext: (String) -> Unit) {
     val liteMode by vm.litePerformanceMode.collectAsState()
     val status by vm.status.collectAsState()
     val error by vm.error.collectAsState()
+    val appUpdateInfo by vm.appUpdateInfo.collectAsState()
     val scrollState = rememberScrollState()
     val (panX, panY) = rememberAnimatedGlobalStarPan()
 
@@ -118,6 +124,7 @@ fun RegisterScreen(vm: AppViewModel, onNext: (String) -> Unit) {
     }
 
     LaunchedEffect(Unit) {
+        vm.checkAppUpdate()
         phone = prefs.getString(KEY_LAST_PHONE, "").orEmpty()
         password = prefs.getString(KEY_LAST_PASSWORD, "").orEmpty()
         val cachedLat = prefs.getString(KEY_LAST_SKY_LAT, null)?.toDoubleOrNull()
@@ -318,6 +325,7 @@ AnimatedVisibility(
                     val phoneError = localError.contains("手机号格式错误")
                     val passwordError = localError.contains("密码格式错误")
                     Text("慢约会 登录/注册", color = Color.White)
+                    Text("当前版本：${BuildConfig.VERSION_NAME}", color = Color(0xFFAAC2F2))
                     StarrySectionCard(title = "账号信息") {
                         StarryTextField(
                             value = phone,
@@ -358,6 +366,42 @@ AnimatedVisibility(
                     }
                 }
             }
+        }
+
+        appUpdateInfo?.let { update ->
+            AlertDialog(
+                onDismissRequest = {
+                    if (!update.force_update) vm.dismissAppUpdatePrompt()
+                },
+                title = { Text(if (update.force_update) "发现新版本（必须更新）" else "发现新版本") },
+                text = {
+                    Text(
+                        buildString {
+                            append("当前版本：${update.client_version_name}\n")
+                            append("最新版本：${update.latest_version_name}\n")
+                            if (update.changelog.isNotBlank()) {
+                                append("\n更新内容：\n${update.changelog}")
+                            }
+                        }
+                    )
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            runCatching {
+                                context.startActivity(
+                                    Intent(Intent.ACTION_VIEW, Uri.parse(update.download_url))
+                                )
+                            }
+                        }
+                    ) { Text("立即更新") }
+                },
+                dismissButton = if (!update.force_update) {
+                    {
+                        TextButton(onClick = { vm.dismissAppUpdatePrompt() }) { Text("稍后") }
+                    }
+                } else null
+            )
         }
     }
 }

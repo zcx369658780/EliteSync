@@ -22,6 +22,7 @@
 - `reference/dating_system_design_supplement_for_codex.md`
 - `reference/DEMO_PERSONA_USERS.md`
 - `reference/GITHUB_PUSH_NETWORK_MODE.md`
+- `reference/APP_VERSIONING_SPEC.md`
 
 ## Archive
 - `archive/legacy_2026-03/`: 历史版本文档归档（保留，不作为当前执行入口）
