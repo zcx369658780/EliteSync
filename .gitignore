@@ -18,6 +18,7 @@ apps/android/.idea/
 apps/android/build/
 apps/android/**/build/
 local.properties
+apps/android/local.properties
 
 # Laravel runtime/cache artifacts
 services/backend-laravel/vendor/
@@ -33,3 +34,6 @@ services/backend-laravel/bootstrap/cache/*.php
 # Local diagnostics and cloud snapshots
 logs_*/
 backups/aliyun_backend_*/
+docs/devlogs/*.md
+docs/同事建议/.tmp_*/
+docs/同事建议/
