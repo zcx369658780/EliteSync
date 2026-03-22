@@ -1,0 +1,4044 @@
+{
+  "schema_version": "2.0",
+  "question_bank_id": "question_bank_docx_scored_v2",
+  "title": {
+    "zh": "DOCX 提取题库 V2 赋分版",
+    "en": "DOCX Extracted Question Bank Scored V2"
+  },
+  "description": {
+    "zh": "基于 docx_questions_extracted.json 的 57 道 selectable questions，按 EliteSync V2 维度完成赋分。",
+    "en": "Scored selectable questions derived from docx_questions_extracted.json under EliteSync V2 dimensions."
+  },
+  "categories": [
+    "communication",
+    "family",
+    "intimacy",
+    "lifestyle",
+    "relationship_goals",
+    "social_energy"
+  ],
+  "questions": [
+    {
+      "source_question_no": 1,
+      "category": "lifestyle",
+      "subtopic": "ethical_convenience_tradeoff",
+      "question_text": {
+        "zh": "回忆一下过去一年，你有没有遇到过这样的情况：你知道某件事的“正确做法”，但最后还是选择了“更方便/对自己更有利”的做法？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "planning_reliability",
+        "reciprocity_investment",
+        "emotional_regulation"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "有，经常这样"
+          },
+          "dimension_weights": {
+            "planning_reliability": -0.74,
+            "reciprocity_investment": -0.68,
+            "emotional_regulation": -0.49
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "有，偶尔这样"
+          },
+          "dimension_weights": {
+            "planning_reliability": -0.28,
+            "reciprocity_investment": -0.19,
+            "emotional_regulation": -0.11
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "很少这样"
+          },
+          "dimension_weights": {
+            "planning_reliability": 0.32,
+            "reciprocity_investment": 0.24,
+            "emotional_regulation": 0.18
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "没有，我一般都按正确的方式做"
+          },
+          "dimension_weights": {
+            "planning_reliability": 0.71,
+            "reciprocity_investment": 0.63,
+            "emotional_regulation": 0.41
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 2,
+      "category": "lifestyle",
+      "subtopic": "resume_embellishment_view",
+      "question_text": {
+        "zh": "小张在求职时，为了让简历更好看，稍微美化了一段实习经历（把3个月写成6个月）。他觉得“大家都这么做”。你怎么看？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "planning_reliability",
+        "reciprocity_investment",
+        "communication_clarity"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "绝对不能接受，这是诚信问题"
+          },
+          "dimension_weights": {
+            "planning_reliability": 0.78,
+            "reciprocity_investment": 0.69,
+            "communication_clarity": 0.44
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "可以理解，但自己不会这么做"
+          },
+          "dimension_weights": {
+            "planning_reliability": 0.39,
+            "reciprocity_investment": 0.31,
+            "communication_clarity": 0.18
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "只要能力匹配，简历美化无伤大雅"
+          },
+          "dimension_weights": {
+            "planning_reliability": -0.24,
+            "reciprocity_investment": -0.17,
+            "communication_clarity": -0.11
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "招聘本身就是博弈，这很正常"
+          },
+          "dimension_weights": {
+            "planning_reliability": -0.63,
+            "reciprocity_investment": -0.54,
+            "communication_clarity": -0.36
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 3,
+      "category": "intimacy",
+      "subtopic": "infidelity_advice_response",
+      "question_text": {
+        "zh": "你最好的朋友告诉你，TA发现自己的恋爱对象出轨了，但TA很爱对方，问你应该怎么办。你当时是怎么建议的？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "autonomy_boundary",
+        "conflict_repair",
+        "empathy_responsiveness",
+        "emotional_regulation"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "建议直接分手，出轨零容忍"
+          },
+          "dimension_weights": {
+            "autonomy_boundary": 0.71,
+            "conflict_repair": -0.48,
+            "empathy_responsiveness": 0.12,
+            "emotional_regulation": -0.08
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "建议再给对方一次机会"
+          },
+          "dimension_weights": {
+            "autonomy_boundary": -0.09,
+            "conflict_repair": 0.67,
+            "empathy_responsiveness": 0.58,
+            "emotional_regulation": 0.29
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "建议先观察，不要冲动"
+          },
+          "dimension_weights": {
+            "autonomy_boundary": 0.22,
+            "conflict_repair": 0.31,
+            "empathy_responsiveness": 0.39,
+            "emotional_regulation": 0.63
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "没遇到过，想象中会建议分手"
+          },
+          "dimension_weights": {
+            "autonomy_boundary": 0.43,
+            "conflict_repair": -0.29,
+            "empathy_responsiveness": 0.04,
+            "emotional_regulation": -0.21
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 4,
+      "category": "communication",
+      "subtopic": "roommate_conflict_response",
+      "question_text": {
+        "zh": "你和朋友合租，朋友经常晚归且不打扫公共区域。 真实情况下，你通常会怎么做？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "communication_clarity",
+        "conflict_repair",
+        "autonomy_boundary",
+        "emotional_regulation"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "直接沟通，表达不满"
+          },
+          "dimension_weights": {
+            "communication_clarity": 0.76,
+            "conflict_repair": 0.54,
+            "autonomy_boundary": 0.51,
+            "emotional_regulation": 0.27
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "自己多做点，懒得冲突"
+          },
+          "dimension_weights": {
+            "communication_clarity": -0.19,
+            "conflict_repair": -0.23,
+            "autonomy_boundary": -0.31,
+            "emotional_regulation": 0.12
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "默默减少交流，考虑换室友"
+          },
+          "dimension_weights": {
+            "communication_clarity": -0.14,
+            "conflict_repair": -0.41,
+            "autonomy_boundary": 0.33,
+            "emotional_regulation": -0.08
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "在朋友圈发“有些人真的不懂尊重”"
+          },
+          "dimension_weights": {
+            "communication_clarity": -0.61,
+            "conflict_repair": -0.67,
+            "autonomy_boundary": -0.28,
+            "emotional_regulation": -0.49
+          }
+        },
+        {
+          "option_id": "E",
+          "label": {
+            "zh": "没遇到过，想象中会直接沟通"
+          },
+          "dimension_weights": {
+            "communication_clarity": 0.43,
+            "conflict_repair": 0.22,
+            "autonomy_boundary": 0.19,
+            "emotional_regulation": 0.06
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 5,
+      "category": "lifestyle",
+      "subtopic": "lottery_priority_order",
+      "question_text": {
+        "zh": "如果你意外中了100万彩票，你最想做的第一件事是什么？请按顺序排列："
+      },
+      "answer_type": "ranking",
+      "acceptable_answer_logic": "rank_select",
+      "measured_dimensions": [
+        "reciprocity_investment",
+        "planning_reliability",
+        "openness_exploration",
+        "empathy_responsiveness",
+        "autonomy_boundary"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "给父母买房/还贷"
+          },
+          "dimension_weights": {
+            "reciprocity_investment": 0.73,
+            "planning_reliability": 0.41,
+            "openness_exploration": -0.22,
+            "empathy_responsiveness": 0.51,
+            "autonomy_boundary": -0.09
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "投资自己（留学/进修/创业）"
+          },
+          "dimension_weights": {
+            "reciprocity_investment": 0.18,
+            "planning_reliability": 0.46,
+            "openness_exploration": 0.74,
+            "empathy_responsiveness": 0.07,
+            "autonomy_boundary": 0.63
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "存起来，当作安全感"
+          },
+          "dimension_weights": {
+            "reciprocity_investment": 0.09,
+            "planning_reliability": 0.78,
+            "openness_exploration": -0.31,
+            "empathy_responsiveness": -0.14,
+            "autonomy_boundary": 0.29
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "吃喝玩乐，享受生活"
+          },
+          "dimension_weights": {
+            "reciprocity_investment": -0.34,
+            "planning_reliability": -0.57,
+            "openness_exploration": 0.48,
+            "empathy_responsiveness": -0.22,
+            "autonomy_boundary": 0.17
+          }
+        },
+        {
+          "option_id": "E",
+          "label": {
+            "zh": "捐一部分给需要的人"
+          },
+          "dimension_weights": {
+            "reciprocity_investment": 0.61,
+            "planning_reliability": 0.21,
+            "openness_exploration": 0.12,
+            "empathy_responsiveness": 0.79,
+            "autonomy_boundary": 0.04
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 6,
+      "category": "lifestyle",
+      "subtopic": "goal_pursuit_intensity",
+      "question_text": {
+        "zh": "回忆一下，过去三年里，你有没有过“为了某个目标非常拼命”的经历？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "planning_reliability",
+        "commitment_readiness",
+        "reciprocity_investment",
+        "emotional_regulation"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "有，为了高考/考研/重要项目拼过"
+          },
+          "dimension_weights": {
+            "planning_reliability": 0.78,
+            "commitment_readiness": 0.43,
+            "reciprocity_investment": 0.11,
+            "emotional_regulation": 0.37
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "有，为了追一个人拼过"
+          },
+          "dimension_weights": {
+            "planning_reliability": 0.19,
+            "commitment_readiness": 0.61,
+            "reciprocity_investment": 0.66,
+            "emotional_regulation": -0.08
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "有，但不太记得了"
+          },
+          "dimension_weights": {
+            "planning_reliability": -0.12,
+            "commitment_readiness": -0.07,
+            "reciprocity_investment": -0.09,
+            "emotional_regulation": -0.06
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "没有，我一般比较随缘"
+          },
+          "dimension_weights": {
+            "planning_reliability": -0.58,
+            "commitment_readiness": -0.44,
+            "reciprocity_investment": -0.18,
+            "emotional_regulation": -0.31
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 7,
+      "category": "communication",
+      "subtopic": "debt_boundary_repair",
+      "question_text": {
+        "zh": "你有没有借过钱给别人，对方迟迟不还的经历？最后怎么处理的？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "communication_clarity",
+        "autonomy_boundary",
+        "conflict_repair",
+        "rejection_resilience"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "有，直接要回来了"
+          },
+          "dimension_weights": {
+            "communication_clarity": 0.74,
+            "autonomy_boundary": 0.71,
+            "conflict_repair": 0.18,
+            "rejection_resilience": 0.33
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "有，委婉提醒后要回来了"
+          },
+          "dimension_weights": {
+            "communication_clarity": 0.46,
+            "autonomy_boundary": 0.38,
+            "conflict_repair": 0.57,
+            "rejection_resilience": 0.24
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "有，最后没要回来，关系也淡了"
+          },
+          "dimension_weights": {
+            "communication_clarity": -0.21,
+            "autonomy_boundary": -0.17,
+            "conflict_repair": -0.49,
+            "rejection_resilience": -0.42
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "有，就当送了，以后不再借"
+          },
+          "dimension_weights": {
+            "communication_clarity": -0.08,
+            "autonomy_boundary": 0.44,
+            "conflict_repair": -0.31,
+            "rejection_resilience": -0.19
+          }
+        },
+        {
+          "option_id": "E",
+          "label": {
+            "zh": "没有过这种经历"
+          },
+          "dimension_weights": {
+            "communication_clarity": 0.11,
+            "autonomy_boundary": 0.09,
+            "conflict_repair": 0.06,
+            "rejection_resilience": 0.03
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 8,
+      "category": "relationship_goals",
+      "subtopic": "goodness_definition",
+      "question_text": {
+        "zh": "你认为“好人”最重要的是什么？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "reciprocity_investment",
+        "empathy_responsiveness",
+        "autonomy_boundary",
+        "openness_exploration"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "不害人，遵纪守法"
+          },
+          "dimension_weights": {
+            "reciprocity_investment": 0.31,
+            "empathy_responsiveness": 0.18,
+            "autonomy_boundary": 0.74,
+            "openness_exploration": -0.27
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "愿意帮助别人，哪怕自己吃亏"
+          },
+          "dimension_weights": {
+            "reciprocity_investment": 0.79,
+            "empathy_responsiveness": 0.71,
+            "autonomy_boundary": -0.22,
+            "openness_exploration": 0.06
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "对得起自己，也对得起在乎的人"
+          },
+          "dimension_weights": {
+            "reciprocity_investment": 0.54,
+            "empathy_responsiveness": 0.43,
+            "autonomy_boundary": 0.48,
+            "openness_exploration": 0.11
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "世界复杂，没法简单定义好人坏人"
+          },
+          "dimension_weights": {
+            "reciprocity_investment": -0.12,
+            "empathy_responsiveness": -0.18,
+            "autonomy_boundary": 0.07,
+            "openness_exploration": 0.67
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 9,
+      "category": "lifestyle",
+      "subtopic": "hidden_wrongdoing_reflection",
+      "question_text": {
+        "zh": "回忆一下，你小时候有没有做过一件错事，一直没被人发现？你现在想起这件事是什么感觉？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "empathy_responsiveness",
+        "emotional_regulation",
+        "attachment_security"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "有点愧疚，希望当时没做"
+          },
+          "dimension_weights": {
+            "empathy_responsiveness": 0.72,
+            "emotional_regulation": 0.34,
+            "attachment_security": 0.27
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "没什么感觉，小孩不懂事"
+          },
+          "dimension_weights": {
+            "empathy_responsiveness": -0.19,
+            "emotional_regulation": -0.08,
+            "attachment_security": -0.14
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "甚至有点好笑，觉得那时候挺天真"
+          },
+          "dimension_weights": {
+            "empathy_responsiveness": -0.41,
+            "emotional_regulation": 0.12,
+            "attachment_security": -0.29
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "没做过这种事"
+          },
+          "dimension_weights": {
+            "empathy_responsiveness": 0.21,
+            "emotional_regulation": 0.18,
+            "attachment_security": 0.09
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 10,
+      "category": "relationship_goals",
+      "subtopic": "ends_justify_means",
+      "question_text": {
+        "zh": "你怎么看“为达目的不择手段”？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "reciprocity_investment",
+        "autonomy_boundary",
+        "empathy_responsiveness",
+        "planning_reliability"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "坚决反对，手段决定目的的性质"
+          },
+          "dimension_weights": {
+            "reciprocity_investment": 0.74,
+            "autonomy_boundary": 0.69,
+            "empathy_responsiveness": 0.41,
+            "planning_reliability": 0.36
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "看目的，如果目的是好的，可以理解"
+          },
+          "dimension_weights": {
+            "reciprocity_investment": 0.18,
+            "autonomy_boundary": 0.09,
+            "empathy_responsiveness": 0.12,
+            "planning_reliability": -0.07
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "现实世界就是这样，太干净成不了事"
+          },
+          "dimension_weights": {
+            "reciprocity_investment": -0.61,
+            "autonomy_boundary": -0.43,
+            "empathy_responsiveness": -0.38,
+            "planning_reliability": -0.29
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "不评价，每个人有自己的活法"
+          },
+          "dimension_weights": {
+            "reciprocity_investment": -0.14,
+            "autonomy_boundary": 0.28,
+            "empathy_responsiveness": -0.21,
+            "planning_reliability": -0.11
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 12,
+      "category": "intimacy",
+      "subtopic": "partner_past_morality",
+      "question_text": {
+        "zh": "如果你发现自己的伴侣在和你在一起之前，做过不太道德的事（但已经过去了），你的第一反应会是？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "attachment_security",
+        "autonomy_boundary",
+        "empathy_responsiveness",
+        "commitment_readiness"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "不能接受，过去决定现在"
+          },
+          "dimension_weights": {
+            "attachment_security": 0.18,
+            "autonomy_boundary": 0.63,
+            "empathy_responsiveness": -0.22,
+            "commitment_readiness": -0.31
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "看是什么事，严重的话会重新考虑"
+          },
+          "dimension_weights": {
+            "attachment_security": 0.33,
+            "autonomy_boundary": 0.41,
+            "empathy_responsiveness": 0.09,
+            "commitment_readiness": 0.14
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "人都会成长，只要现在好就行"
+          },
+          "dimension_weights": {
+            "attachment_security": 0.57,
+            "autonomy_boundary": -0.04,
+            "empathy_responsiveness": 0.61,
+            "commitment_readiness": 0.38
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "不追问过去，只看未来"
+          },
+          "dimension_weights": {
+            "attachment_security": -0.19,
+            "autonomy_boundary": -0.28,
+            "empathy_responsiveness": 0.12,
+            "commitment_readiness": 0.07
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 13,
+      "category": "social_energy",
+      "subtopic": "circle_fit_compromise",
+      "question_text": {
+        "zh": "你有没有为了融入一个圈子，做过自己不太认同的事？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "autonomy_boundary",
+        "social_initiative",
+        "rejection_resilience"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "有，后悔"
+          },
+          "dimension_weights": {
+            "autonomy_boundary": -0.18,
+            "social_initiative": 0.29,
+            "rejection_resilience": -0.14
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "有，但不后悔"
+          },
+          "dimension_weights": {
+            "autonomy_boundary": -0.41,
+            "social_initiative": 0.44,
+            "rejection_resilience": 0.12
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "没有，坚持做自己"
+          },
+          "dimension_weights": {
+            "autonomy_boundary": 0.76,
+            "social_initiative": -0.11,
+            "rejection_resilience": 0.53
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "没遇到过这种情况"
+          },
+          "dimension_weights": {
+            "autonomy_boundary": 0.21,
+            "social_initiative": 0.03,
+            "rejection_resilience": 0.18
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 14,
+      "category": "social_energy",
+      "subtopic": "preferred_praise",
+      "question_text": {
+        "zh": "以下哪种夸奖最让你开心？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "planning_reliability",
+        "empathy_responsiveness",
+        "autonomy_boundary",
+        "social_initiative"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "“你真有能力，什么事都能搞定”"
+          },
+          "dimension_weights": {
+            "planning_reliability": 0.71,
+            "empathy_responsiveness": -0.18,
+            "autonomy_boundary": 0.49,
+            "social_initiative": 0.12
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "“你真是个好人，和你相处很舒服”"
+          },
+          "dimension_weights": {
+            "planning_reliability": 0.14,
+            "empathy_responsiveness": 0.74,
+            "autonomy_boundary": 0.08,
+            "social_initiative": 0.21
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "“你活得很通透，知道自己要什么”"
+          },
+          "dimension_weights": {
+            "planning_reliability": 0.33,
+            "empathy_responsiveness": 0.09,
+            "autonomy_boundary": 0.77,
+            "social_initiative": -0.12
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "“你很有趣，和你在一起很开心”"
+          },
+          "dimension_weights": {
+            "planning_reliability": -0.07,
+            "empathy_responsiveness": 0.18,
+            "autonomy_boundary": 0.11,
+            "social_initiative": 0.72
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 16,
+      "category": "family",
+      "subtopic": "parental_life_path_pressure",
+      "question_text": {
+        "zh": "真实情况：你父母有没有提出过让你“回老家/按他们的想法发展”的要求？你是怎么应对的？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "autonomy_boundary",
+        "communication_clarity",
+        "conflict_repair",
+        "commitment_readiness"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "有，我听从了"
+          },
+          "dimension_weights": {
+            "autonomy_boundary": -0.31,
+            "communication_clarity": 0.07,
+            "conflict_repair": 0.29,
+            "commitment_readiness": -0.18
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "有，我商量后争取到了折中方案"
+          },
+          "dimension_weights": {
+            "autonomy_boundary": 0.43,
+            "communication_clarity": 0.71,
+            "conflict_repair": 0.58,
+            "commitment_readiness": 0.21
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "有，我坚持了自己"
+          },
+          "dimension_weights": {
+            "autonomy_boundary": 0.76,
+            "communication_clarity": 0.49,
+            "conflict_repair": 0.12,
+            "commitment_readiness": 0.31
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "有，我表面答应实际没做"
+          },
+          "dimension_weights": {
+            "autonomy_boundary": -0.08,
+            "communication_clarity": -0.42,
+            "conflict_repair": -0.31,
+            "commitment_readiness": 0.09
+          }
+        },
+        {
+          "option_id": "E",
+          "label": {
+            "zh": "没有过这种情况"
+          },
+          "dimension_weights": {
+            "autonomy_boundary": 0.11,
+            "communication_clarity": 0.16,
+            "conflict_repair": 0.07,
+            "commitment_readiness": 0.04
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 17,
+      "category": "family",
+      "subtopic": "spring_festival_return_pattern",
+      "question_text": {
+        "zh": "过去三个春节，你是怎么过的？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "reciprocity_investment",
+        "planning_reliability",
+        "autonomy_boundary"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "都回老家了"
+          },
+          "dimension_weights": {
+            "reciprocity_investment": 0.68,
+            "planning_reliability": 0.41,
+            "autonomy_boundary": -0.22
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "大部分回，有一次没回"
+          },
+          "dimension_weights": {
+            "reciprocity_investment": 0.37,
+            "planning_reliability": 0.24,
+            "autonomy_boundary": 0.11
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "有一半回，一半没回"
+          },
+          "dimension_weights": {
+            "reciprocity_investment": 0.08,
+            "planning_reliability": 0.09,
+            "autonomy_boundary": 0.33
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "基本没回过"
+          },
+          "dimension_weights": {
+            "reciprocity_investment": -0.31,
+            "planning_reliability": -0.12,
+            "autonomy_boundary": 0.67
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 18,
+      "category": "family",
+      "subtopic": "partner_calls_mom_after_fight",
+      "question_text": {
+        "zh": "想象一个场景：你和伴侣吵架了，TA很生气，打电话给你妈妈“告状”。你当时的感受会是？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "autonomy_boundary",
+        "attachment_security",
+        "conflict_repair",
+        "emotional_regulation"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "非常愤怒，觉得TA越界了"
+          },
+          "dimension_weights": {
+            "autonomy_boundary": 0.74,
+            "attachment_security": -0.26,
+            "conflict_repair": -0.34,
+            "emotional_regulation": -0.18
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "有点不舒服，但能理解TA需要倾诉"
+          },
+          "dimension_weights": {
+            "autonomy_boundary": 0.22,
+            "attachment_security": 0.19,
+            "conflict_repair": 0.31,
+            "emotional_regulation": 0.54
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "无所谓，反正我妈也不会当真"
+          },
+          "dimension_weights": {
+            "autonomy_boundary": -0.12,
+            "attachment_security": 0.08,
+            "conflict_repair": -0.09,
+            "emotional_regulation": 0.14
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "可能会更生气，觉得TA在联合我妈压我"
+          },
+          "dimension_weights": {
+            "autonomy_boundary": 0.41,
+            "attachment_security": -0.47,
+            "conflict_repair": -0.42,
+            "emotional_regulation": -0.31
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 19,
+      "category": "family",
+      "subtopic": "childhood_housework_model",
+      "question_text": {
+        "zh": "你小时候，你家里的家务是谁做的？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "reciprocity_investment",
+        "empathy_responsiveness",
+        "autonomy_boundary",
+        "planning_reliability"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "妈妈为主，爸爸偶尔帮忙"
+          },
+          "dimension_weights": {
+            "reciprocity_investment": 0.07,
+            "empathy_responsiveness": 0.12,
+            "autonomy_boundary": -0.33,
+            "planning_reliability": 0.18
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "爸爸为主，妈妈偶尔帮忙"
+          },
+          "dimension_weights": {
+            "reciprocity_investment": 0.14,
+            "empathy_responsiveness": 0.19,
+            "autonomy_boundary": 0.21,
+            "planning_reliability": 0.18
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "父母基本平分"
+          },
+          "dimension_weights": {
+            "reciprocity_investment": 0.76,
+            "empathy_responsiveness": 0.54,
+            "autonomy_boundary": 0.39,
+            "planning_reliability": 0.31
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "老人/保姆做"
+          },
+          "dimension_weights": {
+            "reciprocity_investment": 0.11,
+            "empathy_responsiveness": -0.08,
+            "autonomy_boundary": -0.04,
+            "planning_reliability": 0.42
+          }
+        },
+        {
+          "option_id": "E",
+          "label": {
+            "zh": "没注意过"
+          },
+          "dimension_weights": {
+            "reciprocity_investment": -0.22,
+            "empathy_responsiveness": -0.16,
+            "autonomy_boundary": -0.09,
+            "planning_reliability": -0.31
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 20,
+      "category": "relationship_goals",
+      "subtopic": "desire_for_children",
+      "question_text": {
+        "zh": "关于孩子，你现在最真实的想法是？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "commitment_readiness",
+        "planning_reliability",
+        "autonomy_boundary"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "一定要有，人生才完整"
+          },
+          "dimension_weights": {
+            "commitment_readiness": 0.79,
+            "planning_reliability": 0.31,
+            "autonomy_boundary": -0.34
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "最好有，但也看经济条件"
+          },
+          "dimension_weights": {
+            "commitment_readiness": 0.51,
+            "planning_reliability": 0.67,
+            "autonomy_boundary": -0.11
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "可要可不要，看伴侣意愿"
+          },
+          "dimension_weights": {
+            "commitment_readiness": 0.21,
+            "planning_reliability": 0.08,
+            "autonomy_boundary": 0.26
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "不想要，二人世界更好"
+          },
+          "dimension_weights": {
+            "commitment_readiness": -0.36,
+            "planning_reliability": -0.12,
+            "autonomy_boundary": 0.72
+          }
+        },
+        {
+          "option_id": "E",
+          "label": {
+            "zh": "还没想过，太远了"
+          },
+          "dimension_weights": {
+            "commitment_readiness": -0.19,
+            "planning_reliability": -0.41,
+            "autonomy_boundary": 0.17
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 21,
+      "category": "family",
+      "subtopic": "childcare_responsibility_view",
+      "question_text": {
+        "zh": "如果有了孩子，你认为谁应该承担更多照顾责任？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "reciprocity_investment",
+        "empathy_responsiveness",
+        "planning_reliability",
+        "autonomy_boundary"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "妈妈，天性如此"
+          },
+          "dimension_weights": {
+            "reciprocity_investment": -0.28,
+            "empathy_responsiveness": -0.09,
+            "planning_reliability": -0.07,
+            "autonomy_boundary": -0.44
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "谁工作更轻松谁多承担"
+          },
+          "dimension_weights": {
+            "reciprocity_investment": 0.33,
+            "empathy_responsiveness": 0.28,
+            "planning_reliability": 0.57,
+            "autonomy_boundary": 0.19
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "必须平等，父母都是责任人"
+          },
+          "dimension_weights": {
+            "reciprocity_investment": 0.79,
+            "empathy_responsiveness": 0.61,
+            "planning_reliability": 0.49,
+            "autonomy_boundary": 0.31
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "请老人或保姆帮忙，夫妻都工作"
+          },
+          "dimension_weights": {
+            "reciprocity_investment": 0.11,
+            "empathy_responsiveness": 0.14,
+            "planning_reliability": 0.22,
+            "autonomy_boundary": -0.17
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 22,
+      "category": "family",
+      "subtopic": "parents_cohabitation_reaction",
+      "question_text": {
+        "zh": "你父母现在多大年纪？如果有一天他们提出想搬来和你同住，你的第一反应会是？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "empathy_responsiveness",
+        "autonomy_boundary",
+        "planning_reliability",
+        "commitment_readiness"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "欢迎，正好照顾他们"
+          },
+          "dimension_weights": {
+            "empathy_responsiveness": 0.74,
+            "autonomy_boundary": -0.27,
+            "planning_reliability": 0.18,
+            "commitment_readiness": 0.42
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "可以住附近，但不要同住"
+          },
+          "dimension_weights": {
+            "empathy_responsiveness": 0.31,
+            "autonomy_boundary": 0.71,
+            "planning_reliability": 0.47,
+            "commitment_readiness": 0.14
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "看情况，如果身体不好可以"
+          },
+          "dimension_weights": {
+            "empathy_responsiveness": 0.49,
+            "autonomy_boundary": 0.18,
+            "planning_reliability": 0.63,
+            "commitment_readiness": 0.27
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "不太愿意，生活习惯不同"
+          },
+          "dimension_weights": {
+            "empathy_responsiveness": -0.18,
+            "autonomy_boundary": 0.57,
+            "planning_reliability": 0.12,
+            "commitment_readiness": -0.11
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 23,
+      "category": "family",
+      "subtopic": "partner_parent_conflict_solution",
+      "question_text": {
+        "zh": "想象一个场景：你未来的伴侣和你父母关系不好，经常吵架。你觉得最可能的解决办法是什么？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "conflict_repair",
+        "empathy_responsiveness",
+        "autonomy_boundary",
+        "commitment_readiness"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "我努力调解，希望他们改善"
+          },
+          "dimension_weights": {
+            "conflict_repair": 0.72,
+            "empathy_responsiveness": 0.58,
+            "autonomy_boundary": 0.14,
+            "commitment_readiness": 0.39
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "让伴侣多忍耐，毕竟是长辈"
+          },
+          "dimension_weights": {
+            "conflict_repair": -0.19,
+            "empathy_responsiveness": -0.22,
+            "autonomy_boundary": -0.31,
+            "commitment_readiness": 0.07
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "尽量减少他们接触"
+          },
+          "dimension_weights": {
+            "conflict_repair": 0.24,
+            "empathy_responsiveness": 0.21,
+            "autonomy_boundary": 0.69,
+            "commitment_readiness": 0.12
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "可能会因此重新考虑关系"
+          },
+          "dimension_weights": {
+            "conflict_repair": -0.28,
+            "empathy_responsiveness": -0.17,
+            "autonomy_boundary": 0.33,
+            "commitment_readiness": -0.41
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 24,
+      "category": "family",
+      "subtopic": "bride_price_view",
+      "question_text": {
+        "zh": "你家乡的彩礼/嫁妆习俗是怎样的？你个人怎么看？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "communication_clarity",
+        "autonomy_boundary",
+        "planning_reliability",
+        "commitment_readiness"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "传统必须遵守，是对女方/男方的尊重"
+          },
+          "dimension_weights": {
+            "communication_clarity": -0.12,
+            "autonomy_boundary": -0.31,
+            "planning_reliability": 0.18,
+            "commitment_readiness": 0.44
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "可以有，但量力而行，意思一下"
+          },
+          "dimension_weights": {
+            "communication_clarity": 0.33,
+            "autonomy_boundary": 0.21,
+            "planning_reliability": 0.64,
+            "commitment_readiness": 0.27
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "形式主义，感情好比什么都强"
+          },
+          "dimension_weights": {
+            "communication_clarity": -0.18,
+            "autonomy_boundary": 0.49,
+            "planning_reliability": -0.09,
+            "commitment_readiness": 0.11
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "双方商量，不给也行，给也行"
+          },
+          "dimension_weights": {
+            "communication_clarity": 0.71,
+            "autonomy_boundary": 0.58,
+            "planning_reliability": 0.41,
+            "commitment_readiness": 0.33
+          }
+        },
+        {
+          "option_id": "E",
+          "label": {
+            "zh": "没了解过"
+          },
+          "dimension_weights": {
+            "communication_clarity": -0.31,
+            "autonomy_boundary": -0.07,
+            "planning_reliability": -0.38,
+            "commitment_readiness": -0.19
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 25,
+      "category": "family",
+      "subtopic": "romantic_conflict_with_parents",
+      "question_text": {
+        "zh": "回忆一下，你有没有因为恋爱对象的事，和父母发生过争执？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "autonomy_boundary",
+        "communication_clarity",
+        "conflict_repair",
+        "commitment_readiness"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "有，坚持自己，最后父母接受了"
+          },
+          "dimension_weights": {
+            "autonomy_boundary": 0.73,
+            "communication_clarity": 0.58,
+            "conflict_repair": 0.47,
+            "commitment_readiness": 0.39
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "有，最后我妥协了"
+          },
+          "dimension_weights": {
+            "autonomy_boundary": -0.27,
+            "communication_clarity": 0.11,
+            "conflict_repair": -0.14,
+            "commitment_readiness": -0.19
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "有，现在还僵着"
+          },
+          "dimension_weights": {
+            "autonomy_boundary": 0.22,
+            "communication_clarity": -0.08,
+            "conflict_repair": -0.49,
+            "commitment_readiness": -0.28
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "没有过"
+          },
+          "dimension_weights": {
+            "autonomy_boundary": 0.07,
+            "communication_clarity": 0.03,
+            "conflict_repair": 0.06,
+            "commitment_readiness": 0.04
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 26,
+      "category": "family",
+      "subtopic": "inlaw_distance_preference",
+      "question_text": {
+        "zh": "你理想中，你未来的家庭和你伴侣的原生家庭，应该保持什么样的关系？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "autonomy_boundary",
+        "empathy_responsiveness",
+        "commitment_readiness"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "越近越好，像一家人"
+          },
+          "dimension_weights": {
+            "autonomy_boundary": -0.18,
+            "empathy_responsiveness": 0.71,
+            "commitment_readiness": 0.49
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "逢年过节走动，平时各过各的"
+          },
+          "dimension_weights": {
+            "autonomy_boundary": 0.31,
+            "empathy_responsiveness": 0.29,
+            "commitment_readiness": 0.38
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "保持礼貌距离，有事再联系"
+          },
+          "dimension_weights": {
+            "autonomy_boundary": 0.67,
+            "empathy_responsiveness": 0.07,
+            "commitment_readiness": 0.11
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "能不联系就不联系，避免麻烦"
+          },
+          "dimension_weights": {
+            "autonomy_boundary": 0.44,
+            "empathy_responsiveness": -0.37,
+            "commitment_readiness": -0.22
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 27,
+      "category": "family",
+      "subtopic": "parental_care_allocation",
+      "question_text": {
+        "zh": "假设未来某天，你工作很忙，父母生病需要照顾，但你有兄弟姐妹可以分担。你会怎么安排？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "reciprocity_investment",
+        "planning_reliability",
+        "autonomy_boundary",
+        "empathy_responsiveness"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "请假回去，父母最重要"
+          },
+          "dimension_weights": {
+            "reciprocity_investment": 0.79,
+            "planning_reliability": 0.31,
+            "autonomy_boundary": -0.24,
+            "empathy_responsiveness": 0.58
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "尽量安排，但也希望兄弟姐妹多分担"
+          },
+          "dimension_weights": {
+            "reciprocity_investment": 0.51,
+            "planning_reliability": 0.63,
+            "autonomy_boundary": 0.22,
+            "empathy_responsiveness": 0.31
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "请护工，多出钱少出力"
+          },
+          "dimension_weights": {
+            "reciprocity_investment": 0.18,
+            "planning_reliability": 0.49,
+            "autonomy_boundary": 0.41,
+            "empathy_responsiveness": 0.09
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "看情况，如果不严重就远程安排"
+          },
+          "dimension_weights": {
+            "reciprocity_investment": -0.17,
+            "planning_reliability": -0.14,
+            "autonomy_boundary": 0.54,
+            "empathy_responsiveness": -0.08
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 28,
+      "category": "family",
+      "subtopic": "filial_self_conflict",
+      "question_text": {
+        "zh": "你觉得“孝顺”和“做自己”冲突吗？有没有具体的例子？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "autonomy_boundary",
+        "empathy_responsiveness",
+        "planning_reliability"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "不冲突，孝顺就是做自己的一部分"
+          },
+          "dimension_weights": {
+            "autonomy_boundary": -0.08,
+            "empathy_responsiveness": 0.58,
+            "planning_reliability": 0.47
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "有时候冲突，需要平衡"
+          },
+          "dimension_weights": {
+            "autonomy_boundary": 0.33,
+            "empathy_responsiveness": 0.44,
+            "planning_reliability": 0.63
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "经常冲突，但会尽量兼顾"
+          },
+          "dimension_weights": {
+            "autonomy_boundary": 0.49,
+            "empathy_responsiveness": 0.31,
+            "planning_reliability": 0.27
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "冲突时我会选择做自己"
+          },
+          "dimension_weights": {
+            "autonomy_boundary": 0.78,
+            "empathy_responsiveness": -0.11,
+            "planning_reliability": -0.14
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 29,
+      "category": "family",
+      "subtopic": "child_future_location",
+      "question_text": {
+        "zh": "如果你有了孩子，你会希望他/她未来？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "autonomy_boundary",
+        "empathy_responsiveness",
+        "commitment_readiness"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "留在身边，方便照顾"
+          },
+          "dimension_weights": {
+            "autonomy_boundary": -0.29,
+            "empathy_responsiveness": 0.31,
+            "commitment_readiness": 0.42
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "去更好的地方发展，我不拖累"
+          },
+          "dimension_weights": {
+            "autonomy_boundary": 0.41,
+            "empathy_responsiveness": 0.53,
+            "commitment_readiness": 0.27
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "看TA自己的选择，我都支持"
+          },
+          "dimension_weights": {
+            "autonomy_boundary": 0.77,
+            "empathy_responsiveness": 0.69,
+            "commitment_readiness": 0.34
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "没想过"
+          },
+          "dimension_weights": {
+            "autonomy_boundary": -0.12,
+            "empathy_responsiveness": -0.18,
+            "commitment_readiness": -0.31
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 30,
+      "category": "family",
+      "subtopic": "family_honor_view",
+      "question_text": {
+        "zh": "你怎么看待“家族荣誉”？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "autonomy_boundary",
+        "reciprocity_investment",
+        "attachment_security"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "很重要，不能给家族丢脸"
+          },
+          "dimension_weights": {
+            "autonomy_boundary": -0.31,
+            "reciprocity_investment": 0.74,
+            "attachment_security": 0.28
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "适当在意，但不过分"
+          },
+          "dimension_weights": {
+            "autonomy_boundary": 0.11,
+            "reciprocity_investment": 0.39,
+            "attachment_security": 0.17
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "不太在意，活好自己就行"
+          },
+          "dimension_weights": {
+            "autonomy_boundary": 0.53,
+            "reciprocity_investment": -0.09,
+            "attachment_security": 0.08
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "反感这种观念，个人就是个人"
+          },
+          "dimension_weights": {
+            "autonomy_boundary": 0.79,
+            "reciprocity_investment": -0.31,
+            "attachment_security": -0.14
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 33,
+      "category": "intimacy",
+      "subtopic": "jealousy_response",
+      "question_text": {
+        "zh": "真实情况：你有没有因为伴侣和异性走得近，而感到不安过？当时是怎么处理的？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "attachment_security",
+        "communication_clarity",
+        "emotional_regulation",
+        "autonomy_boundary"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "有，直接问了"
+          },
+          "dimension_weights": {
+            "attachment_security": 0.29,
+            "communication_clarity": 0.74,
+            "emotional_regulation": 0.18,
+            "autonomy_boundary": 0.21
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "有，但自己憋着"
+          },
+          "dimension_weights": {
+            "attachment_security": -0.31,
+            "communication_clarity": -0.27,
+            "emotional_regulation": -0.19,
+            "autonomy_boundary": -0.11
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "有，偷偷查了TA手机"
+          },
+          "dimension_weights": {
+            "attachment_security": -0.57,
+            "communication_clarity": -0.41,
+            "emotional_regulation": -0.38,
+            "autonomy_boundary": -0.52
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "有，但后来发现是自己多心"
+          },
+          "dimension_weights": {
+            "attachment_security": 0.44,
+            "communication_clarity": 0.22,
+            "emotional_regulation": 0.63,
+            "autonomy_boundary": 0.09
+          }
+        },
+        {
+          "option_id": "E",
+          "label": {
+            "zh": "没有过"
+          },
+          "dimension_weights": {
+            "attachment_security": 0.18,
+            "communication_clarity": 0.11,
+            "emotional_regulation": 0.31,
+            "autonomy_boundary": 0.14
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 34,
+      "category": "intimacy",
+      "subtopic": "liking_someone_taken",
+      "question_text": {
+        "zh": "如果你喜欢上一个人，但TA有对象，你会？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "autonomy_boundary",
+        "empathy_responsiveness",
+        "rejection_resilience",
+        "commitment_readiness"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "彻底放弃，绝不碰有主的人"
+          },
+          "dimension_weights": {
+            "autonomy_boundary": 0.79,
+            "empathy_responsiveness": 0.58,
+            "rejection_resilience": 0.31,
+            "commitment_readiness": 0.24
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "默默喜欢，等TA恢复单身"
+          },
+          "dimension_weights": {
+            "autonomy_boundary": 0.41,
+            "empathy_responsiveness": 0.19,
+            "rejection_resilience": 0.54,
+            "commitment_readiness": 0.17
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "会试探，但不会主动破坏"
+          },
+          "dimension_weights": {
+            "autonomy_boundary": -0.07,
+            "empathy_responsiveness": -0.12,
+            "rejection_resilience": 0.21,
+            "commitment_readiness": -0.08
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "公平竞争，感情自由"
+          },
+          "dimension_weights": {
+            "autonomy_boundary": -0.52,
+            "empathy_responsiveness": -0.44,
+            "rejection_resilience": -0.18,
+            "commitment_readiness": -0.31
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 35,
+      "category": "intimacy",
+      "subtopic": "space_vs_companionship",
+      "question_text": {
+        "zh": "在过去的恋爱/暧昧经历中，你觉得自己更需要个人空间，还是更需要陪伴？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "autonomy_boundary",
+        "attachment_security",
+        "intimacy_disclosure"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "非常需要个人空间，粘人会烦"
+          },
+          "dimension_weights": {
+            "autonomy_boundary": 0.78,
+            "attachment_security": -0.31,
+            "intimacy_disclosure": -0.22
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "需要一定空间，但不能太久不见"
+          },
+          "dimension_weights": {
+            "autonomy_boundary": 0.31,
+            "attachment_security": 0.37,
+            "intimacy_disclosure": 0.18
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "需要陪伴，喜欢粘着对方"
+          },
+          "dimension_weights": {
+            "autonomy_boundary": -0.24,
+            "attachment_security": 0.63,
+            "intimacy_disclosure": 0.41
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "没谈过，想象中应该是B"
+          },
+          "dimension_weights": {
+            "autonomy_boundary": 0.18,
+            "attachment_security": 0.12,
+            "intimacy_disclosure": 0.06
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 37,
+      "category": "communication",
+      "subtopic": "habit_conflict_resolution",
+      "question_text": {
+        "zh": "你有没有因为伴侣的某个习惯，和TA吵过架？最后怎么解决的？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "conflict_repair",
+        "communication_clarity",
+        "autonomy_boundary",
+        "commitment_readiness"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "有，TA改了"
+          },
+          "dimension_weights": {
+            "conflict_repair": 0.54,
+            "communication_clarity": 0.49,
+            "autonomy_boundary": 0.11,
+            "commitment_readiness": 0.28
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "有，我接受了"
+          },
+          "dimension_weights": {
+            "conflict_repair": 0.31,
+            "communication_clarity": 0.18,
+            "autonomy_boundary": 0.39,
+            "commitment_readiness": 0.21
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "有，现在还吵"
+          },
+          "dimension_weights": {
+            "conflict_repair": -0.49,
+            "communication_clarity": -0.22,
+            "autonomy_boundary": -0.14,
+            "commitment_readiness": -0.28
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "有，因为这个分手了"
+          },
+          "dimension_weights": {
+            "conflict_repair": -0.31,
+            "communication_clarity": 0.07,
+            "autonomy_boundary": 0.41,
+            "commitment_readiness": -0.36
+          }
+        },
+        {
+          "option_id": "E",
+          "label": {
+            "zh": "没有过"
+          },
+          "dimension_weights": {
+            "conflict_repair": 0.08,
+            "communication_clarity": 0.04,
+            "autonomy_boundary": 0.03,
+            "commitment_readiness": 0.05
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 38,
+      "category": "relationship_goals",
+      "subtopic": "meeting_parents_timing_real",
+      "question_text": {
+        "zh": "你带过恋爱对象见父母吗？如果有，是恋爱多久后？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "commitment_readiness",
+        "planning_reliability",
+        "autonomy_boundary",
+        "attachment_security"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "有，3个月以内"
+          },
+          "dimension_weights": {
+            "commitment_readiness": 0.57,
+            "planning_reliability": -0.08,
+            "autonomy_boundary": -0.29,
+            "attachment_security": 0.31
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "有，半年到一年"
+          },
+          "dimension_weights": {
+            "commitment_readiness": 0.49,
+            "planning_reliability": 0.53,
+            "autonomy_boundary": 0.11,
+            "attachment_security": 0.27
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "有，1-2年"
+          },
+          "dimension_weights": {
+            "commitment_readiness": 0.21,
+            "planning_reliability": 0.41,
+            "autonomy_boundary": 0.33,
+            "attachment_security": 0.12
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "有，谈婚论嫁时"
+          },
+          "dimension_weights": {
+            "commitment_readiness": 0.31,
+            "planning_reliability": 0.22,
+            "autonomy_boundary": 0.58,
+            "attachment_security": -0.11
+          }
+        },
+        {
+          "option_id": "E",
+          "label": {
+            "zh": "没有过"
+          },
+          "dimension_weights": {
+            "commitment_readiness": -0.24,
+            "planning_reliability": -0.12,
+            "autonomy_boundary": 0.18,
+            "attachment_security": -0.27
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 39,
+      "category": "intimacy",
+      "subtopic": "opposite_sex_bestie_boundary",
+      "question_text": {
+        "zh": "你能接受伴侣有“异性闺蜜”吗？条件是什么？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "attachment_security",
+        "autonomy_boundary",
+        "communication_clarity",
+        "emotional_regulation"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "完全不能"
+          },
+          "dimension_weights": {
+            "attachment_security": -0.44,
+            "autonomy_boundary": 0.28,
+            "communication_clarity": 0.11,
+            "emotional_regulation": -0.19
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "可以，但要让我认识"
+          },
+          "dimension_weights": {
+            "attachment_security": 0.27,
+            "autonomy_boundary": 0.41,
+            "communication_clarity": 0.53,
+            "emotional_regulation": 0.22
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "可以，相信TA"
+          },
+          "dimension_weights": {
+            "attachment_security": 0.63,
+            "autonomy_boundary": 0.18,
+            "communication_clarity": 0.14,
+            "emotional_regulation": 0.31
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "可以，但如果是前任不行"
+          },
+          "dimension_weights": {
+            "attachment_security": 0.31,
+            "autonomy_boundary": 0.49,
+            "communication_clarity": 0.37,
+            "emotional_regulation": 0.11
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 40,
+      "category": "social_energy",
+      "subtopic": "social_media_affection",
+      "question_text": {
+        "zh": "你会在社交媒体上“秀恩爱”吗？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "social_initiative",
+        "intimacy_disclosure",
+        "attachment_security",
+        "autonomy_boundary"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "会，经常"
+          },
+          "dimension_weights": {
+            "social_initiative": 0.71,
+            "intimacy_disclosure": 0.53,
+            "attachment_security": 0.31,
+            "autonomy_boundary": -0.18
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "会，偶尔"
+          },
+          "dimension_weights": {
+            "social_initiative": 0.39,
+            "intimacy_disclosure": 0.27,
+            "attachment_security": 0.21,
+            "autonomy_boundary": 0.09
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "不会，但对方秀我不介意"
+          },
+          "dimension_weights": {
+            "social_initiative": 0.11,
+            "intimacy_disclosure": 0.08,
+            "attachment_security": 0.18,
+            "autonomy_boundary": 0.41
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "不会，也不希望对方秀"
+          },
+          "dimension_weights": {
+            "social_initiative": -0.17,
+            "intimacy_disclosure": -0.22,
+            "attachment_security": -0.11,
+            "autonomy_boundary": 0.68
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 41,
+      "category": "communication",
+      "subtopic": "fight_response_style",
+      "question_text": {
+        "zh": "回忆一下，你和伴侣/暧昧对象吵架时，你通常会怎么做？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "communication_clarity",
+        "conflict_repair",
+        "emotional_regulation",
+        "attachment_security"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "当场说清楚，不想过夜"
+          },
+          "dimension_weights": {
+            "communication_clarity": 0.74,
+            "conflict_repair": 0.58,
+            "emotional_regulation": 0.17,
+            "attachment_security": 0.29
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "先冷静一下，再沟通"
+          },
+          "dimension_weights": {
+            "communication_clarity": 0.51,
+            "conflict_repair": 0.44,
+            "emotional_regulation": 0.69,
+            "attachment_security": 0.21
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "等对方来哄我"
+          },
+          "dimension_weights": {
+            "communication_clarity": -0.19,
+            "conflict_repair": -0.27,
+            "emotional_regulation": -0.22,
+            "attachment_security": -0.31
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "冷着，看谁先忍不住"
+          },
+          "dimension_weights": {
+            "communication_clarity": -0.54,
+            "conflict_repair": -0.63,
+            "emotional_regulation": -0.41,
+            "attachment_security": -0.47
+          }
+        },
+        {
+          "option_id": "E",
+          "label": {
+            "zh": "没吵过/没谈过"
+          },
+          "dimension_weights": {
+            "communication_clarity": 0.08,
+            "conflict_repair": 0.06,
+            "emotional_regulation": 0.11,
+            "attachment_security": 0.05
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 42,
+      "category": "relationship_goals",
+      "subtopic": "giving_in_relationship",
+      "question_text": {
+        "zh": "你觉得在恋爱中，“付出”应该是？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "reciprocity_investment",
+        "empathy_responsiveness",
+        "autonomy_boundary",
+        "commitment_readiness"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "不计回报地付出"
+          },
+          "dimension_weights": {
+            "reciprocity_investment": 0.48,
+            "empathy_responsiveness": 0.58,
+            "autonomy_boundary": -0.42,
+            "commitment_readiness": 0.19
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "互相付出，保持平衡"
+          },
+          "dimension_weights": {
+            "reciprocity_investment": 0.79,
+            "empathy_responsiveness": 0.49,
+            "autonomy_boundary": 0.31,
+            "commitment_readiness": 0.41
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "谁有能力谁多付出"
+          },
+          "dimension_weights": {
+            "reciprocity_investment": 0.31,
+            "empathy_responsiveness": 0.22,
+            "autonomy_boundary": 0.08,
+            "commitment_readiness": 0.17
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "看对方值不值得"
+          },
+          "dimension_weights": {
+            "reciprocity_investment": -0.36,
+            "empathy_responsiveness": -0.31,
+            "autonomy_boundary": 0.19,
+            "commitment_readiness": -0.22
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 43,
+      "category": "relationship_goals",
+      "subtopic": "other_city_job_choice",
+      "question_text": {
+        "zh": "假设你有一个非常好的工作机会在另一个城市，但伴侣不能一起去。你会？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "commitment_readiness",
+        "planning_reliability",
+        "autonomy_boundary",
+        "reciprocity_investment",
+        "attachment_security"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "放弃机会，感情更重要"
+          },
+          "dimension_weights": {
+            "commitment_readiness": 0.38,
+            "planning_reliability": -0.14,
+            "autonomy_boundary": -0.41,
+            "reciprocity_investment": 0.61,
+            "attachment_security": 0.27
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "接受机会，尝试异地"
+          },
+          "dimension_weights": {
+            "commitment_readiness": 0.41,
+            "planning_reliability": 0.31,
+            "autonomy_boundary": 0.47,
+            "reciprocity_investment": 0.18,
+            "attachment_security": 0.21
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "和伴侣商量，看TA愿不愿意一起走"
+          },
+          "dimension_weights": {
+            "commitment_readiness": 0.71,
+            "planning_reliability": 0.63,
+            "autonomy_boundary": 0.21,
+            "reciprocity_investment": 0.53,
+            "attachment_security": 0.31
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "接受机会，如果异地撑不下去就分手"
+          },
+          "dimension_weights": {
+            "commitment_readiness": -0.24,
+            "planning_reliability": 0.18,
+            "autonomy_boundary": 0.58,
+            "reciprocity_investment": -0.19,
+            "attachment_security": -0.31
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 44,
+      "category": "intimacy",
+      "subtopic": "ex_contact_after_breakup",
+      "question_text": {
+        "zh": "你有分手后还保持联系的前任吗？现在是什么关系？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "attachment_security",
+        "autonomy_boundary",
+        "communication_clarity",
+        "commitment_readiness"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "有，是普通朋友"
+          },
+          "dimension_weights": {
+            "attachment_security": 0.22,
+            "autonomy_boundary": 0.11,
+            "communication_clarity": 0.31,
+            "commitment_readiness": -0.18
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "有，但基本不联系"
+          },
+          "dimension_weights": {
+            "attachment_security": 0.37,
+            "autonomy_boundary": 0.44,
+            "communication_clarity": 0.18,
+            "commitment_readiness": 0.09
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "没有，彻底断了"
+          },
+          "dimension_weights": {
+            "attachment_security": 0.18,
+            "autonomy_boundary": 0.63,
+            "communication_clarity": 0.07,
+            "commitment_readiness": 0.22
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "没谈过"
+          },
+          "dimension_weights": {
+            "attachment_security": -0.08,
+            "autonomy_boundary": 0.03,
+            "communication_clarity": 0.04,
+            "commitment_readiness": -0.11
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 46,
+      "category": "lifestyle",
+      "subtopic": "weekend_pattern",
+      "question_text": {
+        "zh": "回忆一下上个周末，你大概是怎么过的？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "planning_reliability",
+        "social_initiative",
+        "openness_exploration"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "提前有规划，约了朋友"
+          },
+          "dimension_weights": {
+            "planning_reliability": 0.74,
+            "social_initiative": 0.61,
+            "openness_exploration": 0.33
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "睡到自然醒，随缘安排"
+          },
+          "dimension_weights": {
+            "planning_reliability": -0.12,
+            "social_initiative": 0.14,
+            "openness_exploration": 0.22
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "宅着看书/打游戏/追剧"
+          },
+          "dimension_weights": {
+            "planning_reliability": 0.09,
+            "social_initiative": -0.18,
+            "openness_exploration": -0.07
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "在学习/兼职/实习"
+          },
+          "dimension_weights": {
+            "planning_reliability": 0.63,
+            "social_initiative": -0.11,
+            "openness_exploration": 0.08
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 47,
+      "category": "lifestyle",
+      "subtopic": "room_orderliness",
+      "question_text": {
+        "zh": "你现在的房间/书桌是什么样的？请描述一下。"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "planning_reliability",
+        "emotional_regulation"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "非常整洁，东西都有固定位置"
+          },
+          "dimension_weights": {
+            "planning_reliability": 0.78,
+            "emotional_regulation": 0.44
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "有点乱，但我知道东西在哪"
+          },
+          "dimension_weights": {
+            "planning_reliability": 0.31,
+            "emotional_regulation": 0.21
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "挺乱的，但能接受"
+          },
+          "dimension_weights": {
+            "planning_reliability": -0.21,
+            "emotional_regulation": -0.11
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "非常乱，经常找不到东西"
+          },
+          "dimension_weights": {
+            "planning_reliability": -0.63,
+            "emotional_regulation": -0.41
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 48,
+      "category": "lifestyle",
+      "subtopic": "monthly_spending_priority",
+      "question_text": {
+        "zh": "上个月，你的主要花销在哪方面？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "planning_reliability",
+        "reciprocity_investment",
+        "openness_exploration",
+        "empathy_responsiveness"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "存起来了"
+          },
+          "dimension_weights": {
+            "planning_reliability": 0.76,
+            "reciprocity_investment": 0.07,
+            "openness_exploration": -0.18,
+            "empathy_responsiveness": -0.09
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "吃饭/购物/娱乐"
+          },
+          "dimension_weights": {
+            "planning_reliability": -0.19,
+            "reciprocity_investment": -0.12,
+            "openness_exploration": 0.44,
+            "empathy_responsiveness": -0.08
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "给家人买了东西"
+          },
+          "dimension_weights": {
+            "planning_reliability": 0.18,
+            "reciprocity_investment": 0.57,
+            "openness_exploration": -0.04,
+            "empathy_responsiveness": 0.63
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "学习/健身/兴趣投资"
+          },
+          "dimension_weights": {
+            "planning_reliability": 0.43,
+            "reciprocity_investment": 0.11,
+            "openness_exploration": 0.61,
+            "empathy_responsiveness": 0.08
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 50,
+      "category": "lifestyle",
+      "subtopic": "mood_regulation_method",
+      "question_text": {
+        "zh": "你最近一次心情不好是什么时候？当时你是怎么调节的？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "emotional_regulation",
+        "intimacy_disclosure",
+        "social_initiative",
+        "rejection_resilience"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "找了朋友倾诉"
+          },
+          "dimension_weights": {
+            "emotional_regulation": 0.31,
+            "intimacy_disclosure": 0.63,
+            "social_initiative": 0.49,
+            "rejection_resilience": 0.21
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "自己消化（听歌/写日记）"
+          },
+          "dimension_weights": {
+            "emotional_regulation": 0.57,
+            "intimacy_disclosure": 0.41,
+            "social_initiative": -0.12,
+            "rejection_resilience": 0.44
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "运动发泄"
+          },
+          "dimension_weights": {
+            "emotional_regulation": 0.71,
+            "intimacy_disclosure": -0.09,
+            "social_initiative": 0.11,
+            "rejection_resilience": 0.33
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "吃东西/购物"
+          },
+          "dimension_weights": {
+            "emotional_regulation": -0.31,
+            "intimacy_disclosure": -0.18,
+            "social_initiative": 0.07,
+            "rejection_resilience": -0.21
+          }
+        },
+        {
+          "option_id": "E",
+          "label": {
+            "zh": "睡一觉"
+          },
+          "dimension_weights": {
+            "emotional_regulation": -0.08,
+            "intimacy_disclosure": -0.24,
+            "social_initiative": -0.17,
+            "rejection_resilience": 0.03
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 51,
+      "category": "lifestyle",
+      "subtopic": "eating_attitude",
+      "question_text": {
+        "zh": "你对“吃”的态度是？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "openness_exploration",
+        "planning_reliability",
+        "emotional_regulation"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "吃货，愿意为美食花钱花时间"
+          },
+          "dimension_weights": {
+            "openness_exploration": 0.61,
+            "planning_reliability": -0.11,
+            "emotional_regulation": 0.14
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "正常吃，不特别讲究"
+          },
+          "dimension_weights": {
+            "openness_exploration": 0.18,
+            "planning_reliability": 0.21,
+            "emotional_regulation": 0.17
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "随意，能填饱肚子就行"
+          },
+          "dimension_weights": {
+            "openness_exploration": -0.19,
+            "planning_reliability": -0.22,
+            "emotional_regulation": -0.11
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "注重健康，有忌口/控制"
+          },
+          "dimension_weights": {
+            "openness_exploration": 0.09,
+            "planning_reliability": 0.63,
+            "emotional_regulation": 0.57
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 52,
+      "category": "lifestyle",
+      "subtopic": "travel_planning_style",
+      "question_text": {
+        "zh": "你最近一次旅行是什么时候？是怎么安排的？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "planning_reliability",
+        "openness_exploration",
+        "autonomy_boundary",
+        "emotional_regulation"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "详细攻略，按计划走"
+          },
+          "dimension_weights": {
+            "planning_reliability": 0.78,
+            "openness_exploration": 0.21,
+            "autonomy_boundary": 0.18,
+            "emotional_regulation": 0.33
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "随性而行，走到哪玩到哪"
+          },
+          "dimension_weights": {
+            "planning_reliability": 0.09,
+            "openness_exploration": 0.71,
+            "autonomy_boundary": 0.31,
+            "emotional_regulation": 0.18
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "跟团，省心"
+          },
+          "dimension_weights": {
+            "planning_reliability": 0.27,
+            "openness_exploration": -0.11,
+            "autonomy_boundary": -0.14,
+            "emotional_regulation": 0.07
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "很久没旅行了"
+          },
+          "dimension_weights": {
+            "planning_reliability": -0.18,
+            "openness_exploration": -0.31,
+            "autonomy_boundary": 0.11,
+            "emotional_regulation": -0.09
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 53,
+      "category": "lifestyle",
+      "subtopic": "exercise_frequency",
+      "question_text": {
+        "zh": "你有运动习惯吗？频率大概是"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "planning_reliability",
+        "emotional_regulation",
+        "commitment_readiness"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "每周3次以上"
+          },
+          "dimension_weights": {
+            "planning_reliability": 0.78,
+            "emotional_regulation": 0.63,
+            "commitment_readiness": 0.41
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "每周1-2次"
+          },
+          "dimension_weights": {
+            "planning_reliability": 0.44,
+            "emotional_regulation": 0.31,
+            "commitment_readiness": 0.19
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "偶尔，想起来就动动"
+          },
+          "dimension_weights": {
+            "planning_reliability": -0.11,
+            "emotional_regulation": -0.07,
+            "commitment_readiness": -0.09
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "基本不运动"
+          },
+          "dimension_weights": {
+            "planning_reliability": -0.57,
+            "emotional_regulation": -0.42,
+            "commitment_readiness": -0.31
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 54,
+      "category": "social_energy",
+      "subtopic": "social_media_time",
+      "question_text": {
+        "zh": "你每天大概花多少时间在社交媒体上？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "planning_reliability",
+        "emotional_regulation",
+        "social_initiative"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "3小时以上"
+          },
+          "dimension_weights": {
+            "planning_reliability": -0.54,
+            "emotional_regulation": -0.28,
+            "social_initiative": 0.22
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "1-3小时"
+          },
+          "dimension_weights": {
+            "planning_reliability": -0.12,
+            "emotional_regulation": 0.07,
+            "social_initiative": 0.18
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "1小时以内"
+          },
+          "dimension_weights": {
+            "planning_reliability": 0.41,
+            "emotional_regulation": 0.31,
+            "social_initiative": 0.11
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "不看，有事才上"
+          },
+          "dimension_weights": {
+            "planning_reliability": 0.57,
+            "emotional_regulation": 0.44,
+            "social_initiative": -0.18
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 55,
+      "category": "lifestyle",
+      "subtopic": "sleep_schedule",
+      "question_text": {
+        "zh": "你一般是几点睡觉？几点起床？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "planning_reliability",
+        "emotional_regulation",
+        "commitment_readiness"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "23点前睡，7点前起"
+          },
+          "dimension_weights": {
+            "planning_reliability": 0.79,
+            "emotional_regulation": 0.66,
+            "commitment_readiness": 0.43
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "23-1点睡，7-9点起"
+          },
+          "dimension_weights": {
+            "planning_reliability": 0.41,
+            "emotional_regulation": 0.28,
+            "commitment_readiness": 0.22
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "1-3点睡，9-11点起"
+          },
+          "dimension_weights": {
+            "planning_reliability": -0.22,
+            "emotional_regulation": -0.18,
+            "commitment_readiness": -0.07
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "完全不规律"
+          },
+          "dimension_weights": {
+            "planning_reliability": -0.63,
+            "emotional_regulation": -0.49,
+            "commitment_readiness": -0.31
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 56,
+      "category": "intimacy",
+      "subtopic": "ritual_importance",
+      "question_text": {
+        "zh": "你对“仪式感”（纪念日/礼物）怎么看？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "intimacy_disclosure",
+        "reciprocity_investment",
+        "commitment_readiness",
+        "autonomy_boundary"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "非常重要，是爱的证明"
+          },
+          "dimension_weights": {
+            "intimacy_disclosure": 0.53,
+            "reciprocity_investment": 0.57,
+            "commitment_readiness": 0.44,
+            "autonomy_boundary": -0.28
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "可以有一些，但不用太刻意"
+          },
+          "dimension_weights": {
+            "intimacy_disclosure": 0.27,
+            "reciprocity_investment": 0.31,
+            "commitment_readiness": 0.22,
+            "autonomy_boundary": 0.18
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "不太在意，实际相处更重要"
+          },
+          "dimension_weights": {
+            "intimacy_disclosure": -0.09,
+            "reciprocity_investment": 0.11,
+            "commitment_readiness": 0.07,
+            "autonomy_boundary": 0.41
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "觉得麻烦，能免则免"
+          },
+          "dimension_weights": {
+            "intimacy_disclosure": -0.31,
+            "reciprocity_investment": -0.19,
+            "commitment_readiness": -0.22,
+            "autonomy_boundary": 0.57
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 57,
+      "category": "intimacy",
+      "subtopic": "opposite_sex_roommate_boundary",
+      "question_text": {
+        "zh": "你能接受伴侣有“异性合租室友”吗？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "attachment_security",
+        "autonomy_boundary",
+        "communication_clarity",
+        "emotional_regulation"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "完全不能"
+          },
+          "dimension_weights": {
+            "attachment_security": -0.41,
+            "autonomy_boundary": 0.29,
+            "communication_clarity": 0.07,
+            "emotional_regulation": -0.18
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "可以，但要让我认识"
+          },
+          "dimension_weights": {
+            "attachment_security": 0.22,
+            "autonomy_boundary": 0.38,
+            "communication_clarity": 0.58,
+            "emotional_regulation": 0.19
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "可以，相信TA"
+          },
+          "dimension_weights": {
+            "attachment_security": 0.69,
+            "autonomy_boundary": 0.11,
+            "communication_clarity": 0.14,
+            "emotional_regulation": 0.31
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "看合租多久，短期可以"
+          },
+          "dimension_weights": {
+            "attachment_security": 0.31,
+            "autonomy_boundary": 0.49,
+            "communication_clarity": 0.22,
+            "emotional_regulation": 0.09
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 58,
+      "category": "lifestyle",
+      "subtopic": "saving_habit",
+      "question_text": {
+        "zh": "你平时有储蓄的习惯吗？大概存多少？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "planning_reliability",
+        "commitment_readiness",
+        "emotional_regulation"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "有，每月固定存"
+          },
+          "dimension_weights": {
+            "planning_reliability": 0.79,
+            "commitment_readiness": 0.41,
+            "emotional_regulation": 0.33
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "有，剩多少存多少"
+          },
+          "dimension_weights": {
+            "planning_reliability": 0.31,
+            "commitment_readiness": 0.18,
+            "emotional_regulation": 0.17
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "没有，月光"
+          },
+          "dimension_weights": {
+            "planning_reliability": -0.28,
+            "commitment_readiness": -0.17,
+            "emotional_regulation": -0.21
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "没有，还要借钱/用花呗"
+          },
+          "dimension_weights": {
+            "planning_reliability": -0.71,
+            "commitment_readiness": -0.33,
+            "emotional_regulation": -0.41
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 59,
+      "category": "lifestyle",
+      "subtopic": "ideal_weekend_date",
+      "question_text": {
+        "zh": "你理想的周末约会是什么样的？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "openness_exploration",
+        "intimacy_disclosure",
+        "social_initiative",
+        "autonomy_boundary"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "出去探店/看电影/吃饭"
+          },
+          "dimension_weights": {
+            "openness_exploration": 0.53,
+            "intimacy_disclosure": 0.22,
+            "social_initiative": 0.49,
+            "autonomy_boundary": 0.11
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "宅家一起做饭/追剧"
+          },
+          "dimension_weights": {
+            "openness_exploration": 0.18,
+            "intimacy_disclosure": 0.57,
+            "social_initiative": 0.09,
+            "autonomy_boundary": 0.21
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "户外运动/短途旅行"
+          },
+          "dimension_weights": {
+            "openness_exploration": 0.78,
+            "intimacy_disclosure": 0.31,
+            "social_initiative": 0.41,
+            "autonomy_boundary": 0.27
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "各自做自己的事，偶尔互动"
+          },
+          "dimension_weights": {
+            "openness_exploration": -0.11,
+            "intimacy_disclosure": -0.18,
+            "social_initiative": -0.29,
+            "autonomy_boundary": 0.71
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 60,
+      "category": "lifestyle",
+      "subtopic": "pet_attitude",
+      "question_text": {
+        "zh": "你喜欢宠物吗？有养过吗？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "empathy_responsiveness",
+        "reciprocity_investment",
+        "planning_reliability",
+        "openness_exploration"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "喜欢，养过/正在养"
+          },
+          "dimension_weights": {
+            "empathy_responsiveness": 0.71,
+            "reciprocity_investment": 0.53,
+            "planning_reliability": 0.31,
+            "openness_exploration": 0.28
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "喜欢，但没条件养"
+          },
+          "dimension_weights": {
+            "empathy_responsiveness": 0.41,
+            "reciprocity_investment": 0.27,
+            "planning_reliability": 0.07,
+            "openness_exploration": 0.19
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "无感，可有可无"
+          },
+          "dimension_weights": {
+            "empathy_responsiveness": -0.08,
+            "reciprocity_investment": -0.11,
+            "planning_reliability": 0.03,
+            "openness_exploration": -0.07
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "不喜欢，觉得麻烦"
+          },
+          "dimension_weights": {
+            "empathy_responsiveness": -0.36,
+            "reciprocity_investment": -0.31,
+            "planning_reliability": -0.18,
+            "openness_exploration": -0.19
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 62,
+      "category": "relationship_goals",
+      "subtopic": "breakup_triggers",
+      "question_text": {
+        "zh": "请回答“会分手”或“不会分手”："
+      },
+      "answer_type": "multi_select",
+      "acceptable_answer_logic": "multi_select",
+      "measured_dimensions": [
+        "autonomy_boundary",
+        "attachment_security",
+        "commitment_readiness",
+        "empathy_responsiveness",
+        "conflict_repair"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "对方出轨一次，但诚恳道歉 →"
+          },
+          "dimension_weights": {
+            "autonomy_boundary": 0.41,
+            "attachment_security": 0.37,
+            "commitment_readiness": -0.22,
+            "empathy_responsiveness": -0.18,
+            "conflict_repair": -0.31
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "对方动手打我一次（推搡也算）→"
+          },
+          "dimension_weights": {
+            "autonomy_boundary": 0.82,
+            "attachment_security": 0.61,
+            "commitment_readiness": 0.07,
+            "empathy_responsiveness": 0.11,
+            "conflict_repair": -0.74
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "对方欠下巨额债务（赌博除外）→"
+          },
+          "dimension_weights": {
+            "autonomy_boundary": 0.49,
+            "attachment_security": -0.09,
+            "commitment_readiness": -0.31,
+            "empathy_responsiveness": -0.12,
+            "conflict_repair": -0.18
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "对方父母强烈反对，无法调和 →"
+          },
+          "dimension_weights": {
+            "autonomy_boundary": 0.18,
+            "attachment_security": -0.27,
+            "commitment_readiness": -0.41,
+            "empathy_responsiveness": -0.09,
+            "conflict_repair": -0.24
+          }
+        },
+        {
+          "option_id": "E",
+          "label": {
+            "zh": "对方得了重大疾病，需要长期照顾 →"
+          },
+          "dimension_weights": {
+            "autonomy_boundary": -0.31,
+            "attachment_security": 0.11,
+            "commitment_readiness": 0.58,
+            "empathy_responsiveness": 0.74,
+            "conflict_repair": 0.22
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 63,
+      "category": "relationship_goals",
+      "subtopic": "breakup_common_reason",
+      "question_text": {
+        "zh": "你觉得一段感情走到分手，最常见的原因是什么？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "communication_clarity",
+        "conflict_repair",
+        "autonomy_boundary",
+        "attachment_security"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "价值观根本不同"
+          },
+          "dimension_weights": {
+            "communication_clarity": 0.41,
+            "conflict_repair": -0.11,
+            "autonomy_boundary": 0.63,
+            "attachment_security": 0.07
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "生活习惯无法磨合"
+          },
+          "dimension_weights": {
+            "communication_clarity": 0.18,
+            "conflict_repair": -0.44,
+            "autonomy_boundary": 0.11,
+            "attachment_security": -0.12
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "家庭干涉太多"
+          },
+          "dimension_weights": {
+            "communication_clarity": 0.09,
+            "conflict_repair": -0.18,
+            "autonomy_boundary": 0.74,
+            "attachment_security": -0.27
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "感情变淡，没感觉了"
+          },
+          "dimension_weights": {
+            "communication_clarity": -0.12,
+            "conflict_repair": -0.09,
+            "autonomy_boundary": -0.08,
+            "attachment_security": -0.63
+          }
+        },
+        {
+          "option_id": "E",
+          "label": {
+            "zh": "出现第三者"
+          },
+          "dimension_weights": {
+            "communication_clarity": -0.21,
+            "conflict_repair": -0.31,
+            "autonomy_boundary": 0.14,
+            "attachment_security": -0.52
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 64,
+      "category": "relationship_goals",
+      "subtopic": "children_disagreement_response",
+      "question_text": {
+        "zh": "如果你和伴侣在“要不要孩子”这个问题上完全相反，你会？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "commitment_readiness",
+        "communication_clarity",
+        "autonomy_boundary",
+        "planning_reliability"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "分手，这个问题无法妥协"
+          },
+          "dimension_weights": {
+            "commitment_readiness": 0.18,
+            "communication_clarity": 0.41,
+            "autonomy_boundary": 0.69,
+            "planning_reliability": 0.33
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "再谈谈，也许有一方会改变"
+          },
+          "dimension_weights": {
+            "commitment_readiness": 0.58,
+            "communication_clarity": 0.63,
+            "autonomy_boundary": 0.14,
+            "planning_reliability": 0.41
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "先在一起，以后再说"
+          },
+          "dimension_weights": {
+            "commitment_readiness": 0.07,
+            "communication_clarity": -0.21,
+            "autonomy_boundary": -0.09,
+            "planning_reliability": -0.31
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "为对方妥协"
+          },
+          "dimension_weights": {
+            "commitment_readiness": 0.31,
+            "communication_clarity": 0.19,
+            "autonomy_boundary": -0.53,
+            "planning_reliability": -0.11
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    },
+    {
+      "source_question_no": 65,
+      "category": "relationship_goals",
+      "subtopic": "city_disagreement_response",
+      "question_text": {
+        "zh": "如果你和伴侣在“去哪个城市发展”上完全相反，且都不愿妥协，你会？"
+      },
+      "answer_type": "single_choice",
+      "acceptable_answer_logic": "single_select",
+      "measured_dimensions": [
+        "commitment_readiness",
+        "planning_reliability",
+        "autonomy_boundary",
+        "communication_clarity"
+      ],
+      "options": [
+        {
+          "option_id": "A",
+          "label": {
+            "zh": "分手，长痛不如短痛"
+          },
+          "dimension_weights": {
+            "commitment_readiness": 0.11,
+            "planning_reliability": 0.22,
+            "autonomy_boundary": 0.71,
+            "communication_clarity": 0.31
+          }
+        },
+        {
+          "option_id": "B",
+          "label": {
+            "zh": "异地，走一步看一步"
+          },
+          "dimension_weights": {
+            "commitment_readiness": 0.27,
+            "planning_reliability": -0.14,
+            "autonomy_boundary": 0.41,
+            "communication_clarity": -0.08
+          }
+        },
+        {
+          "option_id": "C",
+          "label": {
+            "zh": "再商量，找个折中的城市"
+          },
+          "dimension_weights": {
+            "commitment_readiness": 0.71,
+            "planning_reliability": 0.66,
+            "autonomy_boundary": 0.18,
+            "communication_clarity": 0.58
+          }
+        },
+        {
+          "option_id": "D",
+          "label": {
+            "zh": "看谁的发展前景更好，跟TA走"
+          },
+          "dimension_weights": {
+            "commitment_readiness": 0.38,
+            "planning_reliability": 0.44,
+            "autonomy_boundary": -0.11,
+            "communication_clarity": 0.19
+          }
+        }
+      ],
+      "version": 2,
+      "active": true,
+      "recommended_bank": "core"
+    }
+  ]
+}
