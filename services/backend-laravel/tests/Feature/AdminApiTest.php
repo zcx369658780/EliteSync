@@ -241,6 +241,29 @@ class AdminApiTest extends TestCase
             ->where('enabled', true)
             ->where('quality_tag', 'low_drop')
             ->count();
+        if ($initial === 0) {
+            QuestionnaireQuestion::query()->create([
+                'question_key' => 'TEST_LOW_DROP_001',
+                'category' => 'values',
+                'subtopic' => 'test',
+                'recommended_bank' => 'core',
+                'quality_tier' => 'normal',
+                'quality_tag' => 'low_drop',
+                'quality_reason' => 'test_seed',
+                'content' => 'test low drop question',
+                'question_text_zh' => 'test low drop question',
+                'question_text_en' => 'test low drop question',
+                'question_type' => 'single_choice',
+                'acceptable_answer_logic' => 'single_select',
+                'options' => [
+                    ['option_id' => 'A', 'label' => ['zh' => 'A', 'en' => 'A'], 'dimension_weights' => [], 'evaluation_standard' => ['code' => 'T', 'zh' => 'T', 'en' => 'T'], 'score' => 1],
+                ],
+                'sort_order' => 999999,
+                'enabled' => true,
+                'version' => 1,
+            ]);
+            $initial = 1;
+        }
         $this->assertGreaterThan(0, $initial);
 
         $dryRun = $this->postJson('/api/v1/admin/questionnaire/prune-low-drop', [
