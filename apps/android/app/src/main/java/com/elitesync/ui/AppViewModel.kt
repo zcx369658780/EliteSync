@@ -19,6 +19,7 @@ import java.time.LocalDateTime
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -26,6 +27,9 @@ import java.time.format.DateTimeFormatter
 class AppViewModel : ViewModel() {
     private val repo = AppRepository()
     private val unresolvedCityPlaceholder = "已定位（未解析城市）"
+    private companion object {
+        const val PLACE_OP_TIMEOUT_MS = 12_000L
+    }
 
     private val _token = MutableStateFlow("")
     val token: StateFlow<String> = _token
@@ -570,7 +574,11 @@ class AppViewModel : ViewModel() {
             return@launch
         }
         _status.value = "地点搜索中..."
-        runCatching { repo.searchPlaces(query, region) }
+        runCatching {
+            withTimeout(PLACE_OP_TIMEOUT_MS) {
+                repo.searchPlaces(query, region)
+            }
+        }
             .onSuccess {
                 _placeResults.value = it
                 _status.value = "搜索完成(${it.size})"
@@ -581,7 +589,11 @@ class AppViewModel : ViewModel() {
 
     fun reverseGeocodeCurrent(lat: Double, lng: Double) = viewModelScope.launch {
         _status.value = "定位解析中..."
-        runCatching { repo.reverseGeocode(lat, lng) }
+        runCatching {
+            withTimeout(PLACE_OP_TIMEOUT_MS) {
+                repo.reverseGeocode(lat, lng)
+            }
+        }
             .onSuccess { initial ->
                 var resolved = initial
 
@@ -593,7 +605,9 @@ class AppViewModel : ViewModel() {
                     ).filter { it.isNotBlank() }.distinct()
 
                     for (query in queryCandidates) {
-                        val searched = runCatching { repo.searchPlaces(query) }.getOrDefault(emptyList())
+                        val searched = runCatching {
+                            withTimeout(PLACE_OP_TIMEOUT_MS) { repo.searchPlaces(query) }
+                        }.getOrDefault(emptyList())
                         val hit = searched.firstOrNull { it.city.isNotBlank() || it.district.isNotBlank() }
                         if (hit != null) {
                             val base = resolved
@@ -626,7 +640,11 @@ class AppViewModel : ViewModel() {
 
     fun reverseGeocodeBirth(lat: Double, lng: Double) = viewModelScope.launch {
         _status.value = "出生地解析中..."
-        runCatching { repo.reverseGeocode(lat, lng) }
+        runCatching {
+            withTimeout(PLACE_OP_TIMEOUT_MS) {
+                repo.reverseGeocode(lat, lng)
+            }
+        }
             .onSuccess {
                 _birthPlace.value = it
                 _status.value = if (it != null) "出生地已更新" else "出生地解析无结果"
