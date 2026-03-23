@@ -61,7 +61,23 @@ $results = New-Object 'System.Collections.Generic.List[object]'
 if (-not $SkipAndroidBuild) {
     try {
         Push-Location $appDir
-        & .\gradlew.bat :app:compileDebugKotlin --no-daemon
+        $isWindowsHost = $false
+        if ($env:OS -eq "Windows_NT") {
+            $isWindowsHost = $true
+        }
+        elseif ($PSVersionTable.PSEdition -eq "Desktop") {
+            $isWindowsHost = $true
+        }
+
+        if ($isWindowsHost) {
+            & .\gradlew.bat :app:compileDebugKotlin --no-daemon
+        }
+        else {
+            if (Test-Path "./gradlew") {
+                chmod +x ./gradlew
+            }
+            & ./gradlew :app:compileDebugKotlin --no-daemon
+        }
         if ($LASTEXITCODE -ne 0) {
             throw "Gradle exit code: $LASTEXITCODE"
         }
