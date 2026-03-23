@@ -29,10 +29,10 @@ jobs:
             throw "Missing required secrets: ELITESYNC_TEST_PHONE / ELITESYNC_TEST_PASSWORD"
           }
 
-      - name: Setup PHP 8.5
+      - name: Setup PHP 8.4
         uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.5"
+          php-version: "8.4"
           extensions: mbstring, sqlite3, pdo_mysql, bcmath, intl, xml
           tools: composer:v2
           coverage: none
