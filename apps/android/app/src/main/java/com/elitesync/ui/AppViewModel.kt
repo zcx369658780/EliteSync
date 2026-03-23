@@ -19,6 +19,7 @@ import java.time.LocalDateTime
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -26,6 +27,9 @@ import java.time.format.DateTimeFormatter
 class AppViewModel : ViewModel() {
     private val repo = AppRepository()
     private val unresolvedCityPlaceholder = "已定位（未解析城市）"
+    private companion object {
+        const val PLACE_OP_TIMEOUT_MS = 12_000L
+    }
 
     private val _token = MutableStateFlow("")
     val token: StateFlow<String> = _token
@@ -111,6 +115,10 @@ class AppViewModel : ViewModel() {
     private fun setError(msg: String) {
         _error.value = msg
         _status.value = "失败"
+    }
+
+    private fun setError(action: String, throwable: Throwable) {
+        setError("${action}失败：${err(throwable)}")
     }
 
     private fun err(e: Throwable): String = NetworkErrorMapper.message(e)
@@ -256,7 +264,7 @@ class AppViewModel : ViewModel() {
                 _status.value = "注册成功，请登录"
                 _error.value = ""
             }
-            .onFailure { setError("注册失败: ${err(it)}") }
+            .onFailure { setError("注册", it) }
     }
 
     fun login(phone: String, password: String) = viewModelScope.launch {
@@ -280,7 +288,7 @@ class AppViewModel : ViewModel() {
                 loadMbtiResult()
                 loadQuestionnaireProgress()
             }
-            .onFailure { setError("登录失败: ${err(it)}") }
+            .onFailure { setError("登录", it) }
     }
 
     fun loadBasicProfile() = viewModelScope.launch {
@@ -365,7 +373,7 @@ class AppViewModel : ViewModel() {
                 _error.value = ""
                 loadQuestionnaireProgress()
             }
-            .onFailure { setError("拉取问卷失败: ${err(it)}") }
+            .onFailure { setError("拉取问卷", it) }
     }
 
     fun loadQuestionnaireProgress() = viewModelScope.launch {
@@ -395,7 +403,7 @@ class AppViewModel : ViewModel() {
                 _status.value = "问卷已重置"
                 _error.value = ""
             }
-            .onFailure { setError("重置失败: ${err(it)}") }
+            .onFailure { setError("重置问卷", it) }
     }
 
     fun loadQuestionnaireProfile() = viewModelScope.launch {
@@ -413,7 +421,7 @@ class AppViewModel : ViewModel() {
                 _error.value = ""
                 loadQuestionnaireProgress()
             }
-            .onFailure { setError("保存失败: ${err(it)}") }
+            .onFailure { setError("保存答案", it) }
     }
 
     fun saveAnswerV2(
@@ -440,7 +448,7 @@ class AppViewModel : ViewModel() {
                 _error.value = ""
                 loadQuestionnaireProgress()
             }
-            .onFailure { setError("保存失败: ${err(it)}") }
+            .onFailure { setError("保存答案", it) }
     }
 
     fun replaceQuestion(currentQuestionId: Int, excludeIds: List<Int>) = viewModelScope.launch {
@@ -459,7 +467,7 @@ class AppViewModel : ViewModel() {
                     setError("当前题目已变化，请重试")
                 }
             }
-            .onFailure { setError("换题失败: ${err(it)}") }
+            .onFailure { setError("换题", it) }
     }
 
     fun saveAllAnswers(answer: String, isDraft: Boolean = false) = viewModelScope.launch {
@@ -473,7 +481,7 @@ class AppViewModel : ViewModel() {
                 _error.value = ""
                 loadQuestionnaireProgress()
             }
-            .onFailure { setError("保存失败: ${err(it)}") }
+            .onFailure { setError("保存全部答案", it) }
     }
 
     fun loadCurrentMatch() = viewModelScope.launch {
@@ -509,7 +517,7 @@ class AppViewModel : ViewModel() {
         _status.value = "提交意向中..."
         runCatching { repo.confirmMatch(_token.value, m.match_id, like) }
             .onSuccess { _status.value = if (like) "已选择喜欢" else "已选择略过"; _error.value = "" }
-            .onFailure { setError("确认失败: ${err(it)}") }
+            .onFailure { setError("确认匹配", it) }
     }
 
     fun devPrepareMatchForDemo() = viewModelScope.launch {
@@ -540,7 +548,7 @@ class AppViewModel : ViewModel() {
                 _error.value = ""
                 refreshMessages()
             }
-            .onFailure { setError("发送失败: ${err(it)}") }
+            .onFailure { setError("发送消息", it) }
     }
 
     fun refreshMessages() = viewModelScope.launch {
@@ -557,7 +565,7 @@ class AppViewModel : ViewModel() {
                     )
                 }
             }
-            .onFailure { setError("拉取消息失败: ${err(it)}") }
+            .onFailure { setError("拉取消息", it) }
     }
 
     fun searchPlaces(query: String, region: String = "全国") = viewModelScope.launch {
@@ -566,18 +574,26 @@ class AppViewModel : ViewModel() {
             return@launch
         }
         _status.value = "地点搜索中..."
-        runCatching { repo.searchPlaces(query, region) }
+        runCatching {
+            withTimeout(PLACE_OP_TIMEOUT_MS) {
+                repo.searchPlaces(query, region)
+            }
+        }
             .onSuccess {
                 _placeResults.value = it
                 _status.value = "搜索完成(${it.size})"
                 _error.value = ""
             }
-            .onFailure { setError("地点搜索失败: ${err(it)}") }
+            .onFailure { setError("地点搜索", it) }
     }
 
     fun reverseGeocodeCurrent(lat: Double, lng: Double) = viewModelScope.launch {
         _status.value = "定位解析中..."
-        runCatching { repo.reverseGeocode(lat, lng) }
+        runCatching {
+            withTimeout(PLACE_OP_TIMEOUT_MS) {
+                repo.reverseGeocode(lat, lng)
+            }
+        }
             .onSuccess { initial ->
                 var resolved = initial
 
@@ -589,7 +605,9 @@ class AppViewModel : ViewModel() {
                     ).filter { it.isNotBlank() }.distinct()
 
                     for (query in queryCandidates) {
-                        val searched = runCatching { repo.searchPlaces(query) }.getOrDefault(emptyList())
+                        val searched = runCatching {
+                            withTimeout(PLACE_OP_TIMEOUT_MS) { repo.searchPlaces(query) }
+                        }.getOrDefault(emptyList())
                         val hit = searched.firstOrNull { it.city.isNotBlank() || it.district.isNotBlank() }
                         if (hit != null) {
                             val base = resolved
@@ -617,18 +635,22 @@ class AppViewModel : ViewModel() {
                 _status.value = if (finalCity.isNotBlank()) "定位成功" else "定位成功（未解析城市）"
                 _error.value = ""
             }
-            .onFailure { setError("定位解析失败: ${err(it)}") }
+            .onFailure { setError("定位解析", it) }
     }
 
     fun reverseGeocodeBirth(lat: Double, lng: Double) = viewModelScope.launch {
         _status.value = "出生地解析中..."
-        runCatching { repo.reverseGeocode(lat, lng) }
+        runCatching {
+            withTimeout(PLACE_OP_TIMEOUT_MS) {
+                repo.reverseGeocode(lat, lng)
+            }
+        }
             .onSuccess {
                 _birthPlace.value = it
                 _status.value = if (it != null) "出生地已更新" else "出生地解析无结果"
                 _error.value = ""
             }
-            .onFailure { setError("出生地解析失败: ${err(it)}") }
+            .onFailure { setError("出生地解析", it) }
     }
 
     fun setBirthPlace(place: com.elitesync.model.MapPlace) {
@@ -701,7 +723,7 @@ class AppViewModel : ViewModel() {
                 _status.value = "MBTI题目已加载(${resp.total}题)"
                 _error.value = ""
             }
-            .onFailure { setError("加载MBTI题目失败: ${err(it)}") }
+            .onFailure { setError("加载MBTI题目", it) }
     }
 
     fun submitMbtiQuiz() = viewModelScope.launch {
@@ -727,7 +749,7 @@ class AppViewModel : ViewModel() {
                 _status.value = "MBTI测试完成（已保存）"
                 _error.value = ""
             }
-            .onFailure { setError("提交MBTI失败: ${err(it)}") }
+            .onFailure { setError("提交MBTI", it) }
     }
 
     fun computeAstroProfile() = viewModelScope.launch {

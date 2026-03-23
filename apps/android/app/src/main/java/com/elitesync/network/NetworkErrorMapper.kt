@@ -2,6 +2,8 @@ package com.elitesync.network
 
 import com.google.gson.JsonParser
 import retrofit2.HttpException
+import java.net.ConnectException
+import java.net.SocketTimeoutException
 import java.io.IOException
 import java.net.UnknownHostException
 import javax.net.ssl.SSLException
@@ -17,8 +19,16 @@ object NetworkErrorMapper {
             return "SSL 连接失败，请检查设备时间或证书链"
         }
 
+        if (throwable is SocketTimeoutException) {
+            return "请求超时，请稍后重试"
+        }
+
+        if (throwable is ConnectException) {
+            return "无法连接服务器，请稍后重试"
+        }
+
         if (throwable is IOException) {
-            return "网络不可用，请检查服务是否启动"
+            return "网络不可用，请检查网络连接后重试"
         }
 
         if (throwable is HttpException) {
@@ -46,7 +56,7 @@ object NetworkErrorMapper {
                     }
                 }
             }
-            return "HTTP ${throwable.code()}"
+            return mapHttpCode(throwable.code())
         }
 
         return throwable.message ?: throwable.javaClass.simpleName
@@ -63,7 +73,26 @@ object NetworkErrorMapper {
                 "手机号不能为空"
             lower.contains("phone") && (lower.contains("invalid") || lower.contains("format")) ->
                 "手机号格式错误，请输入11位中国大陆手机号（如 13800138000）"
+            lower.contains("route") && lower.contains("could not be found") ->
+                "当前功能服务端暂未发布，请稍后重试"
+            lower.contains("sqlstate") ->
+                "服务暂时不可用，请稍后重试"
             else -> msg
+        }
+    }
+
+    private fun mapHttpCode(code: Int): String {
+        return when (code) {
+            400 -> "请求参数错误，请检查填写内容"
+            401 -> "登录状态已失效，请重新登录"
+            403 -> "当前操作无权限"
+            404 -> "服务端接口暂不可用"
+            409 -> "数据冲突，请刷新后重试"
+            422 -> "提交内容不符合要求，请检查后重试"
+            429 -> "请求过于频繁，请稍后重试"
+            500 -> "服务端处理异常，请稍后重试"
+            502, 503, 504 -> "服务暂时不可用，请稍后重试"
+            else -> "请求失败（HTTP $code）"
         }
     }
 }
