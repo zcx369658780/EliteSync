@@ -1,0 +1,84 @@
+name: regression-full-manual
+
+on:
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: "Backend base URL (optional)"
+        required: false
+        default: "http://101.133.161.203"
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  regression-full:
+    name: Regression Full Baseline
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Validate Secrets
+        shell: pwsh
+        env:
+          TEST_PHONE: ${{ secrets.ELITESYNC_TEST_PHONE }}
+          TEST_PASSWORD: ${{ secrets.ELITESYNC_TEST_PASSWORD }}
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:TEST_PHONE) -or [string]::IsNullOrWhiteSpace($env:TEST_PASSWORD)) {
+            throw "Missing required secrets: ELITESYNC_TEST_PHONE / ELITESYNC_TEST_PASSWORD"
+          }
+
+      - name: Setup PHP 8.5
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.5"
+          extensions: mbstring, sqlite3, pdo_mysql, bcmath, intl, xml
+          tools: composer:v2
+          coverage: none
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: gradle
+
+      - name: Ensure Android SDK Environment
+        run: |
+          echo "ANDROID_HOME=/usr/local/lib/android/sdk" >> $GITHUB_ENV
+          echo "ANDROID_SDK_ROOT=/usr/local/lib/android/sdk" >> $GITHUB_ENV
+          echo "/usr/local/lib/android/sdk/platform-tools" >> $GITHUB_PATH
+          echo "/usr/local/lib/android/sdk/cmdline-tools/latest/bin" >> $GITHUB_PATH
+          echo "/usr/local/lib/android/sdk/cmdline-tools/bin" >> $GITHUB_PATH
+
+      - name: Install Backend Dependencies
+        working-directory: services/backend-laravel
+        run: composer install --no-interaction --prefer-dist --no-progress --optimize-autoloader
+
+      - name: Prepare Laravel Environment
+        working-directory: services/backend-laravel
+        run: |
+          cp .env.example .env
+          php artisan key:generate --force
+
+      - name: Run Full Baseline Regression
+        shell: pwsh
+        env:
+          TEST_PHONE: ${{ secrets.ELITESYNC_TEST_PHONE }}
+          TEST_PASSWORD: ${{ secrets.ELITESYNC_TEST_PASSWORD }}
+        run: |
+          ./scripts/regression_alpha_baseline.ps1 `
+            -BaseUrl "${{ github.event.inputs.base_url }}" `
+            -Phone $env:TEST_PHONE `
+            -Password $env:TEST_PASSWORD
+
+      - name: Upload Regression Logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: regression-full-logs
+          path: |
+            docs/devlogs/REGRESSION_BASELINE_LOG.md
+            docs/devlogs/RELEASE_GATE_LOG.md
+            docs/devlogs/SMOKE_LOG.md

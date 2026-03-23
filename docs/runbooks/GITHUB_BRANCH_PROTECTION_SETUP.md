@@ -39,3 +39,19 @@ Enable branch protection on `main`, then mark these checks as required:
 3. Gate logs are uploaded as workflow artifacts and appended locally to:
    - `docs/devlogs/RELEASE_GATE_LOG.md`
    - `docs/devlogs/SMOKE_LOG.md`
+
+## Manual Full Regression Workflow
+Use workflow `regression-full-manual` when you need full baseline validation in GitHub Actions.
+
+### Required Secrets
+Configure in `Settings -> Secrets and variables -> Actions`:
+1. `ELITESYNC_TEST_PHONE`
+2. `ELITESYNC_TEST_PASSWORD`
+
+### Trigger
+1. Open `Actions` -> `regression-full-manual`.
+2. Click `Run workflow`.
+3. Optional input: `base_url` (defaults to `http://101.133.161.203`).
+4. Run and wait for:
+   - `Regression Full Baseline` job
+   - artifact `regression-full-logs`
