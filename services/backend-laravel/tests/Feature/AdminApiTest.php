@@ -70,6 +70,8 @@ class AdminApiTest extends TestCase
             'name' => 'admin',
             'password' => 'secret123',
             'verify_status' => 'approved',
+            'city' => 'Nanyang',
+            'gender' => 'male',
         ]);
 
         $u1 = User::create([
@@ -77,6 +79,8 @@ class AdminApiTest extends TestCase
             'name' => 'u1',
             'password' => 'secret123',
             'verify_status' => 'approved',
+            'city' => 'Nanyang',
+            'gender' => 'female',
         ]);
 
         User::create([
@@ -84,6 +88,8 @@ class AdminApiTest extends TestCase
             'name' => 'u2',
             'password' => 'secret123',
             'verify_status' => 'approved',
+            'city' => 'Nanyang',
+            'gender' => 'female',
         ]);
 
         $incomplete = User::create([
@@ -91,6 +97,8 @@ class AdminApiTest extends TestCase
             'name' => 'u3',
             'password' => 'secret123',
             'verify_status' => 'approved',
+            'city' => 'Nanyang',
+            'gender' => 'male',
         ]);
 
         Config::set('app.admin_phones', [$admin->phone]);
@@ -118,6 +126,39 @@ class AdminApiTest extends TestCase
             ->assertJsonPath('ok', true)
             ->assertJsonPath('released', 1);
 
+        Sanctum::actingAs($u1);
+        $current = $this->getJson('/api/v1/matches/current')
+            ->assertOk()
+            ->assertJsonStructure([
+                'match_reasons' => [
+                    'summary',
+                    'match',
+                    'mismatch',
+                    'confidence',
+                    'modules' => [[
+                        'key',
+                        'label',
+                        'score',
+                        'weight',
+                        'confidence',
+                        'verdict',
+                        'reason_short',
+                        'reason_detail',
+                        'risk_short',
+                        'risk_detail',
+                        'evidence_tags',
+                        'evidence',
+                        'highlights',
+                        'risks',
+                        'degraded',
+                        'degrade_reason',
+                    ]],
+                ],
+            ])
+            ->json();
+        $this->assertNotEmpty(data_get($current, 'match_reasons.modules', []));
+
+        Sanctum::actingAs($admin);
         $this->assertFalse(
             DatingMatch::query()
                 ->where('user_a', $incomplete->id)
@@ -135,11 +176,13 @@ class AdminApiTest extends TestCase
             'name' => 'admin2',
             'password' => 'secret123',
             'verify_status' => 'approved',
+            'city' => 'Nanyang',
+            'gender' => 'male',
         ]);
 
-        $u1 = User::create(['phone' => '13800000122', 'name' => 'u1', 'password' => 'secret123', 'verify_status' => 'approved']);
-        $u2 = User::create(['phone' => '13800000123', 'name' => 'u2', 'password' => 'secret123', 'verify_status' => 'approved']);
-        $u3 = User::create(['phone' => '13800000124', 'name' => 'u3', 'password' => 'secret123', 'verify_status' => 'approved']);
+        $u1 = User::create(['phone' => '13800000122', 'name' => 'u1', 'password' => 'secret123', 'verify_status' => 'approved', 'city' => 'Nanyang', 'gender' => 'female']);
+        $u2 = User::create(['phone' => '13800000123', 'name' => 'u2', 'password' => 'secret123', 'verify_status' => 'approved', 'city' => 'Nanyang', 'gender' => 'male']);
+        $u3 = User::create(['phone' => '13800000124', 'name' => 'u3', 'password' => 'secret123', 'verify_status' => 'approved', 'city' => 'Nanyang', 'gender' => 'female']);
 
         Config::set('app.admin_phones', [$admin->phone]);
         Sanctum::actingAs($admin);
@@ -167,6 +210,85 @@ class AdminApiTest extends TestCase
             ->assertOk()
             ->assertJsonPath('ok', true)
             ->assertJsonPath('pairs', 2);
+    }
+
+    public function test_dev_matching_can_toggle_synthetic_user_inclusion(): void
+    {
+        $this->seed();
+
+        $admin = User::create([
+            'phone' => '13800000126',
+            'name' => 'admin-syn',
+            'password' => 'secret123',
+            'verify_status' => 'approved',
+            'is_synthetic' => false,
+            'city' => 'Nanyang',
+            'gender' => 'male',
+        ]);
+        $real1 = User::create([
+            'phone' => '13800000127',
+            'name' => 'real-1',
+            'password' => 'secret123',
+            'verify_status' => 'approved',
+            'is_synthetic' => false,
+            'city' => 'Nanyang',
+            'gender' => 'female',
+        ]);
+        $real2 = User::create([
+            'phone' => '13800000128',
+            'name' => 'real-2',
+            'password' => 'secret123',
+            'verify_status' => 'approved',
+            'is_synthetic' => false,
+            'city' => 'Nanyang',
+            'gender' => 'male',
+        ]);
+        $syn = User::create([
+            'phone' => '13800000129',
+            'name' => 'syn-1',
+            'password' => 'secret123',
+            'verify_status' => 'approved',
+            'is_synthetic' => true,
+            'synthetic_batch' => 'test_batch',
+            'city' => 'Nanyang',
+            'gender' => 'female',
+        ]);
+
+        Config::set('app.admin_phones', [$admin->phone]);
+
+        // complete questionnaire for 4 users
+        Sanctum::actingAs($admin);
+        $this->postJson('/api/v1/questionnaire/answers', ['answers' => $this->fullAnswersPayload()])->assertOk();
+        Sanctum::actingAs($real1);
+        $this->postJson('/api/v1/questionnaire/answers', ['answers' => $this->fullAnswersPayload()])->assertOk();
+        Sanctum::actingAs($real2);
+        $this->postJson('/api/v1/questionnaire/answers', ['answers' => $this->fullAnswersPayload()])->assertOk();
+        Sanctum::actingAs($syn);
+        $this->postJson('/api/v1/questionnaire/answers', ['answers' => $this->fullAnswersPayload()])->assertOk();
+
+        Sanctum::actingAs($admin);
+
+        $this->postJson('/api/v1/admin/dev/matching-debug', [
+            'include_synthetic_users' => false,
+        ])->assertOk()->assertJsonPath('include_synthetic_users', false);
+
+        $respOff = $this->postJson('/api/v1/admin/dev/run-matching')
+            ->assertOk()
+            ->assertJsonPath('ok', true)
+            ->assertJsonPath('include_synthetic_users', false)
+            ->json();
+        $this->assertSame(3, (int) ($respOff['eligible_users'] ?? 0));
+
+        $this->postJson('/api/v1/admin/dev/matching-debug', [
+            'include_synthetic_users' => true,
+        ])->assertOk()->assertJsonPath('include_synthetic_users', true);
+
+        $respOn = $this->postJson('/api/v1/admin/dev/run-matching')
+            ->assertOk()
+            ->assertJsonPath('ok', true)
+            ->assertJsonPath('include_synthetic_users', true)
+            ->json();
+        $this->assertSame(4, (int) ($respOn['eligible_users'] ?? 0));
     }
 
     public function test_admin_endpoints_forbid_non_admin_user(): void

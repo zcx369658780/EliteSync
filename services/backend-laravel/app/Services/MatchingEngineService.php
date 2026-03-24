@@ -5,7 +5,10 @@ namespace App\Services;
 use App\Models\DatingMatch;
 use App\Models\QuestionnaireAnswer;
 use App\Models\QuestionnaireQuestion;
+use App\Models\User;
+use App\Models\UserAstroProfile;
 use Carbon\CarbonImmutable;
+use Illuminate\Support\Arr;
 
 class MatchingEngineService
 {
@@ -29,10 +32,14 @@ class MatchingEngineService
         }
 
         $answerIndex = $this->buildAnswerIndex($userIds);
+        $userSignals = $this->loadUserSignals($userIds);
         $recentPairs = $this->recentPairSet($userIds);
         $exposureCounts = $this->recentExposureCounts($userIds);
         $used = [];
         $pairs = [];
+        $astro = app(AstroCompatibilityService::class);
+        $personality = app(PersonalityCompatibilityService::class);
+        $mbti = app(MbtiCompatibilityService::class);
 
         foreach ($userIds as $uid) {
             if (isset($used[$uid])) {
@@ -45,7 +52,7 @@ class MatchingEngineService
                 if ($peer === $uid || isset($used[$peer])) {
                     continue;
                 }
-                if (!$this->passesHardFilters($uid, $peer, $answerIndex, $recentPairs)) {
+                if (!$this->passesHardFilters($uid, $peer, $answerIndex, $userSignals, $recentPairs)) {
                     continue;
                 }
                 $detail = $this->pairScoreDetail(
@@ -53,8 +60,12 @@ class MatchingEngineService
                     $peer,
                     $profiles,
                     $answerIndex,
+                    $userSignals,
                     $usersMeta,
-                    $exposureCounts
+                    $exposureCounts,
+                    $astro,
+                    $personality,
+                    $mbti
                 );
                 if ($bestDetail === null || $detail['final'] > $bestDetail['final']) {
                     $bestPeer = $peer;
@@ -78,6 +89,22 @@ class MatchingEngineService
                 'score_base' => (int) round($bestDetail['base'] * 100),
                 'score_final' => (int) round($bestDetail['final'] * 100),
                 'score_fair' => (int) round($bestDetail['fair_adjusted'] * 100),
+                'score_personality_total' => (int) ($bestDetail['personality']['score'] ?? 0),
+                'score_mbti_total' => (int) ($bestDetail['mbti']['score'] ?? 0),
+                'score_astro_total' => (int) ($bestDetail['astro']['total'] ?? 0),
+                'score_overall' => (int) round($bestDetail['fair_adjusted'] * 100),
+                'score_bazi' => (int) ($bestDetail['astro']['bazi'] ?? 0),
+                'score_zodiac' => (int) ($bestDetail['astro']['zodiac'] ?? 0),
+                'score_constellation' => (int) ($bestDetail['astro']['constellation'] ?? 0),
+                'score_natal_chart' => (int) ($bestDetail['astro']['natal_chart'] ?? 0),
+                'match_verdict' => (string) ($bestDetail['astro']['verdict'] ?? 'low'),
+                'match_reasons' => [
+                    'summary' => (string) ($bestDetail['astro']['summary'] ?? ''),
+                    'match' => (array) ($bestDetail['astro']['reasons_match'] ?? []),
+                    'mismatch' => (array) ($bestDetail['astro']['reasons_mismatch'] ?? []),
+                    'confidence' => (float) ($bestDetail['overall_confidence'] ?? 0.5),
+                    'modules' => (array) ($bestDetail['reason_modules'] ?? []),
+                ],
                 'penalty_factors' => $bestDetail['penalty_factors'],
             ];
         }
@@ -88,6 +115,7 @@ class MatchingEngineService
     /**
      * @param array<int,array{vector:array<string,int>}> $profiles
      * @param array<int,array<int,array{selected:array<int,string>,acceptable:array<int,string>,importance:int}>> $answerIndex
+     * @param array<int,array{city:string,birthday:?string,mbti:string}> $userSignals
      * @param array<int,array{created_at:\DateTimeInterface|string|null,updated_at:\DateTimeInterface|string|null}> $usersMeta
      * @param array<int,int> $exposureCounts
      */
@@ -96,8 +124,12 @@ class MatchingEngineService
         int $b,
         array $profiles,
         array $answerIndex,
+        array $userSignals,
         array $usersMeta,
-        array $exposureCounts
+        array $exposureCounts,
+        AstroCompatibilityService $astro,
+        PersonalityCompatibilityService $personality,
+        MbtiCompatibilityService $mbti
     ): array {
         $profileSimilarity = $this->profileSimilarity(
             (array) ($profiles[$a]['vector'] ?? []),
@@ -136,11 +168,77 @@ class MatchingEngineService
             + $this->freshnessScore($usersMeta[$b]['created_at'] ?? null)
         ) / 2.0;
 
-        $base = (0.70 * $reciprocal) + (0.20 * $biQuestion) + (0.10 * $freshness);
-        $penalty = $this->penaltyFactors($a, $b, $answerIndex);
+        $astroScore = $astro->score([
+            'zodiac_animal' => (string) ($userSignals[$a]['zodiac_animal'] ?? ''),
+            'public_zodiac_sign' => (string) ($userSignals[$a]['public_zodiac_sign'] ?? ''),
+            'private_bazi' => (string) ($userSignals[$a]['private_bazi'] ?? ''),
+            'private_natal_chart' => $userSignals[$a]['private_natal_chart'] ?? null,
+            'birthday' => (string) ($userSignals[$a]['birthday'] ?? ''),
+        ], [
+            'zodiac_animal' => (string) ($userSignals[$b]['zodiac_animal'] ?? ''),
+            'public_zodiac_sign' => (string) ($userSignals[$b]['public_zodiac_sign'] ?? ''),
+            'private_bazi' => (string) ($userSignals[$b]['private_bazi'] ?? ''),
+            'private_natal_chart' => $userSignals[$b]['private_natal_chart'] ?? null,
+            'birthday' => (string) ($userSignals[$b]['birthday'] ?? ''),
+        ]);
+        $personalityScore = $personality->score(
+            (array) ($profiles[$a]['vector'] ?? []),
+            (array) ($profiles[$b]['vector'] ?? []),
+            $profileSimilarity,
+            $biQuestion,
+            $interestSimilarity,
+            $this->categoryCompatibility($a, $b, $answerIndex)
+        );
+        $mbtiScore = $mbti->score(
+            (string) ($userSignals[$a]['mbti'] ?? ''),
+            (string) ($userSignals[$b]['mbti'] ?? '')
+        );
+
+        $weights = (array) config('matching.core_weights', []);
+        $wPersonality = (float) ($weights['personality'] ?? 0.50);
+        $wMbti = (float) ($weights['mbti'] ?? 0.15);
+        $wAstro = (float) ($weights['astro'] ?? 0.35);
+        $coreTotal = (int) round(
+            ((int) ($personalityScore['score'] ?? 0)) * $wPersonality
+            + ((int) ($mbtiScore['score'] ?? 0)) * $wMbti
+            + ((int) ($astroScore['total'] ?? 0)) * $wAstro
+        );
+
+        $base = max(0.0, min(1.0, $coreTotal / 100.0));
+        $penalty = $this->penaltyFactors($a, $b, $answerIndex, $userSignals);
         $penaltyProduct = array_product(array_values($penalty));
         $final = $base * $penaltyProduct;
+
+        $guards = (array) config('matching.score_guards', []);
+        $pScore = (int) ($personalityScore['score'] ?? 0);
+        $lowThreshold = (int) ($guards['personality_low_threshold'] ?? 45);
+        $lowCap = (int) ($guards['personality_low_cap'] ?? 72);
+        $highThreshold = (int) ($guards['personality_high_threshold'] ?? 75);
+        $highFloor = (int) ($guards['personality_high_floor'] ?? 40);
+        if ($pScore < $lowThreshold) {
+            $final = min($final, $lowCap / 100.0);
+        }
+        if ($pScore >= $highThreshold) {
+            $final = max($final, $highFloor / 100.0);
+        }
+
         $fairAdjusted = $final * $this->fairnessMultiplier($b, $exposureCounts);
+        if ($pScore < $lowThreshold) {
+            $fairAdjusted = min($fairAdjusted, $lowCap / 100.0);
+        }
+        if ($pScore >= $highThreshold) {
+            $fairAdjusted = max($fairAdjusted, $highFloor / 100.0);
+        }
+
+        $reasonModules = $this->buildReasonModules(
+            $personalityScore,
+            $mbtiScore,
+            $astroScore,
+            $wPersonality,
+            $wMbti,
+            $wAstro
+        );
+        $overallConfidence = $this->overallConfidence($reasonModules);
 
         return [
             'base' => max(0.0, min(1.0, $base)),
@@ -153,6 +251,11 @@ class MatchingEngineService
             'activity_avg' => ($activityA + $activityB) / 2.0,
             'penalty_factors' => $penalty,
             'category_scores' => $this->categoryCompatibility($a, $b, $answerIndex),
+            'astro' => $astroScore,
+            'personality' => $personalityScore,
+            'mbti' => $mbtiScore,
+            'reason_modules' => $reasonModules,
+            'overall_confidence' => $overallConfidence,
         ];
     }
 
@@ -160,11 +263,33 @@ class MatchingEngineService
      * @param array<int,array<int,array{selected:array<int,string>,acceptable:array<int,string>,importance:int,category:string}>> $answerIndex
      * @param array<string,bool> $recentPairs
      */
-    private function passesHardFilters(int $a, int $b, array $answerIndex, array $recentPairs): bool
+    private function passesHardFilters(int $a, int $b, array $answerIndex, array $userSignals, array $recentPairs): bool
     {
         $days = max(0, (int) config('matching.hard_filters.exclude_recent_pair_days', 14));
         if ($days > 0 && isset($recentPairs[$this->pairKey($a, $b)])) {
             return false;
+        }
+
+        if ((bool) config('matching.hard_filters.same_city_only', true)) {
+            // V1 product rule: city must match.
+            $cityA = $this->normalizeCityForMatch((string) ($userSignals[$a]['city'] ?? ''));
+            $cityB = $this->normalizeCityForMatch((string) ($userSignals[$b]['city'] ?? ''));
+            if ($cityA === '' || $cityB === '' || $cityA !== $cityB) {
+                return false;
+            }
+        }
+
+        if ((bool) config('matching.hard_filters.opposite_gender_only', true)) {
+            // V1 product rule: only opposite-sex pairing.
+            $genderA = trim((string) ($userSignals[$a]['gender'] ?? ''));
+            $genderB = trim((string) ($userSignals[$b]['gender'] ?? ''));
+            $allowed = ['male', 'female'];
+            if (!in_array($genderA, $allowed, true) || !in_array($genderB, $allowed, true)) {
+                return false;
+            }
+            if ($genderA === $genderB) {
+                return false;
+            }
         }
 
         if ((bool) config('matching.hard_filters.reject_casual_vs_marriage', true)) {
@@ -182,11 +307,13 @@ class MatchingEngineService
 
     /**
      * @param array<int,array<int,array{selected:array<int,string>,acceptable:array<int,string>,importance:int,category:string}>> $answerIndex
+     * @param array<int,array{city:string,birthday:?string,mbti:string}> $userSignals
      * @return array<string,float>
      */
-    private function penaltyFactors(int $a, int $b, array $answerIndex): array
+    private function penaltyFactors(int $a, int $b, array $answerIndex, array $userSignals): array
     {
         $cfg = config('matching.soft_penalties', []);
+        $signalCfg = (array) config('matching.signal_adjustments', []);
         $category = $this->categoryCompatibility($a, $b, $answerIndex);
         $factors = [];
 
@@ -208,6 +335,46 @@ class MatchingEngineService
         }
         if ($this->interestSimilarity($a, $b, $answerIndex) < 0.35) {
             $factors['interest_overlap_low'] = (float) ($cfg['interest_overlap_low'] ?? 0.92);
+        }
+
+        // Same-city boost to improve local matching chance in pilot stage.
+        $cityA = $this->normalizeCityForMatch((string) ($userSignals[$a]['city'] ?? ''));
+        $cityB = $this->normalizeCityForMatch((string) ($userSignals[$b]['city'] ?? ''));
+        if ($cityA !== '' && $cityB !== '' && $cityA === $cityB) {
+            $factors['same_city_boost'] = (float) ($signalCfg['same_city_multiplier'] ?? 1.12);
+        }
+
+        // Age-gap soft adjustment based on birthday.
+        $birthdayA = $this->toCarbon($userSignals[$a]['birthday'] ?? null);
+        $birthdayB = $this->toCarbon($userSignals[$b]['birthday'] ?? null);
+        if ($birthdayA && $birthdayB) {
+            $ageGapYears = abs($birthdayA->diffInYears($birthdayB));
+            foreach ((array) ($signalCfg['age_gap'] ?? []) as $bucket) {
+                $max = (int) ($bucket['max'] ?? 999);
+                if ($ageGapYears <= $max) {
+                    $factors['age_gap_adjustment'] = (float) ($bucket['multiplier'] ?? 1.0);
+                    break;
+                }
+            }
+        }
+
+        // MBTI letter-level compatibility slight boost/penalty.
+        $mbtiCfg = (array) ($signalCfg['mbti'] ?? []);
+        if ((bool) ($mbtiCfg['enabled'] ?? true)) {
+            $mbtiA = strtoupper((string) ($userSignals[$a]['mbti'] ?? ''));
+            $mbtiB = strtoupper((string) ($userSignals[$b]['mbti'] ?? ''));
+            if (strlen($mbtiA) === 4 && strlen($mbtiB) === 4) {
+                $matches = 0;
+                for ($i = 0; $i < 4; $i++) {
+                    if ($mbtiA[$i] === $mbtiB[$i]) {
+                        $matches++;
+                    }
+                }
+                $perLetter = (float) ($mbtiCfg['per_letter_bonus'] ?? 0.015);
+                $maxMultiplier = (float) ($mbtiCfg['max_multiplier'] ?? 1.06);
+                $mbtiFactor = 1.0 + ($matches * $perLetter);
+                $factors['mbti_letter_match'] = min($maxMultiplier, max(0.90, $mbtiFactor));
+            }
         }
 
         if (empty($factors)) {
@@ -415,6 +582,21 @@ class MatchingEngineService
 
     private function highlights(array $detail, array $tags): string
     {
+        if (!empty($detail['reason_modules']) && is_array($detail['reason_modules'])) {
+            $first = Arr::first($detail['reason_modules']);
+            if (is_array($first)) {
+                $text = (string) data_get($first, 'highlights.0.text', '');
+                if ($text !== '') {
+                    return $text;
+                }
+            }
+        }
+        if (!empty($detail['astro']['verdict'])) {
+            $v = (string) $detail['astro']['verdict'];
+            $head = $v === 'high' ? '高匹配' : ($v === 'medium' ? '中匹配' : '低匹配');
+            $reason = (string) (($detail['astro']['reasons_match'][0] ?? '') ?: ($detail['astro']['reasons_mismatch'][0] ?? ''));
+            return trim("{$head}：{$reason}", '：');
+        }
         if (empty($tags)) {
             return '画像匹配：互惠意向较高';
         }
@@ -427,6 +609,31 @@ class MatchingEngineService
      */
     private function explanationTags(array $detail): array
     {
+        if (!empty($detail['reason_modules']) && is_array($detail['reason_modules'])) {
+            $tags = [];
+            foreach ($detail['reason_modules'] as $module) {
+                $t = (string) data_get($module, 'highlights.0.text', '');
+                if ($t !== '') {
+                    $tags[] = $t;
+                }
+            }
+            $tags = array_slice(array_values(array_unique($tags)), 0, 3);
+            if (!empty($tags)) {
+                return $tags;
+            }
+        }
+
+        if (!empty($detail['astro'])) {
+            $astro = (array) $detail['astro'];
+            $list = array_values(array_unique(array_filter(array_merge(
+                array_slice((array) ($astro['reasons_match'] ?? []), 0, 2),
+                array_slice((array) ($astro['reasons_mismatch'] ?? []), 0, 1)
+            ))));
+            if (!empty($list)) {
+                return array_slice($list, 0, 3);
+            }
+        }
+
         $cat = $detail['category_scores'] ?? [];
         $tags = [];
 
@@ -459,6 +666,216 @@ class MatchingEngineService
         }
 
         return array_slice(array_values(array_unique($tags)), 0, 3);
+    }
+
+    /**
+     * @param array<string,mixed> $personality
+     * @param array<string,mixed> $mbti
+     * @param array<string,mixed> $astro
+     * @return array<int,array<string,mixed>>
+     */
+    private function buildReasonModules(
+        array $personality,
+        array $mbti,
+        array $astro,
+        float $wPersonality,
+        float $wMbti,
+        float $wAstro
+    ): array {
+        $modules = [
+            [
+                'key' => 'personality',
+                'label' => '人格匹配',
+                'layer' => 'process',
+                'score' => (int) ($personality['score'] ?? 0),
+                'weight' => round($wPersonality, 4),
+                'confidence' => (float) ($personality['confidence'] ?? 0.7),
+                'verdict' => (string) ($personality['verdict'] ?? 'medium'),
+                'reason_short' => (string) (($personality['reason_short'] ?? '') ?: ($personality['highlight'] ?? '')),
+                'reason_detail' => (string) ($personality['reason_detail'] ?? ''),
+                'risk_short' => (string) ($personality['risk'] ?? ''),
+                'risk_detail' => (string) ($personality['risk_detail'] ?? ''),
+                'evidence_tags' => (array) ($personality['evidence_tags'] ?? []),
+                'evidence' => (array) ($personality['evidence'] ?? []),
+                'highlights' => [[
+                    'text' => (string) (($personality['reason_short'] ?? '') ?: ($personality['highlight'] ?? '')),
+                    'evidence_tags' => (array) ($personality['evidence_tags'] ?? []),
+                    'evidence' => (array) ($personality['evidence'] ?? []),
+                ], [
+                    'text' => (string) ($personality['reason_detail'] ?? ''),
+                    'evidence_tags' => (array) ($personality['evidence_tags'] ?? []),
+                    'evidence' => (array) ($personality['evidence'] ?? []),
+                ]],
+                'risks' => [[
+                    'text' => (string) ($personality['risk'] ?? ''),
+                    'evidence_tags' => (array) ($personality['evidence_tags'] ?? []),
+                    'evidence' => (array) ($personality['evidence'] ?? []),
+                ], [
+                    'text' => (string) ($personality['risk_detail'] ?? ''),
+                    'evidence_tags' => (array) ($personality['evidence_tags'] ?? []),
+                    'evidence' => (array) ($personality['evidence'] ?? []),
+                ]],
+                'degraded' => (bool) ($personality['degraded'] ?? false),
+                'degrade_reason' => (string) ($personality['degrade_reason'] ?? ''),
+            ],
+            [
+                'key' => 'mbti',
+                'label' => 'MBTI 匹配',
+                'layer' => 'process',
+                'score' => (int) ($mbti['score'] ?? 0),
+                'weight' => round($wMbti, 4),
+                'confidence' => (float) ($mbti['confidence'] ?? 0.55),
+                'verdict' => (string) ($mbti['verdict'] ?? 'medium'),
+                'reason_short' => (string) (($mbti['reason_short'] ?? '') ?: ($mbti['highlight'] ?? '')),
+                'reason_detail' => (string) ($mbti['reason_detail'] ?? ''),
+                'risk_short' => (string) ($mbti['risk'] ?? ''),
+                'risk_detail' => (string) ($mbti['risk_detail'] ?? ''),
+                'evidence_tags' => (array) ($mbti['evidence_tags'] ?? []),
+                'evidence' => (array) ($mbti['evidence'] ?? []),
+                'highlights' => [[
+                    'text' => (string) (($mbti['reason_short'] ?? '') ?: ($mbti['highlight'] ?? '')),
+                    'evidence_tags' => (array) ($mbti['evidence_tags'] ?? []),
+                    'evidence' => (array) ($mbti['evidence'] ?? []),
+                ], [
+                    'text' => (string) ($mbti['reason_detail'] ?? ''),
+                    'evidence_tags' => (array) ($mbti['evidence_tags'] ?? []),
+                    'evidence' => (array) ($mbti['evidence'] ?? []),
+                ]],
+                'risks' => [[
+                    'text' => (string) ($mbti['risk'] ?? ''),
+                    'evidence_tags' => (array) ($mbti['evidence_tags'] ?? []),
+                    'evidence' => (array) ($mbti['evidence'] ?? []),
+                ], [
+                    'text' => (string) ($mbti['risk_detail'] ?? ''),
+                    'evidence_tags' => (array) ($mbti['evidence_tags'] ?? []),
+                    'evidence' => (array) ($mbti['evidence'] ?? []),
+                ]],
+                'degraded' => (bool) ($mbti['degraded'] ?? false),
+                'degrade_reason' => (string) ($mbti['degrade_reason'] ?? ''),
+            ],
+        ];
+
+        $astroWeight = round($wAstro / 4.0, 4);
+        $astroDetail = (array) ($astro['module_details'] ?? []);
+        $astroLabels = [
+            'bazi' => '八字匹配',
+            'zodiac' => '属相匹配',
+            'constellation' => '星座匹配',
+            'natal_chart' => '星盘匹配',
+        ];
+        foreach ($astroLabels as $key => $label) {
+            $row = (array) ($astroDetail[$key] ?? []);
+            $modules[] = [
+                'key' => $key,
+                'label' => $label,
+                'layer' => $key === 'bazi' ? 'result' : ($key === 'zodiac' ? 'bridge' : 'process'),
+                'score' => (int) ($row['score'] ?? 0),
+                'weight' => $astroWeight,
+                'confidence' => (float) ($row['confidence'] ?? 0.6),
+                'verdict' => $this->scoreVerdict((int) ($row['score'] ?? 0)),
+                'reason_short' => (string) (($row['reason_short'] ?? '') ?: ($row['match'] ?? '')),
+                'reason_detail' => (string) ($row['reason_detail'] ?? ''),
+                'risk_short' => (string) ($row['mismatch'] ?? ''),
+                'risk_detail' => (string) ($row['risk_detail'] ?? ''),
+                'evidence_tags' => (array) ($row['evidence_tags'] ?? []),
+                'evidence' => (array) ($row['evidence'] ?? []),
+                'highlights' => [[
+                    'text' => (string) (($row['reason_short'] ?? '') ?: ($row['match'] ?? '')),
+                    'evidence_tags' => (array) ($row['evidence_tags'] ?? []),
+                    'evidence' => (array) ($row['evidence'] ?? []),
+                ], [
+                    'text' => (string) ($row['reason_detail'] ?? ''),
+                    'evidence_tags' => (array) ($row['evidence_tags'] ?? []),
+                    'evidence' => (array) ($row['evidence'] ?? []),
+                ]],
+                'risks' => [[
+                    'text' => (string) ($row['mismatch'] ?? ''),
+                    'evidence_tags' => (array) ($row['evidence_tags'] ?? []),
+                    'evidence' => (array) ($row['evidence'] ?? []),
+                ], [
+                    'text' => (string) ($row['risk_detail'] ?? ''),
+                    'evidence_tags' => (array) ($row['evidence_tags'] ?? []),
+                    'evidence' => (array) ($row['evidence'] ?? []),
+                ]],
+                'degraded' => (bool) ($row['degraded'] ?? false),
+                'degrade_reason' => (string) ($row['degrade_reason'] ?? ''),
+            ];
+        }
+
+        // Remove empty rows to reduce payload noise.
+        foreach ($modules as &$m) {
+            $m['highlights'] = array_values(array_filter((array) ($m['highlights'] ?? []), fn ($x) => trim((string) ($x['text'] ?? '')) !== ''));
+            $m['risks'] = array_values(array_filter((array) ($m['risks'] ?? []), fn ($x) => trim((string) ($x['text'] ?? '')) !== ''));
+
+            if (trim((string) ($m['reason_short'] ?? '')) === '') {
+                $m['reason_short'] = (string) data_get($m, 'highlights.0.text', '');
+            }
+            if (trim((string) ($m['reason_detail'] ?? '')) === '') {
+                $m['reason_detail'] = (string) data_get($m, 'highlights.1.text', '');
+            }
+            if (trim((string) ($m['risk_short'] ?? '')) === '') {
+                $m['risk_short'] = (string) data_get($m, 'risks.0.text', '');
+            }
+            if (trim((string) ($m['risk_detail'] ?? '')) === '') {
+                $m['risk_detail'] = (string) data_get($m, 'risks.1.text', '');
+            }
+
+            $inlineTags = array_merge(
+                (array) ($m['evidence_tags'] ?? []),
+                (array) data_get($m, 'highlights.0.evidence_tags', []),
+                (array) data_get($m, 'highlights.1.evidence_tags', []),
+                (array) data_get($m, 'risks.0.evidence_tags', []),
+                (array) data_get($m, 'risks.1.evidence_tags', [])
+            );
+            $m['evidence_tags'] = array_values(array_unique(array_filter(array_map('strval', $inlineTags))));
+            if (!is_array($m['evidence'] ?? null) || empty($m['evidence'])) {
+                $m['evidence'] = (array) (
+                    data_get($m, 'highlights.0.evidence', [])
+                    ?: data_get($m, 'highlights.1.evidence', [])
+                    ?: data_get($m, 'risks.0.evidence', [])
+                    ?: []
+                );
+            }
+        }
+        unset($m);
+
+        return $modules;
+    }
+
+    /**
+     * @param array<int,array<string,mixed>> $modules
+     */
+    private function overallConfidence(array $modules): float
+    {
+        if (empty($modules)) {
+            return 0.5;
+        }
+        $sum = 0.0;
+        $ws = 0.0;
+        foreach ($modules as $m) {
+            $w = (float) ($m['weight'] ?? 0.0);
+            $c = (float) ($m['confidence'] ?? 0.5);
+            if ($w <= 0.0) {
+                continue;
+            }
+            $sum += $w * $c;
+            $ws += $w;
+        }
+        if ($ws <= 0.0) {
+            return 0.5;
+        }
+        return round(max(0.0, min(1.0, $sum / $ws)), 2);
+    }
+
+    private function scoreVerdict(int $score): string
+    {
+        if ($score >= 80) {
+            return 'strong';
+        }
+        if ($score >= 60) {
+            return 'medium';
+        }
+        return 'weak';
     }
 
     /**
@@ -515,6 +932,79 @@ class MatchingEngineService
     private function pairKey(int $a, int $b): string
     {
         return $a < $b ? "{$a}:{$b}" : "{$b}:{$a}";
+    }
+
+    private function normalizeCityForMatch(string $city): string
+    {
+        $c = trim($city);
+        if ($c === '') {
+            return '';
+        }
+        // Normalize common Chinese admin suffixes for robust city-equality matching.
+        $c = preg_replace('/(省|市|自治区|自治州|地区|盟|区|县)$/u', '', $c) ?: $c;
+        return trim($c);
+    }
+
+    /**
+     * @param array<int> $userIds
+     * @return array<int,array{city:string,birthday:?string,mbti:string,gender:string,zodiac_animal:string,public_zodiac_sign:string,private_bazi:string,private_natal_chart:mixed}>
+     */
+    private function loadUserSignals(array $userIds): array
+    {
+        if (empty($userIds)) {
+            return [];
+        }
+
+        $rows = User::query()
+            ->whereIn('id', $userIds)
+            ->get(['id', 'city', 'birthday', 'public_mbti', 'gender', 'zodiac_animal', 'public_zodiac_sign', 'private_bazi', 'private_natal_chart']);
+        $astroRows = UserAstroProfile::query()
+            ->whereIn('user_id', $userIds)
+            ->get([
+                'user_id',
+                'sun_sign',
+                'moon_sign',
+                'asc_sign',
+                'bazi',
+                'true_solar_time',
+                'da_yun',
+                'liu_nian',
+                'wu_xing',
+                'notes',
+                'computed_at',
+            ])
+            ->keyBy('user_id');
+
+        $signals = [];
+        foreach ($rows as $row) {
+            $astro = $astroRows->get((int) $row->id);
+            $canonicalSun = trim((string) ($astro?->sun_sign ?? ''));
+            $canonicalBazi = trim((string) ($astro?->bazi ?? ''));
+            $canonicalChart = $astro ? [
+                'moon_sign' => $astro->moon_sign,
+                'asc_sign' => $astro->asc_sign,
+                'true_solar_time' => $astro->true_solar_time,
+                'da_yun' => $astro->da_yun ?? [],
+                'liu_nian' => $astro->liu_nian ?? [],
+                'wu_xing' => $astro->wu_xing ?? [],
+                'notes' => $astro->notes ?? [],
+                'computed_at' => optional($astro->computed_at)->toIso8601String(),
+            ] : null;
+
+            $signals[(int) $row->id] = [
+                'city' => trim((string) ($row->city ?? '')),
+                'birthday' => $row->birthday ? (string) $row->birthday : null,
+                'mbti' => trim((string) ($row->public_mbti ?? '')),
+                'gender' => trim((string) ($row->gender ?? '')),
+                'zodiac_animal' => trim((string) ($row->zodiac_animal ?? '')),
+                // Canonical source: user_astro_profiles. Fallback: users mirror fields.
+                'public_zodiac_sign' => $canonicalSun !== '' ? $canonicalSun : trim((string) ($row->public_zodiac_sign ?? '')),
+                'private_bazi' => $canonicalBazi !== '' ? $canonicalBazi : trim((string) ($row->private_bazi ?? '')),
+                'private_natal_chart' => $canonicalChart ?? $row->private_natal_chart,
+            ];
+        }
+
+        return $signals;
     }
 
     /**
