@@ -45,6 +45,8 @@ class AppRepository {
             relationship_goal = relationshipGoal
         )
     )
+    suspend fun saveCity(token: String, city: String) =
+        api.saveCity("Bearer $token", CityUpdateReq(city = city))
     suspend fun basicProfile(token: String) = api.basicProfile("Bearer $token")
     suspend fun login(phone: String, password: String) = api.login(LoginReq(phone, password))
     suspend fun questions(token: String) = api.questions("Bearer $token")

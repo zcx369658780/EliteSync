@@ -41,6 +41,7 @@ Route::prefix('v1')->group(function () {
         Route::prefix('profile')->group(function () {
             Route::get('/basic', [ProfileController::class, 'basic']);
             Route::post('/basic', [ProfileController::class, 'saveBasic']);
+            Route::post('/city', [ProfileController::class, 'saveCity']);
             Route::get('/astro', [AstroProfileController::class, 'show']);
             Route::post('/astro', [AstroProfileController::class, 'save']);
             Route::get('/mbti/quiz', [MbtiProfileController::class, 'quiz']);
@@ -77,6 +78,8 @@ Route::prefix('v1')->group(function () {
             Route::post('/verify/{uid}', [AdminController::class, 'updateVerify']);
             Route::post('/dev/run-matching', [AdminController::class, 'devRunMatching']);
             Route::post('/dev/release-drop', [AdminController::class, 'devReleaseDrop']);
+            Route::get('/dev/matching-debug', [AdminController::class, 'devMatchingDebugStatus']);
+            Route::post('/dev/matching-debug', [AdminController::class, 'devMatchingDebugSwitch']);
         });
     });
 })->middleware('secure.transport');

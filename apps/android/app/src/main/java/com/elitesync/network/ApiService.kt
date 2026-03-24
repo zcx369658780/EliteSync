@@ -46,6 +46,9 @@ interface ApiService {
     @POST("/api/v1/profile/basic")
     suspend fun saveBasicProfile(@Header("Authorization") bearer: String, @Body req: BasicProfileReq): SimpleResp
 
+    @POST("/api/v1/profile/city")
+    suspend fun saveCity(@Header("Authorization") bearer: String, @Body req: CityUpdateReq): SimpleResp
+
     @GET("/api/v1/profile/astro")
     suspend fun astroProfile(@Header("Authorization") bearer: String): AstroProfileResp
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\ChineseZodiacService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -12,7 +13,7 @@ use Illuminate\Validation\Rules\Password;
 
 class AuthController extends Controller
 {
-    public function register(Request $request): JsonResponse
+    public function register(Request $request, ChineseZodiacService $zodiacService): JsonResponse
     {
         $data = $request->validate([
             'phone' => ['required', 'string', 'max:32', 'unique:users,phone'],
@@ -26,6 +27,7 @@ class AuthController extends Controller
             'phone' => $data['phone'],
             'name' => $data['name'] ?? null,
             'birthday' => $data['birthday'] ?? null,
+            'zodiac_animal' => $zodiacService->fromBirthdayString($data['birthday'] ?? null),
             'realname_verified' => true,
             'password' => Hash::make($data['password']),
         ]);
@@ -38,6 +40,7 @@ class AuthController extends Controller
                 'phone' => $user->phone,
                 'name' => $user->name,
                 'birthday' => optional($user->birthday)->format('Y-m-d'),
+                'zodiac_animal' => $user->zodiac_animal,
                 'gender' => $user->gender,
                 'city' => $user->city,
                 'relationship_goal' => $user->relationship_goal,
@@ -73,6 +76,7 @@ class AuthController extends Controller
                 'phone' => $user->phone,
                 'name' => $user->name,
                 'birthday' => optional($user->birthday)->format('Y-m-d'),
+                'zodiac_animal' => $user->zodiac_animal,
                 'gender' => $user->gender,
                 'city' => $user->city,
                 'relationship_goal' => $user->relationship_goal,
@@ -95,6 +99,7 @@ class AuthController extends Controller
                 'phone' => $user->phone,
                 'name' => $user->name,
                 'birthday' => optional($user->birthday)->format('Y-m-d'),
+                'zodiac_animal' => $user->zodiac_animal,
                 'gender' => $user->gender,
                 'city' => $user->city,
                 'relationship_goal' => $user->relationship_goal,

@@ -1,7 +1,11 @@
 package com.elitesync.ui.screens
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -9,11 +13,16 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import com.elitesync.ui.AppViewModel
 import com.elitesync.ui.components.GlassScrollPage
@@ -22,6 +31,9 @@ import com.elitesync.ui.components.StarryPrimaryButton
 import com.elitesync.ui.components.StarrySectionCard
 import com.elitesync.ui.components.StarrySecondaryButton
 import com.elitesync.ui.components.StarryTextField
+import kotlinx.coroutines.launch
+import kotlin.math.max
+import kotlin.math.min
 
 @Composable
 fun ProfileInsightsScreen(vm: AppViewModel, onOpenMbtiQuiz: () -> Unit) {
@@ -36,6 +48,9 @@ fun ProfileInsightsScreen(vm: AppViewModel, onOpenMbtiQuiz: () -> Unit) {
     val error by vm.error.collectAsState()
     val searching = status.contains("地点搜索中")
     val computing = status.contains("画像计算")
+    val scope = rememberCoroutineScope()
+    var selectingPlace by remember { mutableStateOf(false) }
+    val hideProgress = remember { Animatable(0f) }
     LaunchedEffect(Unit) {
         vm.loadMbtiResult()
     }
@@ -45,22 +60,66 @@ fun ProfileInsightsScreen(vm: AppViewModel, onOpenMbtiQuiz: () -> Unit) {
             Text("生日（个人信息）：${if (birthday.isBlank()) "未填写，请到“我的-基础资料”补充" else birthday}")
             StarryTextField(value = birthTime, onValueChange = { vm.updateInsightsBirthTime(it) }, label = "出生时间（HH:mm）")
             StarryTextField(value = birthQuery, onValueChange = { vm.updateInsightsBirthQuery(it) }, label = "出生地搜索（城市/区县/地点）")
-            StarrySecondaryButton(text = "搜索出生地", loading = searching, onClick = { vm.searchPlaces(birthQuery) })
-            places.take(10).forEach { p ->
-                StarryListItemCard(
-                    text = "${p.name} ${p.city}${p.district}",
-                    onClick = { vm.setBirthPlace(p) },
-                    modifier = Modifier.padding(vertical = 2.dp)
+            StarrySecondaryButton(
+                text = "搜索出生地",
+                loading = searching,
+                feedbackText = "正在搜索",
+                onClick = { vm.searchPlaces(birthQuery) }
+            )
+            if (places.isNotEmpty()) {
+                val visiblePlaces = places.take(10)
+                val itemCount = visiblePlaces.size
+                val step = if (itemCount <= 1) 1f else 0.45f / (itemCount - 1).toFloat()
+                Column {
+                    visiblePlaces.forEachIndexed { index, p ->
+                        val fromBottom = itemCount - 1 - index
+                        val start = fromBottom * step
+                        val span = 0.55f
+                        val localProgress = ((hideProgress.value - start) / span).coerceIn(0f, 1f)
+                        val alpha = 1f - localProgress
+                        val collapse = 1f - localProgress
+                        StarryListItemCard(
+                            text = "${p.name} ${p.city}${p.district}",
+                            onClick = if (selectingPlace) null else {
+                                {
+                                    selectingPlace = true
+                                    vm.setBirthPlace(p)
+                                    scope.launch {
+                                        hideProgress.snapTo(0f)
+                                        hideProgress.animateTo(1f, animationSpec = tween(1000))
+                                        vm.clearPlaceResults()
+                                        hideProgress.snapTo(0f)
+                                        selectingPlace = false
+                                    }
+                                }
+                            },
+                            modifier = Modifier
+                                .graphicsLayer { this.alpha = alpha }
+                                .height((56.dp + 4.dp) * max(0f, min(1f, collapse)))
+                                .padding(vertical = 2.dp)
+                        )
+                    }
+                }
+            }
+            Column {
+                Text(
+                    birthPlace?.let {
+                        "已选出生地：${it.name} (${it.location.lat}, ${it.location.lng})"
+                    } ?: "已选出生地：未选择"
+                )
+                StarrySecondaryButton(
+                    text = "开始MBTI测试（3题）",
+                    feedbackText = "进入测试",
+                    onClick = onOpenMbtiQuiz
+                )
+                Text("当前MBTI：${if (mbti.isBlank()) "未测试" else mbti}")
+                StarryPrimaryButton(
+                    text = "计算星座/星盘/生辰八字",
+                    loading = computing,
+                    feedbackText = "开始计算",
+                    onClick = { vm.computeAstroProfile() }
                 )
             }
-            Text(
-                birthPlace?.let {
-                    "已选出生地：${it.name} (${it.location.lat}, ${it.location.lng})"
-                } ?: "已选出生地：未选择"
-            )
-            StarrySecondaryButton(text = "开始MBTI测试（3题）", onClick = onOpenMbtiQuiz)
-            Text("当前MBTI：${if (mbti.isBlank()) "未测试" else mbti}")
-            StarryPrimaryButton(text = "计算星座/星盘/生辰八字", loading = computing, onClick = { vm.computeAstroProfile() })
         }
 
         StarrySectionCard(title = "结果预览") {

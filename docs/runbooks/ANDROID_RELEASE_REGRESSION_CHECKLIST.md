@@ -1,6 +1,6 @@
 # Android Release Regression Checklist
 
-Updated: 2026-03-22
+Updated: 2026-03-24
 
 Related:
 - `docs/runbooks/GITHUB_BRANCH_PROTECTION_SETUP.md`
@@ -21,7 +21,14 @@ Related:
 - Auto city location
 - Birth-place search + select
 - MBTI submit + display
+- Match current returns data (not only `no match`) for designated test account
+- Match reasons render module fields (weight/confidence/degraded)
+- Message send + list works after entering match
 - About -> Check update returns server latest version
+5. Server config sanity:
+- `.env` `APP_KEY` is non-empty
+- DB host/user/password are valid for current deploy target
+- If testing synthetic matches, ensure `matching_debug_include_synthetic_users=true`
 
 ## 2) Release to Aliyun
 Use:

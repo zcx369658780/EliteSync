@@ -7,6 +7,7 @@ use App\Models\DatingMatch;
 use App\Models\QuestionnaireAnswer;
 use App\Models\QuestionnaireQuestion;
 use App\Models\User;
+use App\Services\MatchingDebugModeService;
 use App\Services\MatchingEngineService;
 use App\Services\PersonalityProfileService;
 use Illuminate\Http\JsonResponse;
@@ -24,7 +25,7 @@ class AdminController extends Controller
     {
         $items = User::query()
             ->orderBy('id')
-            ->get(['id', 'phone', 'name', 'disabled', 'verify_status']);
+            ->get(['id', 'phone', 'name', 'disabled', 'verify_status', 'is_synthetic', 'synthetic_batch']);
 
         return response()->json([
             'items' => $items,
@@ -77,12 +78,18 @@ class AdminController extends Controller
 
     public function devRunMatching(
         PersonalityProfileService $profileService,
-        MatchingEngineService $matchingEngine
+        MatchingEngineService $matchingEngine,
+        MatchingDebugModeService $debugMode
     ): JsonResponse
     {
+        // Dev matching may process large synthetic batches; avoid php max_execution_time cutoff.
+        @set_time_limit(0);
+        @ini_set('max_execution_time', '0');
+
         $weekTag = $this->weekTag();
         $totalQuestions = QuestionnaireQuestion::query()->where('enabled', true)->count();
         $requiredAnswers = max(1, (int) config('questionnaire.required_answer_count', 10));
+        $includeSyntheticUsers = $debugMode->includeSyntheticUsers();
 
         if ($totalQuestions === 0) {
             return response()->json([
@@ -90,6 +97,7 @@ class AdminController extends Controller
                 'week_tag' => $weekTag,
                 'pairs' => 0,
                 'eligible_users' => 0,
+                'include_synthetic_users' => $includeSyntheticUsers,
                 'message' => 'no enabled questions',
                 'match_ids' => [],
             ]);
@@ -102,6 +110,9 @@ class AdminController extends Controller
 
         $users = User::query()
             ->where('disabled', false)
+            ->when(!$includeSyntheticUsers, function ($q) {
+                $q->where('is_synthetic', false);
+            })
             ->whereIn('id', $eligibleUserIds)
             ->orderBy('id')
             ->get(['id', 'created_at', 'updated_at']);
@@ -148,6 +159,16 @@ class AdminController extends Controller
                 'score_base' => $plannedPair['score_base'] ?? null,
                 'score_final' => $plannedPair['score_final'] ?? null,
                 'score_fair' => $plannedPair['score_fair'] ?? null,
+                'score_personality_total' => $plannedPair['score_personality_total'] ?? null,
+                'score_mbti_total' => $plannedPair['score_mbti_total'] ?? null,
+                'score_astro_total' => $plannedPair['score_astro_total'] ?? null,
+                'score_overall' => $plannedPair['score_overall'] ?? null,
+                'score_bazi' => $plannedPair['score_bazi'] ?? null,
+                'score_zodiac' => $plannedPair['score_zodiac'] ?? null,
+                'score_constellation' => $plannedPair['score_constellation'] ?? null,
+                'score_natal_chart' => $plannedPair['score_natal_chart'] ?? null,
+                'match_verdict' => $plannedPair['match_verdict'] ?? null,
+                'match_reasons' => $plannedPair['match_reasons'] ?? null,
                 'penalty_factors' => $plannedPair['penalty_factors'] ?? null,
                 'drop_released' => false,
             ]);
@@ -160,7 +181,35 @@ class AdminController extends Controller
             'week_tag' => $weekTag,
             'pairs' => $pairs,
             'eligible_users' => $users->count(),
+            'include_synthetic_users' => $includeSyntheticUsers,
             'match_ids' => $createdMatchIds,
+        ]);
+    }
+
+    public function devMatchingDebugStatus(MatchingDebugModeService $debugMode): JsonResponse
+    {
+        $enabled = $debugMode->includeSyntheticUsers();
+        $syntheticUserCount = User::query()->where('is_synthetic', true)->count();
+
+        return response()->json([
+            'ok' => true,
+            'include_synthetic_users' => $enabled,
+            'synthetic_users' => $syntheticUserCount,
+        ]);
+    }
+
+    public function devMatchingDebugSwitch(Request $request, MatchingDebugModeService $debugMode): JsonResponse
+    {
+        $data = $request->validate([
+            'include_synthetic_users' => ['required', 'boolean'],
+        ]);
+
+        $enabled = (bool) $data['include_synthetic_users'];
+        $debugMode->setIncludeSyntheticUsers($enabled);
+
+        return response()->json([
+            'ok' => true,
+            'include_synthetic_users' => $debugMode->includeSyntheticUsers(),
         ]);
     }
 

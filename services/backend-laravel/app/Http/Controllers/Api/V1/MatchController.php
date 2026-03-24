@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Models\DatingMatch;
 use App\Models\QuestionnaireAnswer;
+use App\Models\User;
 use App\Services\EventLogger;
+use App\Services\MatchingDebugModeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -24,6 +26,7 @@ class MatchController extends Controller
     public function current(Request $request, EventLogger $events): JsonResponse
     {
         $user = $request->user();
+        $includeSyntheticUsers = app(MatchingDebugModeService::class)->includeSyntheticUsers();
         $answeredCount = QuestionnaireAnswer::query()
             ->where('user_id', $user->id)
             ->distinct('questionnaire_question_id')
@@ -51,6 +54,14 @@ class MatchController extends Controller
         }
 
         $partnerId = $match->user_a == $user->id ? $match->user_b : $match->user_a;
+        if (!$includeSyntheticUsers) {
+            $partnerSynthetic = (bool) User::query()
+                ->where('id', (int) $partnerId)
+                ->value('is_synthetic');
+            if ($partnerSynthetic) {
+                return response()->json(['message' => 'no match'], 404);
+            }
+        }
         $events->log(
             eventName: 'match_exposed',
             actorUserId: (int) $user->id,
@@ -67,6 +78,26 @@ class MatchController extends Controller
             'base_score' => $match->score_base,
             'final_score' => $match->score_final,
             'fairness_adjusted_score' => $match->score_fair,
+            'core_scores' => [
+                'personality' => $match->score_personality_total,
+                'mbti' => $match->score_mbti_total,
+                'astro' => $match->score_astro_total,
+                'overall' => $match->score_overall,
+            ],
+            'astro_scores' => [
+                'bazi' => $match->score_bazi,
+                'zodiac' => $match->score_zodiac,
+                'constellation' => $match->score_constellation,
+                'natal_chart' => $match->score_natal_chart,
+            ],
+            'match_verdict' => $match->match_verdict,
+            'match_reasons' => $match->match_reasons ?? [
+                'summary' => '',
+                'match' => [],
+                'mismatch' => [],
+                'confidence' => 0.5,
+                'modules' => [],
+            ],
             'penalty_factors' => $match->penalty_factors ?? [],
         ]);
     }
@@ -108,14 +139,32 @@ class MatchController extends Controller
     public function history(Request $request): JsonResponse
     {
         $user = $request->user();
+        $includeSyntheticUsers = app(MatchingDebugModeService::class)->includeSyntheticUsers();
 
-        $items = DatingMatch::query()
+        $rows = DatingMatch::query()
             ->where(function ($q) use ($user) {
                 $q->where('user_a', $user->id)
                     ->orWhere('user_b', $user->id);
             })
             ->orderByDesc('id')
-            ->get()
+            ->get();
+
+        $partnerIds = $rows
+            ->map(fn (DatingMatch $m) => (int) ($m->user_a == $user->id ? $m->user_b : $m->user_a))
+            ->unique()
+            ->values();
+        $syntheticMap = User::query()
+            ->whereIn('id', $partnerIds)
+            ->pluck('is_synthetic', 'id');
+
+        $items = $rows
+            ->filter(function (DatingMatch $match) use ($user, $includeSyntheticUsers, $syntheticMap) {
+                if ($includeSyntheticUsers) {
+                    return true;
+                }
+                $partnerId = (int) ($match->user_a == $user->id ? $match->user_b : $match->user_a);
+                return !(bool) ($syntheticMap[$partnerId] ?? false);
+            })
             ->map(function (DatingMatch $match) use ($user) {
                 return [
                     'match_id' => $match->id,
@@ -126,6 +175,26 @@ class MatchController extends Controller
                     'base_score' => $match->score_base,
                     'final_score' => $match->score_final,
                     'fairness_adjusted_score' => $match->score_fair,
+                    'core_scores' => [
+                        'personality' => $match->score_personality_total,
+                        'mbti' => $match->score_mbti_total,
+                        'astro' => $match->score_astro_total,
+                        'overall' => $match->score_overall,
+                    ],
+                    'astro_scores' => [
+                        'bazi' => $match->score_bazi,
+                        'zodiac' => $match->score_zodiac,
+                        'constellation' => $match->score_constellation,
+                        'natal_chart' => $match->score_natal_chart,
+                    ],
+                    'match_verdict' => $match->match_verdict,
+                    'match_reasons' => $match->match_reasons ?? [
+                        'summary' => '',
+                        'match' => [],
+                        'mismatch' => [],
+                        'confidence' => 0.5,
+                        'modules' => [],
+                    ],
                     'penalty_factors' => $match->penalty_factors ?? [],
                     'drop_released' => $match->drop_released,
                     'like_self' => $match->user_a == $user->id ? $match->like_a : $match->like_b,

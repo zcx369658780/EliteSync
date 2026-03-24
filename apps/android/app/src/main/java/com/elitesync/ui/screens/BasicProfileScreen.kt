@@ -54,6 +54,7 @@ fun BasicProfileScreen(vm: AppViewModel, onBack: () -> Unit) {
     var city by remember { mutableStateOf("") }
     var goal by remember { mutableStateOf("") }
     val currentBirthday by vm.currentUserBirthday.collectAsState()
+    val currentZodiacAnimal by vm.currentUserZodiacAnimal.collectAsState()
     val currentGender by vm.currentUserGender.collectAsState()
     val currentName by vm.currentUserName.collectAsState()
     val currentCity by vm.currentUserCity.collectAsState()
@@ -155,12 +156,17 @@ fun BasicProfileScreen(vm: AppViewModel, onBack: () -> Unit) {
                 )
             }
             StarryDateDropdownField(value = birthday, onValueChange = { birthday = it }, label = "生日（下拉选择）")
+            if (birthday.isNotBlank()) {
+                val zodiacText = currentZodiacAnimal.ifBlank { "自动计算中" }
+                Text("属相：$zodiacText", color = Color(0xFFB9CCEE))
+            }
         }
         StarrySectionCard(title = "城市与婚恋目标") {
             Text("城市信息（自动GPS定位）", color = Color(0xFFE6EEFF))
             StarrySecondaryButton(
                 text = if (city.isBlank()) "自动获取城市" else "重新定位城市",
                 loading = locating,
+                feedbackText = "开始定位",
                 onClick = {
                     if (city.contains("未解析城市")) city = ""
                     val granted = ContextCompat.checkSelfPermission(
@@ -224,6 +230,7 @@ fun BasicProfileScreen(vm: AppViewModel, onBack: () -> Unit) {
         StarrySectionCard {
             StarryPrimaryButton(
                 text = "保存",
+                feedbackText = "正在保存",
                 onClick = {
                     vm.saveBasicProfile(
                         birthday = birthday,

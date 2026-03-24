@@ -1,13 +1,19 @@
 package com.elitesync.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.ui.Alignment
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import com.elitesync.ui.AppViewModel
@@ -68,32 +74,44 @@ fun QuestionnaireScreen(vm: AppViewModel, onNext: () -> Unit) {
     }
 
     GlassScrollPage(title = "问卷（单击大按钮即可作答）", status = status, error = error) {
-        StarrySectionCard(title = "进度") {
+        StarrySectionCard {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 StarrySecondaryButton(
-                    text = "◀ 上一题",
+                    text = "上一题",
                     onClick = { if (currentIndex > 0) currentIndex-- },
                     enabled = currentIndex > 0,
-                    modifier = Modifier.fillMaxWidth(0.30f)
+                    compact = true,
+                    fillWidth = false,
+                    modifier = Modifier.width(72.dp)
                 )
-                Text("进度: ${submittedIds.size}/$questionnaireRequired")
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = "进度 ${submittedIds.size}/$questionnaireRequired",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 2.dp),
+                        textAlign = TextAlign.Center
+                    )
+                    LinearProgressIndicator(
+                        progress = { progress },
+                        modifier = Modifier.fillMaxWidth(),
+                        color = Color(0xFF7FA9FF),
+                        trackColor = Color(0x55334B71)
+                    )
+                }
                 StarrySecondaryButton(
-                    text = "下一题 ▶",
+                    text = "下一题",
                     onClick = { if (currentIndex < questions.lastIndex) currentIndex++ },
                     enabled = currentIndex < questions.lastIndex,
-                    modifier = Modifier.fillMaxWidth(0.30f)
+                    compact = true,
+                    fillWidth = false,
+                    modifier = Modifier.width(72.dp)
                 )
             }
-            LinearProgressIndicator(
-                progress = { progress },
-                modifier = Modifier.fillMaxWidth(),
-                color = Color(0xFF7FA9FF),
-                trackColor = Color(0x55334B71)
-            )
-            Text("完成度：${(progress * 100).toInt()}%")
         }
 
         StarrySectionCard(title = "当前题目") {
