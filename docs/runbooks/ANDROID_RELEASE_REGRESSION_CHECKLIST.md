@@ -23,6 +23,7 @@ Related:
 - MBTI submit + display
 - Match current returns data (not only `no match`) for designated test account
 - Match reasons render module fields (weight/confidence/degraded)
+- Match reasons render standardized fields (`reason_short/reason_detail/risk_short/risk_detail/evidence_tags`)
 - Message send + list works after entering match
 - About -> Check update returns server latest version
 5. Server config sanity:
@@ -47,6 +48,24 @@ Verify during release:
 2. APK url returns HTTP 200.
 3. Old app can check update, download and install.
 4. New app launches and core flows remain normal.
+
+## 3.1) Match payload contract regression (required)
+Use a designated account that should have current match and check `GET /api/v1/matches/current`.
+
+Required payload path:
+- `match_reasons.modules[]`
+
+Required fields for each module:
+- `key`, `label`, `score`, `weight`, `confidence`, `verdict`
+- `reason_short`, `reason_detail`
+- `risk_short`, `risk_detail`
+- `evidence_tags`, `evidence`
+- `degraded`, `degrade_reason`
+
+UI verification (Android):
+- Match screen shows module summary (`score + verdict + weight + confidence`)
+- Match screen shows short/detail reasons and risk lines (fallback to highlights/risks only when new fields are empty)
+- Match screen can show evidence tags without crash
 
 ## 4) Rollback hint
 If update path breaks:
