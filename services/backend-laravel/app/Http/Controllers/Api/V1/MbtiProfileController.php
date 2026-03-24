@@ -80,7 +80,19 @@ class MbtiProfileController extends Controller
             ->latest('id')
             ->first();
 
+        // Canonical MBTI source is users.public_mbti (used by matching engine).
+        // Attempt records are detail/history; if missing, still return persisted public_mbti.
+        $userMbti = strtoupper((string) ($user->public_mbti ?? ''));
         if (!$latest) {
+            if ($userMbti !== '') {
+                return response()->json([
+                    'exists' => true,
+                    'result' => $userMbti,
+                    'updated_at' => optional($user->updated_at)->toIso8601String(),
+                    'scores' => null,
+                    'confidence' => null,
+                ]);
+            }
             return response()->json([
                 'exists' => false,
                 'result' => null,
@@ -90,9 +102,14 @@ class MbtiProfileController extends Controller
             ]);
         }
 
+        $result = strtoupper((string) ($latest->result_letters ?? ''));
+        if ($result === '' && $userMbti !== '') {
+            $result = $userMbti;
+        }
+
         return response()->json([
             'exists' => true,
-            'result' => $latest->result_letters,
+            'result' => $result,
             'updated_at' => optional($latest->submitted_at ?? $latest->created_at)->toIso8601String(),
             'scores' => $latest->score_json ?? [],
             'confidence' => $latest->confidence_json ?? [],

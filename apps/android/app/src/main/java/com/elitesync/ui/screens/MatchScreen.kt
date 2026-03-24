@@ -1,15 +1,20 @@
 package com.elitesync.ui.screens
 
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import com.elitesync.model.MatchReasonModule
 import com.elitesync.ui.AppViewModel
+import com.elitesync.ui.components.EliteSyncColors
 import com.elitesync.ui.components.GlassScrollPage
 import com.elitesync.ui.components.StarryPrimaryButton
 import com.elitesync.ui.components.StarrySectionCard
 import com.elitesync.ui.components.StarrySecondaryButton
+import com.elitesync.ui.components.StarryVerdictBadge
 
 @Composable
 fun MatchScreen(vm: AppViewModel, onRetake: () -> Unit, onChat: () -> Unit, onLogout: () -> Unit) {
@@ -28,6 +33,7 @@ fun MatchScreen(vm: AppViewModel, onRetake: () -> Unit, onChat: () -> Unit, onLo
         StarrySectionCard(title = "匹配摘要") {
             Text("状态: $matchStateText")
             Text("我的倾向: ${profile.summary.label}")
+            match?.let { StarryVerdictBadge(it.match_verdict) }
             Text(
                 if (profile.summary.highlights.isEmpty()) {
                     "完成答题后将显示你的画像倾向"
@@ -35,18 +41,46 @@ fun MatchScreen(vm: AppViewModel, onRetake: () -> Unit, onChat: () -> Unit, onLo
                     profile.summary.highlights.joinToString("；")
                 }
             )
-            Text(match?.let {
-                val tags = if (it.explanation_tags.isEmpty()) it.highlights else it.explanation_tags.joinToString("；")
-                val scoreLine = "分数(base/final/fair): ${it.base_score ?: "-"} / ${it.final_score ?: "-"} / ${it.fairness_adjusted_score ?: "-"}"
-                val penaltyLine = if (it.penalty_factors.isEmpty()) {
+            val m = match
+            if (m == null) {
+                Text("当前无可展示的匹配对象")
+            } else {
+                Text("匹配对象ID: ${m.partner_id}")
+                Text("综合说明: ${m.match_reasons?.summary ?: "暂无"}")
+                Text("置信度: ${(((m.match_reasons?.confidence ?: 0.5) * 100).toInt())}%")
+
+                val core = m.core_scores
+                if (core != null) {
+                    Text("核心分(人格/MBTI/玄学/总分): ${core.personality ?: "-"} / ${core.mbti ?: "-"} / ${core.astro ?: "-"} / ${core.overall ?: "-"}")
+                }
+                Text("分数(base/final/fair): ${m.base_score ?: "-"} / ${m.final_score ?: "-"} / ${m.fairness_adjusted_score ?: "-"}")
+
+                val modules = m.match_reasons?.modules.orEmpty()
+                if (modules.isNotEmpty()) {
+                    modules.forEach { module ->
+                        ModuleLine(module)
+                    }
+                } else {
+                    val tags = if (m.explanation_tags.isEmpty()) m.highlights else m.explanation_tags.joinToString("；")
+                    Text("匹配理由: $tags")
+                    if (!m.match_reasons?.mismatch.isNullOrEmpty()) {
+                        m.match_reasons?.mismatch?.forEach { Text("关注点: $it", color = EliteSyncColors.Warning) }
+                    }
+                }
+
+                val astro = m.astro_scores
+                if (astro != null) {
+                    Text("玄学分项(八字/属相/星座/星盘): ${astro.bazi ?: "-"} / ${astro.zodiac ?: "-"} / ${astro.constellation ?: "-"} / ${astro.natal_chart ?: "-"}")
+                }
+                val penaltyLine = if (m.penalty_factors.isEmpty()) {
                     "惩罚因子: 无"
                 } else {
-                    "惩罚因子: " + it.penalty_factors.entries.joinToString("；") { e ->
+                    "惩罚因子: " + m.penalty_factors.entries.joinToString("；") { e ->
                         "${e.key}=${"%.2f".format(e.value)}"
                     }
                 }
-                "匹配对象ID: ${it.partner_id}\n匹配理由: $tags\n$scoreLine\n$penaltyLine"
-            } ?: "当前无可展示的匹配对象")
+                Text(penaltyLine)
+            }
         }
         StarrySectionCard(title = "操作") {
             StarrySecondaryButton(
@@ -62,5 +96,86 @@ fun MatchScreen(vm: AppViewModel, onRetake: () -> Unit, onChat: () -> Unit, onLo
             StarrySecondaryButton(text = "退出登录", onClick = onLogout)
             }
         
+    }
+}
+
+@Composable
+private fun ModuleLine(module: MatchReasonModule) {
+    val score = (module.score ?: 0).coerceIn(0, 100)
+    val scoreColor = scoreGradientColor(score)
+    val weightPct = (((module.weight ?: 0.0) * 100).toInt()).coerceAtLeast(0)
+    val confidencePct = (((module.confidence ?: 0.0) * 100).toInt()).coerceIn(0, 100)
+    val verdictText = when (module.verdict) {
+        "strong", "high" -> "高匹配"
+        "medium" -> "中匹配"
+        "weak", "low" -> "低匹配"
+        else -> "待评估"
+    }
+    Text(
+        "${module.label.ifBlank { module.key }}：${module.score ?: "-"}分  $verdictText",
+        color = scoreColor
+    )
+    Text(
+        "  权重 ${weightPct}% · 置信度 ${confidencePct}%",
+        color = EliteSyncColors.TextSecondary
+    )
+    val reasonShort = module.reason_short?.trim().orEmpty()
+    val reasonDetail = module.reason_detail?.trim().orEmpty()
+    val riskShort = module.risk_short?.trim().orEmpty()
+    val riskDetail = module.risk_detail?.trim().orEmpty()
+
+    if (reasonShort.isNotBlank()) {
+        Text("  - $reasonShort", color = EliteSyncColors.TextSecondary)
+    } else {
+        module.highlights.firstOrNull()?.text?.takeIf { it.isNotBlank() }?.let {
+            Text("  - $it", color = EliteSyncColors.TextSecondary)
+        }
+    }
+
+    if (reasonDetail.isNotBlank()) {
+        Text("  - $reasonDetail", color = EliteSyncColors.TextSecondary)
+    } else {
+        module.highlights.drop(1).firstOrNull()?.text?.takeIf { it.isNotBlank() }?.let {
+            Text("  - $it", color = EliteSyncColors.TextSecondary)
+        }
+    }
+
+    if (riskShort.isNotBlank()) {
+        Text("  - 关注：$riskShort", color = EliteSyncColors.Warning)
+    } else {
+        module.risks.firstOrNull()?.text?.takeIf { it.isNotBlank() }?.let {
+            Text("  - 关注：$it", color = EliteSyncColors.Warning)
+        }
+    }
+
+    if (riskDetail.isNotBlank()) {
+        Text("  - 关注：$riskDetail", color = EliteSyncColors.Warning)
+    } else {
+        module.risks.drop(1).firstOrNull()?.text?.takeIf { it.isNotBlank() }?.let {
+            Text("  - 关注：$it", color = EliteSyncColors.Warning)
+        }
+    }
+
+    if (module.evidence_tags.isNotEmpty()) {
+        Text(
+            "  证据标签：${module.evidence_tags.joinToString("、")}",
+            color = EliteSyncColors.TextSecondary
+        )
+    }
+    if (module.degraded == true) {
+        val reason = module.degrade_reason?.takeIf { it.isNotBlank() } ?: "数据不完整"
+        Text("  - 当前为降级估算：$reason", color = EliteSyncColors.Warning)
+    }
+}
+
+private fun scoreGradientColor(score: Int): Color {
+    val red = Color(0xFFFF4D4F)     // 50 and below -> red
+    val amber = Color(0xFFFFB020)   // middle -> amber
+    val green = Color(0xFF22C55E)   // 100 -> green
+    val t = ((score - 50f) / 50f).coerceIn(0f, 1f)
+    return if (t < 0.5f) {
+        lerp(red, amber, t / 0.5f)
+    } else {
+        lerp(amber, green, (t - 0.5f) / 0.5f)
     }
 }

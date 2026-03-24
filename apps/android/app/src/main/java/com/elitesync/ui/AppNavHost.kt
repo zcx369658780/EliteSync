@@ -6,7 +6,9 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -120,6 +122,10 @@ fun AppNavHost(vm: AppViewModel, socket: ChatSocketManager) {
                         } else {
                             slideInHorizontally(animationSpec = tween(240)) { -it / 3 } + fadeIn(animationSpec = tween(220))
                         }
+                    } else if (from >= 0 && to < 0) {
+                        slideInVertically(animationSpec = tween(300)) { it / 3 } + fadeIn(animationSpec = tween(260))
+                    } else if (from < 0 && to < 0) {
+                        slideInVertically(animationSpec = tween(220)) { it / 7 } + fadeIn(animationSpec = tween(200))
                     } else {
                         fadeIn(animationSpec = tween(260)) + scaleIn(initialScale = 0.985f, animationSpec = tween(260))
                     }
@@ -133,6 +139,10 @@ fun AppNavHost(vm: AppViewModel, socket: ChatSocketManager) {
                         } else {
                             slideOutHorizontally(animationSpec = tween(220)) { it / 5 } + fadeOut(animationSpec = tween(200))
                         }
+                    } else if (from >= 0 && to < 0) {
+                        slideOutVertically(animationSpec = tween(240)) { -it / 8 } + fadeOut(animationSpec = tween(220))
+                    } else if (from < 0 && to < 0) {
+                        slideOutVertically(animationSpec = tween(200)) { -it / 10 } + fadeOut(animationSpec = tween(180))
                     } else {
                         fadeOut(animationSpec = tween(180))
                     }
@@ -146,6 +156,10 @@ fun AppNavHost(vm: AppViewModel, socket: ChatSocketManager) {
                         } else {
                             slideInHorizontally(animationSpec = tween(220)) { -it / 4 } + fadeIn(animationSpec = tween(200))
                         }
+                    } else if (from < 0 && to >= 0) {
+                        slideInVertically(animationSpec = tween(240)) { -it / 8 } + fadeIn(animationSpec = tween(220))
+                    } else if (from < 0 && to < 0) {
+                        slideInVertically(animationSpec = tween(200)) { -it / 10 } + fadeIn(animationSpec = tween(180))
                     } else {
                         fadeIn(animationSpec = tween(220)) + scaleIn(initialScale = 0.99f, animationSpec = tween(220))
                     }
@@ -159,6 +173,10 @@ fun AppNavHost(vm: AppViewModel, socket: ChatSocketManager) {
                         } else {
                             slideOutHorizontally(animationSpec = tween(210)) { it / 6 } + fadeOut(animationSpec = tween(180))
                         }
+                    } else if (from < 0 && to >= 0) {
+                        slideOutVertically(animationSpec = tween(210)) { it / 4 } + fadeOut(animationSpec = tween(180))
+                    } else if (from < 0 && to < 0) {
+                        slideOutVertically(animationSpec = tween(190)) { it / 12 } + fadeOut(animationSpec = tween(170))
                     } else {
                         fadeOut(animationSpec = tween(180)) + scaleOut(targetScale = 1.01f, animationSpec = tween(180))
                     }

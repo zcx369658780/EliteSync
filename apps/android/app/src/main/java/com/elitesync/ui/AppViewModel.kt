@@ -40,6 +40,8 @@ class AppViewModel : ViewModel() {
     val currentUserName: StateFlow<String> = _currentUserName
     private val _currentUserBirthday = MutableStateFlow("")
     val currentUserBirthday: StateFlow<String> = _currentUserBirthday
+    private val _currentUserZodiacAnimal = MutableStateFlow("")
+    val currentUserZodiacAnimal: StateFlow<String> = _currentUserZodiacAnimal
     private val _currentUserGender = MutableStateFlow("")
     val currentUserGender: StateFlow<String> = _currentUserGender
     private val _currentUserCity = MutableStateFlow("")
@@ -199,15 +201,52 @@ class AppViewModel : ViewModel() {
         _error.value = "未获取到设备定位，请确认已开启定位服务；模拟器请先在 Extended Controls 设置经纬度。"
     }
 
-    fun cityResolvedFromLocation(city: String) {
-        _currentUserCity.value = city
-        _status.value = "定位成功"
+    fun cityResolvedFromLocation(city: String) = viewModelScope.launch {
+        val normalizedCity = normalizeResolvedCity(city)
+        if (normalizedCity.isBlank()) {
+            cityUnresolvedFromLocation()
+            return@launch
+        }
+        _currentUserCity.value = normalizedCity
         _error.value = ""
+
+        val authToken = _token.value
+        if (authToken.isBlank()) {
+            _status.value = "定位成功（城市已本地更新）"
+            return@launch
+        }
+
+        _status.value = "定位成功，城市同步中..."
+        runCatching { repo.saveCity(authToken, normalizedCity) }
+            .onSuccess {
+                _status.value = "定位成功（城市已同步）"
+                _error.value = ""
+            }
+            .onFailure {
+                val mapped = err(it)
+                if (mapped.contains("route", ignoreCase = true) &&
+                    mapped.contains("profile/city", ignoreCase = true)
+                ) {
+                    _status.value = "定位成功（城市已本地更新，服务端待升级）"
+                    _error.value = ""
+                } else {
+                    _status.value = "定位成功（城市已本地更新）"
+                    _error.value = "城市同步失败：$mapped"
+                }
+            }
     }
 
     fun cityUnresolvedFromLocation() {
         _status.value = "定位成功（未解析城市）"
         _error.value = ""
+    }
+
+    private fun normalizeResolvedCity(city: String): String {
+        val normalized = city.trim()
+        if (normalized.isBlank()) return ""
+        if (normalized.contains("未解析城市")) return ""
+        if (normalized == unresolvedCityPlaceholder) return ""
+        return normalized
     }
 
     fun addIncomingMessage(msg: String) {
@@ -219,6 +258,7 @@ class AppViewModel : ViewModel() {
         _currentUserId.value = null
         _currentUserName.value = ""
         _currentUserBirthday.value = ""
+        _currentUserZodiacAnimal.value = ""
         _currentUserGender.value = ""
         _currentUserCity.value = ""
         _currentRelationshipGoal.value = ""
@@ -276,6 +316,7 @@ class AppViewModel : ViewModel() {
                 _currentUserId.value = it.user?.id
                 _currentUserName.value = it.user?.name.orEmpty()
                 _currentUserBirthday.value = it.user?.birthday.orEmpty()
+                _currentUserZodiacAnimal.value = it.user?.zodiac_animal.orEmpty()
                 _currentUserGender.value = it.user?.gender.orEmpty()
                 _currentUserCity.value = it.user?.city.orEmpty()
                 _currentRelationshipGoal.value = it.user?.relationship_goal.orEmpty()
@@ -297,6 +338,7 @@ class AppViewModel : ViewModel() {
             .onSuccess {
                 _currentUserName.value = it.name.orEmpty()
                 _currentUserBirthday.value = it.birthday.orEmpty()
+                _currentUserZodiacAnimal.value = it.zodiac_animal.orEmpty()
                 _currentUserGender.value = it.gender.orEmpty()
                 _currentUserCity.value = it.city.orEmpty()
                     .takeUnless { c -> c.contains("未解析城市") || c == unresolvedCityPlaceholder }
@@ -313,9 +355,7 @@ class AppViewModel : ViewModel() {
         relationshipGoal: String
     ) = viewModelScope.launch {
         if (_token.value.isBlank()) return@launch setError("请先登录")
-        val normalizedCity = city.trim()
-            .takeUnless { it.contains("未解析城市") || it == unresolvedCityPlaceholder }
-            .orEmpty()
+        val normalizedCity = normalizeResolvedCity(city)
         // Always allow local save; server sync requires complete fields.
         _currentUserName.value = name.orEmpty()
         _currentUserBirthday.value = birthday.trim()
@@ -348,6 +388,7 @@ class AppViewModel : ViewModel() {
             .onSuccess {
                 _status.value = "基础资料已保存"
                 _error.value = ""
+                loadBasicProfile()
             }
             .onFailure {
                 val mapped = err(it)
@@ -632,8 +673,11 @@ class AppViewModel : ViewModel() {
                     location = com.elitesync.model.MapPoint(lat, lng)
                 )
                 val finalCity = _currentPlace.value?.city.orEmpty()
-                _status.value = if (finalCity.isNotBlank()) "定位成功" else "定位成功（未解析城市）"
-                _error.value = ""
+                if (finalCity.isNotBlank()) {
+                    cityResolvedFromLocation(finalCity)
+                } else {
+                    cityUnresolvedFromLocation()
+                }
             }
             .onFailure { setError("定位解析", it) }
     }
@@ -655,7 +699,12 @@ class AppViewModel : ViewModel() {
 
     fun setBirthPlace(place: com.elitesync.model.MapPlace) {
         _birthPlace.value = place
+        _insightsBirthQuery.value = place.name
         _status.value = "已选择出生地"
+    }
+
+    fun clearPlaceResults() {
+        _placeResults.value = emptyList()
     }
 
     fun updateInsightsBirthTime(v: String) {

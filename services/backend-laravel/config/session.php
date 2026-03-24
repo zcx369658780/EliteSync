@@ -18,7 +18,7 @@ return [
     |
     */
 
-    'driver' => env('SESSION_DRIVER', 'database'),
+    'driver' => env('APP_SESSION_DRIVER', 'file'),
 
     /*
     |--------------------------------------------------------------------------
@@ -73,7 +73,9 @@ return [
     |
     */
 
-    'connection' => env('SESSION_CONNECTION'),
+    // Prefer explicit app-scoped session connection, then fallback to DB_CONNECTION.
+    // Avoid being affected by host-level SESSION_CONNECTION pollution.
+    'connection' => env('APP_SESSION_CONNECTION', env('DB_CONNECTION', 'mysql')),
 
     /*
     |--------------------------------------------------------------------------

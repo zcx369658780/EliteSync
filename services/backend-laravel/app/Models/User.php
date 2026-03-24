@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -20,6 +21,7 @@ class User extends Authenticatable
         'email',
         'phone',
         'birthday',
+        'zodiac_animal',
         'gender',
         'city',
         'relationship_goal',
@@ -27,6 +29,8 @@ class User extends Authenticatable
         'verify_status',
         'realname_verified',
         'disabled',
+        'is_synthetic',
+        'synthetic_batch',
         'public_zodiac_sign',
         'public_mbti',
         'public_personality',
@@ -55,9 +59,15 @@ class User extends Authenticatable
             'birthday' => 'date',
             'password' => 'hashed',
             'disabled' => 'boolean',
+            'is_synthetic' => 'boolean',
             'realname_verified' => 'boolean',
             'public_personality' => 'array',
             'private_natal_chart' => 'array',
         ];
+    }
+
+    public function astroProfile(): HasOne
+    {
+        return $this->hasOne(UserAstroProfile::class);
     }
 }

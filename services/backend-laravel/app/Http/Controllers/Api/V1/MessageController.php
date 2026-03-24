@@ -7,6 +7,7 @@ use App\Models\ChatMessage;
 use App\Models\DatingMatch;
 use App\Models\User;
 use App\Services\EventLogger;
+use App\Services\MatchingDebugModeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -22,6 +23,14 @@ class MessageController extends Controller
 
     private function canChat(int $userId, int $peerId): bool
     {
+        $includeSyntheticUsers = app(MatchingDebugModeService::class)->includeSyntheticUsers();
+        if (!$includeSyntheticUsers) {
+            $peerSynthetic = (bool) User::query()->where('id', $peerId)->value('is_synthetic');
+            if ($peerSynthetic) {
+                return false;
+            }
+        }
+
         return DatingMatch::query()
             ->where('drop_released', true)
             ->where(function ($q) use ($userId, $peerId) {

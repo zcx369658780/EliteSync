@@ -12,6 +12,7 @@ data class AuthUser(
     val phone: String? = null,
     val name: String? = null,
     val birthday: String? = null,
+    val zodiac_animal: String? = null,
     val gender: String? = null,
     val city: String? = null,
     val relationship_goal: String? = null,
@@ -77,9 +78,60 @@ data class MatchResp(
     val base_score: Int? = null,
     val final_score: Int? = null,
     val fairness_adjusted_score: Int? = null,
+    val core_scores: MatchCoreScores? = null,
+    val astro_scores: MatchAstroScores? = null,
+    val match_verdict: String? = null,
+    val match_reasons: MatchReasons? = null,
     val penalty_factors: Map<String, Double> = emptyMap()
 )
 data class MatchConfirmReq(val match_id: Int, val like: Boolean)
+
+data class MatchAstroScores(
+    val bazi: Int? = null,
+    val zodiac: Int? = null,
+    val constellation: Int? = null,
+    val natal_chart: Int? = null
+)
+
+data class MatchReasons(
+    val summary: String? = null,
+    val match: List<String> = emptyList(),
+    val mismatch: List<String> = emptyList(),
+    val confidence: Double? = null,
+    val modules: List<MatchReasonModule> = emptyList()
+)
+
+data class MatchCoreScores(
+    val personality: Int? = null,
+    val mbti: Int? = null,
+    val astro: Int? = null,
+    val overall: Int? = null
+)
+
+data class MatchReasonModule(
+    val key: String = "",
+    val label: String = "",
+    val score: Int? = null,
+    val weight: Double? = null,
+    val confidence: Double? = null,
+    val verdict: String? = null,
+    val reason_short: String? = null,
+    val reason_detail: String? = null,
+    val risk_short: String? = null,
+    val risk_detail: String? = null,
+    val evidence_tags: List<String> = emptyList(),
+    val evidence: Map<String, Any?> = emptyMap(),
+    val highlights: List<MatchReasonItem> = emptyList(),
+    val risks: List<MatchReasonItem> = emptyList(),
+    val degraded: Boolean? = null,
+    val degrade_reason: String? = null
+)
+
+data class MatchReasonItem(
+    val text: String = "",
+    val evidence_tags: List<String> = emptyList(),
+    val evidence: Map<String, Any?> = emptyMap()
+)
 
 data class MessageReq(val receiver_id: Int, val content: String)
 data class SimpleResp(val ok: Boolean? = null, val id: Int? = null)
@@ -163,11 +215,16 @@ data class BasicProfileReq(
     val relationship_goal: String
 )
 
+data class CityUpdateReq(
+    val city: String
+)
+
 data class BasicProfileResp(
     val id: Int,
     val name: String? = null,
     val phone: String? = null,
     val birthday: String? = null,
+    val zodiac_animal: String? = null,
     val gender: String? = null,
     val city: String? = null,
     val relationship_goal: String? = null,

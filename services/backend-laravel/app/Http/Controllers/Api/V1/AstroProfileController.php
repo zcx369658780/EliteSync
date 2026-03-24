@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\UserAstroProfile;
+use App\Services\UserAstroMirrorService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -29,7 +30,7 @@ class AstroProfileController extends Controller
         ]);
     }
 
-    public function save(Request $request): JsonResponse
+    public function save(Request $request, UserAstroMirrorService $mirror): JsonResponse
     {
         $user = $request->user();
         $data = $request->validate([
@@ -83,22 +84,8 @@ class AstroProfileController extends Controller
             ]
         );
 
-        $user->forceFill([
-            'public_zodiac_sign' => $data['sun_sign'],
-            'private_bazi' => $data['bazi'] ?? null,
-            'private_birth_place' => $data['birth_place'] ?? null,
-            'private_birth_lat' => $data['birth_lat'] ?? null,
-            'private_birth_lng' => $data['birth_lng'] ?? null,
-            'private_natal_chart' => [
-                'moon_sign' => $data['moon_sign'] ?? null,
-                'asc_sign' => $data['asc_sign'] ?? null,
-                'true_solar_time' => $data['true_solar_time'] ?? null,
-                'da_yun' => $data['da_yun'] ?? [],
-                'liu_nian' => $data['liu_nian'] ?? [],
-                'wu_xing' => $data['wu_xing'] ?? [],
-                'notes' => $data['notes'] ?? [],
-            ],
-        ])->save();
+        // Single direction mirror: canonical source is user_astro_profiles.
+        $mirror->syncFromAstroProfile($user, $profile);
 
         return response()->json([
             'ok' => true,

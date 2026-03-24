@@ -71,6 +71,7 @@ fun MbtiQuizScreen(vm: AppViewModel, onBack: () -> Unit) {
         StarryPrimaryButton(
             text = "提交MBTI结果",
             loading = submitting,
+            feedbackText = "提交中",
             enabled = questions.isNotEmpty() && answers.size == questions.size,
             onClick = { vm.submitMbtiQuiz() }
         )

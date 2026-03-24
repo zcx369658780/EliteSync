@@ -76,10 +76,12 @@ fun AboutScreen(
 
         StarryPrimaryButton(
             text = "检查更新",
+            feedbackText = "正在检查",
             onClick = { vm.checkAppUpdate(reportMessage = true) }
         )
         StarryPrimaryButton(
             text = "复制更新诊断信息",
+            feedbackText = "已复制",
             onClick = {
                 val cm = context.getSystemService(ClipboardManager::class.java)
                 val text = vm.buildUpdateDiagnosticText()

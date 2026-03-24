@@ -21,6 +21,9 @@ function Assert-Tool([string]$Name) {
 function Run-Step([string]$Title, [scriptblock]$Action) {
     Write-Host "==> $Title"
     & $Action
+    if ($LASTEXITCODE -ne 0) {
+        throw "Step failed: $Title (exit=$LASTEXITCODE)"
+    }
     Write-Host "OK: $Title"
 }
 
@@ -143,7 +146,9 @@ curl -sS -o /dev/null -w '%{http_code}\n' http://127.0.0.1/up
 "@
 
 $tmpFile = Join-Path $env:TEMP "elitesync_remote_deploy.sh"
-Set-Content -Path $tmpFile -Value $remoteScript -Encoding ascii
+# Force LF line endings for remote bash execution.
+$remoteScriptLf = ($remoteScript -replace "`r`n", "`n")
+[System.IO.File]::WriteAllText($tmpFile, $remoteScriptLf, (New-Object System.Text.UTF8Encoding($false)))
 
 Run-Step "Upload and run remote deploy script" {
     scp -o StrictHostKeyChecking=no -i $KeyPath `

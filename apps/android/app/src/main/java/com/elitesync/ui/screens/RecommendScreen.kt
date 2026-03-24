@@ -6,21 +6,27 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import com.elitesync.ui.components.EliteSyncColors
 import com.elitesync.ui.AppViewModel
 import com.elitesync.ui.components.GlassScrollPage
 import com.elitesync.ui.components.StarryPrimaryButton
 import com.elitesync.ui.components.StarrySectionCard
 import com.elitesync.ui.components.StarrySecondaryButton
+import com.elitesync.ui.components.StarryVerdictBadge
 
 @Composable
 fun RecommendScreen(vm: AppViewModel, onQuestionnaire: () -> Unit, onGoMatch: () -> Unit) {
     val questionnaireComplete by vm.questionnaireComplete.collectAsState()
     val profile by vm.profile.collectAsState()
+    val match by vm.currentMatch.collectAsState()
     val status by vm.status.collectAsState()
     val error by vm.error.collectAsState()
-    LaunchedEffect(Unit) {
+    LaunchedEffect(questionnaireComplete) {
         vm.loadQuestionnaireProgress()
         vm.loadQuestionnaireProfile()
+        if (questionnaireComplete) {
+            vm.loadCurrentMatch()
+        }
     }
 
     GlassScrollPage(title = "推荐", status = status, error = error) {
@@ -34,6 +40,30 @@ fun RecommendScreen(vm: AppViewModel, onQuestionnaire: () -> Unit, onGoMatch: ()
                     "画像摘要：${profile.summary.highlights.joinToString("；")}"
                 }
             )
+            match?.let { StarryVerdictBadge(it.match_verdict) }
+            val brief = match?.let {
+                val summary = it.match_reasons?.summary?.takeIf { s -> s.isNotBlank() } ?: it.highlights
+                "当前匹配：$summary"
+            } ?: if (questionnaireComplete) {
+                "当前匹配：暂无可展示对象"
+            } else {
+                "当前匹配：完成建档后可查看"
+            }
+            Text(brief)
+            val modules = match?.match_reasons?.modules.orEmpty()
+            if (modules.isNotEmpty()) {
+                val top = modules.sortedByDescending { it.score ?: 0 }.take(2)
+                top.forEach { module ->
+                    val score = module.score ?: 0
+                    val line = module.highlights.firstOrNull()?.text
+                        ?: module.risks.firstOrNull()?.text
+                        ?: "暂无细节"
+                    Text(
+                        text = "${module.label.ifBlank { module.key }}（$score 分）：$line",
+                        color = if (score >= 65) EliteSyncColors.TextPrimary else EliteSyncColors.TextSecondary
+                    )
+                }
+            }
         }
         StarrySectionCard(title = "下一步") {
             StarrySecondaryButton(
