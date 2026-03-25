@@ -94,6 +94,8 @@ data class MatchAstroScores(
 )
 
 data class MatchReasons(
+    val contract_version: String? = null,
+    val generated_at: String? = null,
     val summary: String? = null,
     val match: List<String> = emptyList(),
     val mismatch: List<String> = emptyList(),
@@ -111,6 +113,7 @@ data class MatchCoreScores(
 data class MatchReasonModule(
     val key: String = "",
     val label: String = "",
+    val algo_version: String? = null,
     val score: Int? = null,
     val weight: Double? = null,
     val confidence: Double? = null,

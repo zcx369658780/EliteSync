@@ -25,8 +25,25 @@ class DevFillSyntheticMbtiCommand extends Command
         'ISTP', 'ISFP', 'ESTP', 'ESFP',
     ];
 
+    private function ensureSyntheticOpsAllowed(): bool
+    {
+        if (!app()->environment('production')) {
+            return true;
+        }
+        $allow = (bool) config('matching.debug.allow_synthetic_commands_in_production', false);
+        if ($allow) {
+            return true;
+        }
+        $this->error('Blocked in production: synthetic command is disabled. Set MATCHING_ALLOW_SYNTHETIC_COMMANDS_IN_PRODUCTION=true only for controlled operations.');
+        return false;
+    }
+
     public function handle(): int
     {
+        if (!$this->ensureSyntheticOpsAllowed()) {
+            return self::FAILURE;
+        }
+
         $seed = $this->option('seed');
         if ($seed !== null && $seed !== '') {
             mt_srand((int) $seed);
@@ -113,4 +130,3 @@ class DevFillSyntheticMbtiCommand extends Command
         return $this->mbtiPool[$idx];
     }
 }
-

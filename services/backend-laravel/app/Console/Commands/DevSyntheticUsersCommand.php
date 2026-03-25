@@ -16,7 +16,8 @@ class DevSyntheticUsersCommand extends Command
         {--count=1000 : Number of synthetic users to create}
         {--batch= : Optional batch tag (default auto timestamp)}
         {--with-answers=1 : Whether to auto fill required questionnaire answers (0|1)}
-        {--password=1234567aa : Default password for synthetic users}
+        {--password= : Optional password for synthetic users (if empty, auto-generate random strong password)}
+        {--phone-prefix=90 : Synthetic phone prefix (default 90, avoid real mobile ranges)}
         {--cities=北京,上海,广州,深圳,南阳 : Comma separated city pool}
         {--min-age=24 : Minimum age}
         {--max-age=36 : Maximum age}
@@ -25,15 +26,39 @@ class DevSyntheticUsersCommand extends Command
 
     protected $description = 'Generate (or clear) synthetic users for matching algorithm debugging/load tests.';
 
+    private function ensureSyntheticOpsAllowed(): bool
+    {
+        if (!app()->environment('production')) {
+            return true;
+        }
+        $allow = (bool) config('matching.debug.allow_synthetic_commands_in_production', false);
+        if ($allow) {
+            return true;
+        }
+        $this->error('Blocked in production: synthetic command is disabled. Set MATCHING_ALLOW_SYNTHETIC_COMMANDS_IN_PRODUCTION=true only for controlled operations.');
+        return false;
+    }
+
     public function handle(ChineseZodiacService $zodiacService): int
     {
+        if (!$this->ensureSyntheticOpsAllowed()) {
+            return self::FAILURE;
+        }
+
         $count = max(0, (int) $this->option('count'));
         $batch = trim((string) $this->option('batch'));
         if ($batch === '') {
             $batch = 'syn_'.now()->format('Ymd_His');
         }
         $withAnswers = in_array((string) $this->option('with-answers'), ['1', 'true', 'yes', 'on'], true);
-        $password = (string) $this->option('password');
+        $password = trim((string) $this->option('password'));
+        if ($password === '') {
+            $password = $this->generateStrongPassword();
+        }
+        $phonePrefix = trim((string) $this->option('phone-prefix'));
+        if ($phonePrefix === '' || preg_match('/\D/', $phonePrefix)) {
+            $phonePrefix = '90';
+        }
         $cities = $this->parseCities((string) $this->option('cities'));
         $minAge = max(18, (int) $this->option('min-age'));
         $maxAge = max($minAge, (int) $this->option('max-age'));
@@ -77,7 +102,7 @@ class DevSyntheticUsersCommand extends Command
         DB::beginTransaction();
         try {
             for ($i = 0; $i < $count; $i++) {
-                $phone = $this->nextPhone();
+                $phone = $this->nextPhone($phonePrefix);
                 if ($cityCursor > 0 && $cityCursor % count($cityShuffle) === 0) {
                     shuffle($cityShuffle);
                 }
@@ -180,6 +205,8 @@ class DevSyntheticUsersCommand extends Command
         $this->line("with_answers=".($withAnswers ? 'true' : 'false'));
         $this->line('cities='.implode(',', $cities));
         $this->line("age_range={$minAge}-{$maxAge}");
+        $this->line("phone_prefix={$phonePrefix}");
+        $this->line("synthetic_password={$password}");
 
         return self::SUCCESS;
     }
@@ -192,16 +219,41 @@ class DevSyntheticUsersCommand extends Command
             ->delete();
     }
 
-    private function nextPhone(): string
+    private function nextPhone(string $prefix): string
     {
-        // 17x prefix keeps synthetic range separated from real test accounts.
+        // Use a non-mobile synthetic prefix by default (e.g. 90xxxx...), to avoid
+        // confusing with real phone accounts.
+        $normalized = preg_replace('/\D+/', '', $prefix) ?? '90';
+        if ($normalized === '') {
+            $normalized = '90';
+        }
+        if (strlen($normalized) >= 11) {
+            $normalized = substr($normalized, 0, 10);
+        }
+        $suffixLen = 11 - strlen($normalized);
+        if ($suffixLen < 1) {
+            $suffixLen = 1;
+        }
+
         while (true) {
-            $phone = '17'.str_pad((string) random_int(0, 999999999), 9, '0', STR_PAD_LEFT);
+            $max = (10 ** $suffixLen) - 1;
+            $phone = $normalized.str_pad((string) random_int(0, $max), $suffixLen, '0', STR_PAD_LEFT);
             $exists = User::query()->where('phone', $phone)->exists();
             if (!$exists) {
                 return $phone;
             }
         }
+    }
+
+    private function generateStrongPassword(int $length = 12): string
+    {
+        $alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%^&*';
+        $max = strlen($alphabet) - 1;
+        $out = '';
+        for ($i = 0; $i < $length; $i++) {
+            $out .= $alphabet[random_int(0, $max)];
+        }
+        return $out;
     }
 
     /**

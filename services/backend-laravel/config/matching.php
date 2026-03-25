@@ -1,6 +1,21 @@
 <?php
 
 return [
+    'contract' => [
+        // Payload contract version for match_reasons.
+        'version' => 'v1',
+    ],
+
+    'algo_versions' => [
+        // Module algorithm version markers for telemetry/debug.
+        'personality' => 'p1',
+        'mbti' => 'p1',
+        'bazi' => 'p1',
+        'zodiac' => 'p1',
+        'constellation' => 'p1',
+        'natal_chart' => 'p1',
+    ],
+
     'core_weights' => [
         // P1 (Alpha): personality + mbti + astro
         'personality' => 0.50,
@@ -47,6 +62,11 @@ return [
         // true: synthetic users can be included in matching (for algorithm debug/load test).
         'include_synthetic_users_default' => filter_var(
             env('MATCHING_DEBUG_INCLUDE_SYNTHETIC_USERS', false),
+            FILTER_VALIDATE_BOOL
+        ),
+        // Production safety guard for synthetic-data commands.
+        'allow_synthetic_commands_in_production' => filter_var(
+            env('MATCHING_ALLOW_SYNTHETIC_COMMANDS_IN_PRODUCTION', false),
             FILTER_VALIDATE_BOOL
         ),
     ],

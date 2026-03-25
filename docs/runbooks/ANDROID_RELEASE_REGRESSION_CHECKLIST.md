@@ -30,6 +30,7 @@ Related:
 - `.env` `APP_KEY` is non-empty
 - DB host/user/password are valid for current deploy target
 - If testing synthetic matches, ensure `matching_debug_include_synthetic_users=true`
+- In production, ensure `MATCHING_ALLOW_SYNTHETIC_COMMANDS_IN_PRODUCTION=false` (unless explicit controlled operation)
 
 ## 2) Release to Aliyun
 Use:

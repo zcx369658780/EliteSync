@@ -35,6 +35,12 @@ class DevRunMatchingCommand extends Command
         $includeSyntheticUsers = $includeOption === null
             ? $debugMode->includeSyntheticUsers()
             : in_array((string) $includeOption, ['1', 'true', 'yes', 'on'], true);
+        if (app()->environment('production')
+            && $includeSyntheticUsers
+            && !(bool) config('matching.debug.allow_synthetic_commands_in_production', false)) {
+            $this->error('Blocked in production: include-synthetic requires MATCHING_ALLOW_SYNTHETIC_COMMANDS_IN_PRODUCTION=true.');
+            return self::FAILURE;
+        }
 
         if ($totalQuestions === 0) {
             $this->warn('No enabled questions, skip matching.');

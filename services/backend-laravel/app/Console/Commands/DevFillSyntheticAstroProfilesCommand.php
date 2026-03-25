@@ -57,8 +57,25 @@ class DevFillSyntheticAstroProfilesCommand extends Command
     /** @var array<int,string> */
     private array $zodiacSigns = ['白羊座', '金牛座', '双子座', '巨蟹座', '狮子座', '处女座', '天秤座', '天蝎座', '射手座', '摩羯座', '水瓶座', '双鱼座'];
 
+    private function ensureSyntheticOpsAllowed(): bool
+    {
+        if (!app()->environment('production')) {
+            return true;
+        }
+        $allow = (bool) config('matching.debug.allow_synthetic_commands_in_production', false);
+        if ($allow) {
+            return true;
+        }
+        $this->error('Blocked in production: synthetic command is disabled. Set MATCHING_ALLOW_SYNTHETIC_COMMANDS_IN_PRODUCTION=true only for controlled operations.');
+        return false;
+    }
+
     public function handle(UserAstroMirrorService $mirror): int
     {
+        if (!$this->ensureSyntheticOpsAllowed()) {
+            return self::FAILURE;
+        }
+
         $seed = $this->option('seed');
         if ($seed !== null && $seed !== '') {
             mt_srand((int) $seed);
