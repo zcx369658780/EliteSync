@@ -20,6 +20,7 @@ Route::prefix('v1')->group(function () {
         Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:auth');
         Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:auth');
         Route::post('/refresh', [AuthController::class, 'refresh'])->middleware('auth:sanctum');
+        Route::post('/password', [AuthController::class, 'changePassword'])->middleware('auth:sanctum');
     });
 
     Route::prefix('questionnaire')->middleware('auth:sanctum')->group(function () {

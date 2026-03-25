@@ -7,6 +7,11 @@ data class RegisterReq(
     val realname_verified: Boolean
 )
 data class LoginReq(val phone: String, val password: String)
+data class ChangePasswordReq(
+    val current_password: String,
+    val new_password: String,
+    val new_password_confirmation: String
+)
 data class AuthUser(
     val id: Int,
     val phone: String? = null,

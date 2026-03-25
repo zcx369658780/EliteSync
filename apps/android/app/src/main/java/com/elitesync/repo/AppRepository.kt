@@ -28,6 +28,15 @@ class AppRepository {
 
     suspend fun register(phone: String, password: String, birthday: String?, realnameVerified: Boolean) =
         api.register(RegisterReq(phone, password, birthday, realnameVerified))
+    suspend fun changePassword(token: String, currentPassword: String, newPassword: String, newPasswordConfirmation: String) =
+        api.changePassword(
+            "Bearer $token",
+            ChangePasswordReq(
+                current_password = currentPassword,
+                new_password = newPassword,
+                new_password_confirmation = newPasswordConfirmation
+            )
+        )
     suspend fun saveBasicProfile(
         token: String,
         birthday: String?,

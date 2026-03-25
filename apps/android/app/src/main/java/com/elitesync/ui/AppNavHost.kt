@@ -34,6 +34,7 @@ import com.elitesync.ui.screens.BaiduMapPickerScreen
 import com.elitesync.ui.screens.BasicProfileScreen
 import com.elitesync.ui.screens.AboutScreen
 import com.elitesync.ui.screens.ChatScreen
+import com.elitesync.ui.screens.ChangePasswordScreen
 import com.elitesync.ui.screens.DiscoverScreen
 import com.elitesync.ui.screens.MatchScreen
 import com.elitesync.ui.screens.MeScreen
@@ -271,7 +272,14 @@ fun AppNavHost(vm: AppViewModel, socket: ChatSocketManager) {
                     )
                 }
                 composable("main/me/settings") {
-                    MeSettingsScreen(vm = vm, onBack = { nav.popBackStack() })
+                    MeSettingsScreen(
+                        vm = vm,
+                        onChangePassword = { nav.navigate("main/me/change-password") },
+                        onBack = { nav.popBackStack() }
+                    )
+                }
+                composable("main/me/change-password") {
+                    ChangePasswordScreen(vm = vm, onBack = { nav.popBackStack() })
                 }
                 composable("main/me/about") {
                     AboutScreen(vm = vm, onBack = { nav.popBackStack() })
