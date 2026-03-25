@@ -131,6 +131,8 @@ class AdminApiTest extends TestCase
             ->assertOk()
             ->assertJsonStructure([
                 'match_reasons' => [
+                    'contract_version',
+                    'generated_at',
                     'summary',
                     'match',
                     'mismatch',
@@ -138,6 +140,7 @@ class AdminApiTest extends TestCase
                     'modules' => [[
                         'key',
                         'label',
+                        'algo_version',
                         'score',
                         'weight',
                         'confidence',

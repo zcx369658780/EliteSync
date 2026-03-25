@@ -23,6 +23,35 @@ class MatchController extends Controller
         return now()->utc()->format('Y-\\WW');
     }
 
+    /**
+     * @param array<string,mixed>|null $raw
+     * @return array<string,mixed>
+     */
+    private function normalizeMatchReasons(?array $raw, DatingMatch $match): array
+    {
+        $contractVersion = (string) config('matching.contract.version', 'v1');
+        $normalized = $raw ?? [];
+        $normalized['contract_version'] = (string) ($normalized['contract_version'] ?? $contractVersion);
+        $normalized['generated_at'] = (string) ($normalized['generated_at'] ?? optional($match->updated_at)->toIso8601String() ?? now()->toIso8601String());
+        $normalized['summary'] = (string) ($normalized['summary'] ?? '');
+        $normalized['match'] = array_values((array) ($normalized['match'] ?? []));
+        $normalized['mismatch'] = array_values((array) ($normalized['mismatch'] ?? []));
+        $normalized['confidence'] = (float) ($normalized['confidence'] ?? 0.5);
+        $normalized['modules'] = array_values((array) ($normalized['modules'] ?? []));
+
+        foreach ($normalized['modules'] as &$module) {
+            if (!is_array($module)) {
+                $module = [];
+            }
+            $key = (string) ($module['key'] ?? '');
+            $algoVersion = (string) config("matching.algo_versions.{$key}", 'p1');
+            $module['algo_version'] = (string) ($module['algo_version'] ?? $algoVersion);
+        }
+        unset($module);
+
+        return $normalized;
+    }
+
     public function current(Request $request, EventLogger $events): JsonResponse
     {
         $user = $request->user();
@@ -91,13 +120,7 @@ class MatchController extends Controller
                 'natal_chart' => $match->score_natal_chart,
             ],
             'match_verdict' => $match->match_verdict,
-            'match_reasons' => $match->match_reasons ?? [
-                'summary' => '',
-                'match' => [],
-                'mismatch' => [],
-                'confidence' => 0.5,
-                'modules' => [],
-            ],
+            'match_reasons' => $this->normalizeMatchReasons($match->match_reasons, $match),
             'penalty_factors' => $match->penalty_factors ?? [],
         ]);
     }
@@ -188,13 +211,7 @@ class MatchController extends Controller
                         'natal_chart' => $match->score_natal_chart,
                     ],
                     'match_verdict' => $match->match_verdict,
-                    'match_reasons' => $match->match_reasons ?? [
-                        'summary' => '',
-                        'match' => [],
-                        'mismatch' => [],
-                        'confidence' => 0.5,
-                        'modules' => [],
-                    ],
+                    'match_reasons' => $this->normalizeMatchReasons($match->match_reasons, $match),
                     'penalty_factors' => $match->penalty_factors ?? [],
                     'drop_released' => $match->drop_released,
                     'like_self' => $match->user_a == $user->id ? $match->like_a : $match->like_b,

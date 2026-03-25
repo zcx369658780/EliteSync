@@ -40,6 +40,7 @@ class MatchingEngineService
         $astro = app(AstroCompatibilityService::class);
         $personality = app(PersonalityCompatibilityService::class);
         $mbti = app(MbtiCompatibilityService::class);
+        $contractVersion = (string) config('matching.contract.version', 'v1');
 
         foreach ($userIds as $uid) {
             if (isset($used[$uid])) {
@@ -99,6 +100,8 @@ class MatchingEngineService
                 'score_natal_chart' => (int) ($bestDetail['astro']['natal_chart'] ?? 0),
                 'match_verdict' => (string) ($bestDetail['astro']['verdict'] ?? 'low'),
                 'match_reasons' => [
+                    'contract_version' => $contractVersion,
+                    'generated_at' => now()->toIso8601String(),
                     'summary' => (string) ($bestDetail['astro']['summary'] ?? ''),
                     'match' => (array) ($bestDetail['astro']['reasons_match'] ?? []),
                     'mismatch' => (array) ($bestDetail['astro']['reasons_mismatch'] ?? []),
@@ -682,11 +685,13 @@ class MatchingEngineService
         float $wMbti,
         float $wAstro
     ): array {
+        $algo = (array) config('matching.algo_versions', []);
         $modules = [
             [
                 'key' => 'personality',
                 'label' => '人格匹配',
                 'layer' => 'process',
+                'algo_version' => (string) ($algo['personality'] ?? 'p1'),
                 'score' => (int) ($personality['score'] ?? 0),
                 'weight' => round($wPersonality, 4),
                 'confidence' => (float) ($personality['confidence'] ?? 0.7),
@@ -722,6 +727,7 @@ class MatchingEngineService
                 'key' => 'mbti',
                 'label' => 'MBTI 匹配',
                 'layer' => 'process',
+                'algo_version' => (string) ($algo['mbti'] ?? 'p1'),
                 'score' => (int) ($mbti['score'] ?? 0),
                 'weight' => round($wMbti, 4),
                 'confidence' => (float) ($mbti['confidence'] ?? 0.55),
@@ -769,6 +775,7 @@ class MatchingEngineService
                 'key' => $key,
                 'label' => $label,
                 'layer' => $key === 'bazi' ? 'result' : ($key === 'zodiac' ? 'bridge' : 'process'),
+                'algo_version' => (string) ($algo[$key] ?? 'p1'),
                 'score' => (int) ($row['score'] ?? 0),
                 'weight' => $astroWeight,
                 'confidence' => (float) ($row['confidence'] ?? 0.6),
