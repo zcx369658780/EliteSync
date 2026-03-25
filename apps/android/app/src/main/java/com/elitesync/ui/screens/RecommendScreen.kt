@@ -71,7 +71,7 @@ fun RecommendScreen(vm: AppViewModel, onQuestionnaire: () -> Unit, onGoMatch: ()
                     )
                     if (module.evidence_tags.isNotEmpty()) {
                         Text(
-                            text = "证据：${module.evidence_tags.joinToString(" | ")}",
+                            text = "证据：${humanizeEvidenceTags(module.evidence_tags)}",
                             color = EliteSyncColors.TextSecondary
                         )
                     }

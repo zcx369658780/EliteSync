@@ -80,13 +80,19 @@ fun MatchScreen(vm: AppViewModel, onRetake: () -> Unit, onChat: () -> Unit, onLo
                     Text("玄学分项(八字/属相/星座/星盘): ${astro.bazi ?: "-"} / ${astro.zodiac ?: "-"} / ${astro.constellation ?: "-"} / ${astro.natal_chart ?: "-"}")
                 }
                 val penaltyLine = if (m.penalty_factors.isEmpty()) {
-                    "惩罚因子: 无"
+                    "修正因子: 无"
                 } else {
-                    "惩罚因子: " + m.penalty_factors.entries.joinToString("；") { e ->
-                        "${e.key}=${"%.2f".format(e.value)}"
-                    }
+                    "修正因子:"
                 }
                 Text(penaltyLine)
+                if (m.penalty_factors.isNotEmpty()) {
+                    m.penalty_factors.entries.forEach { e ->
+                        Text(
+                            "  - ${humanizePenaltyFactorLine(e.key, e.value)}",
+                            color = EliteSyncColors.TextSecondary
+                        )
+                    }
+                }
             }
         }
         StarrySectionCard(title = "操作") {
@@ -166,7 +172,7 @@ private fun ModuleLine(module: MatchReasonModule) {
 
         if (module.evidence_tags.isNotEmpty()) {
             Text(
-                "  证据标签：${module.evidence_tags.joinToString(" | ")}",
+                "  证据标签：${humanizeEvidenceTags(module.evidence_tags)}",
                 color = EliteSyncColors.TextSecondary
             )
         }
