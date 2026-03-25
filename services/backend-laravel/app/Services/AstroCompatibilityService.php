@@ -5,10 +5,10 @@ namespace App\Services;
 class AstroCompatibilityService
 {
     /**
-     * @param array{zodiac_animal:string,public_zodiac_sign:string,private_bazi:string,private_natal_chart:mixed,birthday:?string} $a
-     * @param array{zodiac_animal:string,public_zodiac_sign:string,private_bazi:string,private_natal_chart:mixed,birthday:?string} $b
+     * @param array{zodiac_animal:string,public_zodiac_sign:string,private_bazi:string,private_natal_chart:mixed,birthday:?string,gender:string} $a
+     * @param array{zodiac_animal:string,public_zodiac_sign:string,private_bazi:string,private_natal_chart:mixed,birthday:?string,gender:string} $b
      * @return array{
-      *  bazi:int,zodiac:int,constellation:int,natal_chart:int,total:int,verdict:string,
+      *  bazi:int,zodiac:int,constellation:int,natal_chart:int,pair_chart:int,total:int,verdict:string,
      *  reasons_match:array<int,string>,reasons_mismatch:array<int,string>,confidence:float,
      *  module_details:array<string,array<string,mixed>>
      * }
@@ -19,17 +19,29 @@ class AstroCompatibilityService
         $constellation = $this->scoreConstellation((string) ($a['public_zodiac_sign'] ?? ''), (string) ($b['public_zodiac_sign'] ?? ''));
         $bazi = $this->scoreBazi((string) ($a['private_bazi'] ?? ''), (string) ($b['private_bazi'] ?? ''), $a['private_natal_chart'] ?? null, $b['private_natal_chart'] ?? null);
         $chart = $this->scoreNatalChart($a['private_natal_chart'] ?? null, $b['private_natal_chart'] ?? null, (string) ($a['public_zodiac_sign'] ?? ''), (string) ($b['public_zodiac_sign'] ?? ''));
+        $pairChart = $this->scorePairChart(
+            $a['private_natal_chart'] ?? null,
+            $b['private_natal_chart'] ?? null,
+            (string) ($a['public_zodiac_sign'] ?? ''),
+            (string) ($b['public_zodiac_sign'] ?? ''),
+            (string) ($a['private_bazi'] ?? ''),
+            (string) ($b['private_bazi'] ?? ''),
+            (string) ($a['gender'] ?? ''),
+            (string) ($b['gender'] ?? '')
+        );
 
         $w = (array) config('match_rules.weights', []);
         $weightBazi = (float) ($w['bazi'] ?? 0.5);
-        $weightZodiac = (float) ($w['zodiac'] ?? 0.3);
-        $weightConstellation = (float) ($w['constellation'] ?? 0.1);
-        $weightChart = (float) ($w['natal_chart'] ?? 0.1);
+        $weightZodiac = (float) ($w['zodiac'] ?? 0.25);
+        $weightConstellation = (float) ($w['constellation'] ?? 0.15);
+        $weightChart = (float) ($w['natal_chart'] ?? 0.10);
+        $weightPairChart = (float) ($w['pair_chart'] ?? 0.0);
         $total = (int) round(
             ($bazi['score'] * $weightBazi)
             + ($zodiac['score'] * $weightZodiac)
             + ($constellation['score'] * $weightConstellation)
             + ($chart['score'] * $weightChart)
+            + ($pairChart['score'] * $weightPairChart)
         );
 
         $threshold = (array) config('match_rules.verdict_thresholds', ['high' => 80, 'medium' => 60]);
@@ -71,6 +83,16 @@ class AstroCompatibilityService
                 'mismatch' => (string) $chart['mismatch'],
             ],
         ];
+        if ($weightPairChart > 0.0) {
+            $modules[] = [
+                'key' => 'pair_chart',
+                'name' => '男女合盘',
+                'score' => (int) $pairChart['score'],
+                'weight' => $weightPairChart,
+                'match' => (string) $pairChart['match'],
+                'mismatch' => (string) $pairChart['mismatch'],
+            ];
+        }
         usort($modules, function (array $x, array $y): int {
             $wx = ((float) ($x['weight'] ?? 0.0)) * ((int) ($x['score'] ?? 0));
             $wy = ((float) ($y['weight'] ?? 0.0)) * ((int) ($y['score'] ?? 0));
@@ -95,12 +117,13 @@ class AstroCompatibilityService
         $reasonsMismatch = array_slice($reasonsMismatch, 0, 2);
 
         $summary = sprintf(
-            '综合匹配度%d分（八字%d%%、属相%d%%、星座%d%%、星盘%d%%）',
+            '综合匹配度%d分（八字%d%%、属相%d%%、星座%d%%、星盘%d%%、合盘%d%%）',
             max(0, min(100, $total)),
             $this->toPercent($weightBazi),
             $this->toPercent($weightZodiac),
             $this->toPercent($weightConstellation),
-            $this->toPercent($weightChart)
+            $this->toPercent($weightChart),
+            $this->toPercent($weightPairChart)
         );
 
         return [
@@ -108,17 +131,19 @@ class AstroCompatibilityService
             'zodiac' => $zodiac['score'],
             'constellation' => $constellation['score'],
             'natal_chart' => $chart['score'],
+            'pair_chart' => $pairChart['score'],
             'total' => max(0, min(100, $total)),
             'verdict' => $verdict,
             'summary' => $summary,
             'reasons_match' => $reasonsMatch,
             'reasons_mismatch' => $reasonsMismatch,
-            'confidence' => round(($bazi['confidence'] + $chart['confidence'] + 1.0 + 1.0) / 4, 2),
+            'confidence' => round(($bazi['confidence'] + $chart['confidence'] + $pairChart['confidence'] + 1.0 + 1.0) / 5, 2),
             'module_details' => [
                 'bazi' => $bazi,
                 'zodiac' => $zodiac,
                 'constellation' => $constellation,
                 'natal_chart' => $chart,
+                'pair_chart' => $pairChart,
             ],
         ];
     }
@@ -399,6 +424,93 @@ class AstroCompatibilityService
             ],
             'degraded' => $conf < 0.8,
             'degrade_reason' => $conf < 0.8 ? 'partial_natal_chart' : '',
+        ];
+    }
+
+    /**
+     * @return array{
+     *   score:int,match:string,mismatch:string,confidence:float,
+     *   reason_short:string,reason_detail:string,risk_detail:string,
+     *   evidence_tags:array<int,string>,evidence:array<string,mixed>,
+     *   degraded:bool,degrade_reason:string
+     * }
+     */
+    private function scorePairChart(
+        mixed $chartA,
+        mixed $chartB,
+        string $sunA,
+        string $sunB,
+        string $baziA,
+        string $baziB,
+        string $genderA,
+        string $genderB
+    ): array {
+        $moonA = is_array($chartA) ? (string) ($chartA['moon_sign'] ?? '') : '';
+        $moonB = is_array($chartB) ? (string) ($chartB['moon_sign'] ?? '') : '';
+        $ascA = is_array($chartA) ? (string) ($chartA['asc_sign'] ?? '') : '';
+        $ascB = is_array($chartB) ? (string) ($chartB['asc_sign'] ?? '') : '';
+
+        // Reuse existing scoring primitives to keep implementation lightweight and deterministic.
+        $sunMoonAB = ($sunA !== '' && $moonB !== '') ? $this->scoreConstellation($sunA, $moonB)['score'] : 60;
+        $sunMoonBA = ($sunB !== '' && $moonA !== '') ? $this->scoreConstellation($sunB, $moonA)['score'] : 60;
+        $sunMoon = (int) round(($sunMoonAB + $sunMoonBA) / 2.0);
+
+        $ascScore = ($ascA !== '' && $ascB !== '') ? $this->scoreConstellation($ascA, $ascB)['score'] : 60;
+        $moonScore = ($moonA !== '' && $moonB !== '') ? $this->scoreConstellation($moonA, $moonB)['score'] : 60;
+        $baziBridge = ($baziA !== '' && $baziB !== '') ? 72 : 60;
+
+        $raw = (0.35 * $sunMoon) + (0.20 * $ascScore) + (0.25 * $moonScore) + (0.20 * $baziBridge);
+        $score = (int) round(max(0.0, min(100.0, $raw)));
+
+        $full = ($sunA !== '' && $sunB !== '' && $moonA !== '' && $moonB !== '' && $ascA !== '' && $ascB !== '' && $baziA !== '' && $baziB !== '');
+        $partial = ($sunA !== '' && $sunB !== '' && (($moonA !== '' && $moonB !== '') || ($ascA !== '' && $ascB !== '')));
+        $confidence = $full ? 0.92 : ($partial ? 0.72 : 0.5);
+        $degraded = !$full;
+        $degradeReason = $full ? '' : ($partial ? 'partial_pair_chart' : 'sun_only_estimation');
+
+        $match = $score >= 78
+            ? '男女合盘协同性较高，关系推进路径更清晰'
+            : ($score >= 60 ? '男女合盘存在互补空间，可通过沟通对齐节奏' : '男女合盘节奏差异较大，建议先建立边界与沟通规则');
+        $mismatch = $score < 60 ? '合盘提示互动节奏存在温差，磨合期成本偏高' : '';
+        $reasonShort = $score >= 78
+            ? '情感节奏与互动推进较协调，关系升温路径清晰。'
+            : ($score >= 60 ? '存在互补空间，建议通过沟通对齐节奏。' : '互动节奏差异较明显，建议先建立边界与沟通规则。');
+        $reasonDetail = $full
+            ? '该项综合太阳-月亮互容、上升互动、情绪节奏与八字桥接信号，反映关系过程层的顺滑度。'
+            : '当前基于有限出生信息进行合盘估算，结果主要用于过程层参考，建议补全出生时间与地点。';
+        $riskDetail = $score < 60
+            ? '情绪回应速度与表达方式存在时差，易出现“误解并非恶意”；建议建立固定复盘与确认机制。'
+            : ($degraded ? '当前为简化估算，缺失信息会降低结论稳定性。' : '');
+
+        $evidenceTags = ['pair_chart_v1', 'sun_moon_harmony', 'emotion_rhythm'];
+        if ($score < 60) {
+            $evidenceTags[] = 'pair_chart_tension';
+        } else {
+            $evidenceTags[] = 'pair_chart_harmony';
+        }
+        if ($degraded) {
+            $evidenceTags[] = 'pair_chart_degraded';
+        }
+
+        return [
+            'score' => $score,
+            'match' => $match,
+            'mismatch' => $mismatch,
+            'confidence' => $confidence,
+            'reason_short' => $reasonShort,
+            'reason_detail' => $reasonDetail,
+            'risk_detail' => $riskDetail,
+            'evidence_tags' => $evidenceTags,
+            'evidence' => [
+                'sun_moon_ab' => $sunMoonAB,
+                'sun_moon_ba' => $sunMoonBA,
+                'asc_score' => $ascScore,
+                'moon_score' => $moonScore,
+                'bazi_bridge' => $baziBridge,
+                'gender_pair' => [$genderA, $genderB],
+            ],
+            'degraded' => $degraded,
+            'degrade_reason' => $degradeReason,
         ];
     }
 

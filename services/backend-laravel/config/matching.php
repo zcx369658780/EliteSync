@@ -14,6 +14,7 @@ return [
         'zodiac' => 'p1',
         'constellation' => 'p1',
         'natal_chart' => 'p1',
+        'pair_chart' => 'p1',
     ],
 
     'core_weights' => [

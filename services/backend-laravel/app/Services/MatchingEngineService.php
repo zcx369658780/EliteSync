@@ -177,12 +177,14 @@ class MatchingEngineService
             'private_bazi' => (string) ($userSignals[$a]['private_bazi'] ?? ''),
             'private_natal_chart' => $userSignals[$a]['private_natal_chart'] ?? null,
             'birthday' => (string) ($userSignals[$a]['birthday'] ?? ''),
+            'gender' => (string) ($userSignals[$a]['gender'] ?? ''),
         ], [
             'zodiac_animal' => (string) ($userSignals[$b]['zodiac_animal'] ?? ''),
             'public_zodiac_sign' => (string) ($userSignals[$b]['public_zodiac_sign'] ?? ''),
             'private_bazi' => (string) ($userSignals[$b]['private_bazi'] ?? ''),
             'private_natal_chart' => $userSignals[$b]['private_natal_chart'] ?? null,
             'birthday' => (string) ($userSignals[$b]['birthday'] ?? ''),
+            'gender' => (string) ($userSignals[$b]['gender'] ?? ''),
         ]);
         $personalityScore = $personality->score(
             (array) ($profiles[$a]['vector'] ?? []),
@@ -761,23 +763,34 @@ class MatchingEngineService
             ],
         ];
 
-        $astroWeight = round($wAstro / 4.0, 4);
+        $astroWeightMap = (array) config('match_rules.weights', []);
+        $astroKeys = ['bazi', 'zodiac', 'constellation', 'natal_chart', 'pair_chart'];
+        $sumAstroWeight = 0.0;
+        foreach ($astroKeys as $k) {
+            $sumAstroWeight += (float) ($astroWeightMap[$k] ?? 0.0);
+        }
+        $sumAstroWeight = $sumAstroWeight > 0.0 ? $sumAstroWeight : 1.0;
         $astroDetail = (array) ($astro['module_details'] ?? []);
         $astroLabels = [
             'bazi' => '八字匹配',
             'zodiac' => '属相匹配',
             'constellation' => '星座匹配',
             'natal_chart' => '星盘匹配',
+            'pair_chart' => '男女合盘',
         ];
         foreach ($astroLabels as $key => $label) {
             $row = (array) ($astroDetail[$key] ?? []);
+            if (empty($row) && !array_key_exists($key, $astroDetail)) {
+                continue;
+            }
+            $localAstroWeight = round($wAstro * (((float) ($astroWeightMap[$key] ?? 0.0)) / $sumAstroWeight), 4);
             $modules[] = [
                 'key' => $key,
                 'label' => $label,
-                'layer' => $key === 'bazi' ? 'result' : ($key === 'zodiac' ? 'bridge' : 'process'),
+                'layer' => $key === 'bazi' ? 'result' : (($key === 'zodiac' || $key === 'pair_chart') ? 'bridge' : 'process'),
                 'algo_version' => (string) ($algo[$key] ?? 'p1'),
                 'score' => (int) ($row['score'] ?? 0),
-                'weight' => $astroWeight,
+                'weight' => $localAstroWeight,
                 'confidence' => (float) ($row['confidence'] ?? 0.6),
                 'verdict' => $this->scoreVerdict((int) ($row['score'] ?? 0)),
                 'reason_short' => (string) (($row['reason_short'] ?? '') ?: ($row['match'] ?? '')),
