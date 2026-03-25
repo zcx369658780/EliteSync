@@ -2,6 +2,8 @@ package com.elitesync.ui.screens
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -48,6 +50,9 @@ fun MatchScreen(vm: AppViewModel, onRetake: () -> Unit, onChat: () -> Unit, onLo
                 Text("匹配对象ID: ${m.partner_id}")
                 Text("综合说明: ${m.match_reasons?.summary ?: "暂无"}")
                 Text("置信度: ${(((m.match_reasons?.confidence ?: 0.5) * 100).toInt())}%")
+                m.match_reasons?.contract_version?.takeIf { it.isNotBlank() }?.let {
+                    Text("解释版本: $it", color = EliteSyncColors.TextSecondary)
+                }
 
                 val core = m.core_scores
                 if (core != null) {
@@ -57,7 +62,9 @@ fun MatchScreen(vm: AppViewModel, onRetake: () -> Unit, onChat: () -> Unit, onLo
 
                 val modules = m.match_reasons?.modules.orEmpty()
                 if (modules.isNotEmpty()) {
-                    modules.forEach { module ->
+                    val sortedModules = modules.sortedByDescending { it.score ?: 0 }
+                    Text("模块解释：", color = EliteSyncColors.TextSecondary)
+                    sortedModules.forEach { module ->
                         ModuleLine(module)
                     }
                 } else {
@@ -111,60 +118,62 @@ private fun ModuleLine(module: MatchReasonModule) {
         "weak", "low" -> "低匹配"
         else -> "待评估"
     }
-    Text(
-        "${module.label.ifBlank { module.key }}：${module.score ?: "-"}分  $verdictText",
-        color = scoreColor
-    )
-    Text(
-        "  权重 ${weightPct}% · 置信度 ${confidencePct}%",
-        color = EliteSyncColors.TextSecondary
-    )
-    val reasonShort = module.reason_short?.trim().orEmpty()
-    val reasonDetail = module.reason_detail?.trim().orEmpty()
-    val riskShort = module.risk_short?.trim().orEmpty()
-    val riskDetail = module.risk_detail?.trim().orEmpty()
-
-    if (reasonShort.isNotBlank()) {
-        Text("  - $reasonShort", color = EliteSyncColors.TextSecondary)
-    } else {
-        module.highlights.firstOrNull()?.text?.takeIf { it.isNotBlank() }?.let {
-            Text("  - $it", color = EliteSyncColors.TextSecondary)
-        }
-    }
-
-    if (reasonDetail.isNotBlank()) {
-        Text("  - $reasonDetail", color = EliteSyncColors.TextSecondary)
-    } else {
-        module.highlights.drop(1).firstOrNull()?.text?.takeIf { it.isNotBlank() }?.let {
-            Text("  - $it", color = EliteSyncColors.TextSecondary)
-        }
-    }
-
-    if (riskShort.isNotBlank()) {
-        Text("  - 关注：$riskShort", color = EliteSyncColors.Warning)
-    } else {
-        module.risks.firstOrNull()?.text?.takeIf { it.isNotBlank() }?.let {
-            Text("  - 关注：$it", color = EliteSyncColors.Warning)
-        }
-    }
-
-    if (riskDetail.isNotBlank()) {
-        Text("  - 关注：$riskDetail", color = EliteSyncColors.Warning)
-    } else {
-        module.risks.drop(1).firstOrNull()?.text?.takeIf { it.isNotBlank() }?.let {
-            Text("  - 关注：$it", color = EliteSyncColors.Warning)
-        }
-    }
-
-    if (module.evidence_tags.isNotEmpty()) {
+    Column(verticalArrangement = Arrangement.spacedBy(com.elitesync.ui.components.EliteSyncDimens.Space4)) {
         Text(
-            "  证据标签：${module.evidence_tags.joinToString("、")}",
+            "${module.label.ifBlank { module.key }}：${module.score ?: "-"}分  $verdictText",
+            color = scoreColor
+        )
+        Text(
+            "  权重 ${weightPct}% · 置信度 ${confidencePct}%",
             color = EliteSyncColors.TextSecondary
         )
-    }
-    if (module.degraded == true) {
-        val reason = module.degrade_reason?.takeIf { it.isNotBlank() } ?: "数据不完整"
-        Text("  - 当前为降级估算：$reason", color = EliteSyncColors.Warning)
+        val reasonShort = module.reason_short?.trim().orEmpty()
+        val reasonDetail = module.reason_detail?.trim().orEmpty()
+        val riskShort = module.risk_short?.trim().orEmpty()
+        val riskDetail = module.risk_detail?.trim().orEmpty()
+
+        if (reasonShort.isNotBlank()) {
+            Text("  匹配点：$reasonShort", color = EliteSyncColors.TextSecondary)
+        } else {
+            module.highlights.firstOrNull()?.text?.takeIf { it.isNotBlank() }?.let {
+                Text("  匹配点：$it", color = EliteSyncColors.TextSecondary)
+            }
+        }
+
+        if (reasonDetail.isNotBlank()) {
+            Text("  说明：$reasonDetail", color = EliteSyncColors.TextSecondary)
+        } else {
+            module.highlights.drop(1).firstOrNull()?.text?.takeIf { it.isNotBlank() }?.let {
+                Text("  说明：$it", color = EliteSyncColors.TextSecondary)
+            }
+        }
+
+        if (riskShort.isNotBlank()) {
+            Text("  风险：$riskShort", color = EliteSyncColors.Warning)
+        } else {
+            module.risks.firstOrNull()?.text?.takeIf { it.isNotBlank() }?.let {
+                Text("  风险：$it", color = EliteSyncColors.Warning)
+            }
+        }
+
+        if (riskDetail.isNotBlank()) {
+            Text("  风险说明：$riskDetail", color = EliteSyncColors.Warning)
+        } else {
+            module.risks.drop(1).firstOrNull()?.text?.takeIf { it.isNotBlank() }?.let {
+                Text("  风险说明：$it", color = EliteSyncColors.Warning)
+            }
+        }
+
+        if (module.evidence_tags.isNotEmpty()) {
+            Text(
+                "  证据标签：${module.evidence_tags.joinToString(" | ")}",
+                color = EliteSyncColors.TextSecondary
+            )
+        }
+        if (module.degraded == true) {
+            val reason = module.degrade_reason?.takeIf { it.isNotBlank() } ?: "数据不完整"
+            Text("  当前为降级估算：$reason", color = EliteSyncColors.Warning)
+        }
     }
 }
 

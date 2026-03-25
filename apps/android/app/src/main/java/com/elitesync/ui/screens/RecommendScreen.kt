@@ -1,6 +1,7 @@
 package com.elitesync.ui.screens
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.ui.graphics.Color
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -55,13 +56,25 @@ fun RecommendScreen(vm: AppViewModel, onQuestionnaire: () -> Unit, onGoMatch: ()
                 val top = modules.sortedByDescending { it.score ?: 0 }.take(2)
                 top.forEach { module ->
                     val score = module.score ?: 0
-                    val line = module.highlights.firstOrNull()?.text
+                    val line = module.reason_short?.takeIf { it.isNotBlank() }
+                        ?: module.highlights.firstOrNull()?.text
+                        ?: module.risk_short?.takeIf { it.isNotBlank() }
                         ?: module.risks.firstOrNull()?.text
                         ?: "暂无细节"
                     Text(
                         text = "${module.label.ifBlank { module.key }}（$score 分）：$line",
-                        color = if (score >= 65) EliteSyncColors.TextPrimary else EliteSyncColors.TextSecondary
+                        color = when {
+                            score >= 85 -> Color(0xFF22C55E)
+                            score >= 70 -> EliteSyncColors.TextPrimary
+                            else -> EliteSyncColors.TextSecondary
+                        }
                     )
+                    if (module.evidence_tags.isNotEmpty()) {
+                        Text(
+                            text = "证据：${module.evidence_tags.joinToString(" | ")}",
+                            color = EliteSyncColors.TextSecondary
+                        )
+                    }
                 }
             }
         }
