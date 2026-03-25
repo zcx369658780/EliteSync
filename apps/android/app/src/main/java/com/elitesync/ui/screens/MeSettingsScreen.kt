@@ -13,6 +13,7 @@ import com.elitesync.ui.components.StarrySecondaryButton
 @Composable
 fun MeSettingsScreen(
     vm: AppViewModel,
+    onChangePassword: () -> Unit,
     onBack: () -> Unit
 ) {
     val hapticEnabled by vm.hapticEnabled.collectAsState()
@@ -20,6 +21,12 @@ fun MeSettingsScreen(
     val liteMode by vm.litePerformanceMode.collectAsState()
 
     GlassScrollPage(title = "设置") {
+        StarrySectionCard(title = "账号安全") {
+            StarrySecondaryButton(
+                text = "修改密码",
+                onClick = onChangePassword
+            )
+        }
         StarrySectionCard(title = "交互反馈") {
             StarrySecondaryButton(
                 text = if (hapticEnabled) "触感反馈：已开启" else "触感反馈：已关闭",

@@ -332,6 +332,30 @@ class AppViewModel : ViewModel() {
             .onFailure { setError("登录", it) }
     }
 
+    fun changePassword(currentPassword: String, newPassword: String, newPasswordConfirm: String) = viewModelScope.launch {
+        if (_token.value.isBlank()) return@launch setError("请先登录")
+        val current = currentPassword.trim()
+        val next = newPassword.trim()
+        val confirm = newPasswordConfirm.trim()
+        if (current.isBlank() || next.isBlank() || confirm.isBlank()) {
+            return@launch setError("请完整填写当前密码与新密码")
+        }
+        if (next != confirm) {
+            return@launch setError("两次输入的新密码不一致")
+        }
+        if (next.length < 8 || !next.any { it.isLetter() } || !next.any { it.isDigit() }) {
+            return@launch setError("密码格式错误：至少8位，且必须包含字母和数字")
+        }
+
+        _status.value = "修改密码中..."
+        runCatching { repo.changePassword(_token.value, current, next, confirm) }
+            .onSuccess {
+                _status.value = "密码修改成功"
+                _error.value = ""
+            }
+            .onFailure { setError("修改密码", it) }
+    }
+
     fun loadBasicProfile() = viewModelScope.launch {
         if (_token.value.isBlank()) return@launch
         runCatching { repo.basicProfile(_token.value) }

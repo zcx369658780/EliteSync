@@ -22,6 +22,12 @@ interface ApiService {
     @POST("/api/v1/auth/login")
     suspend fun login(@Body req: LoginReq): TokenResp
 
+    @POST("/api/v1/auth/password")
+    suspend fun changePassword(
+        @Header("Authorization") bearer: String,
+        @Body req: ChangePasswordReq
+    ): SimpleResp
+
     @GET("/api/v1/questionnaire/questions")
     suspend fun questions(@Header("Authorization") bearer: String): QuestionsResp
 

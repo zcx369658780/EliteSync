@@ -109,4 +109,27 @@ class AuthController extends Controller
             'token_type' => 'Bearer',
         ]);
     }
+
+    public function changePassword(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'current_password' => ['required', 'string'],
+            'new_password' => ['required', 'string', 'different:current_password', Password::min(8)->letters()->numbers(), 'confirmed'],
+        ]);
+
+        $user = $request->user();
+        if (!$user || !Hash::check($data['current_password'], $user->password)) {
+            throw ValidationException::withMessages([
+                'current_password' => ['当前密码不正确。'],
+            ]);
+        }
+
+        $user->password = Hash::make($data['new_password']);
+        $user->save();
+
+        return response()->json([
+            'ok' => true,
+            'message' => '密码已更新',
+        ]);
+    }
 }
