@@ -5,7 +5,8 @@ Param(
     [string]$Password = "",
     [string]$SmokeLogPath = "docs/devlogs/SMOKE_LOG.md",
     [int]$TimeoutSec = 20,
-    [switch]$SkipAuthChecks
+    [switch]$SkipAuthChecks,
+    [switch]$CheckPasswordChange
 )
 
 $ErrorActionPreference = "Stop"
@@ -175,6 +176,51 @@ if ($runAuth) {
     catch {
         Add-Result -List $results -Name "Astro GET" -Pass $false -Detail $_.Exception.Message
     }
+
+    # 9) Change password POST (optional, with rollback)
+    if ($CheckPasswordChange) {
+        $tempPassword = "$Password`_smk9a"
+        $changed = $false
+        try {
+            $changeBody = @{
+                current_password = $Password
+                new_password = $tempPassword
+                new_password_confirmation = $tempPassword
+            } | ConvertTo-Json -Compress
+            $changeResp = Invoke-RestMethod -Uri "$BaseUrl/api/v1/auth/password" -Method Post -Headers $headers -ContentType "application/json" -Body $changeBody -TimeoutSec $TimeoutSec
+            $changed = ($changeResp.ok -eq $true)
+            Add-Result -List $results -Name "Change Password POST" -Pass $changed -Detail ("ok={0}" -f $changeResp.ok)
+        }
+        catch {
+            Add-Result -List $results -Name "Change Password POST" -Pass $false -Detail $_.Exception.Message
+        }
+
+        if ($changed) {
+            try {
+                $loginBody2 = @{ phone = $Phone; password = $tempPassword } | ConvertTo-Json -Compress
+                $login2 = Invoke-RestMethod -Uri "$BaseUrl/api/v1/auth/login" -Method Post -ContentType "application/json" -Body $loginBody2 -TimeoutSec $TimeoutSec
+                $token2 = [string]$login2.access_token
+                $passLoginNew = -not [string]::IsNullOrWhiteSpace($token2)
+                $loginNewDetail = if ($passLoginNew) { "token ok" } else { "empty token" }
+                Add-Result -List $results -Name "Login with New Password" -Pass $passLoginNew -Detail $loginNewDetail
+
+                if ($passLoginNew) {
+                    $headers2 = @{ Authorization = "Bearer $token2" }
+                    $rollbackBody = @{
+                        current_password = $tempPassword
+                        new_password = $Password
+                        new_password_confirmation = $Password
+                    } | ConvertTo-Json -Compress
+                    $rollbackResp = Invoke-RestMethod -Uri "$BaseUrl/api/v1/auth/password" -Method Post -Headers $headers2 -ContentType "application/json" -Body $rollbackBody -TimeoutSec $TimeoutSec
+                    $rollbackPass = ($rollbackResp.ok -eq $true)
+                    Add-Result -List $results -Name "Password Rollback" -Pass $rollbackPass -Detail ("ok={0}" -f $rollbackResp.ok)
+                }
+            }
+            catch {
+                Add-Result -List $results -Name "Password Rollback" -Pass $false -Detail $_.Exception.Message
+            }
+        }
+    }
 }
 
 $failCount = @($results | Where-Object { -not $_.Pass }).Count
@@ -209,6 +255,7 @@ if ($SkipAuthChecks) {
     $md.Add("- AuthChecks: SKIPPED")
 } else {
     $md.Add("- AuthChecks: ENABLED")
+    $md.Add("- CheckPasswordChange: $CheckPasswordChange")
 }
 $md.Add("- Details:")
 foreach ($r in $results) {
