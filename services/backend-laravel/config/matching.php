@@ -62,7 +62,7 @@ return [
         // false: synthetic users are excluded from matching.
         // true: synthetic users can be included in matching (for algorithm debug/load test).
         'include_synthetic_users_default' => filter_var(
-            env('MATCHING_DEBUG_INCLUDE_SYNTHETIC_USERS', false),
+            env('MATCHING_DEBUG_INCLUDE_SYNTHETIC_USERS', true),
             FILTER_VALIDATE_BOOL
         ),
         // Production safety guard for synthetic-data commands.

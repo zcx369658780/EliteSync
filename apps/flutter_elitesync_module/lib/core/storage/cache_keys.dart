@@ -1,0 +1,31 @@
+abstract final class CacheKeys {
+  // Sensitive keys (secure storage)
+  static const accessToken = 'auth_access_token';
+  static const refreshToken = 'auth_refresh_token';
+  static const tokenExpireAt = 'auth_token_expire_at';
+
+  // Non-sensitive keys (shared preferences)
+  static const onboardingDone = 'onboarding_done';
+  static const questionnaireDraft = 'questionnaire_draft';
+  static const appThemeMode = 'app_theme_mode';
+  static const lastKnownProfile = 'last_known_profile';
+  static const featureFlags = 'feature_flags';
+  static const pushNotificationEnabled = 'push_notification_enabled';
+  static const privacyProfileVisible = 'privacy_profile_visible';
+  static const privacyShowCity = 'privacy_show_city';
+  static const performanceLiteMode = 'performance_lite_mode';
+  static const homeSearchQuery = 'home_search_query';
+  static const discoverSearchQuery = 'discover_search_query';
+  static const messagesSearchQuery = 'messages_search_query';
+  static const homeSearchHistory = 'home_search_history';
+  static const homeSelectedTab = 'home_selected_tab';
+  static const discoverSearchHistory = 'discover_search_history';
+  static const messagesSearchHistory = 'messages_search_history';
+  static const discoverSelectedTab = 'discover_selected_tab';
+  static const messagesSelectedTab = 'messages_selected_tab';
+  static const messagesQuickUnreadOnly = 'messages_quick_unread_only';
+  static const homeFeedSnapshot = 'home_feed_snapshot_v1';
+  static const discoverFeedSnapshot = 'discover_feed_snapshot_v1';
+  static const chatDraftPrefix = 'chat_draft_';
+  static const messagesConversationSnapshot = 'messages_conversation_snapshot_v1';
+}

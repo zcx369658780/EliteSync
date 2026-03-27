@@ -61,7 +61,8 @@ class MatchApiTest extends TestCase
         $this->getJson('/api/v1/matches/current')
             ->assertOk()
             ->assertJsonPath('match_id', $match->id)
-            ->assertJsonPath('partner_id', $userB->id);
+            ->assertJsonPath('partner_id', $userB->id)
+            ->assertJsonPath('partner_nickname', 'B');
         $this->assertDatabaseHas('app_events', [
             'event_name' => 'match_exposed',
             'actor_user_id' => $userA->id,
@@ -94,7 +95,8 @@ class MatchApiTest extends TestCase
         Sanctum::actingAs($userA);
         $this->getJson('/api/v1/matches/history')
             ->assertOk()
-            ->assertJsonPath('total', 1);
+            ->assertJsonPath('total', 1)
+            ->assertJsonPath('items.0.partner_nickname', 'B');
     }
 
     public function test_current_match_returns_404_when_questionnaire_incomplete(): void

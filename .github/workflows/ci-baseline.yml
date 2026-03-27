@@ -1,10 +1,13 @@
 name: ci-baseline
 
 on:
+  pull_request:
+    branches:
+      - main
   push:
     branches:
-      - "**"
-  pull_request:
+      - main
+  workflow_dispatch:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -77,6 +80,20 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.41.6"
+          channel: stable
+          cache: true
+
+      - name: Build Flutter module AAR repo
+        run: |
+          cd ../flutter_elitesync_module
+          flutter pub get
+          flutter build aar --no-tree-shake-icons
+          ls -la build/host/outputs/repo/com/elitesync/flutter_elitesync_module/flutter_release/1.0 || true
 
       - name: Setup Java 17
         uses: actions/setup-java@v5

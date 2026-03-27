@@ -7,11 +7,13 @@ pluginManagement {
 }
 
 dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    // Flutter module Gradle plugin adds transient repositories during module integration.
+    repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
     repositories {
+        maven(url = uri("../flutter_elitesync_module/build/host/outputs/repo"))
         google()
         mavenCentral()
-        maven(url = "https://maven.baidubce.com/repository/maven/")
+        maven(url = uri("https://storage.googleapis.com/download.flutter.io"))
     }
 }
 
