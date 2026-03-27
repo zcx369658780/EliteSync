@@ -44,6 +44,19 @@ jobs:
           java-version: "17"
           cache: gradle
 
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.41.6"
+          channel: stable
+          cache: true
+
+      - name: Build Flutter module AAR repo
+        run: |
+          cd apps/flutter_elitesync_module
+          flutter pub get
+          flutter build aar --no-tree-shake-icons
+
       - name: Ensure Android SDK Environment
         run: |
           echo "ANDROID_HOME=/usr/local/lib/android/sdk" >> $GITHUB_ENV
