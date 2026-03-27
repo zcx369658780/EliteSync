@@ -14,7 +14,6 @@ dependencyResolutionManagement {
         mavenCentral()
         maven(url = uri("../flutter_elitesync_module/build/host/outputs/repo"))
         maven(url = uri("https://storage.googleapis.com/download.flutter.io"))
-        maven(url = "https://maven.baidubce.com/repository/maven/")
     }
 }
 
