@@ -37,3 +37,5 @@ backups/aliyun_backend_*/
 docs/devlogs/*.md
 docs/同事建议/.tmp_*/
 docs/同事建议/
+.gradle-home/
+tmp_emulator_screen*.png

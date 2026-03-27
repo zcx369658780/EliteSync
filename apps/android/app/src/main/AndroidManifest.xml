@@ -24,7 +24,14 @@
         <activity
             android:name=".MainActivity"
             android:theme="@style/Theme.EliteSync.Launch"
-            android:exported="true">
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:hardwareAccelerated="true"
+            android:windowSoftInputMode="adjustResize"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode">
+            <meta-data
+                android:name="io.flutter.embedding.android.NormalTheme"
+                android:resource="@style/Theme.EliteSync" />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

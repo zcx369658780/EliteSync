@@ -83,6 +83,11 @@ class MatchController extends Controller
         }
 
         $partnerId = $match->user_a == $user->id ? $match->user_b : $match->user_a;
+        $partnerUser = User::query()->find((int) $partnerId);
+        $partnerNickname = '';
+        if ($partnerUser) {
+            $partnerNickname = (string) ($partnerUser->nickname ?? $partnerUser->name ?? $partnerUser->phone ?? '');
+        }
         if (!$includeSyntheticUsers) {
             $partnerSynthetic = (bool) User::query()
                 ->where('id', (int) $partnerId)
@@ -102,6 +107,7 @@ class MatchController extends Controller
         return response()->json([
             'match_id' => $match->id,
             'partner_id' => $partnerId,
+            'partner_nickname' => $partnerNickname,
             'highlights' => $match->highlights ?? '',
             'explanation_tags' => $match->explanation_tags ?? [],
             'base_score' => $match->score_base,
@@ -176,6 +182,10 @@ class MatchController extends Controller
             ->map(fn (DatingMatch $m) => (int) ($m->user_a == $user->id ? $m->user_b : $m->user_a))
             ->unique()
             ->values();
+        $partnerInfoMap = User::query()
+            ->whereIn('id', $partnerIds)
+            ->get(['id', 'nickname', 'name', 'phone'])
+            ->keyBy('id');
         $syntheticMap = User::query()
             ->whereIn('id', $partnerIds)
             ->pluck('is_synthetic', 'id');
@@ -188,11 +198,18 @@ class MatchController extends Controller
                 $partnerId = (int) ($match->user_a == $user->id ? $match->user_b : $match->user_a);
                 return !(bool) ($syntheticMap[$partnerId] ?? false);
             })
-            ->map(function (DatingMatch $match) use ($user) {
+            ->map(function (DatingMatch $match) use ($user, $partnerInfoMap) {
+                $partnerId = (int) ($match->user_a == $user->id ? $match->user_b : $match->user_a);
+                $partner = $partnerInfoMap->get($partnerId);
+                $partnerNickname = '';
+                if ($partner) {
+                    $partnerNickname = (string) ($partner->nickname ?? $partner->name ?? $partner->phone ?? '');
+                }
                 return [
                     'match_id' => $match->id,
                     'week_tag' => $match->week_tag,
-                    'partner_id' => $match->user_a == $user->id ? $match->user_b : $match->user_a,
+                    'partner_id' => $partnerId,
+                    'partner_nickname' => $partnerNickname,
                     'highlights' => $match->highlights ?? '',
                     'explanation_tags' => $match->explanation_tags ?? [],
                     'base_score' => $match->score_base,
