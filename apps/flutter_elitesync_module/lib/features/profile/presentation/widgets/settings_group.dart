@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_elitesync_module/design_system/theme/app_theme_extensions.dart';
 
+enum SettingsItemVariant { normal, destructive }
+
 class SettingsGroup extends StatelessWidget {
   const SettingsGroup({super.key, required this.title, required this.children});
   final String title;
@@ -42,6 +44,7 @@ class SettingsItemTile extends StatelessWidget {
     required this.icon,
     this.onTap,
     this.trailing,
+    this.variant = SettingsItemVariant.normal,
   });
 
   final String title;
@@ -49,10 +52,15 @@ class SettingsItemTile extends StatelessWidget {
   final IconData icon;
   final VoidCallback? onTap;
   final Widget? trailing;
+  final SettingsItemVariant variant;
 
   @override
   Widget build(BuildContext context) {
     final t = context.appTokens;
+    final isDanger = variant == SettingsItemVariant.destructive;
+    final iconBg = isDanger ? t.error.withValues(alpha: 0.16) : t.brandPrimary.withValues(alpha: 0.18);
+    final iconColor = isDanger ? t.error : t.brandPrimary;
+    final titleColor = isDanger ? t.error : t.textPrimary;
     return ListTile(
       onTap: onTap,
       leading: Container(
@@ -60,14 +68,14 @@ class SettingsItemTile extends StatelessWidget {
         height: 34,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: t.brandPrimary.withValues(alpha: 0.18),
+          color: iconBg,
         ),
-        child: Icon(icon, size: 18, color: t.brandPrimary),
+        child: Icon(icon, size: 18, color: iconColor),
       ),
       title: Text(
         title,
         style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              color: t.textPrimary,
+              color: titleColor,
               fontWeight: FontWeight.w600,
             ),
       ),

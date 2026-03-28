@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_elitesync_module/core/storage/cache_keys.dart';
 import 'package:flutter_elitesync_module/design_system/components/bars/app_top_bar.dart';
+import 'package:flutter_elitesync_module/design_system/components/cards/app_info_section_card.dart';
+import 'package:flutter_elitesync_module/design_system/components/controls/app_switch.dart';
+import 'package:flutter_elitesync_module/design_system/components/feedback/app_feedback.dart';
 import 'package:flutter_elitesync_module/design_system/components/layout/app_scaffold.dart';
 import 'package:flutter_elitesync_module/design_system/components/layout/page_title_rail.dart';
 import 'package:flutter_elitesync_module/design_system/components/layout/section_reveal.dart';
@@ -44,12 +47,7 @@ class _PrivacySettingsPageState extends ConsumerState<PrivacySettingsPage> {
     await local.setBool(CacheKeys.privacyProfileVisible, value);
     if (!mounted) return;
     setState(() => profileVisible = value);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        duration: const Duration(milliseconds: 900),
-        content: Text(value ? '已开启公开个人资料' : '已关闭公开个人资料'),
-      ),
-    );
+    AppFeedback.showInfo(context, value ? '已开启公开个人资料' : '已关闭公开个人资料');
   }
 
   Future<void> _setShowCity(bool value) async {
@@ -57,12 +55,7 @@ class _PrivacySettingsPageState extends ConsumerState<PrivacySettingsPage> {
     await local.setBool(CacheKeys.privacyShowCity, value);
     if (!mounted) return;
     setState(() => showCity = value);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        duration: const Duration(milliseconds: 900),
-        content: Text(value ? '已开启显示城市' : '已关闭显示城市'),
-      ),
-    );
+    AppFeedback.showInfo(context, value ? '已开启显示城市' : '已关闭显示城市');
   }
 
   @override
@@ -79,6 +72,22 @@ class _PrivacySettingsPageState extends ConsumerState<PrivacySettingsPage> {
               subtitle: '你可以随时调整对外展示范围',
             ),
           ),
+          SizedBox(height: t.spacing.sm),
+          SectionReveal(
+            delay: const Duration(milliseconds: 40),
+            child: AppInfoSectionCard(
+              title: '隐私策略说明',
+              subtitle: '默认优先保护敏感画像信息',
+              leadingIcon: Icons.privacy_tip_outlined,
+              child: Text(
+                '出生地点、八字、星盘等敏感信息默认不对外公开。你可在本页控制资料摘要可见范围与城市展示。',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: t.textSecondary,
+                      height: 1.45,
+                    ),
+              ),
+            ),
+          ),
           SizedBox(height: t.spacing.md),
           SectionReveal(
             delay: const Duration(milliseconds: 70),
@@ -90,7 +99,7 @@ class _PrivacySettingsPageState extends ConsumerState<PrivacySettingsPage> {
                   title: '公开个人资料',
                   subtitle: '关闭后仅匹配对象可见你的资料摘要',
                   icon: Icons.visibility_outlined,
-                  trailing: Switch.adaptive(
+                  trailing: AppSwitch(
                     value: profileVisible,
                     onChanged: _setProfileVisible,
                   ),
@@ -101,7 +110,7 @@ class _PrivacySettingsPageState extends ConsumerState<PrivacySettingsPage> {
                   title: '显示城市',
                   subtitle: '用于同城匹配和线下活动组织',
                   icon: Icons.location_city_outlined,
-                  trailing: Switch.adaptive(
+                  trailing: AppSwitch(
                     value: showCity,
                     onChanged: _setShowCity,
                   ),

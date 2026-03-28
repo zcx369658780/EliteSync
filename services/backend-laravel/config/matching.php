@@ -10,11 +10,11 @@ return [
         // Module algorithm version markers for telemetry/debug.
         'personality' => 'p1',
         'mbti' => 'p1',
-        'bazi' => 'p1',
-        'zodiac' => 'p1',
+        'bazi' => 'p2',
+        'zodiac' => 'p2',
         'constellation' => 'p1',
-        'natal_chart' => 'p1',
-        'pair_chart' => 'p1',
+        'natal_chart' => 'p2',
+        'pair_chart' => 'p2',
     ],
 
     'core_weights' => [

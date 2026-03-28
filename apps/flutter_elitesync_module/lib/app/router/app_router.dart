@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_elitesync_module/app/router/app_route_names.dart';
 import 'package:flutter_elitesync_module/app/router/app_shell.dart';
+import 'package:flutter_elitesync_module/core/ui/app_motion.dart';
 import 'package:flutter_elitesync_module/features/auth/presentation/pages/login_page.dart';
 import 'package:flutter_elitesync_module/features/auth/presentation/pages/register_page.dart';
 import 'package:flutter_elitesync_module/features/chat/presentation/pages/chat_room_page.dart';
@@ -159,10 +160,14 @@ CustomTransitionPage<void> _fadeSlidePage(GoRouterState state, Widget child) {
   return CustomTransitionPage<void>(
     key: state.pageKey,
     child: child,
-    transitionDuration: const Duration(milliseconds: 360),
-    reverseTransitionDuration: const Duration(milliseconds: 260),
+    transitionDuration: AppMotion.routeForward,
+    reverseTransitionDuration: AppMotion.routeReverse,
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
-      final curved = CurvedAnimation(parent: animation, curve: Curves.easeOutCubic);
+      final curved = CurvedAnimation(
+        parent: animation,
+        curve: AppMotion.routeCurve,
+        reverseCurve: AppMotion.routeReverseCurve,
+      );
       return FadeTransition(
         opacity: Tween<double>(begin: 0.0, end: 1.0).animate(curved),
         child: SlideTransition(

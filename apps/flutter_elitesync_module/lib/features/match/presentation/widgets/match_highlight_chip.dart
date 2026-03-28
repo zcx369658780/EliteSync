@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_elitesync_module/design_system/components/tags/app_tag.dart';
 
 class MatchHighlightChip extends StatelessWidget {
   const MatchHighlightChip({super.key, required this.label});
@@ -7,6 +8,6 @@ class MatchHighlightChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Chip(label: Text(label));
+    return AppTag(label: label, variant: AppTagVariant.brand);
   }
 }

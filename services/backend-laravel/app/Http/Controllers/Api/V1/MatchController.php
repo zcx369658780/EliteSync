@@ -10,9 +10,22 @@ use App\Services\EventLogger;
 use App\Services\MatchingDebugModeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 
 class MatchController extends Controller
 {
+    /**
+     * @return list<string>
+     */
+    private function userIdentityColumns(): array
+    {
+        $columns = ['id', 'name', 'phone'];
+        if (Schema::hasColumn('users', 'nickname')) {
+            $columns[] = 'nickname';
+        }
+        return $columns;
+    }
+
     private function requiredAnswerCount(): int
     {
         return max(1, (int) config('questionnaire.required_answer_count', 10));
@@ -48,8 +61,134 @@ class MatchController extends Controller
             $module['algo_version'] = (string) ($module['algo_version'] ?? $algoVersion);
         }
         unset($module);
+        $normalized['reason_glossary'] = $this->buildReasonGlossary($normalized);
 
         return $normalized;
+    }
+
+    /**
+     * @param array<string,mixed> $reasons
+     * @return array<string,string>
+     */
+    private function buildReasonGlossary(array $reasons): array
+    {
+        $seed = [
+            '八字' => '基于出生信息推算的结构，用于观察长期生活节奏与稳定性倾向。',
+            '五行' => '木火土金水的分布结构，主要看互补与均衡，不作为绝对结论。',
+            '属相六合' => '传统上协同度较高的属相关系，通常更容易形成配合感。',
+            '属相三合' => '传统分组中的协同关系，通常表示节奏更容易对齐。',
+            '相冲/相刑/相害' => '表示磨合成本可能偏高，建议提前明确沟通边界。',
+            '星座元素' => '火土风水四元素倾向，主要用于过程层互动顺滑度判断。',
+            '星盘' => '结合太阳/月亮/上升等要素的过程层分析，偏向“如何相处”。',
+            '合盘' => '将双方盘面组合后的过程层分析，关注互动路径与磨合成本。',
+            '证据标签' => '用于说明每个结论来自哪些信号，便于复盘与解释。',
+        ];
+
+        $moduleTerms = [];
+        foreach ((array) ($reasons['modules'] ?? []) as $module) {
+            if (!is_array($module)) {
+                continue;
+            }
+            $label = trim((string) ($module['label'] ?? ''));
+            if ($label !== '') {
+                $moduleTerms[] = $label;
+            }
+            foreach ((array) ($module['evidence_tags'] ?? []) as $tag) {
+                $tv = strtolower(trim((string) $tag));
+                if ($tv === '') {
+                    continue;
+                }
+                $moduleTerms = array_merge($moduleTerms, $this->mapEvidenceTagToTerms($tv));
+            }
+            $moduleTerms = array_merge(
+                $moduleTerms,
+                $this->extractTermsFromText((string) ($module['reason_short'] ?? '')),
+                $this->extractTermsFromText((string) ($module['reason_detail'] ?? '')),
+                $this->extractTermsFromText((string) ($module['risk_short'] ?? '')),
+                $this->extractTermsFromText((string) ($module['risk_detail'] ?? ''))
+            );
+        }
+        foreach ((array) ($reasons['match'] ?? []) as $line) {
+            $moduleTerms = array_merge($moduleTerms, $this->extractTermsFromText((string) $line));
+        }
+        foreach ((array) ($reasons['mismatch'] ?? []) as $line) {
+            $moduleTerms = array_merge($moduleTerms, $this->extractTermsFromText((string) $line));
+        }
+
+        $out = [];
+        foreach (array_unique($moduleTerms) as $term) {
+            if (isset($seed[$term])) {
+                $out[$term] = $seed[$term];
+            }
+        }
+        // Always keep these two generic glossary entries for UI fallback.
+        $out += [
+            '证据标签' => $seed['证据标签'],
+            '合盘' => $seed['合盘'],
+        ];
+
+        return $out;
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function mapEvidenceTagToTerms(string $tag): array
+    {
+        $terms = [];
+        if (str_contains($tag, 'zodiac')) {
+            $terms[] = '属相六合';
+            $terms[] = '属相三合';
+            $terms[] = '相冲/相刑/相害';
+        }
+        if (str_contains($tag, 'wu_xing') || str_contains($tag, 'bazi')) {
+            $terms[] = '八字';
+            $terms[] = '五行';
+        }
+        if (str_contains($tag, 'natal') || str_contains($tag, 'moon') || str_contains($tag, 'asc')) {
+            $terms[] = '星盘';
+        }
+        if (str_contains($tag, 'pair_chart') || str_contains($tag, 'sun_moon')) {
+            $terms[] = '合盘';
+        }
+        if (str_contains($tag, 'element') || str_contains($tag, 'constellation')) {
+            $terms[] = '星座元素';
+        }
+        return $terms;
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function extractTermsFromText(string $text): array
+    {
+        $v = trim($text);
+        if ($v === '') {
+            return [];
+        }
+        $matched = [];
+        $keywords = [
+            '八字' => '八字',
+            '五行' => '五行',
+            '六合' => '属相六合',
+            '三合' => '属相三合',
+            '相冲' => '相冲/相刑/相害',
+            '相刑' => '相冲/相刑/相害',
+            '相害' => '相冲/相刑/相害',
+            '星盘' => '星盘',
+            '上升' => '星盘',
+            '月亮' => '星盘',
+            '太阳' => '星盘',
+            '星座' => '星座元素',
+            '元素' => '星座元素',
+            '合盘' => '合盘',
+        ];
+        foreach ($keywords as $k => $term) {
+            if (str_contains($v, $k)) {
+                $matched[] = $term;
+            }
+        }
+        return array_values(array_unique($matched));
     }
 
     public function current(Request $request, EventLogger $events): JsonResponse
@@ -184,7 +323,7 @@ class MatchController extends Controller
             ->values();
         $partnerInfoMap = User::query()
             ->whereIn('id', $partnerIds)
-            ->get(['id', 'nickname', 'name', 'phone'])
+            ->get($this->userIdentityColumns())
             ->keyBy('id');
         $syntheticMap = User::query()
             ->whereIn('id', $partnerIds)

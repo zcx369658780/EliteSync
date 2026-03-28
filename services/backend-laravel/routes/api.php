@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\AdminController;
 use App\Http\Controllers\Api\V1\AppVersionController;
 use App\Http\Controllers\Api\V1\AstroProfileController;
+use App\Http\Controllers\Api\V1\HomeController;
 use App\Http\Controllers\Api\V1\MatchController;
 use App\Http\Controllers\Api\V1\MbtiProfileController;
 use App\Http\Controllers\Api\V1\MessageController;
@@ -69,6 +70,18 @@ Route::prefix('v1')->group(function () {
             Route::post('/read/{messageId}', [MessageController::class, 'markRead']);
             Route::get('/ws/{userId}', [MessageController::class, 'websocketStub']);
         });
+
+        Route::prefix('home')->group(function () {
+            Route::get('/banner', [HomeController::class, 'banner']);
+            Route::get('/shortcuts', [HomeController::class, 'shortcuts']);
+            Route::get('/feed', [HomeController::class, 'feed']);
+        });
+
+        Route::prefix('discover')->group(function () {
+            Route::get('/feed', [HomeController::class, 'discoverFeed']);
+        });
+
+        Route::get('/content/{contentId}', [HomeController::class, 'content']);
 
         Route::prefix('admin')->middleware('admin.phone')->group(function () {
             Route::get('/users', [AdminController::class, 'users']);

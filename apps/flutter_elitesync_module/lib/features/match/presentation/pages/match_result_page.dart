@@ -7,6 +7,7 @@ import 'package:flutter_elitesync_module/design_system/components/states/app_err
 import 'package:flutter_elitesync_module/design_system/components/states/app_loading_skeleton.dart';
 import 'package:flutter_elitesync_module/design_system/components/buttons/app_primary_button.dart';
 import 'package:flutter_elitesync_module/design_system/components/buttons/app_secondary_button.dart';
+import 'package:flutter_elitesync_module/design_system/components/tags/app_choice_chip.dart';
 import 'package:flutter_elitesync_module/design_system/theme/app_theme_extensions.dart';
 import 'package:flutter_elitesync_module/features/match/presentation/providers/match_providers.dart';
 import 'package:flutter_elitesync_module/features/match/presentation/widgets/match_hero_summary_card.dart';
@@ -14,6 +15,32 @@ import 'package:flutter_elitesync_module/features/match/presentation/widgets/mat
 
 class MatchResultPage extends ConsumerWidget {
   const MatchResultPage({super.key});
+
+  String _sectionLabel(int index) {
+    switch (index) {
+      case 0:
+        return '你们为什么值得认识';
+      case 1:
+        return '相处中可能舒服的地方';
+      case 2:
+        return '需要留意的地方';
+      default:
+        return '建议怎样开始聊天';
+    }
+  }
+
+  String _sectionDesc(int index) {
+    switch (index) {
+      case 0:
+        return '先看匹配核心动因';
+      case 1:
+        return '这是关系中的潜在顺滑区';
+      case 2:
+        return '提前理解差异会更轻松';
+      default:
+        return '建议用轻话题自然开场';
+    }
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -30,10 +57,39 @@ class MatchResultPage extends ConsumerWidget {
         data: (state) {
           final data = state.data;
           if (data == null) {
-            return AppErrorState(
-              title: '暂无匹配',
-              description: '请先完成问卷并等待揭晓',
-              onRetry: () => ref.refresh(matchResultProvider),
+            final tip = (state.error ?? '').isNotEmpty ? state.error! : '请先完成问卷并等待揭晓';
+            return BrowseScaffold(
+              header: const SizedBox.shrink(),
+              body: ListView(
+                padding: const EdgeInsets.fromLTRB(0, 12, 0, 24),
+                children: [
+                  AppErrorState(
+                    title: '暂无匹配',
+                    description: tip,
+                    retryLabel: '重新加载',
+                    onRetry: () => ref.refresh(matchResultProvider),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: AppSecondaryButton(
+                          label: '去做问卷',
+                          fullWidth: true,
+                          onPressed: () => context.push(AppRouteNames.questionnaire),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: AppPrimaryButton(
+                          label: '完善资料',
+                          onPressed: () => context.push(AppRouteNames.editProfile),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             );
           }
           final t = context.appTokens;
@@ -75,14 +131,14 @@ class MatchResultPage extends ConsumerWidget {
                     children: [
                       Expanded(
                         child: AppPrimaryButton(
-                          label: '立即表态',
+                          label: '愿意认识',
                           onPressed: () => context.push(AppRouteNames.matchIntention),
                         ),
                       ),
                       SizedBox(width: t.spacing.sm),
                       Expanded(
                         child: AppSecondaryButton(
-                          label: '查看详情',
+                          label: '查看完整解释',
                           fullWidth: true,
                           onPressed: () => context.push(AppRouteNames.matchDetail),
                         ),
@@ -90,26 +146,22 @@ class MatchResultPage extends ConsumerWidget {
                     ],
                   ),
                   SizedBox(height: t.spacing.md),
-                  Text(
-                    '核心理由',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: t.textPrimary,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  SizedBox(height: t.spacing.xs),
-                  ...data.highlights.take(2).map(
-                    (e) => Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: MatchReasonCard(reason: '${e.title} ${e.value}: ${e.desc}'),
+                  ...List.generate(
+                    data.highlights.take(4).length,
+                    (index) => Padding(
+                      padding: EdgeInsets.only(bottom: t.spacing.sm),
+                      child: MatchReasonCard(
+                        reason:
+                            '${_sectionLabel(index)}\n${_sectionDesc(index)}\n${data.highlights[index].title} ${data.highlights[index].value}：${data.highlights[index].desc}',
+                      ),
                     ),
                   ),
                   Align(
                     alignment: Alignment.centerLeft,
-                    child: ActionChip(
-                      avatar: const Icon(Icons.read_more_rounded, size: 14),
-                      label: const Text('展开完整解释'),
-                      onPressed: () => context.push(AppRouteNames.matchDetail),
+                    child: AppChoiceChip(
+                      label: '展开完整解释',
+                      leading: const Icon(Icons.read_more_rounded),
+                      onTap: () => context.push(AppRouteNames.matchDetail),
                     ),
                   ),
                 ],

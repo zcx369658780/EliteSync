@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_elitesync_module/design_system/components/bars/app_top_bar.dart';
+import 'package:flutter_elitesync_module/design_system/components/feedback/app_feedback.dart';
 import 'package:flutter_elitesync_module/design_system/components/layout/app_scaffold.dart';
 import 'package:flutter_elitesync_module/design_system/components/layout/page_title_rail.dart';
 import 'package:flutter_elitesync_module/design_system/components/layout/section_reveal.dart';
+import 'package:flutter_elitesync_module/design_system/components/tags/app_tag.dart';
 import 'package:flutter_elitesync_module/design_system/theme/app_theme_extensions.dart';
 import 'package:flutter_elitesync_module/features/home/domain/entities/home_feed_entity.dart';
 import 'package:flutter_elitesync_module/features/home/presentation/providers/content_detail_provider.dart';
@@ -89,24 +91,7 @@ class _ContentDetailBody extends StatelessWidget {
                 runSpacing: 8,
                 children: data.tags
                     .map(
-                      (tag) => Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: t.spacing.sm,
-                          vertical: t.spacing.xxs,
-                        ),
-                        decoration: BoxDecoration(
-                          color: t.browseChip,
-                          borderRadius: BorderRadius.circular(t.radius.pill),
-                          border: Border.all(color: t.browseBorder),
-                        ),
-                        child: Text(
-                          tag,
-                          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                            color: t.textSecondary,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
+                      (tag) => AppTag(label: tag),
                     )
                     .toList(),
               ),
@@ -192,16 +177,12 @@ class _MediaGallery extends StatelessWidget {
   Future<void> _openExternal(BuildContext context, String raw) async {
     final uri = Uri.tryParse(raw);
     if (uri == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('链接格式无效')),
-      );
+      AppFeedback.showError(context, '链接格式无效');
       return;
     }
     final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
     if (!ok && context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('无法打开该链接')),
-      );
+      AppFeedback.showError(context, '无法打开该链接');
     }
   }
 

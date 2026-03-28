@@ -29,5 +29,11 @@ class MatchMapper {
             .toList(),
       );
 
-  MatchDetailEntity detail(MatchDetailDto dto) => MatchDetailEntity(reasons: dto.reasons, weights: dto.weights);
+  MatchDetailEntity detail(MatchDetailDto dto) => MatchDetailEntity(
+        reasons: dto.reasons,
+        weights: dto.weights,
+        moduleScores: dto.moduleScores,
+        moduleInsights: dto.moduleInsights,
+        reasonGlossary: dto.reasonGlossary,
+      );
 }

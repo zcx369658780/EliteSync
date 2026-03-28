@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_elitesync_module/core/storage/cache_keys.dart';
 import 'package:flutter_elitesync_module/design_system/components/bars/app_top_bar.dart';
 import 'package:flutter_elitesync_module/design_system/components/buttons/app_secondary_button.dart';
+import 'package:flutter_elitesync_module/design_system/components/feedback/app_feedback.dart';
 import 'package:flutter_elitesync_module/design_system/components/layout/page_title_rail.dart';
 import 'package:flutter_elitesync_module/design_system/components/layout/section_reveal.dart';
 import 'package:flutter_elitesync_module/design_system/theme/app_theme_extensions.dart';
@@ -114,9 +115,7 @@ class _ChatRoomPageState extends ConsumerState<ChatRoomPage> {
       ref.invalidate(chatRoomMessagesProvider(widget.conversationId));
     } catch (_) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('发送失败，请稍后重试')),
-      );
+      AppFeedback.showError(context, '发送失败，请稍后重试');
     } finally {
       if (mounted) {
         setState(() => _sending = false);

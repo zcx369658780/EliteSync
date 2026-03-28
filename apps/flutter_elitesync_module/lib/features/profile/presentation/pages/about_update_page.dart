@@ -7,8 +7,8 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_elitesync_module/core/network/network_result.dart';
 import 'package:flutter_elitesync_module/design_system/components/bars/app_top_bar.dart';
 import 'package:flutter_elitesync_module/design_system/components/buttons/app_primary_button.dart';
-import 'package:flutter_elitesync_module/design_system/components/buttons/app_secondary_button.dart';
 import 'package:flutter_elitesync_module/design_system/components/cards/legal_document_card.dart';
+import 'package:flutter_elitesync_module/design_system/components/feedback/app_confirm_dialog.dart';
 import 'package:flutter_elitesync_module/design_system/components/layout/app_scaffold.dart';
 import 'package:flutter_elitesync_module/design_system/components/layout/page_title_rail.dart';
 import 'package:flutter_elitesync_module/design_system/components/layout/section_reveal.dart';
@@ -94,30 +94,14 @@ class _AboutUpdatePageState extends ConsumerState<AboutUpdatePage> {
     });
 
     if (!hasUpdate || downloadUrl.isEmpty) return;
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(forceUpdate ? '发现强制更新' : '发现新版本'),
-        content: Text('当前版本 $_currentVersion，最新版本 $latest，是否下载更新？'),
-        actions: [
-          SizedBox(
-            width: 84,
-            child: AppSecondaryButton(
-              label: '否',
-              onPressed: () => Navigator.pop(context, false),
-            ),
-          ),
-          SizedBox(
-            width: 84,
-            child: AppPrimaryButton(
-              label: '是',
-              onPressed: () => Navigator.pop(context, true),
-            ),
-          ),
-        ],
-      ),
+    final confirmed = await AppConfirmDialog.show(
+      context,
+      title: forceUpdate ? '发现强制更新' : '发现新版本',
+      message: '当前版本 $_currentVersion，最新版本 $latest，是否下载更新？',
+      confirmLabel: '下载',
+      cancelLabel: '稍后',
     );
-    if (confirmed != true) return;
+    if (!confirmed) return;
     await launchUrl(Uri.parse(downloadUrl), mode: LaunchMode.externalApplication);
   }
 

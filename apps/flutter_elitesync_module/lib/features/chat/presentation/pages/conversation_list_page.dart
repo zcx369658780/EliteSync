@@ -8,10 +8,12 @@ import 'package:flutter_elitesync_module/app/router/app_route_names.dart';
 import 'package:flutter_elitesync_module/core/storage/cache_keys.dart';
 import 'package:flutter_elitesync_module/design_system/components/brand/browse_top_search_bar.dart';
 import 'package:flutter_elitesync_module/design_system/components/brand/category_tab_strip.dart';
+import 'package:flutter_elitesync_module/design_system/components/feedback/app_feedback.dart';
 import 'package:flutter_elitesync_module/design_system/components/layout/browse_scaffold.dart';
 import 'package:flutter_elitesync_module/design_system/components/states/app_empty_state.dart';
 import 'package:flutter_elitesync_module/design_system/components/states/app_error_state.dart';
 import 'package:flutter_elitesync_module/design_system/components/states/app_loading_skeleton.dart';
+import 'package:flutter_elitesync_module/design_system/components/tags/app_choice_chip.dart';
 import 'package:flutter_elitesync_module/design_system/theme/app_theme_extensions.dart';
 import 'package:flutter_elitesync_module/features/chat/domain/entities/conversation_entity.dart';
 import 'package:flutter_elitesync_module/features/chat/presentation/providers/chat_providers.dart';
@@ -140,9 +142,10 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage>
       final raw = _tabScrollOffsets[tab] ?? 0;
       final target = raw.clamp(0, _listController.position.maxScrollExtent);
       final liteMode = ref.read(performanceLiteModeProvider).asData?.value ?? false;
+      final t = context.appTokens;
       _listController.animateTo(
         target.toDouble(),
-        duration: Duration(milliseconds: liteMode ? 120 : 240),
+        duration: liteMode ? t.motionFast : t.motionNormal,
         curve: Curves.easeOutCubic,
       );
     });
@@ -194,12 +197,7 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage>
       final state = await ref.read(conversationListProvider.future);
       await _saveConversationSnapshot(state.items);
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          duration: Duration(milliseconds: 1000),
-          content: Text('已刷新会话列表'),
-        ),
-      );
+      AppFeedback.showInfo(context, '已刷新会话列表');
     } finally {
       if (mounted) {
         setState(() => _quickRefreshing = false);
@@ -226,12 +224,26 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage>
           _snapshotHydrated = true;
           unawaited(_saveConversationSnapshot(state.items));
         }
-        if ((state.error ?? '').isNotEmpty) {
-          return AppErrorState(
-            title: '会话加载失败',
-            description: state.error!,
-            retryLabel: '重新加载',
-            onRetry: () => ref.invalidate(conversationListProvider),
+        if ((state.error ?? '').isNotEmpty && !_snapshotHydrated) {
+          return BrowseScaffold(
+            header: const SizedBox.shrink(),
+            body: ListView(
+              children: [
+                AppErrorState(
+                  title: '会话加载失败',
+                  description: state.error!,
+                  retryLabel: '重新加载',
+                  onRetry: () => ref.invalidate(conversationListProvider),
+                ),
+                const SizedBox(height: 8),
+                AppEmptyState(
+                  title: '当前没有可展示会话',
+                  description: '你可以先去匹配页建立新关系，稍后会自动出现会话入口。',
+                  actionLabel: '去匹配',
+                  onAction: () => context.go(AppRouteNames.match),
+                ),
+              ],
+            ),
           );
         }
         return ValueListenableBuilder<String>(
@@ -268,15 +280,15 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage>
                               ),
                         ),
                       ),
-                      ActionChip(
-                        avatar: const Icon(Icons.favorite_rounded, size: 14),
-                        label: const Text('去匹配'),
-                        onPressed: () => context.go(AppRouteNames.match),
+                      AppChoiceChip(
+                        label: '去匹配',
+                        leading: const Icon(Icons.favorite_rounded),
+                        onTap: () => context.go(AppRouteNames.match),
                       ),
                     ],
                   ),
                   AnimatedSize(
-                    duration: Duration(milliseconds: liteMode ? 80 : 180),
+                    duration: liteMode ? t.motionFast : t.motionNormal,
                     curve: Curves.easeOutCubic,
                     child: searchQuery.isNotEmpty
                         ? Column(
@@ -290,10 +302,10 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage>
                                       style: Theme.of(context).textTheme.bodySmall?.copyWith(color: t.textSecondary),
                                     ),
                                   ),
-                                  ActionChip(
-                                    avatar: const Icon(Icons.close_rounded, size: 14),
-                                    label: const Text('清除'),
-                                    onPressed: _clearSearch,
+                                  AppChoiceChip(
+                                    label: '清除',
+                                    leading: const Icon(Icons.close_rounded),
+                                    onTap: _clearSearch,
                                   ),
                                 ],
                               ),
@@ -311,9 +323,9 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage>
                                       separatorBuilder: (_, index) => SizedBox(width: t.spacing.xs),
                                       itemBuilder: (context, index) {
                                         final term = _recentSearches[index];
-                                        return ActionChip(
-                                          label: Text(term),
-                                          onPressed: () {
+                                        return AppChoiceChip(
+                                          label: term,
+                                          onTap: () {
                                             _searchController.text = term;
                                             _searchController.selection = TextSelection.collapsed(offset: term.length);
                                             _onSearchChanged(term);
@@ -330,16 +342,17 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage>
                   SizedBox(height: t.spacing.xs),
                   Align(
                     alignment: Alignment.centerLeft,
-                    child: FilterChip(
+                    child: AppChoiceChip(
                       selected: _quickUnreadOnly,
-                      label: const Text('仅未读'),
-                      onSelected: (v) {
+                      label: '仅未读',
+                      onTap: () {
+                        final v = !_quickUnreadOnly;
                         setState(() => _quickUnreadOnly = v);
                         _saveUiPrefs();
                         if (_listController.hasClients) {
                           _listController.animateTo(
                             0,
-                            duration: Duration(milliseconds: liteMode ? 120 : 220),
+                            duration: liteMode ? t.motionFast : t.motionNormal,
                             curve: Curves.easeOutCubic,
                           );
                         }
@@ -351,6 +364,7 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage>
                     tabs: _tabs,
                     selectedIndex: _tabIndex,
                     onSelected: (index) => setState(() {
+                      _searchFocusNode.unfocus();
                       if (_listController.hasClients) {
                         _tabScrollOffsets[_tabIndex] = _listController.offset;
                       }
@@ -368,7 +382,7 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage>
                   await ref.read(conversationListProvider.future);
                 },
                 child: AnimatedSwitcher(
-                  duration: Duration(milliseconds: liteMode ? 100 : 220),
+                  duration: liteMode ? t.motionFast : t.motionNormal,
                   switchInCurve: Curves.easeOutCubic,
                   switchOutCurve: Curves.easeInCubic,
                   child: filtered.isEmpty

@@ -168,25 +168,40 @@ class AstroCompatibilityService
             $keys = ['木', '火', '土', '金', '水'];
             $sumA = max(1, array_sum(array_map(fn ($k) => (int) ($wuA[$k] ?? 0), $keys)));
             $sumB = max(1, array_sum(array_map(fn ($k) => (int) ($wuB[$k] ?? 0), $keys)));
-            $dist = 0.0;
+            $dist = 0.0; // L1 distance across normalized wuxing vectors (0~2).
+            $ratiosA = [];
+            $ratiosB = [];
             foreach ($keys as $k) {
                 $va = ((int) ($wuA[$k] ?? 0)) / $sumA;
                 $vb = ((int) ($wuB[$k] ?? 0)) / $sumB;
                 $dist += abs($va - $vb);
+                $ratiosA[$k] = $va;
+                $ratiosB[$k] = $vb;
             }
-            $target = (float) config('match_rules.bazi.fallback.with_wuxing_target_distance', 0.6);
-            $part1 = max(0.0, 40 * (1 - abs($dist - $target) / $target));
-            $part2 = 28.0; // simplified day-master relation placeholder for V1.
-            $part3 = 20.0 - min(20.0, $dist * 10.0);
-            $part4 = 10.0;
-            $score = (int) round($part1 + $part2 + $part3 + $part4);
+            $cfg = (array) config('match_rules.bazi.scoring', []);
+            $base = (float) ($cfg['base'] ?? 40);
+            $complementWeight = (float) ($cfg['complement_weight'] ?? 35);
+            $balanceWeight = (float) ($cfg['balance_weight'] ?? 25);
+
+            // Complement score: 1 means close distributions, 0 means opposite ends.
+            $complement = max(0.0, min(1.0, 1.0 - ($dist / 2.0)));
+            // Balance score: less internal skew => higher long-term rhythm stability.
+            $balanceA = 1.0 - (max($ratiosA) - min($ratiosA));
+            $balanceB = 1.0 - (max($ratiosB) - min($ratiosB));
+            $balanceAvg = max(0.0, min(1.0, ($balanceA + $balanceB) / 2.0));
+
+            $score = (int) round($base + ($complement * $complementWeight) + ($balanceAvg * $balanceWeight));
 
             return [
                 'score' => max(0, min(100, $score)),
                 'match' => (string) ($tpl['match'] ?? '八字五行互补度较好，节奏更容易协调'),
                 'mismatch' => $score < 60 ? (string) ($tpl['mismatch'] ?? '八字五行分布偏差较大，可能需要更长磨合') : '',
                 'confidence' => 1.0,
-                'reason_short' => (string) ($tpl['short'] ?? '五行结构偏互补，长期磨合潜力较好。'),
+                'reason_short' => sprintf(
+                    '五行互补度%.0f%%，整体均衡度%.0f%%，长期节奏更易形成稳定配合。',
+                    $complement * 100,
+                    $balanceAvg * 100
+                ),
                 'reason_detail' => (string) ($tpl['detail'] ?? '从五行分布看，你们更偏向“互补调节”而非同侧堆叠，长期生活节律更容易形成稳定配合。'),
                 'risk_detail' => $score < 60 ? (string) ($tpl['risk'] ?? '五行分布差异偏大，婚后在作息、决策与压力处理上可能出现节律不一致。') : '',
                 'evidence_tags' => ['wu_xing_complement', 'long_term_harmony_oriented'],
@@ -194,7 +209,10 @@ class AstroCompatibilityService
                     'wu_xing_a' => $wuA,
                     'wu_xing_b' => $wuB,
                     'wu_xing_distance' => round($dist, 4),
-                    'target_distance' => $target,
+                    'wu_xing_complement' => round($complement, 4),
+                    'wu_xing_balance_a' => round($balanceA, 4),
+                    'wu_xing_balance_b' => round($balanceB, 4),
+                    'wu_xing_balance_avg' => round($balanceAvg, 4),
                 ],
                 'degraded' => false,
                 'degrade_reason' => '',
@@ -291,7 +309,13 @@ class AstroCompatibilityService
             'mismatch' => $mismatch,
             'confidence' => 1.0,
             'reason_short' => $match,
-            'reason_detail' => $detail,
+            'reason_detail' => sprintf(
+                '%s 当前组合：%s-%s（关系类型：%s）。',
+                $detail,
+                $a,
+                $b,
+                $relation
+            ),
             'risk_detail' => in_array($relation, ['chong', 'xing', 'hai'], true)
                 ? $tplRisk
                 : '',
@@ -390,29 +414,52 @@ class AstroCompatibilityService
         $ascA = is_array($chartA) ? (string) ($chartA['asc_sign'] ?? '') : '';
         $ascB = is_array($chartB) ? (string) ($chartB['asc_sign'] ?? '') : '';
 
-        $sunPart = $this->scoreConstellation($sunA, $sunB)['score'] * 0.30;
-        $moonPart = ($moonA !== '' && $moonB !== '') ? ($this->scoreConstellation($moonA, $moonB)['score'] * 0.40) : 0;
-        $ascPart = ($ascA !== '' && $ascB !== '') ? ($this->scoreConstellation($ascA, $ascB)['score'] * 0.20) : 0;
-        $aspectPart = ($moonA !== '' && $moonB !== '' && $ascA !== '' && $ascB !== '') ? 8 : 4;
+        $directionSync = $this->scoreConstellation($sunA, $sunB)['score'];
+        $emotionSync = ($moonA !== '' && $moonB !== '') ? $this->scoreConstellation($moonA, $moonB)['score'] : 60;
+        $expressionSync = ($ascA !== '' && $ascB !== '') ? $this->scoreConstellation($ascA, $ascB)['score'] : 60;
 
-        $raw = (int) round($sunPart + $moonPart + $ascPart + $aspectPart);
-        $max = 30 + (($moonA !== '' && $moonB !== '') ? 40 : 0) + (($ascA !== '' && $ascB !== '') ? 20 : 0) + 10;
-        $score = $max > 0 ? (int) round($raw / $max * 100) : 60;
-        $conf = $max >= 100 ? 1.0 : ($max >= 70 ? 0.7 : 0.4);
+        $hasMoon = $moonA !== '' && $moonB !== '';
+        $hasAsc = $ascA !== '' && $ascB !== '';
+        $completenessBonus = ($hasMoon && $hasAsc) ? 6 : (($hasMoon || $hasAsc) ? 3 : 0);
+
+        $raw = (0.35 * $emotionSync) + (0.30 * $expressionSync) + (0.30 * $directionSync) + (0.05 * (60 + $completenessBonus));
+        $score = (int) round(max(0.0, min(100.0, $raw)));
+        $completenessLevel = ($hasMoon ? 1 : 0) + ($hasAsc ? 1 : 0);
+        $conf = $completenessLevel === 2 ? 0.9 : ($completenessLevel === 1 ? 0.72 : 0.55);
+        $lowKeys = [];
+        if ($emotionSync < 60) {
+            $lowKeys[] = '情绪同步';
+        }
+        if ($expressionSync < 60) {
+            $lowKeys[] = '表达风格';
+        }
+        if ($directionSync < 60) {
+            $lowKeys[] = '关系方向';
+        }
+        $riskPoint = empty($lowKeys) ? '' : ('主要张力点：'.implode('、', $lowKeys).'。');
 
         return [
             'score' => max(0, min(100, $score)),
             'match' => $score >= 70 ? '星盘关键项相位较和谐，情绪与节奏更易同步' : '星盘结构一般，可通过互动逐步建立默契',
             'mismatch' => $score < 60 ? '星盘相位张力偏大，容易出现沟通温差' : '',
             'confidence' => $conf,
-            'reason_short' => $score >= 70 ? '情绪节奏与互动推进更易同步。' : '星盘结构中性，需靠互动建立默契。',
-            'reason_detail' => $score >= 70
-                ? '月亮与上升等关键项更协调，通常意味着情绪回应与关系推进节奏更容易对上。'
-                : '星盘关键项协同一般，更多需要依赖现实互动和沟通机制来建立稳定体验。',
-            'risk_detail' => $score < 60 ? '该项反映过程层温差风险，建议在互动中增加反馈确认与节奏对齐。' : '',
+            'reason_short' => sprintf(
+                '情绪同步%d / 表达风格%d / 关系方向%d。',
+                (int) round($emotionSync),
+                (int) round($expressionSync),
+                (int) round($directionSync)
+            ),
+            'reason_detail' => sprintf(
+                '该项主要衡量过程层顺滑度：情绪同步（%d）、表达风格（%d）、关系方向（%d）。%s',
+                (int) round($emotionSync),
+                (int) round($expressionSync),
+                (int) round($directionSync),
+                $completenessLevel === 2 ? '关键出生信息较完整，结论稳定性较高。' : '当前存在部分出生信息缺失，建议补全后复核。'
+            ),
+            'risk_detail' => $score < 60 ? ('该项反映过程层温差风险，建议在互动中增加反馈确认与节奏对齐。'.$riskPoint) : '',
             'evidence_tags' => $conf < 0.8
                 ? ['natal_chart_partial_data']
-                : ($score >= 70 ? ['moon_sync_high', 'asc_style_match'] : ['moon_sync_low', 'asc_style_gap']),
+                : ($score >= 70 ? ['moon_sync_high', 'asc_style_match', 'sun_direction_sync'] : ['moon_sync_low', 'asc_style_gap', 'sun_direction_gap']),
             'evidence' => [
                 'sun_sign_a' => $sunA,
                 'sun_sign_b' => $sunB,
@@ -420,7 +467,10 @@ class AstroCompatibilityService
                 'moon_sign_b' => $moonB,
                 'asc_sign_a' => $ascA,
                 'asc_sign_b' => $ascB,
-                'data_completeness' => $max,
+                'emotion_sync_score' => (int) round($emotionSync),
+                'expression_sync_score' => (int) round($expressionSync),
+                'direction_sync_score' => (int) round($directionSync),
+                'data_completeness_level' => $completenessLevel,
             ],
             'degraded' => $conf < 0.8,
             'degrade_reason' => $conf < 0.8 ? 'partial_natal_chart' : '',
@@ -450,23 +500,54 @@ class AstroCompatibilityService
         $ascA = is_array($chartA) ? (string) ($chartA['asc_sign'] ?? '') : '';
         $ascB = is_array($chartB) ? (string) ($chartB['asc_sign'] ?? '') : '';
 
-        // Reuse existing scoring primitives to keep implementation lightweight and deterministic.
+        $pairCfg = (array) config('match_rules.pair_chart.weights', []);
+        $wSunMoon = (float) ($pairCfg['sun_moon_harmony'] ?? 0.35);
+        $wAsc = (float) ($pairCfg['asc_interaction'] ?? 0.20);
+        $wEmotion = (float) ($pairCfg['emotion_rhythm'] ?? 0.25);
+        $wLong = (float) ($pairCfg['long_term_stability'] ?? 0.20);
+
         $sunMoonAB = ($sunA !== '' && $moonB !== '') ? $this->scoreConstellation($sunA, $moonB)['score'] : 60;
         $sunMoonBA = ($sunB !== '' && $moonA !== '') ? $this->scoreConstellation($sunB, $moonA)['score'] : 60;
         $sunMoon = (int) round(($sunMoonAB + $sunMoonBA) / 2.0);
-
         $ascScore = ($ascA !== '' && $ascB !== '') ? $this->scoreConstellation($ascA, $ascB)['score'] : 60;
-        $moonScore = ($moonA !== '' && $moonB !== '') ? $this->scoreConstellation($moonA, $moonB)['score'] : 60;
+        $emotionScore = ($moonA !== '' && $moonB !== '') ? $this->scoreConstellation($moonA, $moonB)['score'] : 60;
         $baziBridge = ($baziA !== '' && $baziB !== '') ? 72 : 60;
 
-        $raw = (0.35 * $sunMoon) + (0.20 * $ascScore) + (0.25 * $moonScore) + (0.20 * $baziBridge);
+        $raw = ($wSunMoon * $sunMoon) + ($wAsc * $ascScore) + ($wEmotion * $emotionScore) + ($wLong * $baziBridge);
         $score = (int) round(max(0.0, min(100.0, $raw)));
 
         $full = ($sunA !== '' && $sunB !== '' && $moonA !== '' && $moonB !== '' && $ascA !== '' && $ascB !== '' && $baziA !== '' && $baziB !== '');
-        $partial = ($sunA !== '' && $sunB !== '' && (($moonA !== '' && $moonB !== '') || ($ascA !== '' && $ascB !== '')));
-        $confidence = $full ? 0.92 : ($partial ? 0.72 : 0.5);
+        $componentCount = 0;
+        if ($sunA !== '' && $sunB !== '') {
+            $componentCount++;
+        }
+        if ($moonA !== '' && $moonB !== '') {
+            $componentCount++;
+        }
+        if ($ascA !== '' && $ascB !== '') {
+            $componentCount++;
+        }
+        if ($baziA !== '' && $baziB !== '') {
+            $componentCount++;
+        }
+        $partial = $componentCount >= 2;
+        $confidence = $full ? 0.92 : ($partial ? 0.74 : 0.52);
         $degraded = !$full;
         $degradeReason = $full ? '' : ($partial ? 'partial_pair_chart' : 'sun_only_estimation');
+        $lowPair = [];
+        if ($sunMoon < 60) {
+            $lowPair[] = '日月互动';
+        }
+        if ($ascScore < 60) {
+            $lowPair[] = '上升互动';
+        }
+        if ($emotionScore < 60) {
+            $lowPair[] = '情绪节奏';
+        }
+        if ($baziBridge < 65) {
+            $lowPair[] = '长期稳定';
+        }
+        $pairRiskPoint = empty($lowPair) ? '' : ('重点磨合点：'.implode('、', $lowPair).'。');
 
         $match = $score >= 78
             ? '男女合盘协同性较高，关系推进路径更清晰'
@@ -475,11 +556,16 @@ class AstroCompatibilityService
         $reasonShort = $score >= 78
             ? '情感节奏与互动推进较协调，关系升温路径清晰。'
             : ($score >= 60 ? '存在互补空间，建议通过沟通对齐节奏。' : '互动节奏差异较明显，建议先建立边界与沟通规则。');
-        $reasonDetail = $full
-            ? '该项综合太阳-月亮互容、上升互动、情绪节奏与八字桥接信号，反映关系过程层的顺滑度。'
-            : '当前基于有限出生信息进行合盘估算，结果主要用于过程层参考，建议补全出生时间与地点。';
+        $reasonDetail = sprintf(
+            '合盘过程层分项：日月互动%d、上升互动%d、情绪节奏%d、长期稳定%d。%s',
+            $sunMoon,
+            $ascScore,
+            $emotionScore,
+            $baziBridge,
+            $full ? '核心信息完整，推进路径判断更稳定。' : '当前存在信息缺失，建议补全后复核。'
+        );
         $riskDetail = $score < 60
-            ? '情绪回应速度与表达方式存在时差，易出现“误解并非恶意”；建议建立固定复盘与确认机制。'
+            ? ('情绪回应速度与表达方式存在时差，易出现“误解并非恶意”；建议建立固定复盘与确认机制。'.$pairRiskPoint)
             : ($degraded ? '当前为简化估算，缺失信息会降低结论稳定性。' : '');
 
         $evidenceTags = ['pair_chart_v1', 'sun_moon_harmony', 'emotion_rhythm'];
@@ -505,9 +591,10 @@ class AstroCompatibilityService
                 'sun_moon_ab' => $sunMoonAB,
                 'sun_moon_ba' => $sunMoonBA,
                 'asc_score' => $ascScore,
-                'moon_score' => $moonScore,
+                'emotion_rhythm_score' => $emotionScore,
                 'bazi_bridge' => $baziBridge,
                 'gender_pair' => [$genderA, $genderB],
+                'component_count' => $componentCount,
             ],
             'degraded' => $degraded,
             'degrade_reason' => $degradeReason,

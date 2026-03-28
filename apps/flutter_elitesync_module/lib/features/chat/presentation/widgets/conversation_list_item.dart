@@ -14,6 +14,17 @@ class ConversationListItem extends StatelessWidget {
   final VoidCallback onTap;
   final String highlightQuery;
 
+  String _conversationStatus() {
+    if (item.unread > 0) return '待回复';
+    if (item.lastMessage.contains('你好') ||
+        item.lastMessage.contains('嗨') ||
+        item.lastMessage.contains('破冰')) {
+      return '破冰中';
+    }
+    if (item.lastMessage.contains('匹配') || item.lastMessage.contains('系统')) return '新匹配';
+    return '已开启聊天';
+  }
+
   @override
   Widget build(BuildContext context) {
     final t = context.appTokens;
@@ -75,6 +86,14 @@ class ConversationListItem extends StatelessWidget {
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: t.textSecondary,
                     ),
+                  ),
+                  SizedBox(height: t.spacing.xxs),
+                  Text(
+                    _conversationStatus(),
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: item.unread > 0 ? t.brandPrimary : t.textTertiary,
+                          fontWeight: FontWeight.w600,
+                        ),
                   ),
                 ],
               ),

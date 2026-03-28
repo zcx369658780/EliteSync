@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_elitesync_module/design_system/components/bars/app_top_bar.dart';
+import 'package:flutter_elitesync_module/design_system/components/feedback/app_feedback.dart';
 import 'package:flutter_elitesync_module/design_system/components/layout/app_scaffold.dart';
 import 'package:flutter_elitesync_module/design_system/components/layout/page_title_rail.dart';
 import 'package:flutter_elitesync_module/design_system/components/layout/section_reveal.dart';
@@ -25,12 +26,10 @@ class _MatchIntentionPageState extends ConsumerState<MatchIntentionPage> {
       await ref.read(submitIntentionUseCaseProvider).call(action);
       if (!mounted) return;
       final msg = action == 'accept' ? '已发送愿意认识' : '已设置稍后决定';
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+      AppFeedback.showSuccess(context, msg);
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('提交失败：$e')),
-      );
+      AppFeedback.showError(context, '提交失败：$e');
     } finally {
       if (mounted) {
         setState(() => _submitting = false);
