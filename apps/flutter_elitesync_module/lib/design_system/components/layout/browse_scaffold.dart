@@ -16,19 +16,28 @@ class BrowseScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = context.appTokens;
-    return ColoredBox(
-      color: t.browseBackground,
-      child: SafeArea(
-        child: Padding(
-          padding:
-              padding ??
-              EdgeInsets.symmetric(horizontal: t.spacing.pageHorizontal),
-          child: Column(
-            children: [
-              header,
-              SizedBox(height: t.spacing.sm),
-              Expanded(child: body),
-            ],
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onTap: () {
+        final currentFocus = FocusScope.of(context);
+        if (!currentFocus.hasPrimaryFocus && currentFocus.focusedChild != null) {
+          currentFocus.unfocus();
+        }
+      },
+      child: ColoredBox(
+        color: t.browseBackground,
+        child: SafeArea(
+          child: Padding(
+            padding:
+                padding ??
+                EdgeInsets.symmetric(horizontal: t.spacing.pageHorizontal),
+            child: Column(
+              children: [
+                header,
+                SizedBox(height: t.spacing.sm),
+                Expanded(child: body),
+              ],
+            ),
           ),
         ),
       ),

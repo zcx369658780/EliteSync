@@ -9,9 +9,11 @@ import 'package:flutter_elitesync_module/core/storage/cache_keys.dart';
 import 'package:flutter_elitesync_module/design_system/components/brand/browse_top_search_bar.dart';
 import 'package:flutter_elitesync_module/design_system/components/brand/category_tab_strip.dart';
 import 'package:flutter_elitesync_module/design_system/components/layout/browse_scaffold.dart';
+import 'package:flutter_elitesync_module/design_system/components/feedback/app_feedback.dart';
 import 'package:flutter_elitesync_module/design_system/components/states/app_empty_state.dart';
 import 'package:flutter_elitesync_module/design_system/components/states/app_error_state.dart';
 import 'package:flutter_elitesync_module/design_system/components/states/app_loading_skeleton.dart';
+import 'package:flutter_elitesync_module/design_system/components/tags/app_choice_chip.dart';
 import 'package:flutter_elitesync_module/design_system/theme/app_theme_extensions.dart';
 import 'package:flutter_elitesync_module/features/home/domain/entities/home_feed_entity.dart';
 import 'package:flutter_elitesync_module/features/home/domain/entities/home_shortcut_entity.dart';
@@ -169,7 +171,7 @@ class _HomePageState extends ConsumerState<HomePage>
                     onRightActionTap: () => context.push(AppRouteNames.discover),
                   ),
                   AnimatedSize(
-                    duration: Duration(milliseconds: liteMode ? 80 : 180),
+                    duration: liteMode ? t.motionFast : t.motionNormal,
                     curve: Curves.easeOutCubic,
                     child: searchQuery.isNotEmpty
                         ? Column(
@@ -183,10 +185,10 @@ class _HomePageState extends ConsumerState<HomePage>
                                       style: Theme.of(context).textTheme.bodySmall?.copyWith(color: t.textSecondary),
                                     ),
                                   ),
-                                  ActionChip(
-                                    avatar: const Icon(Icons.close_rounded, size: 14),
-                                    label: const Text('清除'),
-                                    onPressed: _clearSearch,
+                                  AppChoiceChip(
+                                    label: '清除',
+                                    leading: const Icon(Icons.close_rounded),
+                                    onTap: _clearSearch,
                                   ),
                                 ],
                               ),
@@ -204,9 +206,9 @@ class _HomePageState extends ConsumerState<HomePage>
                                       separatorBuilder: (_, index) => SizedBox(width: t.spacing.xs),
                                       itemBuilder: (context, index) {
                                         final term = _recentSearches[index];
-                                        return ActionChip(
-                                          label: Text(term),
-                                          onPressed: () {
+                                        return AppChoiceChip(
+                                          label: term,
+                                          onTap: () {
                                             _searchController.text = term;
                                             _searchController.selection = TextSelection.collapsed(offset: term.length);
                                             _onSearchChanged(term);
@@ -225,6 +227,7 @@ class _HomePageState extends ConsumerState<HomePage>
                     tabs: _tabs,
                     selectedIndex: _selectedTabIndex,
                     onSelected: (index) {
+                      _searchFocusNode.unfocus();
                       setState(() => _selectedTabIndex = index);
                       _saveUiPrefs();
                       const tabKeys = ['recommend', 'nearby', 'topic', 'event', 'inspire'];
@@ -232,7 +235,7 @@ class _HomePageState extends ConsumerState<HomePage>
                       if (_scrollController.hasClients) {
                         _scrollController.animateTo(
                           0,
-                          duration: const Duration(milliseconds: 220),
+                          duration: liteMode ? t.motionFast : t.motionNormal,
                           curve: Curves.easeOutCubic,
                         );
                       }
@@ -246,14 +249,19 @@ class _HomePageState extends ConsumerState<HomePage>
                   controller: _scrollController,
                   cacheExtent: liteMode ? 480 : 1200,
                   padding: EdgeInsets.fromLTRB(0, t.spacing.xs, 0, t.spacing.huge),
-                  children: [
-                    _ShortcutRow(
-                      shortcuts: state.shortcuts,
-                      onShortcutTap: (item) => _handleShortcutTap(context, item),
-                    ),
-                    SizedBox(height: t.spacing.md),
-                    Text(
-                      '${_tabs[_selectedTabIndex]}精选',
+                children: [
+                  _ShortcutRow(
+                    shortcuts: state.shortcuts,
+                    onShortcutTap: (item) => _handleShortcutTap(context, item),
+                  ),
+                  SizedBox(height: t.spacing.sm),
+                  _HomeHeroCard(
+                    onTapPrimary: () => context.go(AppRouteNames.match),
+                    onTapSecondary: () => context.push(AppRouteNames.questionnaire),
+                  ),
+                  SizedBox(height: t.spacing.md),
+                  Text(
+                    '${_tabs[_selectedTabIndex]}精选',
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         color: t.textPrimary,
                         fontWeight: FontWeight.w800,
@@ -267,6 +275,7 @@ class _HomePageState extends ConsumerState<HomePage>
                         feed: filteredFeed,
                         highlightQuery: searchQuery,
                         onCardTap: (item) {
+                          _rememberPreferredTag(item);
                           context.push(
                             '${AppRouteNames.contentDetail}/${item.id}',
                             extra: item,
@@ -316,11 +325,14 @@ class _HomePageState extends ConsumerState<HomePage>
     final action = (item.action ?? '').trim().toLowerCase();
     final target = (item.target ?? '').trim();
     if (action == 'route' && target.isNotEmpty) {
-      if (target.startsWith('/home') ||
-          target.startsWith('/discover') ||
-          target.startsWith('/match') ||
-          target.startsWith('/messages') ||
-          target.startsWith('/profile')) {
+      const tabRootRoutes = <String>{
+        AppRouteNames.home,
+        AppRouteNames.discover,
+        AppRouteNames.match,
+        AppRouteNames.messages,
+        AppRouteNames.profile,
+      };
+      if (tabRootRoutes.contains(target)) {
         context.go(target);
       } else {
         context.push(target);
@@ -363,9 +375,33 @@ class _HomePageState extends ConsumerState<HomePage>
         break;
       default:
         context.go(AppRouteNames.discover);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('已为你打开「发现」：${item.title}')),
-        );
+        AppFeedback.showInfo(context, '已为你打开「发现」：${item.title}');
+    }
+  }
+
+  Future<void> _rememberPreferredTag(HomeFeedEntity item) async {
+    if (item.tags.isEmpty) return;
+    final local = ref.read(localStorageProvider);
+    final map = await local.getJson(CacheKeys.contentPreferredTagsMap) ?? <String, dynamic>{};
+    final next = <String, int>{};
+    for (final e in map.entries) {
+      final k = e.key.trim();
+      final v = (e.value as num?)?.toInt() ?? 0;
+      if (k.isEmpty || v <= 0) continue;
+      // Mild decay to avoid one-time clicks dominating forever.
+      final decayed = (v * 0.97).floor();
+      if (decayed > 0) next[k] = decayed;
+    }
+    for (final t in item.tags.take(2)) {
+      final tag = t.trim();
+      if (tag.isEmpty) continue;
+      next[tag] = (next[tag] ?? 0) + 5;
+    }
+    final ranked = next.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
+    final top = ranked.take(8).toList();
+    await local.setJson(CacheKeys.contentPreferredTagsMap, {for (final e in top) e.key: e.value});
+    if (top.isNotEmpty) {
+      await local.setString(CacheKeys.contentPreferredTag, top.first.key);
     }
   }
 
@@ -386,14 +422,32 @@ class _ShortcutRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = context.appTokens;
     if (shortcuts.isEmpty) return const SizedBox.shrink();
+    int rank(HomeShortcutEntity item) {
+      final k = item.key.trim().toLowerCase();
+      switch (k) {
+        case 'questionnaire':
+          return 0;
+        case 'match':
+        case 'matching':
+          return 1;
+        case 'mbti':
+          return 2;
+        case 'astro':
+          return 3;
+        default:
+          return 9;
+      }
+    }
+
+    final ordered = [...shortcuts]..sort((a, b) => rank(a).compareTo(rank(b)));
     return SizedBox(
       height: 38,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
-        itemCount: shortcuts.length,
+        itemCount: ordered.length,
         separatorBuilder: (context, index) => SizedBox(width: t.spacing.xs),
         itemBuilder: (context, index) {
-          final item = shortcuts[index];
+          final item = ordered[index];
           return Material(
             color: Colors.transparent,
             child: InkWell(
@@ -481,6 +535,118 @@ class _MasonryFeed extends StatelessWidget {
         SizedBox(width: t.spacing.sm),
         Expanded(child: buildColumn(rightItems, 1)),
       ],
+    );
+  }
+}
+
+class _HomeHeroCard extends StatelessWidget {
+  const _HomeHeroCard({
+    required this.onTapPrimary,
+    required this.onTapSecondary,
+  });
+
+  final VoidCallback onTapPrimary;
+  final VoidCallback onTapSecondary;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.appTokens;
+    return Container(
+      padding: EdgeInsets.all(t.spacing.cardPaddingLarge),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(t.radius.xl),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            t.brandPrimary.withValues(alpha: 0.2),
+            t.brandSecondary.withValues(alpha: 0.14),
+          ],
+        ),
+        border: Border.all(color: t.browseBorder),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            '本周关系进展',
+            style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                  color: t.textSecondary,
+                  fontWeight: FontWeight.w700,
+                ),
+          ),
+          SizedBox(height: t.spacing.xs),
+          Text(
+            '你有新的匹配结果可查看',
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  color: t.textPrimary,
+                  fontWeight: FontWeight.w800,
+                ),
+          ),
+          SizedBox(height: t.spacing.xxs),
+          Text(
+            '建议先查看匹配亮点，再决定是否进入进一步交流',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: t.textSecondary,
+                ),
+          ),
+          SizedBox(height: t.spacing.sm),
+          Row(
+            children: [
+              AppChoiceChip(
+                label: '查看本周匹配',
+                leading: const Icon(Icons.favorite_rounded),
+                selected: true,
+                onTap: onTapPrimary,
+              ),
+              SizedBox(width: t.spacing.xs),
+              AppChoiceChip(
+                label: '继续完善问卷',
+                leading: const Icon(Icons.quiz_rounded),
+                onTap: onTapSecondary,
+              ),
+            ],
+          ),
+          SizedBox(height: t.spacing.xs),
+          Wrap(
+            spacing: t.spacing.xs,
+            runSpacing: t.spacing.xs,
+            children: const [
+              _HeroHintChip(label: 'MBTI 可刷新'),
+              _HeroHintChip(label: '星盘画像可查看'),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HeroHintChip extends StatelessWidget {
+  const _HeroHintChip({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.appTokens;
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: t.spacing.xs,
+        vertical: t.spacing.xxs,
+      ),
+      decoration: BoxDecoration(
+        color: t.browseSurface.withValues(alpha: 0.72),
+        borderRadius: BorderRadius.circular(t.radius.pill),
+        border: Border.all(color: t.browseBorder),
+      ),
+      child: Text(
+        label,
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              color: t.textSecondary,
+              fontWeight: FontWeight.w600,
+            ),
+      ),
     );
   }
 }

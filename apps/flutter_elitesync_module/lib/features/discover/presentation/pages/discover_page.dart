@@ -9,9 +9,11 @@ import 'package:flutter_elitesync_module/core/storage/cache_keys.dart';
 import 'package:flutter_elitesync_module/design_system/components/brand/browse_top_search_bar.dart';
 import 'package:flutter_elitesync_module/design_system/components/brand/category_tab_strip.dart';
 import 'package:flutter_elitesync_module/design_system/components/layout/browse_scaffold.dart';
+import 'package:flutter_elitesync_module/design_system/components/feedback/app_feedback.dart';
 import 'package:flutter_elitesync_module/design_system/components/states/app_empty_state.dart';
 import 'package:flutter_elitesync_module/design_system/components/states/app_error_state.dart';
 import 'package:flutter_elitesync_module/design_system/components/states/app_loading_skeleton.dart';
+import 'package:flutter_elitesync_module/design_system/components/tags/app_choice_chip.dart';
 import 'package:flutter_elitesync_module/design_system/components/tags/highlight_text.dart';
 import 'package:flutter_elitesync_module/design_system/theme/app_theme_extensions.dart';
 import 'package:flutter_elitesync_module/features/discover/presentation/controllers/discover_feed_controller.dart';
@@ -31,6 +33,7 @@ class DiscoverPage extends ConsumerStatefulWidget {
 
 class _DiscoverPageState extends ConsumerState<DiscoverPage>
     with AutomaticKeepAliveClientMixin<DiscoverPage> {
+  static const Duration _snapshotTtl = Duration(hours: 6);
   int _tab = 0;
   final ValueNotifier<String> _searchQueryNotifier = ValueNotifier<String>('');
   static const _tabs = ['热门', '同城', '活动', '话题', '直播'];
@@ -43,6 +46,7 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
   List<String> _recentSearches = const [];
   bool _searchFocused = false;
   bool _quickRefreshing = false;
+  bool _initialized = false;
   final Map<int, double> _tabScrollOffsets = <int, double>{};
   List<HomeFeedEntity> _cachedSourceItems = const [];
   String _cachedFilterQuery = '';
@@ -64,10 +68,17 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
       mapper: const HomeMapper(),
     )..addListener(_onControllerChanged);
     _scrollController.addListener(_onScroll);
-    _loadUiPrefs();
-    _loadSearchHistory();
-    _loadFeedSnapshot();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _controller.initialize());
+    WidgetsBinding.instance.addPostFrameCallback((_) => _bootstrap());
+  }
+
+  Future<void> _bootstrap() async {
+    if (_initialized || !mounted) return;
+    _initialized = true;
+    await _loadUiPrefs();
+    await _loadSearchHistory();
+    await _loadFeedSnapshot();
+    if (!mounted) return;
+    await _controller.initialize();
   }
 
   Future<void> _loadUiPrefs() async {
@@ -156,6 +167,10 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
     try {
       final decoded = jsonDecode(raw);
       if (decoded is! Map<String, dynamic>) return;
+      final savedAtMs = (decoded['savedAtMs'] as num?)?.toInt() ?? 0;
+      if (savedAtMs <= 0) return;
+      final ageMs = DateTime.now().millisecondsSinceEpoch - savedAtMs;
+      if (ageMs > _snapshotTtl.inMilliseconds) return;
       final index = (decoded['tabIndex'] as num?)?.toInt() ?? 0;
       final list = (decoded['items'] as List<dynamic>? ?? const []);
       final items = list
@@ -187,7 +202,10 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
         hasMore: (decoded['hasMore'] as bool?) ?? false,
         nextCursor: (decoded['nextCursor'] ?? '').toString().isEmpty ? null : (decoded['nextCursor'] ?? '').toString(),
       );
-      _controller.hydrateFromSnapshot(index: index, snapshot: snapshot);
+      // Only hydrate from snapshot before first remote init to avoid stale overwrite.
+      if (_controller.state.isLoading) {
+        _controller.hydrateFromSnapshot(index: index, snapshot: snapshot);
+      }
       setState(() => _tab = index.clamp(0, _tabs.length - 1));
     } catch (_) {}
   }
@@ -199,6 +217,7 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
       'tabIndex': _tab,
       'hasMore': s.hasMore,
       'nextCursor': s.nextCursor,
+      'savedAtMs': DateTime.now().millisecondsSinceEpoch,
       'items': s.items
           .map(
             (e) => {
@@ -232,16 +251,36 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
     try {
       await _controller.loadInitial();
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          duration: Duration(milliseconds: 1000),
-          content: Text('已刷新发现内容'),
-        ),
-      );
+      AppFeedback.showInfo(context, '已刷新发现内容');
     } finally {
       if (mounted) {
         setState(() => _quickRefreshing = false);
       }
+    }
+  }
+
+  Future<void> _rememberPreferredTag(HomeFeedEntity item) async {
+    if (item.tags.isEmpty) return;
+    final local = ref.read(localStorageProvider);
+    final map = await local.getJson(CacheKeys.contentPreferredTagsMap) ?? <String, dynamic>{};
+    final next = <String, int>{};
+    for (final e in map.entries) {
+      final k = e.key.trim();
+      final v = (e.value as num?)?.toInt() ?? 0;
+      if (k.isEmpty || v <= 0) continue;
+      final decayed = (v * 0.97).floor();
+      if (decayed > 0) next[k] = decayed;
+    }
+    for (final t in item.tags.take(2)) {
+      final tag = t.trim();
+      if (tag.isEmpty) continue;
+      next[tag] = (next[tag] ?? 0) + 5;
+    }
+    final ranked = next.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
+    final top = ranked.take(8).toList();
+    await local.setJson(CacheKeys.contentPreferredTagsMap, {for (final e in top) e.key: e.value});
+    if (top.isNotEmpty) {
+      await local.setString(CacheKeys.contentPreferredTag, top.first.key);
     }
   }
 
@@ -271,7 +310,7 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
                 rightIcon: _quickRefreshing ? Icons.hourglass_top_rounded : Icons.refresh_rounded,
               ),
               AnimatedSize(
-                duration: Duration(milliseconds: liteMode ? 80 : 180),
+                duration: liteMode ? t.motionFast : t.motionNormal,
                 curve: Curves.easeOutCubic,
                 child: searchQuery.isNotEmpty
                     ? Column(
@@ -285,10 +324,10 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
                                   style: Theme.of(context).textTheme.bodySmall?.copyWith(color: t.textSecondary),
                                 ),
                               ),
-                              ActionChip(
-                                avatar: const Icon(Icons.close_rounded, size: 14),
-                                label: const Text('清除'),
-                                onPressed: _clearSearch,
+                              AppChoiceChip(
+                                label: '清除',
+                                leading: const Icon(Icons.close_rounded),
+                                onTap: _clearSearch,
                               ),
                             ],
                           ),
@@ -306,9 +345,9 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
                                   separatorBuilder: (_, index) => SizedBox(width: t.spacing.xs),
                                   itemBuilder: (context, index) {
                                     final term = _recentSearches[index];
-                                    return ActionChip(
-                                      label: Text(term),
-                                      onPressed: () {
+                                    return AppChoiceChip(
+                                      label: term,
+                                      onTap: () {
                                         _searchController.text = term;
                                         _searchController.selection = TextSelection.collapsed(offset: term.length);
                                         _onSearchChanged(term);
@@ -327,6 +366,7 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
                 tabs: _tabs,
                 selectedIndex: _tab,
                 onSelected: (i) {
+                  _searchFocusNode.unfocus();
                   if (_scrollController.hasClients) {
                     _tabScrollOffsets[_tab] = _scrollController.offset;
                   }
@@ -341,7 +381,7 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
                     );
                     _scrollController.animateTo(
                       target.toDouble(),
-                      duration: Duration(milliseconds: liteMode ? 140 : 260),
+                      duration: liteMode ? t.motionFast : t.motionNormal,
                       curve: Curves.easeOutCubic,
                     );
                   });
@@ -350,7 +390,7 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
             ],
           ),
           body: AnimatedSwitcher(
-            duration: Duration(milliseconds: liteMode ? 100 : 220),
+            duration: liteMode ? t.motionFast : t.motionNormal,
             switchInCurve: Curves.easeOutCubic,
             switchOutCurve: Curves.easeInCubic,
             child: state.isLoading
@@ -392,16 +432,19 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
                                       onAction: _clearSearch,
                                     ),
                                   ] else ...[
+                                    _SceneEntryRow(
+                                      onTap: (label) {
+                                        _searchController.text = label;
+                                        _searchController.selection = TextSelection.collapsed(offset: label.length);
+                                        _onSearchChanged(label);
+                                      },
+                                    ),
+                                    SizedBox(height: t.spacing.sm),
                                     _SectionTitle(title: '${_tabs[_tab]}发现'),
                                     SizedBox(height: t.spacing.sm),
                                     ...List.generate(filteredItems.length, (index) {
                                       final item = filteredItems[index];
-                                      final accents = const [
-                                        Color(0xFF7CB8FF),
-                                        Color(0xFF79D7C9),
-                                        Color(0xFF9A8CFF),
-                                        Color(0xFF7EA3FF),
-                                      ];
+                                      final scene = _sceneOf(_tabs[_tab], item, index);
                                       return Padding(
                                         padding: EdgeInsets.only(bottom: t.spacing.sm),
                                         child: RepaintBoundary(
@@ -409,8 +452,11 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
                                             title: item.title,
                                             subtitle: item.summary,
                                             highlightQuery: searchQuery,
-                                            accent: accents[index % accents.length],
+                                            accent: scene.accent,
+                                            icon: scene.icon,
+                                            cta: scene.cta,
                                             onTap: () {
+                                              _rememberPreferredTag(item);
                                               context.push(
                                                 '${AppRouteNames.contentDetail}/${item.id}',
                                                 extra: item,
@@ -535,12 +581,16 @@ class _DiscoverCard extends StatelessWidget {
     required this.subtitle,
     required this.highlightQuery,
     required this.accent,
+    required this.icon,
+    required this.cta,
     this.onTap,
   });
   final String title;
   final String subtitle;
   final String highlightQuery;
   final Color accent;
+  final IconData icon;
+  final String cta;
   final VoidCallback? onTap;
 
   @override
@@ -567,7 +617,7 @@ class _DiscoverCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                   color: accent.withValues(alpha: 0.22),
                 ),
-                child: Icon(Icons.auto_awesome_rounded, color: accent),
+                child: Icon(icon, color: accent),
               ),
               SizedBox(width: t.spacing.sm),
               Expanded(
@@ -592,6 +642,14 @@ class _DiscoverCard extends StatelessWidget {
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: t.textSecondary,
                       ),
+                    ),
+                    SizedBox(height: t.spacing.xxs),
+                    Text(
+                      cta,
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                            color: accent,
+                            fontWeight: FontWeight.w700,
+                          ),
                     ),
                   ],
                 ),
@@ -661,4 +719,88 @@ class _MiniTopicCard extends StatelessWidget {
       ),
     );
   }
+}
+
+class _SceneEntryRow extends StatelessWidget {
+  const _SceneEntryRow({required this.onTap});
+
+  final ValueChanged<String> onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.appTokens;
+    final scenes = const [
+      ('同城活动', Icons.location_on_rounded),
+      ('热点话题', Icons.local_fire_department_rounded),
+      ('语音房', Icons.mic_rounded),
+      ('兴趣圈', Icons.auto_awesome_rounded),
+    ];
+    return SizedBox(
+      height: 36,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: scenes.length,
+        separatorBuilder: (_, index) => SizedBox(width: t.spacing.xs),
+        itemBuilder: (context, index) {
+          final item = scenes[index];
+          return AppChoiceChip(
+            label: item.$1,
+            leading: Icon(item.$2),
+            onTap: () => onTap(item.$1),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _DiscoverSceneStyle {
+  const _DiscoverSceneStyle({
+    required this.accent,
+    required this.icon,
+    required this.cta,
+  });
+
+  final Color accent;
+  final IconData icon;
+  final String cta;
+}
+
+_DiscoverSceneStyle _sceneOf(String tab, HomeFeedEntity item, int index) {
+  final text = '${item.title} ${item.summary}'.toLowerCase();
+  if (tab.contains('同城') || text.contains('同城') || text.contains('附近')) {
+    return const _DiscoverSceneStyle(
+      accent: Color(0xFF5FC8FF),
+      icon: Icons.location_on_rounded,
+      cta: '去看看',
+    );
+  }
+  if (tab.contains('活动') || text.contains('活动') || text.contains('报名')) {
+    return const _DiscoverSceneStyle(
+      accent: Color(0xFF7BD88F),
+      icon: Icons.event_available_rounded,
+      cta: '立即报名',
+    );
+  }
+  if (tab.contains('话题') || text.contains('话题') || text.contains('讨论')) {
+    return const _DiscoverSceneStyle(
+      accent: Color(0xFF9B8CFF),
+      icon: Icons.forum_rounded,
+      cta: '参与讨论',
+    );
+  }
+  if (tab.contains('直播') || text.contains('直播') || text.contains('语音')) {
+    return const _DiscoverSceneStyle(
+      accent: Color(0xFFFFA76A),
+      icon: Icons.mic_rounded,
+      cta: '进入语音房',
+    );
+  }
+  const fallback = [
+    _DiscoverSceneStyle(accent: Color(0xFF7CB8FF), icon: Icons.explore_rounded, cta: '去看看'),
+    _DiscoverSceneStyle(accent: Color(0xFF79D7C9), icon: Icons.auto_awesome_rounded, cta: '去看看'),
+    _DiscoverSceneStyle(accent: Color(0xFF9A8CFF), icon: Icons.local_fire_department_rounded, cta: '参与讨论'),
+    _DiscoverSceneStyle(accent: Color(0xFF7EA3FF), icon: Icons.groups_rounded, cta: '去看看'),
+  ];
+  return fallback[index % fallback.length];
 }

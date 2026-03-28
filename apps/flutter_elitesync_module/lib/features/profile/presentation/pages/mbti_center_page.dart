@@ -5,6 +5,7 @@ import 'package:flutter_elitesync_module/app/router/app_route_names.dart';
 import 'package:flutter_elitesync_module/design_system/components/bars/app_top_bar.dart';
 import 'package:flutter_elitesync_module/design_system/components/buttons/app_primary_button.dart';
 import 'package:flutter_elitesync_module/design_system/components/buttons/app_secondary_button.dart';
+import 'package:flutter_elitesync_module/design_system/components/cards/app_info_section_card.dart';
 import 'package:flutter_elitesync_module/design_system/components/layout/app_scaffold.dart';
 import 'package:flutter_elitesync_module/design_system/components/layout/page_title_rail.dart';
 import 'package:flutter_elitesync_module/design_system/components/layout/section_reveal.dart';
@@ -37,13 +38,10 @@ class MbtiCenterPage extends ConsumerWidget {
           SizedBox(height: t.spacing.md),
           SectionReveal(
             delay: const Duration(milliseconds: 70),
-            child: Container(
-              padding: EdgeInsets.all(t.spacing.cardPaddingLarge),
-              decoration: BoxDecoration(
-                color: t.browseSurface,
-                borderRadius: BorderRadius.circular(t.radius.lg),
-                border: Border.all(color: t.browseBorder),
-              ),
+            child: AppInfoSectionCard(
+              title: '测评说明',
+              subtitle: '当前为轻量入口，后续可替换正式 MBTI 算法',
+              leadingIcon: Icons.info_outline_rounded,
               child: Text(
                 '当前 MBTI 题目已并入性格问卷流程。测试结果会用于匹配解释中的 MBTI 分项。',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -56,13 +54,10 @@ class MbtiCenterPage extends ConsumerWidget {
           SizedBox(height: t.spacing.sm),
           SectionReveal(
             delay: const Duration(milliseconds: 110),
-            child: Container(
-              padding: EdgeInsets.all(t.spacing.cardPaddingLarge),
-              decoration: BoxDecoration(
-                color: t.browseSurface,
-                borderRadius: BorderRadius.circular(t.radius.lg),
-                border: Border.all(color: t.browseBorder),
-              ),
+            child: AppInfoSectionCard(
+              title: '当前状态',
+              subtitle: '从资料标签中读取 MBTI 结果',
+              leadingIcon: hasMbti ? Icons.psychology_alt_rounded : Icons.help_outline_rounded,
               child: Row(
                 children: [
                   Icon(

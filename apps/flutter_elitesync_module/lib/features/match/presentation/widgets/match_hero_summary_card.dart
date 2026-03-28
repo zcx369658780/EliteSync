@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_elitesync_module/design_system/components/tags/app_tag.dart';
 import 'package:flutter_elitesync_module/design_system/theme/app_theme_extensions.dart';
 
 class MatchHeroSummaryCard extends StatelessWidget {
@@ -19,6 +20,14 @@ class MatchHeroSummaryCard extends StatelessWidget {
     if (score >= 70) return t.brandPrimary;
     if (score >= 55) return t.warning;
     return t.error;
+  }
+
+  String _scoreNarrative() {
+    if (score >= 90) return '高匹配，建议尽快进入深入交流';
+    if (score >= 80) return '中高匹配，关系潜力较强';
+    if (score >= 70) return '中等匹配，建议从轻话题慢慢建立连接';
+    if (score >= 60) return '可尝试匹配，建议重点关注沟通节奏';
+    return '当前匹配度较保守，建议先观察再决定';
   }
 
   @override
@@ -44,7 +53,7 @@ class MatchHeroSummaryCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            '匹配结论',
+            '本周匹配已更新',
             style: Theme.of(context).textTheme.labelLarge?.copyWith(
               color: t.textSecondary,
               fontWeight: FontWeight.w700,
@@ -57,6 +66,14 @@ class MatchHeroSummaryCard extends StatelessWidget {
               color: t.textPrimary,
               fontWeight: FontWeight.w800,
             ),
+          ),
+          SizedBox(height: t.spacing.sm),
+          Text(
+            _scoreNarrative(),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: t.textSecondary,
+                  fontWeight: FontWeight.w500,
+                ),
           ),
           SizedBox(height: t.spacing.sm),
           Row(
@@ -84,24 +101,7 @@ class MatchHeroSummaryCard extends StatelessWidget {
               spacing: 8,
               runSpacing: 8,
               children: tags.take(4).map((tag) {
-                return Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: t.spacing.sm,
-                    vertical: t.spacing.xxs,
-                  ),
-                  decoration: BoxDecoration(
-                    color: t.browseSurface.withValues(alpha: 0.76),
-                    borderRadius: BorderRadius.circular(t.radius.pill),
-                    border: Border.all(color: t.browseBorder),
-                  ),
-                  child: Text(
-                    tag,
-                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                      color: t.textSecondary,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                );
+                return AppTag(label: tag, variant: AppTagVariant.outlined);
               }).toList(),
             ),
           ],

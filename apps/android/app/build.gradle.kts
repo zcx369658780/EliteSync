@@ -1,4 +1,5 @@
-﻿import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.io.File
 import java.util.Properties
 
 plugins {
@@ -15,6 +16,39 @@ val localProps = Properties().apply {
 val baiduAkFromProp = (project.findProperty("BAIDU_MAP_AK") as String?)
     ?: localProps.getProperty("BAIDU_MAP_AK", "")
 
+val flutterModuleDir = rootProject.file("../flutter_elitesync_module")
+val flutterModuleLocalProps = Properties().apply {
+    val f = rootProject.file("../flutter_elitesync_module/.android/local.properties")
+    if (f.exists()) {
+        f.inputStream().use { load(it) }
+    }
+}
+val flutterSdkPath = flutterModuleLocalProps.getProperty("flutter.sdk")
+    ?: localProps.getProperty("flutter.sdk")
+    ?: System.getenv("FLUTTER_HOME")
+val flutterExecutable = when {
+    !flutterSdkPath.isNullOrBlank() -> {
+        val suffix = if (System.getProperty("os.name").lowercase().contains("windows")) "flutter.bat" else "flutter"
+        File(flutterSdkPath, "bin/$suffix").absolutePath
+    }
+    System.getProperty("os.name").lowercase().contains("windows") -> "flutter.bat"
+    else -> "flutter"
+}
+
+val syncFlutterAar by tasks.registering(Exec::class) {
+    group = "build"
+    description = "Build latest Flutter module AAR before Android preBuild"
+    workingDir = flutterModuleDir
+    commandLine(flutterExecutable, "build", "aar", "--no-debug", "--no-profile")
+    inputs.dir(File(flutterModuleDir, "lib"))
+    inputs.file(File(flutterModuleDir, "pubspec.yaml"))
+    outputs.dir(File(flutterModuleDir, "build/host/outputs/repo/com/elitesync/flutter_elitesync_module/flutter_release/1.0"))
+}
+
+tasks.named("preBuild") {
+    dependsOn(syncFlutterAar)
+}
+
 android {
     namespace = "com.elitesync"
     compileSdk = 34
@@ -27,8 +61,8 @@ android {
         // major: product major stage (0 before launch, 1+ after launch)
         // minor: 01=Alpha, 02-99=Beta
         // patch: current stage incremental version
-        versionCode = 108
-        versionName = "0.01.08"
+        versionCode = 202
+        versionName = "0.02.02"
         ndk {
             // Google Play 16KB page-size compliance: avoid x86_64 native libs from third-party SDKs.
             // Keep ARM ABIs for real-device testing and release publishing.
@@ -123,6 +157,9 @@ configurations.all {
         force("androidx.browser:browser:1.8.0")
     }
 }
+
+
+
 
 
 

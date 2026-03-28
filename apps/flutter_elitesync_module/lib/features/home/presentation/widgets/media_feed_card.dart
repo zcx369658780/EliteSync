@@ -114,6 +114,30 @@ class MediaFeedCard extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: t.spacing.xs),
+                    Wrap(
+                      spacing: t.spacing.xxs,
+                      runSpacing: t.spacing.xxs,
+                      children: _buildTags(item).map((tag) {
+                        return Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: t.spacing.xs,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: t.brandPrimary.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(t.radius.pill),
+                          ),
+                          child: Text(
+                            tag,
+                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                  color: t.brandPrimary,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                    SizedBox(height: t.spacing.xs),
                     Text(
                       '${item.author} · ${item.likes} 喜欢',
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
@@ -128,5 +152,25 @@ class MediaFeedCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  List<String> _buildTags(HomeFeedEntity entity) {
+    final tags = <String>{};
+    for (final tag in entity.tags) {
+      if (tags.length >= 2) break;
+      final t = tag.trim();
+      if (t.isNotEmpty) tags.add(t);
+    }
+    final text = '${entity.title} ${entity.summary}'.toLowerCase();
+    if (tags.isEmpty) {
+      if (text.contains('沟通')) tags.add('沟通技巧');
+      if (text.contains('星') || text.contains('盘')) tags.add('星盘');
+      if (text.contains('mbti')) tags.add('MBTI');
+      if (text.contains('匹配')) tags.add('匹配提升');
+      if (text.contains('关系')) tags.add('关系研究');
+    }
+    if (tags.isEmpty) tags.add('关系研究');
+    if (tags.length < 2 && !tags.contains('匹配提升')) tags.add('匹配提升');
+    return tags.take(2).toList();
   }
 }

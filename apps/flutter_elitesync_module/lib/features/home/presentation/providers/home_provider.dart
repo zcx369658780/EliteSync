@@ -15,7 +15,11 @@ import 'package:flutter_elitesync_module/shared/providers/app_providers.dart';
 
 final homeRemoteDataSourceProvider = Provider<HomeRemoteDataSource>((ref) {
   final env = ref.watch(appEnvProvider);
-  return HomeRemoteDataSource(apiClient: ref.watch(apiClientProvider), useMock: env.useMockHome);
+  return HomeRemoteDataSource(
+    apiClient: ref.watch(apiClientProvider),
+    useMock: env.useMockHome,
+    localStorage: ref.watch(localStorageProvider),
+  );
 });
 
 final homeRepositoryProvider = Provider<HomeRepository>((ref) {
@@ -27,6 +31,8 @@ final fetchHomeFeedUseCaseProvider = Provider<FetchHomeFeedUseCase>((ref) {
 });
 
 class HomeNotifier extends AsyncNotifier<HomeUiState> {
+  static const Duration _snapshotTtl = Duration(hours: 6);
+
   @override
   Future<HomeUiState> build() async {
     final cached = await _readSnapshot();
@@ -159,6 +165,10 @@ class HomeNotifier extends AsyncNotifier<HomeUiState> {
     try {
       final decoded = jsonDecode(raw);
       if (decoded is! Map<String, dynamic>) return null;
+      final savedAtMs = (decoded['savedAtMs'] as num?)?.toInt() ?? 0;
+      if (savedAtMs <= 0) return null;
+      final ageMs = DateTime.now().millisecondsSinceEpoch - savedAtMs;
+      if (ageMs > _snapshotTtl.inMilliseconds) return null;
       final bannerRaw = decoded['banner'];
       final shortcutsRaw = decoded['shortcuts'];
       final feedRaw = decoded['feed'];
@@ -254,6 +264,7 @@ class HomeNotifier extends AsyncNotifier<HomeUiState> {
       'currentTab': data.currentTab,
       'hasMore': data.hasMore,
       'nextCursor': data.nextCursor,
+      'savedAtMs': DateTime.now().millisecondsSinceEpoch,
     };
     await ref.read(localStorageProvider).setString(CacheKeys.homeFeedSnapshot, jsonEncode(payload));
   }

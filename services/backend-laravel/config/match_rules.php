@@ -103,8 +103,13 @@ return [
     ],
 
     'bazi' => [
-        'fallback' => [
-            'with_wuxing_target_distance' => 0.6,
+        'scoring' => [
+            // V2: score = base + complement * 35 + balance * 25
+            // complement: two-party wuxing distribution closeness (0~1)
+            // balance: intra-profile wuxing balance average (0~1)
+            'base' => 40,
+            'complement_weight' => 35,
+            'balance_weight' => 25,
         ],
         'templates' => [
             'full' => [

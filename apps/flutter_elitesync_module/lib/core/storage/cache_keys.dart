@@ -14,6 +14,9 @@ abstract final class CacheKeys {
   static const privacyProfileVisible = 'privacy_profile_visible';
   static const privacyShowCity = 'privacy_show_city';
   static const performanceLiteMode = 'performance_lite_mode';
+  static const contentRankerMode = 'content_ranker_mode';
+  static const contentPreferredTag = 'content_preferred_tag';
+  static const contentPreferredTagsMap = 'content_preferred_tags_map_v1';
   static const homeSearchQuery = 'home_search_query';
   static const discoverSearchQuery = 'discover_search_query';
   static const messagesSearchQuery = 'messages_search_query';

@@ -1,5 +1,7 @@
 import 'package:flutter_elitesync_module/core/network/api_client.dart';
 import 'package:flutter_elitesync_module/core/network/network_result.dart';
+import 'package:flutter_elitesync_module/core/storage/cache_keys.dart';
+import 'package:flutter_elitesync_module/core/storage/local_storage_service.dart';
 import 'package:flutter_elitesync_module/mocks/mock_data/home_mock.dart';
 import 'package:flutter_elitesync_module/features/home/data/dto/home_banner_dto.dart';
 import 'package:flutter_elitesync_module/features/home/data/dto/home_feed_dto.dart';
@@ -18,10 +20,48 @@ class FeedPageResult {
 }
 
 class HomeRemoteDataSource {
-  const HomeRemoteDataSource({required this.apiClient, required this.useMock});
+  HomeRemoteDataSource({
+    required this.apiClient,
+    required this.useMock,
+    required this.localStorage,
+  });
 
   final ApiClient apiClient;
   final bool useMock;
+  final LocalStorageService localStorage;
+
+  Future<String> _rankerMode() async {
+    final mode = (await localStorage.getString(CacheKeys.contentRankerMode))?.trim().toLowerCase() ?? 'auto';
+    if (mode == 'legacy' || mode == 'weighted' || mode == 'auto') return mode;
+    return 'auto';
+  }
+
+  Future<String?> _preferredTag() async {
+    final tag = (await localStorage.getString(CacheKeys.contentPreferredTag))?.trim() ?? '';
+    return tag.isEmpty ? null : tag;
+  }
+
+  Future<(String?, String?)> _preferredTagPair() async {
+    // Preferred path via persisted tag-score map.
+    final map = await localStorage.getJson(CacheKeys.contentPreferredTagsMap);
+    if (map != null && map.isNotEmpty) {
+      final ranked = map.entries
+          .where((e) => e.key.trim().isNotEmpty)
+          .map((e) => MapEntry(e.key.trim(), (e.value as num?)?.toInt() ?? 0))
+          .where((e) => e.value > 0)
+          .toList()
+        ..sort((a, b) => b.value.compareTo(a.value));
+      if (ranked.isNotEmpty) {
+        final primary = ranked.first.key;
+        final secondary = ranked.length > 1 ? ranked[1].key : null;
+        return (primary, secondary);
+      }
+    }
+
+    // Legacy fallback: single preferred tag.
+    final single = await _preferredTag();
+    return (single, null);
+  }
 
   Future<HomeBannerDto> fetchBanner() async {
     if (useMock) {
@@ -84,9 +124,14 @@ class HomeRemoteDataSource {
       );
     }
     try {
+      final ranker = await _rankerMode();
+      final (preferredTag, preferredTag2) = await _preferredTagPair();
       final query = <String, dynamic>{'limit': limit};
       if ((tab ?? '').isNotEmpty) query['tab'] = tab;
       if ((cursor ?? '').isNotEmpty) query['cursor'] = cursor;
+      query['ranker'] = ranker;
+      if ((preferredTag ?? '').isNotEmpty) query['boost_tag'] = preferredTag;
+      if ((preferredTag2 ?? '').isNotEmpty) query['boost_tag_secondary'] = preferredTag2;
       final result = await apiClient.get('/api/v1/home/feed', query: query);
       if (result is NetworkSuccess<Map<String, dynamic>>) {
         final list = (result.data['data'] as List<dynamic>? ?? const []);
@@ -130,6 +175,8 @@ class HomeRemoteDataSource {
       );
     }
     try {
+      final ranker = await _rankerMode();
+      final (preferredTag, preferredTag2) = await _preferredTagPair();
       final query = <String, dynamic>{'limit': limit};
       if ((tab ?? '').isNotEmpty) {
         query['tab'] = tab;
@@ -137,6 +184,9 @@ class HomeRemoteDataSource {
       if ((cursor ?? '').isNotEmpty) {
         query['cursor'] = cursor;
       }
+      query['ranker'] = ranker;
+      if ((preferredTag ?? '').isNotEmpty) query['boost_tag'] = preferredTag;
+      if ((preferredTag2 ?? '').isNotEmpty) query['boost_tag_secondary'] = preferredTag2;
       final primary = await apiClient.get('/api/v1/discover/feed', query: query.isEmpty ? null : query);
       if (primary is NetworkSuccess<Map<String, dynamic>>) {
         final list = (primary.data['data'] as List<dynamic>? ?? const []);
@@ -156,6 +206,9 @@ class HomeRemoteDataSource {
         fallbackQuery['cursor'] = cursor;
       }
       fallbackQuery['limit'] = limit;
+      fallbackQuery['ranker'] = ranker;
+      if ((preferredTag ?? '').isNotEmpty) fallbackQuery['boost_tag'] = preferredTag;
+      if ((preferredTag2 ?? '').isNotEmpty) fallbackQuery['boost_tag_secondary'] = preferredTag2;
       final fallback = await apiClient.get('/api/v1/home/feed', query: fallbackQuery);
       if (fallback is NetworkSuccess<Map<String, dynamic>>) {
         final list = (fallback.data['data'] as List<dynamic>? ?? const []);

@@ -89,6 +89,7 @@ class MatchPayloadContractTest extends TestCase
                     'match',
                     'mismatch',
                     'confidence',
+                    'reason_glossary',
                     'modules' => [[
                         'key',
                         'label',
@@ -115,6 +116,7 @@ class MatchPayloadContractTest extends TestCase
         $this->assertNotSame('', (string) ($reasons['contract_version'] ?? ''));
         $this->assertIsString($reasons['generated_at'] ?? null);
         $this->assertNotSame('', (string) ($reasons['generated_at'] ?? ''));
+        $this->assertIsArray($reasons['reason_glossary'] ?? null);
 
         $module = (array) (($reasons['modules'][0] ?? []) ?: []);
         $this->assertIsString($module['algo_version'] ?? null);
@@ -123,4 +125,3 @@ class MatchPayloadContractTest extends TestCase
         $this->assertIsArray($module['evidence'] ?? null);
     }
 }
-

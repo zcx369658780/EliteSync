@@ -89,10 +89,15 @@ class MatchRemoteDataSource {
       return const MatchDetailDto(
         reasons: ['沟通风格互补', '关系目标一致', '同城活动便利'],
         weights: {'八字': 50, '属相': 30, '星座': 10, '星盘': 10},
+        moduleScores: {'八字': 78, '属相': 81, '星座': 73, '星盘': 75},
+        moduleInsights: ['八字：五行互补中等偏上，生活节奏较易协调'],
       );
     }
     final raw = await _currentMatchRaw();
     final reasons = (raw['match_reasons'] as Map<String, dynamic>? ?? const {});
+    final reasonGlossary = (reasons['reason_glossary'] as Map<String, dynamic>? ?? const {})
+        .map((k, v) => MapEntry(k.toString(), v.toString()));
+    final astroScoresRaw = (raw['astro_scores'] as Map<String, dynamic>? ?? const {});
     final match = (reasons['match'] as List<dynamic>? ?? const [])
         .whereType<Map<String, dynamic>>()
         .map((e) {
@@ -100,7 +105,7 @@ class MatchRemoteDataSource {
           final score = (e['score'] as num?)?.toInt();
           final reason = (e['reason'] ?? '').toString();
           final scorePart = score == null ? '' : '（$score分）';
-          return '[匹配] $module$scorePart：$reason'.trim();
+          return '匹配亮点｜$module$scorePart：$reason'.trim();
         })
         .where((e) => e.isNotEmpty)
         .toList();
@@ -111,7 +116,7 @@ class MatchRemoteDataSource {
           final score = (e['score'] as num?)?.toInt();
           final reason = (e['reason'] ?? '').toString();
           final scorePart = score == null ? '' : '（$score分）';
-          return '[风险] $module$scorePart：$reason'.trim();
+          return '需要留意｜$module$scorePart：$reason'.trim();
         })
         .where((e) => e.isNotEmpty)
         .toList();
@@ -119,18 +124,66 @@ class MatchRemoteDataSource {
       ...match,
       ...mismatch,
     ];
+    final modules = (reasons['modules'] as List<dynamic>? ?? const [])
+        .whereType<Map<String, dynamic>>()
+        .toList();
+    final moduleScores = <String, int>{};
+    final moduleInsights = <String>[];
+    final moduleWeights = <String, int>{};
+    for (final m in modules) {
+      final label = (m['label'] ?? '').toString().trim().isNotEmpty
+          ? (m['label'] ?? '').toString().trim()
+          : _moduleName((m['key'] ?? '').toString());
+      final score = (m['score'] as num?)?.toInt() ?? 0;
+      moduleScores[label] = score;
+      final weightPct = ((m['weight'] as num?)?.toDouble() ?? 0) * 100;
+      if (weightPct > 0) {
+        moduleWeights[label] = weightPct.round();
+      }
+
+      final reasonShort = (m['reason_short'] ?? '').toString().trim();
+      final reasonDetail = (m['reason_detail'] ?? '').toString().trim();
+      final riskShort = (m['risk_short'] ?? '').toString().trim();
+      final tags = (m['evidence_tags'] as List<dynamic>? ?? const [])
+          .map((e) => _formatEvidenceTag(e.toString()))
+          .where((e) => e.isNotEmpty)
+          .toList();
+      final mainExplain = reasonDetail.isNotEmpty
+          ? reasonDetail
+          : (reasonShort.isNotEmpty ? reasonShort : '暂无解释');
+      final riskExplain = riskShort.isNotEmpty ? '；风险提示：$riskShort' : '';
+      final tagExplain = tags.isNotEmpty ? '；证据标签：${tags.join("、")}' : '';
+      moduleInsights.add('$label（$score分）：$mainExplain$riskExplain$tagExplain');
+    }
+    if (moduleScores.isEmpty && astroScoresRaw.isNotEmpty) {
+      final fallback = <String, int>{};
+      astroScoresRaw.forEach((k, v) {
+        fallback[_moduleName(k)] = (v as num?)?.toInt() ?? 0;
+      });
+      moduleScores.addAll(fallback);
+    }
+    if (moduleInsights.isEmpty && moduleScores.isNotEmpty) {
+      moduleInsights.addAll(
+        moduleScores.entries.map((e) => '${e.key}（${e.value}分）：该分项已纳入当前结论，建议结合“亮点、风险与证据标签”综合判断。'),
+      );
+    }
     final defaultReasons = <String>[
       '综合匹配分: ${raw['final_score'] ?? 0}',
       '匹配结论: ${(raw['match_verdict'] ?? '待评估').toString()}',
     ];
     return MatchDetailDto.fromJson({
       'reasons': detailReasons.isNotEmpty ? detailReasons : defaultReasons,
-      'weights': const {
+      'weights': moduleWeights.isNotEmpty
+          ? moduleWeights
+          : const {
         '八字': 50,
         '属相': 30,
         '星座': 10,
         '星盘': 10,
       },
+      'module_scores': moduleScores,
+      'module_insights': moduleInsights,
+      'reason_glossary': reasonGlossary,
     });
   }
 
@@ -196,5 +249,84 @@ class MatchRemoteDataSource {
       return '${_moduleName(k)}因子 $val';
     }
     return _moduleName(v);
+  }
+
+  String _formatEvidenceTag(String raw) {
+    final v = raw.trim();
+    if (v.isEmpty) return '';
+    if (!v.contains('=')) {
+      const tagMap = <String, String>{
+        'wu_xing_complement': '五行互补',
+        'long_term_harmony_oriented': '长期协同倾向',
+        'bazi_similarity_estimation': '八字结构估算',
+        'confidence_medium': '中等置信度',
+        'bazi_degraded_estimation': '八字降级估算',
+        'missing_bazi': '缺少八字信息',
+        'zodiac_liuhe': '属相六合',
+        'zodiac_sanhe': '属相三合',
+        'zodiac_same': '同属相',
+        'zodiac_chong': '属相相冲',
+        'zodiac_xing': '属相相刑',
+        'zodiac_hai': '属相相害',
+        'zodiac_normal': '属相常规关系',
+        'missing_zodiac': '缺少属相信息',
+        'same_element': '同元素星座',
+        'element_complement': '元素互补',
+        'element_tension': '元素张力',
+        'process_layer_signal': '过程层信号',
+        'missing_constellation': '缺少星座信息',
+        'natal_chart_partial_data': '星盘数据不完整',
+        'moon_sync_high': '情绪同步高',
+        'moon_sync_low': '情绪同步低',
+        'asc_style_match': '表达风格匹配',
+        'asc_style_gap': '表达风格差异',
+        'sun_direction_sync': '关系方向同步',
+        'sun_direction_gap': '关系方向差异',
+        'pair_chart_v1': '合盘基础模型',
+        'pair_chart_harmony': '合盘协同性高',
+        'pair_chart_tension': '合盘张力偏高',
+        'pair_chart_degraded': '合盘降级估算',
+        'sun_moon_harmony': '日月互动',
+        'emotion_rhythm': '情绪节奏',
+        'mbti_lite_low_confidence': 'MBTI低置信度',
+        'missing_mbti': '缺少MBTI',
+        'profile_similarity_high': '人格相似度高',
+        'bidirectional_acceptance_high': '双向接受度高',
+        'key_dimension_gap_high': '关键维度差距高',
+        'missing_personality_vector': '缺少人格向量',
+      };
+      return tagMap[v.toLowerCase()] ?? _moduleName(v);
+    }
+
+    final parts = v.split('=');
+    final key = parts.first.trim().toLowerCase();
+    final value = parts.length > 1 ? parts.sublist(1).join('=').trim() : '';
+
+    switch (key) {
+      case 'same_city_boost':
+        return '同城加权 $value';
+      case 'age_gap_adjustment':
+        return '年龄差修正 $value';
+      case 'mbti_letter_match':
+        return 'MBTI 协同 $value';
+      case 'communication_mismatch':
+        return '沟通磨合系数 $value';
+      case 'relation_type':
+        {
+          const relationMap = <String, String>{
+            'liuhe': '六合',
+            'sanhe': '三合',
+            'same': '同属相',
+            'chong': '相冲',
+            'xing': '相刑',
+            'hai': '相害',
+            'normal': '常规关系',
+          };
+          final label = relationMap[value.toLowerCase()] ?? value;
+          return '属相关系 $label';
+        }
+      default:
+        return '${_moduleName(key)} $value'.trim();
+    }
   }
 }

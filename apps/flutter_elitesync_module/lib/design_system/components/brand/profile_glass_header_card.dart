@@ -35,8 +35,8 @@ class ProfileGlassHeaderCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(t.radius.xl),
         child: Stack(
           children: [
-            const Positioned.fill(child: ConstellationHeroCanvas(opacity: 0.7)),
-            Container(color: Colors.black.withValues(alpha: 0.10)),
+            const Positioned.fill(child: ConstellationHeroCanvas(opacity: 0.45)),
+            Container(color: Colors.black.withValues(alpha: 0.06)),
             Padding(
               padding: EdgeInsets.all(t.spacing.cardPaddingLarge),
               child: Row(
@@ -53,13 +53,20 @@ class ProfileGlassHeaderCard extends StatelessWidget {
                       children: [
                         Text(
                           nickname,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                           style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                 color: t.textPrimary,
                                 fontWeight: FontWeight.w700,
                               ),
                         ),
                         const SizedBox(height: 4),
-                        Text(city, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: t.textSecondary)),
+                        Text(
+                          city.trim().isEmpty ? '城市未填写' : city,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: t.textSecondary),
+                        ),
                       ],
                     ),
                   ),
@@ -86,4 +93,3 @@ class ProfileGlassHeaderCard extends StatelessWidget {
     );
   }
 }
-
