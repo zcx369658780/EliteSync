@@ -6,6 +6,10 @@ use Carbon\CarbonImmutable;
 
 class ChineseZodiacService
 {
+    public function __construct(private readonly BaziDerivedZodiacService $baziDerivedZodiacService)
+    {
+    }
+
     /**
      * Order starts at Rat(鼠) for year where (year - 4) % 12 = 0.
      * V1 uses Gregorian birth year for deterministic backfill and low complexity.
@@ -27,6 +31,21 @@ class ChineseZodiacService
         return $this->fromYear((int) $date->year);
     }
 
+    /**
+     * Preferred chain for V2:
+     * 1) derive from bazi year pillar
+     * 2) fallback to birthday-derived zodiac (legacy)
+     */
+    public function fromPreferredSources(?string $bazi, ?string $birthday): ?string
+    {
+        $fromBazi = $this->baziDerivedZodiacService->fromBaziString($bazi);
+        if ($fromBazi !== null && $fromBazi !== '') {
+            return $fromBazi;
+        }
+
+        return $this->fromBirthdayString($birthday);
+    }
+
     public function fromYear(int $year): string
     {
         $idx = ($year - 4) % 12;
@@ -37,4 +56,3 @@ class ChineseZodiacService
         return self::ANIMALS[$idx];
     }
 }
-

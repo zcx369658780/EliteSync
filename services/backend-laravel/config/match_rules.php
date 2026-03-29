@@ -103,6 +103,22 @@ return [
     ],
 
     'bazi' => [
+        'feature_weights' => [
+            // Bazi 2.0 feature layer weights
+            'structure' => 0.50,
+            'relationship' => 0.30,
+            'timing' => 0.20,
+        ],
+        'relation_scores' => [
+            // relation between key branches (day branch preferred, year branch fallback)
+            'liuhe' => 92,
+            'sanhe' => 84,
+            'same' => 72,
+            'normal' => 60,
+            'hai' => 42,
+            'xing' => 38,
+            'chong' => 32,
+        ],
         'scoring' => [
             // V2: score = base + complement * 35 + balance * 25
             // complement: two-party wuxing distribution closeness (0~1)

@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\User;
+use App\Models\UserAstroProfile;
 use App\Services\ChineseZodiacService;
 use Illuminate\Console\Command;
 
@@ -13,7 +14,7 @@ class DevBackfillZodiacCommand extends Command
         {--dry-run : Print stats only, no write}
         {--batch-size=500 : Chunk size for update}';
 
-    protected $description = 'Backfill users.zodiac_animal from birthday.';
+    protected $description = 'Backfill users.zodiac_animal from bazi year pillar (preferred) or birthday (fallback).';
 
     public function handle(ChineseZodiacService $zodiacService): int
     {
@@ -21,7 +22,7 @@ class DevBackfillZodiacCommand extends Command
         $dryRun = (bool) $this->option('dry-run');
         $batchSize = max(100, (int) $this->option('batch-size'));
 
-        $base = User::query()->whereNotNull('birthday');
+        $base = User::query();
         if (!$force) {
             $base->where(function ($q) {
                 $q->whereNull('zodiac_animal')->orWhere('zodiac_animal', '');
@@ -39,9 +40,17 @@ class DevBackfillZodiacCommand extends Command
 
         $base->orderBy('id')->chunkById($batchSize, function ($users) use ($zodiacService, $dryRun, &$updated, &$scanned) {
             /** @var \Illuminate\Support\Collection<int,\App\Models\User> $users */
+            $userIds = $users->pluck('id')->map(fn ($v) => (int) $v)->all();
+            $astroBaziByUserId = UserAstroProfile::query()
+                ->whereIn('user_id', $userIds)
+                ->whereNotNull('bazi')
+                ->pluck('bazi', 'user_id');
+
             foreach ($users as $user) {
                 $scanned++;
-                $animal = $zodiacService->fromBirthdayString(optional($user->birthday)->format('Y-m-d'));
+                $bazi = (string) ($astroBaziByUserId[(int) $user->id] ?? '');
+                $birthday = optional($user->birthday)->format('Y-m-d');
+                $animal = $zodiacService->fromPreferredSources($bazi, $birthday);
                 if (!$animal) {
                     continue;
                 }
@@ -66,4 +75,3 @@ class DevBackfillZodiacCommand extends Command
         return self::SUCCESS;
     }
 }
-

@@ -161,61 +161,44 @@ class AstroCompatibilityService
         $tpl = (array) (((array) config('match_rules.bazi.templates', []))['full'] ?? []);
         $tplSimilarity = (array) (((array) config('match_rules.bazi.templates', []))['similarity'] ?? []);
         $tplDegraded = (array) (((array) config('match_rules.bazi.templates', []))['degraded'] ?? []);
-        $wuA = $this->extractWuXing($chartA);
-        $wuB = $this->extractWuXing($chartB);
+        /** @var BaziFeatureExtractor $extractor */
+        $extractor = app(BaziFeatureExtractor::class);
+        $features = $extractor->extractPairFeatures($baziA, $baziB, $chartA, $chartB);
+        if ((bool) ($features['available'] ?? false)) {
+            $weights = (array) config('match_rules.bazi.feature_weights', []);
+            $ws = (float) ($weights['structure'] ?? 0.50);
+            $wr = (float) ($weights['relationship'] ?? 0.30);
+            $wt = (float) ($weights['timing'] ?? 0.20);
+            $norm = max(0.0001, $ws + $wr + $wt);
+            $ws /= $norm;
+            $wr /= $norm;
+            $wt /= $norm;
 
-        if (!empty($wuA) && !empty($wuB)) {
-            $keys = ['木', '火', '土', '金', '水'];
-            $sumA = max(1, array_sum(array_map(fn ($k) => (int) ($wuA[$k] ?? 0), $keys)));
-            $sumB = max(1, array_sum(array_map(fn ($k) => (int) ($wuB[$k] ?? 0), $keys)));
-            $dist = 0.0; // L1 distance across normalized wuxing vectors (0~2).
-            $ratiosA = [];
-            $ratiosB = [];
-            foreach ($keys as $k) {
-                $va = ((int) ($wuA[$k] ?? 0)) / $sumA;
-                $vb = ((int) ($wuB[$k] ?? 0)) / $sumB;
-                $dist += abs($va - $vb);
-                $ratiosA[$k] = $va;
-                $ratiosB[$k] = $vb;
-            }
-            $cfg = (array) config('match_rules.bazi.scoring', []);
-            $base = (float) ($cfg['base'] ?? 40);
-            $complementWeight = (float) ($cfg['complement_weight'] ?? 35);
-            $balanceWeight = (float) ($cfg['balance_weight'] ?? 25);
-
-            // Complement score: 1 means close distributions, 0 means opposite ends.
-            $complement = max(0.0, min(1.0, 1.0 - ($dist / 2.0)));
-            // Balance score: less internal skew => higher long-term rhythm stability.
-            $balanceA = 1.0 - (max($ratiosA) - min($ratiosA));
-            $balanceB = 1.0 - (max($ratiosB) - min($ratiosB));
-            $balanceAvg = max(0.0, min(1.0, ($balanceA + $balanceB) / 2.0));
-
-            $score = (int) round($base + ($complement * $complementWeight) + ($balanceAvg * $balanceWeight));
+            $structure = (float) ($features['structure_score'] ?? 60.0);
+            $relationship = (float) ($features['relationship_score'] ?? 60.0);
+            $timing = (float) ($features['timing_score'] ?? 60.0);
+            $score = (int) round(($structure * $ws) + ($relationship * $wr) + ($timing * $wt));
 
             return [
                 'score' => max(0, min(100, $score)),
                 'match' => (string) ($tpl['match'] ?? '八字五行互补度较好，节奏更容易协调'),
                 'mismatch' => $score < 60 ? (string) ($tpl['mismatch'] ?? '八字五行分布偏差较大，可能需要更长磨合') : '',
-                'confidence' => 1.0,
+                'confidence' => (float) ($features['confidence'] ?? 0.85),
                 'reason_short' => sprintf(
-                    '五行互补度%.0f%%，整体均衡度%.0f%%，长期节奏更易形成稳定配合。',
-                    $complement * 100,
-                    $balanceAvg * 100
+                    '结构分%.0f，关系分%.0f，时间分%.0f（权重 %.0f/%.0f/%.0f）。',
+                    $structure,
+                    $relationship,
+                    $timing,
+                    $ws * 100,
+                    $wr * 100,
+                    $wt * 100
                 ),
                 'reason_detail' => (string) ($tpl['detail'] ?? '从五行分布看，你们更偏向“互补调节”而非同侧堆叠，长期生活节律更容易形成稳定配合。'),
                 'risk_detail' => $score < 60 ? (string) ($tpl['risk'] ?? '五行分布差异偏大，婚后在作息、决策与压力处理上可能出现节律不一致。') : '',
-                'evidence_tags' => ['wu_xing_complement', 'long_term_harmony_oriented'],
-                'evidence' => [
-                    'wu_xing_a' => $wuA,
-                    'wu_xing_b' => $wuB,
-                    'wu_xing_distance' => round($dist, 4),
-                    'wu_xing_complement' => round($complement, 4),
-                    'wu_xing_balance_a' => round($balanceA, 4),
-                    'wu_xing_balance_b' => round($balanceB, 4),
-                    'wu_xing_balance_avg' => round($balanceAvg, 4),
-                ],
-                'degraded' => false,
-                'degrade_reason' => '',
+                'evidence_tags' => (array) ($features['evidence_tags'] ?? ['wu_xing_complement', 'long_term_harmony_oriented']),
+                'evidence' => (array) ($features['evidence'] ?? []),
+                'degraded' => (bool) ($features['degraded'] ?? false),
+                'degrade_reason' => (string) ($features['degrade_reason'] ?? ''),
             ];
         }
 
@@ -409,22 +392,24 @@ class AstroCompatibilityService
      */
     private function scoreNatalChart(mixed $chartA, mixed $chartB, string $sunA, string $sunB): array
     {
-        $moonA = is_array($chartA) ? (string) ($chartA['moon_sign'] ?? '') : '';
-        $moonB = is_array($chartB) ? (string) ($chartB['moon_sign'] ?? '') : '';
-        $ascA = is_array($chartA) ? (string) ($chartA['asc_sign'] ?? '') : '';
-        $ascB = is_array($chartB) ? (string) ($chartB['asc_sign'] ?? '') : '';
-
-        $directionSync = $this->scoreConstellation($sunA, $sunB)['score'];
-        $emotionSync = ($moonA !== '' && $moonB !== '') ? $this->scoreConstellation($moonA, $moonB)['score'] : 60;
-        $expressionSync = ($ascA !== '' && $ascB !== '') ? $this->scoreConstellation($ascA, $ascB)['score'] : 60;
-
-        $hasMoon = $moonA !== '' && $moonB !== '';
-        $hasAsc = $ascA !== '' && $ascB !== '';
+        $engine = $this->westernEngine();
+        $m = $engine->natalMetrics($chartA, $chartB, $sunA, $sunB);
+        $sunA = (string) ($m['sun_a'] ?? $sunA);
+        $sunB = (string) ($m['sun_b'] ?? $sunB);
+        $moonA = (string) ($m['moon_a'] ?? '');
+        $moonB = (string) ($m['moon_b'] ?? '');
+        $ascA = (string) ($m['asc_a'] ?? '');
+        $ascB = (string) ($m['asc_b'] ?? '');
+        $directionSync = (float) ($m['direction_sync'] ?? 60.0);
+        $emotionSync = (float) ($m['emotion_sync'] ?? 60.0);
+        $expressionSync = (float) ($m['expression_sync'] ?? 60.0);
+        $completenessLevel = (int) ($m['completeness_level'] ?? 0);
+        $hasMoon = (bool) ($m['has_moon'] ?? false);
+        $hasAsc = (bool) ($m['has_asc'] ?? false);
         $completenessBonus = ($hasMoon && $hasAsc) ? 6 : (($hasMoon || $hasAsc) ? 3 : 0);
 
         $raw = (0.35 * $emotionSync) + (0.30 * $expressionSync) + (0.30 * $directionSync) + (0.05 * (60 + $completenessBonus));
         $score = (int) round(max(0.0, min(100.0, $raw)));
-        $completenessLevel = ($hasMoon ? 1 : 0) + ($hasAsc ? 1 : 0);
         $conf = $completenessLevel === 2 ? 0.9 : ($completenessLevel === 1 ? 0.72 : 0.55);
         $lowKeys = [];
         if ($emotionSync < 60) {
@@ -471,6 +456,7 @@ class AstroCompatibilityService
                 'expression_sync_score' => (int) round($expressionSync),
                 'direction_sync_score' => (int) round($directionSync),
                 'data_completeness_level' => $completenessLevel,
+                'engine_source' => (string) ($m['source'] ?? ''),
             ],
             'degraded' => $conf < 0.8,
             'degrade_reason' => $conf < 0.8 ? 'partial_natal_chart' : '',
@@ -495,58 +481,52 @@ class AstroCompatibilityService
         string $genderA,
         string $genderB
     ): array {
-        $moonA = is_array($chartA) ? (string) ($chartA['moon_sign'] ?? '') : '';
-        $moonB = is_array($chartB) ? (string) ($chartB['moon_sign'] ?? '') : '';
-        $ascA = is_array($chartA) ? (string) ($chartA['asc_sign'] ?? '') : '';
-        $ascB = is_array($chartB) ? (string) ($chartB['asc_sign'] ?? '') : '';
+        $engine = $this->westernEngine();
+        $m = $engine->pairMetrics($chartA, $chartB, $sunA, $sunB);
+        $sunA = (string) ($m['sun_a'] ?? $sunA);
+        $sunB = (string) ($m['sun_b'] ?? $sunB);
+        $moonA = (string) ($m['moon_a'] ?? '');
+        $moonB = (string) ($m['moon_b'] ?? '');
+        $ascA = (string) ($m['asc_a'] ?? '');
+        $ascB = (string) ($m['asc_b'] ?? '');
 
         $pairCfg = (array) config('match_rules.pair_chart.weights', []);
-        $wSunMoon = (float) ($pairCfg['sun_moon_harmony'] ?? 0.35);
-        $wAsc = (float) ($pairCfg['asc_interaction'] ?? 0.20);
-        $wEmotion = (float) ($pairCfg['emotion_rhythm'] ?? 0.25);
-        $wLong = (float) ($pairCfg['long_term_stability'] ?? 0.20);
-
-        $sunMoonAB = ($sunA !== '' && $moonB !== '') ? $this->scoreConstellation($sunA, $moonB)['score'] : 60;
-        $sunMoonBA = ($sunB !== '' && $moonA !== '') ? $this->scoreConstellation($sunB, $moonA)['score'] : 60;
-        $sunMoon = (int) round(($sunMoonAB + $sunMoonBA) / 2.0);
-        $ascScore = ($ascA !== '' && $ascB !== '') ? $this->scoreConstellation($ascA, $ascB)['score'] : 60;
-        $emotionScore = ($moonA !== '' && $moonB !== '') ? $this->scoreConstellation($moonA, $moonB)['score'] : 60;
+        $sunMoonAB = (float) ($m['sun_moon_ab'] ?? 60.0);
+        $sunMoonBA = (float) ($m['sun_moon_ba'] ?? 60.0);
+        $sunMoon = (int) round((float) ($m['sun_moon_avg'] ?? (($sunMoonAB + $sunMoonBA) / 2.0)));
+        $ascScore = (float) ($m['asc_score'] ?? 60.0);
+        $emotionScore = (float) ($m['emotion_score'] ?? 60.0);
         $baziBridge = ($baziA !== '' && $baziB !== '') ? 72 : 60;
-
-        $raw = ($wSunMoon * $sunMoon) + ($wAsc * $ascScore) + ($wEmotion * $emotionScore) + ($wLong * $baziBridge);
-        $score = (int) round(max(0.0, min(100.0, $raw)));
-
-        $full = ($sunA !== '' && $sunB !== '' && $moonA !== '' && $moonB !== '' && $ascA !== '' && $ascB !== '' && $baziA !== '' && $baziB !== '');
-        $componentCount = 0;
-        if ($sunA !== '' && $sunB !== '') {
-            $componentCount++;
-        }
-        if ($moonA !== '' && $moonB !== '') {
-            $componentCount++;
-        }
-        if ($ascA !== '' && $ascB !== '') {
-            $componentCount++;
-        }
+        $full = (bool) ($m['full_data'] ?? false) && $baziA !== '' && $baziB !== '';
+        $componentCount = (int) ($m['component_count'] ?? 0);
         if ($baziA !== '' && $baziB !== '') {
-            $componentCount++;
+            $componentCount += 1;
         }
-        $partial = $componentCount >= 2;
-        $confidence = $full ? 0.92 : ($partial ? 0.74 : 0.52);
-        $degraded = !$full;
-        $degradeReason = $full ? '' : ($partial ? 'partial_pair_chart' : 'sun_only_estimation');
-        $lowPair = [];
-        if ($sunMoon < 60) {
-            $lowPair[] = '日月互动';
-        }
-        if ($ascScore < 60) {
-            $lowPair[] = '上升互动';
-        }
-        if ($emotionScore < 60) {
-            $lowPair[] = '情绪节奏';
-        }
-        if ($baziBridge < 65) {
-            $lowPair[] = '长期稳定';
-        }
+        /** @var PairChartFeatureExtractor $extractor */
+        $extractor = app(PairChartFeatureExtractor::class);
+        $pair = $extractor->build(
+            [
+                'sun_moon_harmony' => $sunMoon,
+                'asc_interaction' => $ascScore,
+                'emotion_rhythm' => $emotionScore,
+                'long_term_stability' => $baziBridge,
+                'sun_moon_ab' => $sunMoonAB,
+                'sun_moon_ba' => $sunMoonBA,
+                'full_data' => $full,
+                'component_count' => $componentCount,
+            ],
+            [
+                'sun_moon_harmony' => (float) ($pairCfg['sun_moon_harmony'] ?? 0.35),
+                'asc_interaction' => (float) ($pairCfg['asc_interaction'] ?? 0.20),
+                'emotion_rhythm' => (float) ($pairCfg['emotion_rhythm'] ?? 0.25),
+                'long_term_stability' => (float) ($pairCfg['long_term_stability'] ?? 0.20),
+            ]
+        );
+        $score = (int) ($pair['score'] ?? 60);
+        $confidence = (float) ($pair['confidence'] ?? 0.7);
+        $degraded = (bool) ($pair['degraded'] ?? true);
+        $degradeReason = (string) ($pair['degrade_reason'] ?? 'partial_pair_chart');
+        $lowPair = (array) ($pair['top_risks'] ?? []);
         $pairRiskPoint = empty($lowPair) ? '' : ('重点磨合点：'.implode('、', $lowPair).'。');
 
         $match = $score >= 78
@@ -556,6 +536,8 @@ class AstroCompatibilityService
         $reasonShort = $score >= 78
             ? '情感节奏与互动推进较协调，关系升温路径清晰。'
             : ($score >= 60 ? '存在互补空间，建议通过沟通对齐节奏。' : '互动节奏差异较明显，建议先建立边界与沟通规则。');
+        $topFeatures = (array) ($pair['top_highlights'] ?? []);
+        $featureHint = empty($topFeatures) ? '' : (' 关键特征：'.implode('、', $topFeatures).'。');
         $reasonDetail = sprintf(
             '合盘过程层分项：日月互动%d、上升互动%d、情绪节奏%d、长期稳定%d。%s',
             $sunMoon,
@@ -563,12 +545,20 @@ class AstroCompatibilityService
             $emotionScore,
             $baziBridge,
             $full ? '核心信息完整，推进路径判断更稳定。' : '当前存在信息缺失，建议补全后复核。'
-        );
+        ).$featureHint;
         $riskDetail = $score < 60
             ? ('情绪回应速度与表达方式存在时差，易出现“误解并非恶意”；建议建立固定复盘与确认机制。'.$pairRiskPoint)
             : ($degraded ? '当前为简化估算，缺失信息会降低结论稳定性。' : '');
 
-        $evidenceTags = ['pair_chart_v1', 'sun_moon_harmony', 'emotion_rhythm'];
+        $featureRows = (array) ($pair['features'] ?? []);
+        $featureTags = [];
+        foreach ($featureRows as $fr) {
+            if (!is_array($fr)) {
+                continue;
+            }
+            $featureTags = array_merge($featureTags, (array) ($fr['evidence_tags'] ?? []));
+        }
+        $evidenceTags = array_values(array_unique(array_merge(['pair_chart_v2', 'sun_moon_harmony', 'emotion_rhythm'], $featureTags)));
         if ($score < 60) {
             $evidenceTags[] = 'pair_chart_tension';
         } else {
@@ -595,6 +585,8 @@ class AstroCompatibilityService
                 'bazi_bridge' => $baziBridge,
                 'gender_pair' => [$genderA, $genderB],
                 'component_count' => $componentCount,
+                'engine_source' => (string) ($m['source'] ?? ''),
+                'features' => $featureRows,
             ],
             'degraded' => $degraded,
             'degrade_reason' => $degradeReason,
@@ -652,5 +644,31 @@ class AstroCompatibilityService
     private function toPercent(float $weight): int
     {
         return (int) round(max(0.0, min(1.0, $weight)) * 100);
+    }
+
+    private function astroAdapter(): AstroEngineAdapter
+    {
+        $name = strtolower(trim((string) config('matching.astro_engine_adapter', 'default')));
+        if ($name === 'standard') {
+            /** @var AstroEngineAdapter $svc */
+            $svc = app(StandardAstroEngineAdapter::class);
+            return $svc;
+        }
+        /** @var AstroEngineAdapter $svc */
+        $svc = app(DefaultAstroEngineAdapter::class);
+        return $svc;
+    }
+
+    private function westernEngine(): WesternCompatibilityEngine
+    {
+        $name = strtolower(trim((string) config('matching.western_engine', 'default')));
+        if ($name === 'standard') {
+            /** @var WesternCompatibilityEngine $svc */
+            $svc = app(StandardWesternCompatibilityEngine::class);
+            return $svc;
+        }
+        /** @var WesternCompatibilityEngine $svc */
+        $svc = app(DefaultWesternCompatibilityEngine::class);
+        return $svc;
     }
 }

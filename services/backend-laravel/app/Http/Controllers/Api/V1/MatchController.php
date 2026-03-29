@@ -50,6 +50,8 @@ class MatchController extends Controller
         $normalized['match'] = array_values((array) ($normalized['match'] ?? []));
         $normalized['mismatch'] = array_values((array) ($normalized['mismatch'] ?? []));
         $normalized['confidence'] = (float) ($normalized['confidence'] ?? 0.5);
+        $normalized['display_score'] = (int) ($normalized['display_score'] ?? ($match->score_final ?? 0));
+        $normalized['rank_score'] = (int) ($normalized['rank_score'] ?? ($match->score_fair ?? 0));
         $normalized['modules'] = array_values((array) ($normalized['modules'] ?? []));
 
         foreach ($normalized['modules'] as &$module) {
@@ -59,8 +61,94 @@ class MatchController extends Controller
             $key = (string) ($module['key'] ?? '');
             $algoVersion = (string) config("matching.algo_versions.{$key}", 'p1');
             $module['algo_version'] = (string) ($module['algo_version'] ?? $algoVersion);
+            $tags = array_values(array_unique(array_filter(array_map(
+                fn ($v) => strtolower(trim((string) $v)),
+                (array) ($module['evidence_tags'] ?? [])
+            ))));
+            $module['evidence_tags'] = $tags;
+            $module['evidence_tag_labels'] = array_map(function (string $tag): string {
+                $meta = $this->evidenceTagMeta($tag);
+                return (string) ($meta['label'] ?? $tag);
+            }, $tags);
         }
         unset($module);
+        $normalized['module_explanations'] = array_values(array_map(function ($module): array {
+            $row = is_array($module) ? $module : [];
+            $label = trim((string) ($row['label'] ?? $row['key'] ?? '匹配项'));
+            $score = (int) ($row['score'] ?? 0);
+            $confidence = (float) ($row['confidence'] ?? 0.5);
+            $degraded = (bool) ($row['degraded'] ?? false);
+            $degradeReason = trim((string) ($row['degrade_reason'] ?? ''));
+            $reason = trim((string) ($row['reason_detail'] ?? $row['reason_short'] ?? '暂无解释'));
+            $risk = trim((string) ($row['risk_short'] ?? $row['risk_detail'] ?? ''));
+            $tags = array_values((array) ($row['evidence_tag_labels'] ?? $row['evidence_tags'] ?? []));
+            $split = $this->splitEvidenceLabels($tags, $label);
+            $tagExplains = $this->buildEvidenceLabelDescriptions($row);
+            $tagRefs = $this->buildEvidenceLabelReferences($row);
+            $riskLevel = 'low';
+            if ($risk !== '' || $score < 70) {
+                if ($score < 60 || str_contains($risk, '冲') || str_contains($risk, '刑') || str_contains($risk, '害')) {
+                    $riskLevel = 'high';
+                } else {
+                    $riskLevel = 'medium';
+                }
+            }
+            $riskWeight = $riskLevel === 'high' ? 300 : ($riskLevel === 'medium' ? 200 : 100);
+            $degradedWeight = $degraded ? 30 : 0;
+            $lowConfidenceWeight = (int) round((1.0 - max(0.0, min(1.0, $confidence))) * 80);
+            $lowScoreWeight = (int) round((100 - max(0, min(100, $score))) * 0.6);
+            $priority = $riskWeight + $degradedWeight + $lowConfidenceWeight + $lowScoreWeight;
+            $priorityLevel = $priority >= 300 ? 'high' : ($priority >= 220 ? 'medium' : 'normal');
+            $priorityReason = $this->buildPriorityReason($riskLevel, $degraded, $confidence, $score);
+            $evidenceStrength = $this->buildEvidenceStrength(
+                $split['core'],
+                $split['aux'],
+                $confidence,
+                $degraded
+            );
+            return [
+                'label' => $label === '' ? '匹配项' : $label,
+                'score' => $score,
+                'confidence' => round(max(0.0, min(1.0, $confidence)), 2),
+                'degraded' => $degraded,
+                'degrade_reason' => $degradeReason,
+                'reason' => $reason === '' ? '暂无解释' : $reason,
+                'risk' => $risk,
+                'risk_level' => $riskLevel,
+                'priority' => $priority,
+                'priority_level' => $priorityLevel,
+                'priority_reason' => $priorityReason,
+                'evidence_strength' => $evidenceStrength['level'],
+                'evidence_strength_reason' => $evidenceStrength['reason'],
+                'tags' => array_values(array_filter(array_map(fn ($v) => trim((string) $v), $tags), fn ($v) => $v !== '')),
+                'core_tags' => $split['core'],
+                'aux_tags' => $split['aux'],
+                'core_tag_explains' => $this->pickTagExplains($split['core'], $tagExplains),
+                'aux_tag_explains' => $this->pickTagExplains($split['aux'], $tagExplains),
+                'core_tag_refs' => $this->pickTagExplains($split['core'], $tagRefs),
+                'aux_tag_refs' => $this->pickTagExplains($split['aux'], $tagRefs),
+            ];
+        }, $normalized['modules']));
+        usort($normalized['module_explanations'], function (array $a, array $b): int {
+            $pa = (int) ($a['priority'] ?? 0);
+            $pb = (int) ($b['priority'] ?? 0);
+            if ($pa !== $pb) {
+                return $pb <=> $pa;
+            }
+            $sa = (int) ($a['score'] ?? 0);
+            $sb = (int) ($b['score'] ?? 0);
+            return $sa <=> $sb;
+        });
+        foreach ($normalized['module_explanations'] as $idx => &$row) {
+            if (!is_array($row)) {
+                $row = [];
+            }
+            $row['priority_rank'] = $idx + 1;
+        }
+        unset($row);
+        $normalized['evidence_strength_summary'] = $this->buildEvidenceStrengthSummary(
+            $normalized['module_explanations']
+        );
         $normalized['reason_glossary'] = $this->buildReasonGlossary($normalized);
 
         return $normalized;
@@ -135,6 +223,12 @@ class MatchController extends Controller
      */
     private function mapEvidenceTagToTerms(string $tag): array
     {
+        $meta = $this->evidenceTagMeta($tag);
+        $terms = (array) ($meta['terms'] ?? []);
+        if (!empty($terms)) {
+            return array_values(array_unique(array_filter(array_map('strval', $terms))));
+        }
+
         $terms = [];
         if (str_contains($tag, 'zodiac')) {
             $terms[] = '属相六合';
@@ -155,6 +249,15 @@ class MatchController extends Controller
             $terms[] = '星座元素';
         }
         return $terms;
+    }
+
+    /**
+     * @return array<string,mixed>
+     */
+    private function evidenceTagMeta(string $tag): array
+    {
+        $dict = (array) config('match_evidence_tags', []);
+        return (array) ($dict[strtolower(trim($tag))] ?? []);
     }
 
     /**
@@ -189,6 +292,251 @@ class MatchController extends Controller
             }
         }
         return array_values(array_unique($matched));
+    }
+
+    /**
+     * @param list<string> $labels
+     * @return array{core:list<string>,aux:list<string>}
+     */
+    private function splitEvidenceLabels(array $labels, string $moduleLabel): array
+    {
+        $clean = array_values(array_filter(array_map(
+            fn ($v) => trim((string) $v),
+            $labels
+        ), fn ($v) => $v !== ''));
+        if (empty($clean)) {
+            return ['core' => [], 'aux' => []];
+        }
+        $core = [];
+        $aux = [];
+        foreach ($clean as $label) {
+            if ($this->isCoreEvidenceLabel($label, $moduleLabel)) {
+                $core[] = $label;
+            } else {
+                $aux[] = $label;
+            }
+        }
+        if (empty($core) && !empty($aux)) {
+            $core[] = (string) array_shift($aux);
+        }
+        return [
+            'core' => array_values(array_unique($core)),
+            'aux' => array_values(array_unique($aux)),
+        ];
+    }
+
+    private function isCoreEvidenceLabel(string $label, string $moduleLabel): bool
+    {
+        $v = mb_strtolower(trim($label));
+        $module = mb_strtolower(trim($moduleLabel));
+        $coreKeywords = [
+            '六合', '三合', '相冲', '相刑', '相害',
+            '五行', '八字', '地支',
+            '日月', '上升', '合盘', '星盘',
+            'mbti', '人格',
+        ];
+        foreach ($coreKeywords as $k) {
+            if (str_contains($v, mb_strtolower($k))) {
+                return true;
+            }
+        }
+        if ($module !== '' && str_contains($v, $module)) {
+            return true;
+        }
+        return false;
+    }
+
+    private function buildPriorityReason(string $riskLevel, bool $degraded, float $confidence, int $score): string
+    {
+        $parts = [];
+        if ($riskLevel === 'high') {
+            $parts[] = '风险等级高';
+        } elseif ($riskLevel === 'medium') {
+            $parts[] = '风险等级中';
+        }
+        if ($degraded) {
+            $parts[] = '存在降级估算';
+        }
+        if ($confidence < 0.6) {
+            $parts[] = '置信度偏低';
+        }
+        if ($score < 60) {
+            $parts[] = '分项得分偏低';
+        }
+        if (empty($parts)) {
+            return '当前为常规关注项';
+        }
+        return implode('、', $parts);
+    }
+
+    /**
+     * @param list<string> $coreTags
+     * @param list<string> $auxTags
+     * @return array{level:string,reason:string}
+     */
+    private function buildEvidenceStrength(array $coreTags, array $auxTags, float $confidence, bool $degraded): array
+    {
+        $score = 0;
+        $reasons = [];
+        $coreCount = count($coreTags);
+        $auxCount = count($auxTags);
+
+        if ($coreCount >= 2) {
+            $score += 2;
+            $reasons[] = '核心证据充足';
+        } elseif ($coreCount === 1) {
+            $score += 1;
+            $reasons[] = '具备核心证据';
+        } else {
+            $score -= 1;
+            $reasons[] = '核心证据不足';
+        }
+
+        if ($auxCount >= 2) {
+            $score += 1;
+            $reasons[] = '辅助证据较多';
+        } elseif ($auxCount === 0) {
+            $reasons[] = '辅助证据较少';
+        }
+
+        if ($confidence >= 0.8) {
+            $score += 1;
+            $reasons[] = '置信度高';
+        } elseif ($confidence < 0.6) {
+            $score -= 1;
+            $reasons[] = '置信度偏低';
+        }
+
+        if ($degraded) {
+            $score -= 1;
+            $reasons[] = '存在降级估算';
+        }
+
+        $level = 'low';
+        if ($score >= 3) {
+            $level = 'high';
+        } elseif ($score >= 1) {
+            $level = 'medium';
+        }
+
+        return [
+            'level' => $level,
+            'reason' => implode('、', array_values(array_unique($reasons))),
+        ];
+    }
+
+    /**
+     * @param array<string,mixed> $module
+     * @return array<string,string>
+     */
+    private function buildEvidenceLabelDescriptions(array $module): array
+    {
+        $out = [];
+        $tags = array_values((array) ($module['evidence_tags'] ?? []));
+        $labels = array_values((array) ($module['evidence_tag_labels'] ?? []));
+        foreach ($tags as $i => $rawTag) {
+            $tag = strtolower(trim((string) $rawTag));
+            $label = trim((string) ($labels[$i] ?? $tag));
+            if ($label === '') {
+                continue;
+            }
+            $meta = $this->evidenceTagMeta($tag);
+            $desc = trim((string) ($meta['description'] ?? ''));
+            if ($desc !== '') {
+                $out[$label] = $desc;
+            }
+        }
+        return $out;
+    }
+
+    /**
+     * @param array<string,mixed> $module
+     * @return array<string,string>
+     */
+    private function buildEvidenceLabelReferences(array $module): array
+    {
+        $out = [];
+        $tags = array_values((array) ($module['evidence_tags'] ?? []));
+        $labels = array_values((array) ($module['evidence_tag_labels'] ?? []));
+        foreach ($tags as $i => $rawTag) {
+            $tag = strtolower(trim((string) $rawTag));
+            $label = trim((string) ($labels[$i] ?? $tag));
+            if ($label === '') {
+                continue;
+            }
+            $meta = $this->evidenceTagMeta($tag);
+            $ref = trim((string) ($meta['reference'] ?? ''));
+            if ($ref !== '') {
+                $out[$label] = $ref;
+            }
+        }
+        return $out;
+    }
+
+    /**
+     * @param array<int,array<string,mixed>> $rows
+     * @return array<string,mixed>
+     */
+    private function buildEvidenceStrengthSummary(array $rows): array
+    {
+        $high = 0;
+        $medium = 0;
+        $low = 0;
+        $weakModules = [];
+        foreach ($rows as $row) {
+            $level = strtolower(trim((string) ($row['evidence_strength'] ?? 'low')));
+            if ($level === 'high') {
+                $high++;
+            } elseif ($level === 'medium') {
+                $medium++;
+            } else {
+                $low++;
+                $label = trim((string) ($row['label'] ?? ''));
+                if ($label !== '') {
+                    $weakModules[] = [
+                        'label' => $label,
+                        'reason' => trim((string) ($row['evidence_strength_reason'] ?? '')),
+                        'priority_rank' => (int) ($row['priority_rank'] ?? 0),
+                    ];
+                }
+            }
+        }
+        $weakModules = array_slice($weakModules, 0, 3);
+        return [
+            'high' => $high,
+            'medium' => $medium,
+            'low' => $low,
+            'total' => count($rows),
+            'weak_modules' => array_values(array_map(
+                fn (array $m): array => [
+                    'label' => (string) ($m['label'] ?? ''),
+                    'reason' => (string) ($m['reason'] ?? ''),
+                    'priority_rank' => (int) ($m['priority_rank'] ?? 0),
+                ],
+                $weakModules
+            )),
+        ];
+    }
+
+    /**
+     * @param list<string> $labels
+     * @param array<string,string> $descMap
+     * @return array<string,string>
+     */
+    private function pickTagExplains(array $labels, array $descMap): array
+    {
+        $out = [];
+        foreach ($labels as $label) {
+            $v = trim((string) $label);
+            if ($v === '') {
+                continue;
+            }
+            $desc = trim((string) ($descMap[$v] ?? ''));
+            if ($desc !== '') {
+                $out[$v] = $desc;
+            }
+        }
+        return $out;
     }
 
     public function current(Request $request, EventLogger $events): JsonResponse
@@ -267,6 +615,8 @@ class MatchController extends Controller
             'match_verdict' => $match->match_verdict,
             'match_reasons' => $this->normalizeMatchReasons($match->match_reasons, $match),
             'penalty_factors' => $match->penalty_factors ?? [],
+            'display_score' => (int) data_get($match->match_reasons, 'display_score', $match->score_final ?? 0),
+            'rank_score' => (int) data_get($match->match_reasons, 'rank_score', $match->score_fair ?? 0),
         ]);
     }
 
@@ -369,6 +719,8 @@ class MatchController extends Controller
                     'match_verdict' => $match->match_verdict,
                     'match_reasons' => $this->normalizeMatchReasons($match->match_reasons, $match),
                     'penalty_factors' => $match->penalty_factors ?? [],
+                    'display_score' => (int) data_get($match->match_reasons, 'display_score', $match->score_final ?? 0),
+                    'rank_score' => (int) data_get($match->match_reasons, 'rank_score', $match->score_fair ?? 0),
                     'drop_released' => $match->drop_released,
                     'like_self' => $match->user_a == $user->id ? $match->like_a : $match->like_b,
                     'like_partner' => $match->user_a == $user->id ? $match->like_b : $match->like_a,
@@ -379,6 +731,63 @@ class MatchController extends Controller
         return response()->json([
             'items' => $items,
             'total' => $items->count(),
+        ]);
+    }
+
+    public function explanationByTarget(Request $request, int $targetUserId): JsonResponse
+    {
+        $user = $request->user();
+        $includeSyntheticUsers = app(MatchingDebugModeService::class)->includeSyntheticUsers();
+
+        if ($targetUserId <= 0 || $targetUserId === (int) $user->id) {
+            return response()->json(['message' => 'invalid target user'], 422);
+        }
+
+        if (!$includeSyntheticUsers) {
+            $targetSynthetic = (bool) User::query()
+                ->where('id', $targetUserId)
+                ->value('is_synthetic');
+            if ($targetSynthetic) {
+                return response()->json(['message' => 'no match'], 404);
+            }
+        }
+
+        $match = DatingMatch::query()
+            ->where(function ($q) use ($user, $targetUserId) {
+                $q->where('user_a', $user->id)->where('user_b', $targetUserId);
+            })
+            ->orWhere(function ($q) use ($user, $targetUserId) {
+                $q->where('user_a', $targetUserId)->where('user_b', $user->id);
+            })
+            ->orderByDesc('id')
+            ->first();
+
+        if (!$match) {
+            return response()->json(['message' => 'no match'], 404);
+        }
+
+        $targetUser = User::query()->find($targetUserId, $this->userIdentityColumns());
+        $targetNickname = '';
+        if ($targetUser) {
+            $targetNickname = (string) ($targetUser->nickname ?? $targetUser->name ?? $targetUser->phone ?? '');
+        }
+
+        return response()->json([
+            'match_id' => (int) $match->id,
+            'partner_id' => $targetUserId,
+            'partner_nickname' => $targetNickname,
+            'week_tag' => (string) $match->week_tag,
+            'drop_released' => (bool) $match->drop_released,
+            'base_score' => (int) ($match->score_base ?? 0),
+            'final_score' => (int) ($match->score_final ?? 0),
+            'fairness_adjusted_score' => (int) ($match->score_fair ?? 0),
+            'display_score' => (int) data_get($match->match_reasons, 'display_score', $match->score_final ?? 0),
+            'rank_score' => (int) data_get($match->match_reasons, 'rank_score', $match->score_fair ?? 0),
+            'match_verdict' => (string) ($match->match_verdict ?? ''),
+            'highlights' => (string) ($match->highlights ?? ''),
+            'explanation_tags' => (array) ($match->explanation_tags ?? []),
+            'match_reasons' => $this->normalizeMatchReasons($match->match_reasons, $match),
+            'penalty_factors' => (array) ($match->penalty_factors ?? []),
         ]);
     }
 }

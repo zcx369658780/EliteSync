@@ -7,6 +7,7 @@ Param(
     [int]$SmokeRetryDelaySec = 3,
     [switch]$SkipAndroidBuild,
     [switch]$SkipBackendSmoke,
+    [switch]$SkipAstroRegression,
     [switch]$SmokeSkipAuthChecks,
     [switch]$QuickUpdateOnly,
     [string]$GateLogPath = "docs/devlogs/RELEASE_GATE_LOG.md"
@@ -50,11 +51,13 @@ if ($QuickUpdateOnly) {
     $SkipAndroidBuild = $true
     $SkipBackendSmoke = $false
     $SmokeSkipAuthChecks = $true
+    $SkipAstroRegression = $true
 }
 
 $repoRoot = (Resolve-Path "$PSScriptRoot\..").Path
 $appDir = Join-Path $repoRoot "apps\android"
 $smokeScript = Join-Path $repoRoot "scripts\smoke_backend_alpha.ps1"
+$backendDir = Join-Path $repoRoot "services\backend-laravel"
 
 $results = New-Object 'System.Collections.Generic.List[object]'
 
@@ -150,6 +153,36 @@ else {
     $results.Add((New-GateStepResult -Name "Backend Smoke" -Pass $true -Detail "SKIPPED")) | Out-Null
 }
 
+if (-not $SkipAstroRegression) {
+    try {
+        Push-Location $backendDir
+        $vendorAutoload = Join-Path $backendDir "vendor/autoload.php"
+        if (-not (Test-Path $vendorAutoload)) {
+            $results.Add((New-GateStepResult -Name "Astro Regression" -Pass $true -Detail "SKIPPED (vendor not installed)")) | Out-Null
+            throw [System.OperationCanceledException]::new("SKIP_ASTRO_REGRESSION_EARLY_RETURN")
+        }
+        & php artisan test --filter "BaziFeatureExtractorTest|ZodiacDerivationTest|AstroEngineAdapterTest"
+        if ($LASTEXITCODE -ne 0) {
+            throw "Laravel astro regression exit code: $LASTEXITCODE"
+        }
+        $results.Add((New-GateStepResult -Name "Astro Regression" -Pass $true -Detail "targeted astro tests passed")) | Out-Null
+    }
+    catch {
+        if ($_.Exception.Message -eq "SKIP_ASTRO_REGRESSION_EARLY_RETURN") {
+            # already recorded as skipped
+        }
+        else {
+        $results.Add((New-GateStepResult -Name "Astro Regression" -Pass $false -Detail $_.Exception.Message)) | Out-Null
+        }
+    }
+    finally {
+        Pop-Location
+    }
+}
+else {
+    $results.Add((New-GateStepResult -Name "Astro Regression" -Pass $true -Detail "SKIPPED")) | Out-Null
+}
+
 $failCount = @($results | Where-Object { -not $_.Pass }).Count
 $overall = if ($failCount -eq 0) { "PASS" } else { "FAIL" }
 
@@ -178,6 +211,7 @@ $md.Add("## $ts")
 $md.Add("- BaseUrl: $BaseUrl")
 $md.Add("- Overall: $overall")
 $md.Add("- QuickUpdateOnly: $QuickUpdateOnly")
+$md.Add("- SkipAstroRegression: $SkipAstroRegression")
 $md.Add("- SmokeRetryCount: $SmokeRetryCount")
 $md.Add("- SmokeRetryDelaySec: $SmokeRetryDelaySec")
 $md.Add("- Steps:")
