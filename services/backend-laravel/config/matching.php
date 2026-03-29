@@ -23,10 +23,11 @@ return [
     ],
 
     'core_weights' => [
-        // P1 (Alpha): personality + mbti + astro
-        'personality' => 0.50,
-        'mbti' => 0.15,
-        'astro' => 0.35,
+        // Algo 2.2 transition:
+        // MBTI is downgraded from core sorter to lightweight factor.
+        'personality' => (float) env('MATCH_WEIGHT_PERSONALITY', 0.58),
+        'mbti' => (float) env('MATCH_WEIGHT_MBTI', 0.07),
+        'astro' => (float) env('MATCH_WEIGHT_ASTRO', 0.35),
     ],
 
     'score_guards' => [
@@ -73,6 +74,25 @@ return [
         // Production safety guard for synthetic-data commands.
         'allow_synthetic_commands_in_production' => filter_var(
             env('MATCHING_ALLOW_SYNTHETIC_COMMANDS_IN_PRODUCTION', false),
+            FILTER_VALIDATE_BOOL
+        ),
+    ],
+
+    // Calibration injector guardrails (dev/staging only by default).
+    'calibration_injector' => [
+        'enabled' => filter_var(
+            env('MATCHING_CALIBRATION_INJECTOR_ENABLED', false),
+            FILTER_VALIDATE_BOOL
+        ),
+        'allow_in_production' => filter_var(
+            env('MATCHING_CALIBRATION_INJECTOR_ALLOW_IN_PRODUCTION', false),
+            FILTER_VALIDATE_BOOL
+        ),
+        // Content marker prefix for injected chat rows.
+        'message_marker_prefix' => env('MATCHING_CALIBRATION_MESSAGE_MARKER_PREFIX', '[[calibration_injector]]'),
+        // By default, metrics/export exclude injected calibration signals.
+        'include_in_metrics_default' => filter_var(
+            env('MATCHING_CALIBRATION_INCLUDE_IN_METRICS', false),
             FILTER_VALIDATE_BOOL
         ),
     ],

@@ -2,6 +2,11 @@
 
 namespace App\Providers;
 
+use App\Services\BaziEngine;
+use App\Services\LegacyInputWesternNatalEngine;
+use App\Services\LunarPhpBaziEngine;
+use App\Services\LegacyClientBaziEngine;
+use App\Services\WesternNatalEngine;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
@@ -14,7 +19,40 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(BaziEngine::class, function () {
+            // Phase 1 bootstrap:
+            // switch canonical engine via config.
+            $engine = (string) config('astro_canonical.engine', 'legacy_client');
+            if ($engine === 'lunar_php' || $engine === 'server_engine') {
+                return new LunarPhpBaziEngine();
+            }
+            if ($engine === 'legacy_client') {
+                return new LegacyClientBaziEngine();
+            }
+            // Unknown engine name: fail-safe fallback.
+            return new LunarPhpBaziEngine();
+        });
+
+        $this->app->bind(WesternNatalEngine::class, function () {
+            $engine = strtolower(trim((string) config('western_natal.engine', 'legacy_input')));
+            /** @var \App\Services\AstrologyDependencyGateService $gate */
+            $gate = app(\App\Services\AstrologyDependencyGateService::class);
+            $licenseKey = match ($engine) {
+                'swisseph' => 'swisseph',
+                'pyswisseph' => 'pyswisseph',
+                'kerykeion' => 'kerykeion',
+                default => null,
+            };
+            if ($licenseKey !== null) {
+                $allow = $gate->allow($licenseKey);
+                if (!(bool) ($allow['allowed'] ?? false)) {
+                    return new LegacyInputWesternNatalEngine();
+                }
+            }
+            // Phase-3 preparation: non-legacy engines are not implemented yet,
+            // keep fallback stable and switch implementation later without changing interface.
+            return new LegacyInputWesternNatalEngine();
+        });
     }
 
     /**

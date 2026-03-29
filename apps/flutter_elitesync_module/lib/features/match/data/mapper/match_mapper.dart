@@ -10,32 +10,33 @@ class MatchMapper {
   const MatchMapper();
 
   MatchCountdownEntity countdown(MatchCountdownDto dto) => MatchCountdownEntity(
-        revealAt: DateTime.tryParse(dto.revealAt),
-        hint: dto.hint,
-      );
+    revealAt: DateTime.tryParse(dto.revealAt),
+    hint: dto.hint,
+  );
 
   MatchResultEntity result(MatchResultDto dto) => MatchResultEntity(
-        headline: dto.headline,
-        score: dto.score,
-        tags: dto.tags,
-        highlights: dto.highlights
-            .map(
-              (e) => MatchHighlightEntity(
-                title: (e['title'] ?? '').toString(),
-                value: (e['value'] as num?)?.toInt() ?? 0,
-                desc: (e['desc'] ?? '').toString(),
-              ),
-            )
-            .toList(),
-      );
+    headline: dto.headline,
+    score: dto.score,
+    tags: dto.tags,
+    highlights: dto.highlights
+        .map(
+          (e) => MatchHighlightEntity(
+            title: (e['title'] ?? '').toString(),
+            value: (e['value'] as num?)?.toInt() ?? 0,
+            desc: (e['desc'] ?? '').toString(),
+          ),
+        )
+        .toList(),
+  );
 
   MatchDetailEntity detail(MatchDetailDto dto) => MatchDetailEntity(
-        reasons: dto.reasons,
-        weights: dto.weights,
-        moduleScores: dto.moduleScores,
-        moduleInsights: dto.moduleInsights,
-        moduleExplanations: dto.moduleExplanations,
-        reasonGlossary: dto.reasonGlossary,
-        evidenceStrengthSummary: dto.evidenceStrengthSummary,
-      );
+    reasons: dto.reasons,
+    weights: dto.weights,
+    moduleScores: dto.moduleScores,
+    moduleInsights: dto.moduleInsights,
+    moduleExplanations: dto.moduleExplanations,
+    compatibilitySections: dto.compatibilitySections,
+    reasonGlossary: dto.reasonGlossary,
+    evidenceStrengthSummary: dto.evidenceStrengthSummary,
+  );
 }

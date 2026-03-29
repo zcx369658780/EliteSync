@@ -11,6 +11,10 @@ Related:
 `powershell -ExecutionPolicy Bypass -File .\scripts\release_gate_alpha.ps1 -QuickUpdateOnly`
 - Full gate (compile + full smoke):
 `powershell -ExecutionPolicy Bypass -File .\scripts\release_gate_alpha.ps1 -Phone 13800000022 -Password "******"`
+- Optional (algorithm calibration cycle, default is off):
+`powershell -ExecutionPolicy Bypass -File .\scripts\release_gate_alpha.ps1 -RunCalibrationCycle -CalibrationOnlyMismatch`
+- Optional dry-run (preview only):
+`powershell -ExecutionPolicy Bypass -File .\scripts\release_gate_alpha.ps1 -RunCalibrationCycle -CalibrationDryRun -CalibrationOnlyMismatch -SkipAndroidBuild -SkipBackendSmoke -SkipAstroRegression`
 
 1. Update version in `apps/android/app/build.gradle.kts` (`versionName`, `versionCode`).
 2. Append release notes in `apps/android/app/src/main/assets/changelog_v0.txt`.

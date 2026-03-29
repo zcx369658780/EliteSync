@@ -11,6 +11,7 @@ class MatchModuleInsightCard extends StatelessWidget {
     this.risk,
     this.riskLevel,
     this.confidence,
+    this.confidenceTier,
     this.degraded = false,
     this.degradeReason,
     this.priority,
@@ -38,6 +39,7 @@ class MatchModuleInsightCard extends StatelessWidget {
   final String? risk;
   final String? riskLevel;
   final double? confidence;
+  final String? confidenceTier;
   final bool degraded;
   final String? degradeReason;
   final int? priority;
@@ -85,6 +87,10 @@ class MatchModuleInsightCard extends StatelessWidget {
   }
 
   String _confidenceLabel() {
+    final tier = (confidenceTier ?? '').trim().toLowerCase();
+    if (tier == 'high') return '高置信';
+    if (tier == 'medium') return '中置信';
+    if (tier == 'low') return '低置信';
     final c = (confidence ?? 0.5).clamp(0.0, 1.0);
     if (c >= 0.8) return '高置信';
     if (c >= 0.6) return '中置信';
@@ -93,6 +99,10 @@ class MatchModuleInsightCard extends StatelessWidget {
 
   Color _confidenceColor(BuildContext context) {
     final t = context.appTokens;
+    final tier = (confidenceTier ?? '').trim().toLowerCase();
+    if (tier == 'high') return t.success;
+    if (tier == 'medium') return t.warning;
+    if (tier == 'low') return t.error;
     final c = (confidence ?? 0.5).clamp(0.0, 1.0);
     if (c >= 0.8) return t.success;
     if (c >= 0.6) return t.warning;
@@ -196,27 +206,27 @@ class MatchModuleInsightCard extends StatelessWidget {
               Text(
                 tag,
                 style: Theme.of(ctx).textTheme.titleMedium?.copyWith(
-                      color: t.textPrimary,
-                      fontWeight: FontWeight.w800,
-                    ),
+                  color: t.textPrimary,
+                  fontWeight: FontWeight.w800,
+                ),
               ),
               SizedBox(height: t.spacing.xs),
               Text(
                 explain,
                 style: Theme.of(ctx).textTheme.bodyMedium?.copyWith(
-                      color: t.textSecondary,
-                      height: 1.5,
-                    ),
+                  color: t.textSecondary,
+                  height: 1.5,
+                ),
               ),
               if (ref.isNotEmpty) ...[
                 SizedBox(height: t.spacing.xs),
                 Text(
                   '理论依据：$ref',
                   style: Theme.of(ctx).textTheme.bodySmall?.copyWith(
-                        color: t.textSecondary.withValues(alpha: 0.9),
-                        height: 1.45,
-                        fontWeight: FontWeight.w600,
-                      ),
+                    color: t.textSecondary.withValues(alpha: 0.9),
+                    height: 1.45,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ],
             ],
@@ -241,347 +251,374 @@ class MatchModuleInsightCard extends StatelessWidget {
               final text = (debugCopyText ?? '').trim();
               await Clipboard.setData(ClipboardData(text: text));
               if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('已复制模块调试信息')),
-                );
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(const SnackBar(content: Text('已复制模块调试信息')));
               }
             }
           : null,
       child: AnimatedContainer(
-      duration: const Duration(milliseconds: 220),
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: EdgeInsets.all(t.spacing.cardPadding),
-      decoration: BoxDecoration(
-        color: highlighted
-            ? t.info.withValues(alpha: 0.12)
-            : t.browseSurface,
-        borderRadius: BorderRadius.circular(t.radius.md),
-        border: Border.all(
-          color: highlighted
-              ? t.info.withValues(alpha: 0.72)
-              : (hasRisk ? riskColor.withValues(alpha: 0.42) : t.browseBorder),
-          width: highlighted ? 1.6 : 1.0,
+        duration: const Duration(milliseconds: 220),
+        margin: const EdgeInsets.only(bottom: 8),
+        padding: EdgeInsets.all(t.spacing.cardPadding),
+        decoration: BoxDecoration(
+          color: highlighted ? t.info.withValues(alpha: 0.12) : t.browseSurface,
+          borderRadius: BorderRadius.circular(t.radius.md),
+          border: Border.all(
+            color: highlighted
+                ? t.info.withValues(alpha: 0.72)
+                : (hasRisk
+                      ? riskColor.withValues(alpha: 0.42)
+                      : t.browseBorder),
+            width: highlighted ? 1.6 : 1.0,
+          ),
         ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(
-                Icons.auto_graph_rounded,
-                size: 15,
-                color: scoreColor.withValues(alpha: 0.9),
-              ),
-              SizedBox(width: t.spacing.xxs),
-              Expanded(
-                child: Text(
-                  module,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: t.textPrimary,
-                        fontWeight: FontWeight.w700,
-                      ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  Icons.auto_graph_rounded,
+                  size: 15,
+                  color: scoreColor.withValues(alpha: 0.9),
                 ),
-              ),
-              if (showDebugMeta && (debugCopyText ?? '').trim().isNotEmpty)
-                IconButton(
-                  onPressed: () async {
-                    final text = (debugCopyText ?? '').trim();
-                    await Clipboard.setData(ClipboardData(text: text));
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('已复制模块调试信息')),
-                      );
-                    }
-                  },
-                  tooltip: '复制模块调试信息',
-                  iconSize: 18,
-                  splashRadius: 18,
-                  icon: Icon(Icons.copy_rounded, color: t.textSecondary),
-                ),
-            ],
-          ),
-          SizedBox(height: t.spacing.xs),
-          Wrap(
-            spacing: t.spacing.xs,
-            runSpacing: t.spacing.xs,
-            children: [
-              Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: t.spacing.xs,
-                  vertical: t.spacing.xxs,
-                ),
-                decoration: BoxDecoration(
-                  color: scoreColor.withValues(alpha: 0.16),
-                  borderRadius: BorderRadius.circular(t.radius.pill),
-                  border: Border.all(color: scoreColor.withValues(alpha: 0.35)),
-                ),
-                child: Text(
-                  '$score分',
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: scoreColor,
-                        fontWeight: FontWeight.w700,
-                      ),
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: t.spacing.xs,
-                  vertical: t.spacing.xxs,
-                ),
-                decoration: BoxDecoration(
-                  color: evidenceColor.withValues(alpha: 0.14),
-                  borderRadius: BorderRadius.circular(t.radius.pill),
-                  border: Border.all(color: evidenceColor.withValues(alpha: 0.32)),
-                ),
-                child: Text(
-                  _evidenceStrengthLabel(),
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: evidenceColor,
-                        fontWeight: FontWeight.w700,
-                      ),
-                ),
-              ),
-              if (hasRisk)
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: t.spacing.xs,
-                    vertical: t.spacing.xxs,
-                  ),
-                  decoration: BoxDecoration(
-                    color: riskColor.withValues(alpha: 0.14),
-                    borderRadius: BorderRadius.circular(t.radius.pill),
-                    border: Border.all(color: riskColor.withValues(alpha: 0.35)),
-                  ),
+                SizedBox(width: t.spacing.xxs),
+                Expanded(
                   child: Text(
-                    _riskLabel(),
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: riskColor,
-                          fontWeight: FontWeight.w700,
-                        ),
-                  ),
-                ),
-              Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: t.spacing.xs,
-                  vertical: t.spacing.xxs,
-                ),
-                decoration: BoxDecoration(
-                  color: priorityColor.withValues(alpha: 0.14),
-                  borderRadius: BorderRadius.circular(t.radius.pill),
-                  border: Border.all(color: priorityColor.withValues(alpha: 0.32)),
-                ),
-                child: Text(
-                  '${_priorityLabel()}${(priorityRank ?? 0) > 0 ? " TOP$priorityRank" : ""}',
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: priorityColor,
-                        fontWeight: FontWeight.w700,
-                      ),
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: t.spacing.xs,
-                  vertical: t.spacing.xxs,
-                ),
-                decoration: BoxDecoration(
-                  color: confidenceColor.withValues(alpha: 0.14),
-                  borderRadius: BorderRadius.circular(t.radius.pill),
-                  border: Border.all(color: confidenceColor.withValues(alpha: 0.32)),
-                ),
-                child: Text(
-                  _confidenceLabel(),
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: confidenceColor,
-                        fontWeight: FontWeight.w700,
-                      ),
-                ),
-              ),
-              if (degraded)
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: t.spacing.xs,
-                    vertical: t.spacing.xxs,
-                  ),
-                  decoration: BoxDecoration(
-                    color: t.info.withValues(alpha: 0.14),
-                    borderRadius: BorderRadius.circular(t.radius.pill),
-                    border: Border.all(color: t.info.withValues(alpha: 0.32)),
-                  ),
-                  child: Text(
-                    '估算中',
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: t.info,
-                          fontWeight: FontWeight.w700,
-                        ),
-                  ),
-                ),
-            ],
-          ),
-          if ((priorityReason ?? '').trim().isNotEmpty) ...[
-            SizedBox(height: t.spacing.xs),
-            Text(
-              '关注原因：${priorityReason!.trim()}',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: t.textSecondary,
-                    height: 1.35,
-                    fontWeight: FontWeight.w600,
-                  ),
-            ),
-          ],
-          if ((evidenceStrengthReason ?? '').trim().isNotEmpty) ...[
-            SizedBox(height: t.spacing.xxs),
-            Text(
-              '证据说明：${evidenceStrengthReason!.trim()}',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: t.textSecondary,
-                    height: 1.35,
-                    fontWeight: FontWeight.w600,
-                  ),
-            ),
-          ],
-          if (showDebugMeta) ...[
-            SizedBox(height: t.spacing.xs),
-            Container(
-              width: double.infinity,
-              padding: EdgeInsets.symmetric(
-                horizontal: t.spacing.xs,
-                vertical: t.spacing.xxs,
-              ),
-              decoration: BoxDecoration(
-                color: t.secondarySurface.withValues(alpha: 0.6),
-                borderRadius: BorderRadius.circular(t.radius.sm),
-                border: Border.all(color: t.browseBorder.withValues(alpha: 0.45)),
-              ),
-              child: Text(
-                'debug: p=${priority ?? -1}, level=${(priorityLevel ?? "-").toLowerCase()}, conf=${((confidence ?? 0.5) * 100).toStringAsFixed(0)}%, degraded=${degraded ? "1" : "0"}',
-                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: t.textSecondary,
-                      fontWeight: FontWeight.w600,
+                    module,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: t.textPrimary,
+                      fontWeight: FontWeight.w700,
                     ),
-              ),
-            ),
-          ],
-          if (degraded && (degradeReason ?? '').trim().isNotEmpty) ...[
-            SizedBox(height: t.spacing.xs),
-            Text(
-              '降级原因：${degradeReason!.trim()}',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: t.info,
-                    height: 1.35,
-                    fontWeight: FontWeight.w600,
                   ),
-            ),
-          ],
-          SizedBox(height: t.spacing.xs),
-          Text(
-            reason,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: t.textSecondary,
-                  height: 1.45,
                 ),
-          ),
-          if ((risk ?? '').trim().isNotEmpty) ...[
+                if (showDebugMeta && (debugCopyText ?? '').trim().isNotEmpty)
+                  IconButton(
+                    onPressed: () async {
+                      final text = (debugCopyText ?? '').trim();
+                      await Clipboard.setData(ClipboardData(text: text));
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('已复制模块调试信息')),
+                        );
+                      }
+                    },
+                    tooltip: '复制模块调试信息',
+                    iconSize: 18,
+                    splashRadius: 18,
+                    icon: Icon(Icons.copy_rounded, color: t.textSecondary),
+                  ),
+              ],
+            ),
             SizedBox(height: t.spacing.xs),
-            Container(
-              width: double.infinity,
-              padding: EdgeInsets.symmetric(
-                horizontal: t.spacing.xs,
-                vertical: t.spacing.xxs,
-              ),
-              decoration: BoxDecoration(
-                color: riskColor.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(t.radius.sm),
-                border: Border.all(color: riskColor.withValues(alpha: 0.28)),
-              ),
-              child: Text(
-                '风险提示：${risk!.trim()}',
+            Wrap(
+              spacing: t.spacing.xs,
+              runSpacing: t.spacing.xs,
+              children: [
+                Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: t.spacing.xs,
+                    vertical: t.spacing.xxs,
+                  ),
+                  decoration: BoxDecoration(
+                    color: scoreColor.withValues(alpha: 0.16),
+                    borderRadius: BorderRadius.circular(t.radius.pill),
+                    border: Border.all(
+                      color: scoreColor.withValues(alpha: 0.35),
+                    ),
+                  ),
+                  child: Text(
+                    '$score分',
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: scoreColor,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: t.spacing.xs,
+                    vertical: t.spacing.xxs,
+                  ),
+                  decoration: BoxDecoration(
+                    color: evidenceColor.withValues(alpha: 0.14),
+                    borderRadius: BorderRadius.circular(t.radius.pill),
+                    border: Border.all(
+                      color: evidenceColor.withValues(alpha: 0.32),
+                    ),
+                  ),
+                  child: Text(
+                    _evidenceStrengthLabel(),
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: evidenceColor,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                if (hasRisk)
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: t.spacing.xs,
+                      vertical: t.spacing.xxs,
+                    ),
+                    decoration: BoxDecoration(
+                      color: riskColor.withValues(alpha: 0.14),
+                      borderRadius: BorderRadius.circular(t.radius.pill),
+                      border: Border.all(
+                        color: riskColor.withValues(alpha: 0.35),
+                      ),
+                    ),
+                    child: Text(
+                      _riskLabel(),
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: riskColor,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: t.spacing.xs,
+                    vertical: t.spacing.xxs,
+                  ),
+                  decoration: BoxDecoration(
+                    color: priorityColor.withValues(alpha: 0.14),
+                    borderRadius: BorderRadius.circular(t.radius.pill),
+                    border: Border.all(
+                      color: priorityColor.withValues(alpha: 0.32),
+                    ),
+                  ),
+                  child: Text(
+                    '${_priorityLabel()}${(priorityRank ?? 0) > 0 ? " TOP$priorityRank" : ""}',
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: priorityColor,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: t.spacing.xs,
+                    vertical: t.spacing.xxs,
+                  ),
+                  decoration: BoxDecoration(
+                    color: confidenceColor.withValues(alpha: 0.14),
+                    borderRadius: BorderRadius.circular(t.radius.pill),
+                    border: Border.all(
+                      color: confidenceColor.withValues(alpha: 0.32),
+                    ),
+                  ),
+                  child: Text(
+                    _confidenceLabel(),
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: confidenceColor,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                if (degraded)
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: t.spacing.xs,
+                      vertical: t.spacing.xxs,
+                    ),
+                    decoration: BoxDecoration(
+                      color: t.info.withValues(alpha: 0.14),
+                      borderRadius: BorderRadius.circular(t.radius.pill),
+                      border: Border.all(color: t.info.withValues(alpha: 0.32)),
+                    ),
+                    child: Text(
+                      '估算中',
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: t.info,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            if ((priorityReason ?? '').trim().isNotEmpty) ...[
+              SizedBox(height: t.spacing.xs),
+              Text(
+                '关注原因：${priorityReason!.trim()}',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: riskColor,
-                      height: 1.45,
-                      fontWeight: FontWeight.w600,
-                    ),
+                  color: t.textSecondary,
+                  height: 1.35,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+            if ((evidenceStrengthReason ?? '').trim().isNotEmpty) ...[
+              SizedBox(height: t.spacing.xxs),
+              Text(
+                '证据说明：${evidenceStrengthReason!.trim()}',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: t.textSecondary,
+                  height: 1.35,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+            if (showDebugMeta) ...[
+              SizedBox(height: t.spacing.xs),
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.symmetric(
+                  horizontal: t.spacing.xs,
+                  vertical: t.spacing.xxs,
+                ),
+                decoration: BoxDecoration(
+                  color: t.secondarySurface.withValues(alpha: 0.6),
+                  borderRadius: BorderRadius.circular(t.radius.sm),
+                  border: Border.all(
+                    color: t.browseBorder.withValues(alpha: 0.45),
+                  ),
+                ),
+                child: Text(
+                  'debug: p=${priority ?? -1}, level=${(priorityLevel ?? "-").toLowerCase()}, conf=${((confidence ?? 0.5) * 100).toStringAsFixed(0)}%, degraded=${degraded ? "1" : "0"}',
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: t.textSecondary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+            if (degraded && (degradeReason ?? '').trim().isNotEmpty) ...[
+              SizedBox(height: t.spacing.xs),
+              Text(
+                '降级原因：${degradeReason!.trim()}',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: t.info,
+                  height: 1.35,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+            SizedBox(height: t.spacing.xs),
+            Text(
+              reason,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: t.textSecondary,
+                height: 1.45,
               ),
             ),
-          ],
-          if (tags.isNotEmpty || coreTags.isNotEmpty || auxTags.isNotEmpty) ...[
-            SizedBox(height: t.spacing.xs),
-            Builder(
-              builder: (context) {
-                final resolvedCoreTags = coreTags.isNotEmpty
-                    ? coreTags
-                    : tags.where(_isCoreTag).toList();
-                final resolvedAuxTags = auxTags.isNotEmpty
-                    ? auxTags
-                    : tags.where((e) => !resolvedCoreTags.contains(e)).toList();
-                Widget tagWrap(List<String> source) {
-                  return Wrap(
-                    spacing: t.spacing.xs,
-                    runSpacing: t.spacing.xs,
-                    children: source
-                        .map(
-                          (tag) => InkWell(
-                            borderRadius: BorderRadius.circular(t.radius.pill),
-                            onTap: () => _showTagExplain(context, tag),
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: t.spacing.xs,
-                                vertical: t.spacing.xxs,
+            if ((risk ?? '').trim().isNotEmpty) ...[
+              SizedBox(height: t.spacing.xs),
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.symmetric(
+                  horizontal: t.spacing.xs,
+                  vertical: t.spacing.xxs,
+                ),
+                decoration: BoxDecoration(
+                  color: riskColor.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(t.radius.sm),
+                  border: Border.all(color: riskColor.withValues(alpha: 0.28)),
+                ),
+                child: Text(
+                  '风险提示：${risk!.trim()}',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: riskColor,
+                    height: 1.45,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+            if (tags.isNotEmpty ||
+                coreTags.isNotEmpty ||
+                auxTags.isNotEmpty) ...[
+              SizedBox(height: t.spacing.xs),
+              Builder(
+                builder: (context) {
+                  final resolvedCoreTags = coreTags.isNotEmpty
+                      ? coreTags
+                      : tags.where(_isCoreTag).toList();
+                  final resolvedAuxTags = auxTags.isNotEmpty
+                      ? auxTags
+                      : tags
+                            .where((e) => !resolvedCoreTags.contains(e))
+                            .toList();
+                  Widget tagWrap(List<String> source) {
+                    return Wrap(
+                      spacing: t.spacing.xs,
+                      runSpacing: t.spacing.xs,
+                      children: source
+                          .map(
+                            (tag) => InkWell(
+                              borderRadius: BorderRadius.circular(
+                                t.radius.pill,
                               ),
-                              decoration: BoxDecoration(
-                                color: (hasRisk ? riskColor : t.browseChip).withValues(alpha: 0.16),
-                                borderRadius: BorderRadius.circular(t.radius.pill),
-                                border: Border.all(
-                                  color: (hasRisk ? riskColor : t.browseBorder).withValues(alpha: 0.35),
+                              onTap: () => _showTagExplain(context, tag),
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: t.spacing.xs,
+                                  vertical: t.spacing.xxs,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: (hasRisk ? riskColor : t.browseChip)
+                                      .withValues(alpha: 0.16),
+                                  borderRadius: BorderRadius.circular(
+                                    t.radius.pill,
+                                  ),
+                                  border: Border.all(
+                                    color:
+                                        (hasRisk ? riskColor : t.browseBorder)
+                                            .withValues(alpha: 0.35),
+                                  ),
+                                ),
+                                child: Text(
+                                  tag,
+                                  style: Theme.of(context).textTheme.labelSmall
+                                      ?.copyWith(
+                                        color: t.textSecondary,
+                                        fontWeight: FontWeight.w600,
+                                      ),
                                 ),
                               ),
-                              child: Text(
-                                tag,
-                                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                      color: t.textSecondary,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                              ),
                             ),
-                          ),
-                        )
-                        .toList(),
-                  );
-                }
+                          )
+                          .toList(),
+                    );
+                  }
 
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (resolvedCoreTags.isNotEmpty) ...[
-                      Text(
-                        '核心证据',
-                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                              color: t.textSecondary,
-                              fontWeight: FontWeight.w700,
-                            ),
-                      ),
-                      SizedBox(height: t.spacing.xxs),
-                      tagWrap(resolvedCoreTags),
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (resolvedCoreTags.isNotEmpty) ...[
+                        Text(
+                          '核心证据',
+                          style: Theme.of(context).textTheme.labelSmall
+                              ?.copyWith(
+                                color: t.textSecondary,
+                                fontWeight: FontWeight.w700,
+                              ),
+                        ),
+                        SizedBox(height: t.spacing.xxs),
+                        tagWrap(resolvedCoreTags),
+                      ],
+                      if (resolvedAuxTags.isNotEmpty) ...[
+                        SizedBox(height: t.spacing.xs),
+                        Text(
+                          '辅助证据',
+                          style: Theme.of(context).textTheme.labelSmall
+                              ?.copyWith(
+                                color: t.textSecondary,
+                                fontWeight: FontWeight.w700,
+                              ),
+                        ),
+                        SizedBox(height: t.spacing.xxs),
+                        tagWrap(resolvedAuxTags),
+                      ],
                     ],
-                    if (resolvedAuxTags.isNotEmpty) ...[
-                      SizedBox(height: t.spacing.xs),
-                      Text(
-                        '辅助证据',
-                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                              color: t.textSecondary,
-                              fontWeight: FontWeight.w700,
-                            ),
-                      ),
-                      SizedBox(height: t.spacing.xxs),
-                      tagWrap(resolvedAuxTags),
-                    ],
-                  ],
-                );
-              },
-            ),
+                  );
+                },
+              ),
+            ],
           ],
-        ],
+        ),
       ),
-    ));
+    );
   }
 }

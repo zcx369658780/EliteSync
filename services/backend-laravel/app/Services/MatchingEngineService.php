@@ -860,10 +860,77 @@ class MatchingEngineService
                     ?: []
                 );
             }
+
+            $m = $this->applyConfidenceNarrativePolicy($m);
         }
         unset($m);
 
         return $modules;
+    }
+
+    /**
+     * @param array<string,mixed> $module
+     * @return array<string,mixed>
+     */
+    private function applyConfidenceNarrativePolicy(array $module): array
+    {
+        $cfg = (array) config('confidence_policy.narrative', []);
+        $low = (float) ($cfg['low_confidence_threshold'] ?? 0.55);
+        $medium = (float) ($cfg['medium_confidence_threshold'] ?? 0.70);
+        $lowSuffix = (string) ($cfg['low_confidence_suffix'] ?? '（当前证据偏弱，建议仅作参考）');
+        $degradedSuffix = (string) ($cfg['degraded_suffix'] ?? '（存在降级估算，建议补全出生信息后再判断）');
+
+        $confidence = (float) ($module['confidence'] ?? 0.5);
+        $degraded = (bool) ($module['degraded'] ?? false);
+        $verdict = strtolower(trim((string) ($module['verdict'] ?? 'medium')));
+
+        $evidenceTags = array_values(array_unique(array_filter(array_map(
+            'strval',
+            (array) ($module['evidence_tags'] ?? [])
+        ))));
+
+        if ($degraded) {
+            if ($verdict === 'strong') {
+                $module['verdict'] = 'medium';
+            }
+            $module['reason_short'] = $this->appendOnce((string) ($module['reason_short'] ?? ''), $degradedSuffix);
+            $module['reason_detail'] = $this->appendOnce((string) ($module['reason_detail'] ?? ''), $degradedSuffix);
+            if (trim((string) ($module['risk_detail'] ?? '')) === '') {
+                $module['risk_detail'] = $degradedSuffix;
+            }
+            $evidenceTags[] = 'degraded_estimation';
+        } elseif ($confidence < $low) {
+            $module['verdict'] = 'weak';
+            $module['reason_short'] = $this->appendOnce((string) ($module['reason_short'] ?? ''), $lowSuffix);
+            $module['reason_detail'] = $this->appendOnce((string) ($module['reason_detail'] ?? ''), $lowSuffix);
+            if (trim((string) ($module['risk_detail'] ?? '')) === '') {
+                $module['risk_detail'] = '当前证据强度较低，建议结合真实互动结果再判断。';
+            }
+            $evidenceTags[] = 'confidence_low';
+        } elseif ($confidence < $medium && $verdict === 'strong') {
+            $module['verdict'] = 'medium';
+            $module['reason_short'] = $this->appendOnce((string) ($module['reason_short'] ?? ''), '（当前为中等置信）');
+            $evidenceTags[] = 'confidence_medium';
+        }
+
+        $module['evidence_tags'] = array_values(array_unique($evidenceTags));
+        return $module;
+    }
+
+    private function appendOnce(string $base, string $suffix): string
+    {
+        $base = trim($base);
+        $suffix = trim($suffix);
+        if ($suffix === '') {
+            return $base;
+        }
+        if ($base === '') {
+            return $suffix;
+        }
+        if (str_contains($base, $suffix)) {
+            return $base;
+        }
+        return $base.$suffix;
     }
 
     /**

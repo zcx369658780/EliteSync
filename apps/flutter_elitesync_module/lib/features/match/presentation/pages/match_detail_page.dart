@@ -27,6 +27,7 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
   bool _expanded = false;
   String _priorityFilter = 'all'; // all/high/medium/normal
   String _evidenceFilter = 'all'; // all/high/medium/low
+  String _confidenceFilter = 'all'; // all/high/medium/low
   bool _showDevMetrics = false;
   final Map<String, GlobalKey> _moduleAnchorKeys = <String, GlobalKey>{};
   String _focusedModuleLabel = '';
@@ -34,7 +35,10 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
   GlobalKey? _resolveModuleAnchorKey(String moduleLabel) {
     final exact = _moduleAnchorKeys[moduleLabel];
     if (exact != null) return exact;
-    final normalizedTarget = moduleLabel.replaceAll(' ', '').trim().toLowerCase();
+    final normalizedTarget = moduleLabel
+        .replaceAll(' ', '')
+        .trim()
+        .toLowerCase();
     for (final entry in _moduleAnchorKeys.entries) {
       final normalizedKey = entry.key.replaceAll(' ', '').trim().toLowerCase();
       if (normalizedKey == normalizedTarget) {
@@ -51,6 +55,7 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
       _expanded = true;
       _priorityFilter = 'all';
       _evidenceFilter = 'low';
+      _confidenceFilter = 'all';
       _focusedModuleLabel = trimmed;
     });
     Future<void>.delayed(const Duration(milliseconds: 800), () {
@@ -83,7 +88,9 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
   String _normalizeRiskLevel(Map<String, dynamic> row) {
     final level = (row['risk_level'] ?? '').toString().trim().toLowerCase();
     if (level == 'high' || level == 'medium' || level == 'low') return level;
-    return _riskRank(row) >= 3 ? 'high' : (_riskRank(row) >= 2 ? 'medium' : 'low');
+    return _riskRank(row) >= 3
+        ? 'high'
+        : (_riskRank(row) >= 2 ? 'medium' : 'low');
   }
 
   String _riskSectionTitle(String level) {
@@ -124,6 +131,32 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
     }
   }
 
+  String _compatSectionTitle(String key) {
+    switch (key) {
+      case 'natal_compatibility':
+        return '本命匹配层';
+      case 'synastry':
+        return '互动关系层';
+      case 'composite_like':
+        return '合盘气质层';
+      default:
+        return key;
+    }
+  }
+
+  String _compatSectionHint(String key) {
+    switch (key) {
+      case 'natal_compatibility':
+        return '看基础稳定与长期节律';
+      case 'synastry':
+        return '看相处过程与沟通节奏';
+      case 'composite_like':
+        return '看关系整体气质与共同体感';
+      default:
+        return '关系分层';
+    }
+  }
+
   int _riskRank(Map<String, dynamic> row) {
     final level = (row['risk_level'] ?? '').toString().trim().toLowerCase();
     if (level == 'high') return 3;
@@ -131,7 +164,10 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
     if (level == 'low') return 1;
     final risk = (row['risk'] ?? '').toString().trim();
     if (risk.isEmpty) return 0;
-    if (risk.contains('高') || risk.contains('冲') || risk.contains('刑') || risk.contains('害')) {
+    if (risk.contains('高') ||
+        risk.contains('冲') ||
+        risk.contains('刑') ||
+        risk.contains('害')) {
       return 3;
     }
     if (risk.contains('中') || risk.contains('磨合') || risk.contains('张力')) {
@@ -191,11 +227,14 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
     return matched;
   }
 
-  ({String module, int score, String reason, String? risk, List<String> tags}) _parseInsightLine(String line) {
+  ({String module, int score, String reason, String? risk, List<String> tags})
+  _parseInsightLine(String line) {
     final trimmed = line.trim();
     final mainParts = trimmed.split('：');
     final title = mainParts.isNotEmpty ? mainParts.first.trim() : '匹配项';
-    final body = mainParts.length > 1 ? mainParts.sublist(1).join('：').trim() : '';
+    final body = mainParts.length > 1
+        ? mainParts.sublist(1).join('：').trim()
+        : '';
 
     final moduleMatch = RegExp(r'^(.+?)（(\d+)分）$').firstMatch(title);
     final module = moduleMatch?.group(1)?.trim() ?? title;
@@ -205,7 +244,11 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
     String? risk;
     List<String> tags = const [];
 
-    final segments = body.split('；').map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
+    final segments = body
+        .split('；')
+        .map((e) => e.trim())
+        .where((e) => e.isNotEmpty)
+        .toList();
     final cleanReason = <String>[];
     for (final s in segments) {
       if (s.startsWith('风险提示：')) {
@@ -236,13 +279,17 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
     );
   }
 
-  ({List<String> highlights, List<String> risks}) _groupReasons(List<String> reasons) {
+  ({List<String> highlights, List<String> risks}) _groupReasons(
+    List<String> reasons,
+  ) {
     final highlights = <String>[];
     final risks = <String>[];
     for (final raw in reasons) {
       final line = raw.trim();
       if (line.isEmpty) continue;
-      if (line.startsWith('需要留意') || line.contains('风险') || line.contains('张力')) {
+      if (line.startsWith('需要留意') ||
+          line.contains('风险') ||
+          line.contains('张力')) {
         risks.add(line);
       } else {
         highlights.add(line);
@@ -278,9 +325,9 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
               Text(
                 title,
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      color: t.textPrimary,
-                      fontWeight: FontWeight.w700,
-                    ),
+                  color: t.textPrimary,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ],
           ),
@@ -291,9 +338,9 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
               child: Text(
                 '• $e',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: t.textSecondary,
-                      height: 1.45,
-                    ),
+                  color: t.textSecondary,
+                  height: 1.45,
+                ),
               ),
             ),
           ),
@@ -333,14 +380,16 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
         decoration: BoxDecoration(
           color: color.withValues(alpha: selected ? 0.24 : 0.14),
           borderRadius: BorderRadius.circular(t.radius.pill),
-          border: Border.all(color: color.withValues(alpha: selected ? 0.62 : 0.32)),
+          border: Border.all(
+            color: color.withValues(alpha: selected ? 0.62 : 0.32),
+          ),
         ),
         child: Text(
           '${_priorityTitle(level)} $count',
           style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                color: color,
-                fontWeight: selected ? FontWeight.w800 : FontWeight.w700,
-              ),
+            color: color,
+            fontWeight: selected ? FontWeight.w800 : FontWeight.w700,
+          ),
         ),
       );
     }
@@ -366,9 +415,9 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
           Text(
             '关注分布',
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  color: t.textPrimary,
-                  fontWeight: FontWeight.w700,
-                ),
+              color: t.textPrimary,
+              fontWeight: FontWeight.w700,
+            ),
           ),
           SizedBox(height: t.spacing.xs),
           Wrap(
@@ -384,16 +433,24 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
                     vertical: t.spacing.xxs,
                   ),
                   decoration: BoxDecoration(
-                    color: t.browseChip.withValues(alpha: _priorityFilter == 'all' ? 0.30 : 0.16),
+                    color: t.browseChip.withValues(
+                      alpha: _priorityFilter == 'all' ? 0.30 : 0.16,
+                    ),
                     borderRadius: BorderRadius.circular(t.radius.pill),
-                    border: Border.all(color: t.browseBorder.withValues(alpha: _priorityFilter == 'all' ? 0.72 : 0.35)),
+                    border: Border.all(
+                      color: t.browseBorder.withValues(
+                        alpha: _priorityFilter == 'all' ? 0.72 : 0.35,
+                      ),
+                    ),
                   ),
                   child: Text(
                     '全部 ${rows.length}',
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: t.textPrimary,
-                          fontWeight: _priorityFilter == 'all' ? FontWeight.w800 : FontWeight.w700,
-                        ),
+                      color: t.textPrimary,
+                      fontWeight: _priorityFilter == 'all'
+                          ? FontWeight.w800
+                          : FontWeight.w700,
+                    ),
                   ),
                 ),
               ),
@@ -419,10 +476,10 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
             Text(
               summary,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: t.textSecondary,
-                    height: 1.4,
-                    fontWeight: FontWeight.w600,
-                  ),
+                color: t.textSecondary,
+                height: 1.4,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ],
         ],
@@ -442,7 +499,8 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
     int high = (summary['high'] as num?)?.toInt() ?? 0;
     int medium = (summary['medium'] as num?)?.toInt() ?? 0;
     int low = (summary['low'] as num?)?.toInt() ?? 0;
-    final weakModulesRaw = (summary['weak_modules'] as List<dynamic>? ?? const []);
+    final weakModulesRaw =
+        (summary['weak_modules'] as List<dynamic>? ?? const []);
     final weakModulesFromServer = weakModulesRaw
         .map((e) {
           if (e is Map<String, dynamic>) {
@@ -459,7 +517,11 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
         .where((e) => e.isNotEmpty)
         .toList();
     final weakModuleLabels = weakModulesRaw
-        .map((e) => e is Map<String, dynamic> ? (e['label'] ?? '').toString().trim() : e.toString().trim())
+        .map(
+          (e) => e is Map<String, dynamic>
+              ? (e['label'] ?? '').toString().trim()
+              : e.toString().trim(),
+        )
         .where((e) => e.isNotEmpty)
         .toList();
     final hasServerSummary = summary.isNotEmpty && (high + medium + low) > 0;
@@ -468,7 +530,10 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
       medium = 0;
       low = 0;
       for (final row in rows) {
-        final level = (row['evidence_strength'] ?? '').toString().trim().toLowerCase();
+        final level = (row['evidence_strength'] ?? '')
+            .toString()
+            .trim()
+            .toLowerCase();
         if (level == 'high') {
           high++;
         } else if (level == 'medium') {
@@ -499,11 +564,20 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
       topSummary = '当前最需补强证据：${weakModulesFromServer.join("、")}';
     } else {
       final top = rows.firstWhere(
-        (r) => (r['evidence_strength'] ?? '').toString().trim().toLowerCase() == 'low',
+        (r) =>
+            (r['evidence_strength'] ?? '').toString().trim().toLowerCase() ==
+            'low',
         orElse: () => rows.first,
       );
       final fallbackWeak = rows
-          .where((r) => (r['evidence_strength'] ?? '').toString().trim().toLowerCase() == 'low')
+          .where(
+            (r) =>
+                (r['evidence_strength'] ?? '')
+                    .toString()
+                    .trim()
+                    .toLowerCase() ==
+                'low',
+          )
           .map((r) => (r['label'] ?? '').toString().trim())
           .where((e) => e.isNotEmpty)
           .toSet()
@@ -513,7 +587,9 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
         weakModules.add({'label': item, 'tooltip': item});
       }
       final topLabel = (top['label'] ?? '').toString().trim();
-      final topReason = (top['evidence_strength_reason'] ?? '').toString().trim();
+      final topReason = (top['evidence_strength_reason'] ?? '')
+          .toString()
+          .trim();
       topSummary = topReason.isEmpty
           ? '当前最需补强证据：${topLabel.isEmpty ? "匹配项" : topLabel}'
           : '当前最需补强证据：${topLabel.isEmpty ? "匹配项" : topLabel}（$topReason）';
@@ -534,14 +610,16 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
         decoration: BoxDecoration(
           color: color.withValues(alpha: selected ? 0.24 : 0.15),
           borderRadius: BorderRadius.circular(t.radius.pill),
-          border: Border.all(color: color.withValues(alpha: selected ? 0.62 : 0.33)),
+          border: Border.all(
+            color: color.withValues(alpha: selected ? 0.62 : 0.33),
+          ),
         ),
         child: Text(
           '$label $count',
           style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                color: color,
-                fontWeight: selected ? FontWeight.w800 : FontWeight.w700,
-              ),
+            color: color,
+            fontWeight: selected ? FontWeight.w800 : FontWeight.w700,
+          ),
         ),
       );
     }
@@ -560,9 +638,9 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
           Text(
             '证据强度分布',
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  color: t.textPrimary,
-                  fontWeight: FontWeight.w700,
-                ),
+              color: t.textPrimary,
+              fontWeight: FontWeight.w700,
+            ),
           ),
           SizedBox(height: t.spacing.xs),
           Wrap(
@@ -578,35 +656,56 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
                     vertical: t.spacing.xxs,
                   ),
                   decoration: BoxDecoration(
-                    color: t.browseChip.withValues(alpha: _evidenceFilter == 'all' ? 0.30 : 0.16),
+                    color: t.browseChip.withValues(
+                      alpha: _evidenceFilter == 'all' ? 0.30 : 0.16,
+                    ),
                     borderRadius: BorderRadius.circular(t.radius.pill),
                     border: Border.all(
-                      color: t.browseBorder.withValues(alpha: _evidenceFilter == 'all' ? 0.72 : 0.35),
+                      color: t.browseBorder.withValues(
+                        alpha: _evidenceFilter == 'all' ? 0.72 : 0.35,
+                      ),
                     ),
                   ),
                   child: Text(
                     '全部 ${rows.length}',
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: t.textPrimary,
-                          fontWeight: _evidenceFilter == 'all' ? FontWeight.w800 : FontWeight.w700,
-                        ),
+                      color: t.textPrimary,
+                      fontWeight: _evidenceFilter == 'all'
+                          ? FontWeight.w800
+                          : FontWeight.w700,
+                    ),
                   ),
                 ),
               ),
               InkWell(
                 borderRadius: BorderRadius.circular(t.radius.pill),
                 onTap: () => onFilterChange('high'),
-                child: chip(key: 'high', label: '证据强', count: high, color: t.success),
+                child: chip(
+                  key: 'high',
+                  label: '证据强',
+                  count: high,
+                  color: t.success,
+                ),
               ),
               InkWell(
                 borderRadius: BorderRadius.circular(t.radius.pill),
                 onTap: () => onFilterChange('medium'),
-                child: chip(key: 'medium', label: '证据中', count: medium, color: t.warning),
+                child: chip(
+                  key: 'medium',
+                  label: '证据中',
+                  count: medium,
+                  color: t.warning,
+                ),
               ),
               InkWell(
                 borderRadius: BorderRadius.circular(t.radius.pill),
                 onTap: () => onFilterChange('low'),
-                child: chip(key: 'low', label: '证据弱', count: low, color: t.error),
+                child: chip(
+                  key: 'low',
+                  label: '证据弱',
+                  count: low,
+                  color: t.error,
+                ),
               ),
             ],
           ),
@@ -614,10 +713,10 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
           Text(
             topSummary,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: t.textSecondary,
-                  height: 1.4,
-                  fontWeight: FontWeight.w600,
-                ),
+              color: t.textSecondary,
+              height: 1.4,
+              fontWeight: FontWeight.w600,
+            ),
           ),
           if (weakModules.isNotEmpty) ...[
             SizedBox(height: t.spacing.xs),
@@ -675,9 +774,154 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
     }
   }
 
+  String _confidenceFilterLabel() {
+    switch (_confidenceFilter) {
+      case 'high':
+        return '高置信';
+      case 'medium':
+        return '中置信';
+      case 'low':
+        return '低置信';
+      default:
+        return '全部置信等级';
+    }
+  }
+
+  Widget _confidenceTierOverview(
+    BuildContext context, {
+    required List<Map<String, dynamic>> rows,
+    required ValueChanged<String> onFilterChange,
+  }) {
+    final t = context.appTokens;
+    final high = rows
+        .where(
+          (e) =>
+              (e['confidence_tier'] ?? '').toString().trim().toLowerCase() ==
+              'high',
+        )
+        .length;
+    final medium = rows
+        .where(
+          (e) =>
+              (e['confidence_tier'] ?? '').toString().trim().toLowerCase() ==
+              'medium',
+        )
+        .length;
+    final low = rows
+        .where(
+          (e) =>
+              (e['confidence_tier'] ?? '').toString().trim().toLowerCase() ==
+              'low',
+        )
+        .length;
+
+    Widget chip({
+      required String key,
+      required String label,
+      required int count,
+      required Color color,
+    }) {
+      final selected = _confidenceFilter == key;
+      return InkWell(
+        borderRadius: BorderRadius.circular(t.radius.pill),
+        onTap: () => onFilterChange(key),
+        child: Container(
+          padding: EdgeInsets.symmetric(
+            horizontal: t.spacing.xs,
+            vertical: t.spacing.xxs,
+          ),
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: selected ? 0.24 : 0.15),
+            borderRadius: BorderRadius.circular(t.radius.pill),
+            border: Border.all(
+              color: color.withValues(alpha: selected ? 0.62 : 0.33),
+            ),
+          ),
+          child: Text(
+            '$label $count',
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              color: color,
+              fontWeight: selected ? FontWeight.w800 : FontWeight.w700,
+            ),
+          ),
+        ),
+      );
+    }
+
+    return Container(
+      margin: EdgeInsets.only(bottom: t.spacing.sm),
+      padding: EdgeInsets.all(t.spacing.cardPadding),
+      decoration: BoxDecoration(
+        color: t.browseSurface,
+        borderRadius: BorderRadius.circular(t.radius.lg),
+        border: Border.all(color: t.browseBorder),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            '置信等级分布',
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+              color: t.textPrimary,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          SizedBox(height: t.spacing.xs),
+          Wrap(
+            spacing: t.spacing.xs,
+            runSpacing: t.spacing.xs,
+            children: [
+              InkWell(
+                borderRadius: BorderRadius.circular(t.radius.pill),
+                onTap: () => onFilterChange('all'),
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: t.spacing.xs,
+                    vertical: t.spacing.xxs,
+                  ),
+                  decoration: BoxDecoration(
+                    color: t.browseChip.withValues(
+                      alpha: _confidenceFilter == 'all' ? 0.30 : 0.16,
+                    ),
+                    borderRadius: BorderRadius.circular(t.radius.pill),
+                    border: Border.all(
+                      color: t.browseBorder.withValues(
+                        alpha: _confidenceFilter == 'all' ? 0.72 : 0.35,
+                      ),
+                    ),
+                  ),
+                  child: Text(
+                    '全部 ${rows.length}',
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: t.textPrimary,
+                      fontWeight: _confidenceFilter == 'all'
+                          ? FontWeight.w800
+                          : FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ),
+              chip(key: 'high', label: '高置信', count: high, color: t.success),
+              chip(
+                key: 'medium',
+                label: '中置信',
+                count: medium,
+                color: t.warning,
+              ),
+              chip(key: 'low', label: '低置信', count: low, color: t.error),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _activeFilterSummary(BuildContext context) {
     final t = context.appTokens;
-    final hasFilter = _priorityFilter != 'all' || _evidenceFilter != 'all';
+    final hasFilter =
+        _priorityFilter != 'all' ||
+        _evidenceFilter != 'all' ||
+        _confidenceFilter != 'all';
     if (!hasFilter) return const SizedBox.shrink();
     return Container(
       margin: EdgeInsets.only(bottom: t.spacing.sm),
@@ -694,11 +938,11 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
         children: [
           Expanded(
             child: Text(
-              '当前筛选：${_priorityFilterLabel()} / ${_evidenceFilterLabel()}',
+              '当前筛选：${_priorityFilterLabel()} / ${_evidenceFilterLabel()} / ${_confidenceFilterLabel()}',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: t.textSecondary,
-                    fontWeight: FontWeight.w700,
-                  ),
+                color: t.textSecondary,
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ),
           TextButton(
@@ -706,6 +950,7 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
               setState(() {
                 _priorityFilter = 'all';
                 _evidenceFilter = 'all';
+                _confidenceFilter = 'all';
               });
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
@@ -744,11 +989,11 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
   ) {
     final sections = <MatchEvidenceReferenceSection>[];
     for (final row in rows) {
-      final coreRefs = (row['core_tag_refs'] as Map<String, dynamic>? ?? const {})
-          .values
-          .map((e) => e.toString().trim())
-          .where((e) => e.isNotEmpty)
-          .toList();
+      final coreRefs =
+          (row['core_tag_refs'] as Map<String, dynamic>? ?? const {}).values
+              .map((e) => e.toString().trim())
+              .where((e) => e.isNotEmpty)
+              .toList();
       final auxRefs = (row['aux_tag_refs'] as Map<String, dynamic>? ?? const {})
           .values
           .map((e) => e.toString().trim())
@@ -822,359 +1067,608 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
       ),
       body: async.when(
         loading: () => const AppLoadingSkeleton(lines: 7),
-        error: (e, _) => AppErrorState(title: '详情加载失败', description: e.toString()),
+        error: (e, _) =>
+            AppErrorState(title: '详情加载失败', description: e.toString()),
         data: (data) {
           final grouped = _groupReasons(data.reasons);
           final maxReasonCount = _expanded ? 99 : 3;
           final maxInsightCount = _expanded ? 99 : 3;
-          final visibleHighlights = grouped.highlights.take(maxReasonCount).toList();
+          final visibleHighlights = grouped.highlights
+              .take(maxReasonCount)
+              .toList();
           final visibleRisks = grouped.risks.take(maxReasonCount).toList();
-          final visibleInsights = data.moduleInsights.take(maxInsightCount).toList();
-          final explanationRowsAll = data.moduleExplanations
-              .where((e) => ((e['label'] ?? '').toString().trim().isNotEmpty))
-              .toList()
-            ..sort((a, b) {
-              final pa = (a['priority'] as num?)?.toInt() ?? -1;
-              final pb = (b['priority'] as num?)?.toInt() ?? -1;
-              if (pa != pb) return pb.compareTo(pa); // server priority first
-              final ra = _riskRank(a);
-              final rb = _riskRank(b);
-              if (ra != rb) return rb.compareTo(ra); // high-risk first
-              final ca = (a['confidence'] as num?)?.toDouble() ?? 0.5;
-              final cb = (b['confidence'] as num?)?.toDouble() ?? 0.5;
-              if (ca != cb) return ca.compareTo(cb); // lower confidence first
-              final sa = (a['score'] as num?)?.toInt() ?? 0;
-              final sb = (b['score'] as num?)?.toInt() ?? 0;
-              return sa.compareTo(sb); // then low-score first
-            });
-          final visibleExplanationRows =
-              explanationRowsAll.take(maxInsightCount).toList();
+          final visibleInsights = data.moduleInsights
+              .take(maxInsightCount)
+              .toList();
+          final explanationRowsAll =
+              data.moduleExplanations
+                  .where(
+                    (e) => ((e['label'] ?? '').toString().trim().isNotEmpty),
+                  )
+                  .toList()
+                ..sort((a, b) {
+                  final pa = (a['priority'] as num?)?.toInt() ?? -1;
+                  final pb = (b['priority'] as num?)?.toInt() ?? -1;
+                  if (pa != pb) {
+                    return pb.compareTo(pa); // server priority first
+                  }
+                  final ra = _riskRank(a);
+                  final rb = _riskRank(b);
+                  if (ra != rb) return rb.compareTo(ra); // high-risk first
+                  final ca = (a['confidence'] as num?)?.toDouble() ?? 0.5;
+                  final cb = (b['confidence'] as num?)?.toDouble() ?? 0.5;
+                  if (ca != cb) {
+                    return ca.compareTo(cb); // lower confidence first
+                  }
+                  final sa = (a['score'] as num?)?.toInt() ?? 0;
+                  final sb = (b['score'] as num?)?.toInt() ?? 0;
+                  return sa.compareTo(sb); // then low-score first
+                });
+          final visibleExplanationRows = explanationRowsAll
+              .take(maxInsightCount)
+              .toList();
           final filteredExplanationRows = _priorityFilter == 'all'
               ? visibleExplanationRows
               : visibleExplanationRows
-                  .where((e) => _normalizePriorityLevel(e) == _priorityFilter)
-                  .toList();
+                    .where((e) => _normalizePriorityLevel(e) == _priorityFilter)
+                    .toList();
           final evidenceFilteredRows = _evidenceFilter == 'all'
               ? filteredExplanationRows
               : filteredExplanationRows
-                  .where(
-                    (e) =>
-                        (e['evidence_strength'] ?? '').toString().trim().toLowerCase() ==
-                        _evidenceFilter,
-                  )
-                  .toList();
-          final referenceSections = _buildReferenceSections(evidenceFilteredRows);
+                    .where(
+                      (e) =>
+                          (e['evidence_strength'] ?? '')
+                              .toString()
+                              .trim()
+                              .toLowerCase() ==
+                          _evidenceFilter,
+                    )
+                    .toList();
+          final confidenceFilteredRows = _confidenceFilter == 'all'
+              ? evidenceFilteredRows
+              : evidenceFilteredRows
+                    .where(
+                      (e) =>
+                          (e['confidence_tier'] ?? '')
+                              .toString()
+                              .trim()
+                              .toLowerCase() ==
+                          _confidenceFilter,
+                    )
+                    .toList();
+          final referenceSections = _buildReferenceSections(
+            confidenceFilteredRows,
+          );
           final groupedExplanations = <String, List<Map<String, dynamic>>>{
             'high': [],
             'medium': [],
             'low': [],
           };
           final anchoredLabels = <String>{};
-          for (final row in evidenceFilteredRows) {
+          for (final row in confidenceFilteredRows) {
             groupedExplanations[_normalizeRiskLevel(row)]!.add(row);
           }
           final hasMoreReasons =
-              grouped.highlights.length > visibleHighlights.length || grouped.risks.length > visibleRisks.length;
+              grouped.highlights.length > visibleHighlights.length ||
+              grouped.risks.length > visibleRisks.length;
           final hasMoreInsights = explanationRowsAll.isNotEmpty
               ? explanationRowsAll.length > visibleExplanationRows.length
               : data.moduleInsights.length > visibleInsights.length;
           final canExpand = hasMoreReasons || hasMoreInsights;
-          final mergedGlossary = <String, String>{..._termGlossary, ...data.reasonGlossary};
+          final mergedGlossary = <String, String>{
+            ..._termGlossary,
+            ...data.reasonGlossary,
+          };
           final glossaryEntries = _collectGlossary([
             ...data.reasons,
             ...visibleInsights,
           ], serverGlossary: data.reasonGlossary);
+          final compatibilitySections = data.compatibilitySections.entries
+              .where((entry) => entry.value.isNotEmpty)
+              .toList();
           return ListView(
             padding: EdgeInsets.only(top: t.spacing.sm, bottom: t.spacing.xl),
             children: [
-            const SectionReveal(
-              child: PageTitleRail(
-                title: '匹配解释',
-                subtitle: '先看关系解释，再看参数补充',
+              const SectionReveal(
+                child: PageTitleRail(title: '匹配解释', subtitle: '先看关系解释，再看参数补充'),
               ),
-            ),
-            SizedBox(height: t.spacing.md),
-            if (grouped.highlights.isNotEmpty)
-              SectionReveal(
-                delay: const Duration(milliseconds: 60),
-                child: _reasonSectionCard(
-                  context,
-                  title: '核心亮点',
-                  items: visibleHighlights,
-                  icon: Icons.check_circle_outline_rounded,
-                  color: t.success,
+              SizedBox(height: t.spacing.md),
+              if (grouped.highlights.isNotEmpty)
+                SectionReveal(
+                  delay: const Duration(milliseconds: 60),
+                  child: _reasonSectionCard(
+                    context,
+                    title: '核心亮点',
+                    items: visibleHighlights,
+                    icon: Icons.check_circle_outline_rounded,
+                    color: t.success,
+                  ),
                 ),
-              ),
-            if (grouped.risks.isNotEmpty)
-              SectionReveal(
-                delay: const Duration(milliseconds: 90),
-                child: _reasonSectionCard(
-                  context,
-                  title: '需要留意',
-                  items: visibleRisks,
-                  icon: Icons.warning_amber_rounded,
-                  color: t.warning,
+              if (grouped.risks.isNotEmpty)
+                SectionReveal(
+                  delay: const Duration(milliseconds: 90),
+                  child: _reasonSectionCard(
+                    context,
+                    title: '需要留意',
+                    items: visibleRisks,
+                    icon: Icons.warning_amber_rounded,
+                    color: t.warning,
+                  ),
                 ),
-              ),
-            if (grouped.highlights.isEmpty && grouped.risks.isEmpty)
-              ...List.generate(data.reasons.length, (index) {
-                return SectionReveal(
-                  delay: Duration(milliseconds: 40 * (index + 1)),
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: MatchReasonCard(
-                      reason: '${_reasonHeadline(index)}\n${data.reasons[index]}',
+              if (grouped.highlights.isEmpty && grouped.risks.isEmpty)
+                ...List.generate(data.reasons.length, (index) {
+                  return SectionReveal(
+                    delay: Duration(milliseconds: 40 * (index + 1)),
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: MatchReasonCard(
+                        reason:
+                            '${_reasonHeadline(index)}\n${data.reasons[index]}',
+                      ),
+                    ),
+                  );
+                }),
+              if (compatibilitySections.isNotEmpty)
+                SectionReveal(
+                  delay: const Duration(milliseconds: 160),
+                  child: Container(
+                    margin: EdgeInsets.only(bottom: t.spacing.sm),
+                    padding: EdgeInsets.all(t.spacing.cardPadding),
+                    decoration: BoxDecoration(
+                      color: t.browseSurface,
+                      borderRadius: BorderRadius.circular(t.radius.lg),
+                      border: Border.all(color: t.browseBorder),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '关系分层',
+                          style: Theme.of(context).textTheme.titleSmall
+                              ?.copyWith(
+                                color: t.textPrimary,
+                                fontWeight: FontWeight.w700,
+                              ),
+                        ),
+                        SizedBox(height: t.spacing.xs),
+                        ...compatibilitySections.map((entry) {
+                          final rows = entry.value;
+                          final avg = rows.isEmpty
+                              ? 0
+                              : (rows
+                                            .map(
+                                              (e) =>
+                                                  (e['score'] as num?)
+                                                      ?.toInt() ??
+                                                  0,
+                                            )
+                                            .reduce((a, b) => a + b) /
+                                        rows.length)
+                                    .round();
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 8),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        _compatSectionTitle(entry.key),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium
+                                            ?.copyWith(
+                                              color: t.textPrimary,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                      ),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        _compatSectionHint(entry.key),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodySmall
+                                            ?.copyWith(color: t.textSecondary),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 4,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: t.browseSurface.withValues(
+                                      alpha: 0.78,
+                                    ),
+                                    borderRadius: BorderRadius.circular(999),
+                                    border: Border.all(color: t.browseBorder),
+                                  ),
+                                  child: Text(
+                                    '$avg分 · ${rows.length}项',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .labelMedium
+                                        ?.copyWith(
+                                          color: t.textPrimary,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }),
+                      ],
                     ),
                   ),
-                );
-              }),
-            if (data.moduleScores.isNotEmpty)
-              SectionReveal(
-                delay: const Duration(milliseconds: 180),
-                child: Container(
-                  margin: EdgeInsets.only(bottom: t.spacing.sm),
-                  padding: EdgeInsets.all(t.spacing.cardPadding),
-                  decoration: BoxDecoration(
-                    color: t.browseSurface,
-                    borderRadius: BorderRadius.circular(t.radius.lg),
-                    border: Border.all(color: t.browseBorder),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '分项解释分',
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                              color: t.textPrimary,
-                              fontWeight: FontWeight.w700,
+                ),
+              if (data.moduleScores.isNotEmpty)
+                SectionReveal(
+                  delay: const Duration(milliseconds: 180),
+                  child: Container(
+                    margin: EdgeInsets.only(bottom: t.spacing.sm),
+                    padding: EdgeInsets.all(t.spacing.cardPadding),
+                    decoration: BoxDecoration(
+                      color: t.browseSurface,
+                      borderRadius: BorderRadius.circular(t.radius.lg),
+                      border: Border.all(color: t.browseBorder),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '分项解释分',
+                          style: Theme.of(context).textTheme.titleSmall
+                              ?.copyWith(
+                                color: t.textPrimary,
+                                fontWeight: FontWeight.w700,
+                              ),
+                        ),
+                        SizedBox(height: t.spacing.xs),
+                        ...data.moduleScores.entries.map(
+                          (e) => Padding(
+                            padding: const EdgeInsets.only(bottom: 4),
+                            child: Text(
+                              '${e.key}: ${e.value}分',
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(color: t.textSecondary),
                             ),
-                      ),
-                      SizedBox(height: t.spacing.xs),
-                      ...data.moduleScores.entries.map(
-                        (e) => Padding(
-                          padding: const EdgeInsets.only(bottom: 4),
-                          child: Text(
-                            '${e.key}: ${e.value}分',
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  color: t.textSecondary,
-                                ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            if (data.moduleInsights.isNotEmpty || data.moduleExplanations.isNotEmpty)
-              SectionReveal(
-                delay: const Duration(milliseconds: 200),
-                child: Container(
-                  margin: EdgeInsets.only(bottom: t.spacing.sm),
-                  padding: EdgeInsets.all(t.spacing.cardPadding),
-                  decoration: BoxDecoration(
-                    color: t.browseSurface,
-                    borderRadius: BorderRadius.circular(t.radius.lg),
-                    border: Border.all(color: t.browseBorder),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '模块解释',
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                              color: t.textPrimary,
-                              fontWeight: FontWeight.w700,
-                            ),
-                      ),
-                      SizedBox(height: t.spacing.xs),
-                      if (env.isDev)
-                        Padding(
-                          padding: EdgeInsets.only(bottom: t.spacing.xs),
-                          child: Row(
-                            children: [
-                              TextButton.icon(
-                                onPressed: () => setState(() => _showDevMetrics = !_showDevMetrics),
-                                icon: Icon(
-                                  _showDevMetrics ? Icons.bug_report_rounded : Icons.bug_report_outlined,
-                                  size: 18,
+              if (data.moduleInsights.isNotEmpty ||
+                  data.moduleExplanations.isNotEmpty)
+                SectionReveal(
+                  delay: const Duration(milliseconds: 200),
+                  child: Container(
+                    margin: EdgeInsets.only(bottom: t.spacing.sm),
+                    padding: EdgeInsets.all(t.spacing.cardPadding),
+                    decoration: BoxDecoration(
+                      color: t.browseSurface,
+                      borderRadius: BorderRadius.circular(t.radius.lg),
+                      border: Border.all(color: t.browseBorder),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '模块解释',
+                          style: Theme.of(context).textTheme.titleSmall
+                              ?.copyWith(
+                                color: t.textPrimary,
+                                fontWeight: FontWeight.w700,
+                              ),
+                        ),
+                        SizedBox(height: t.spacing.xs),
+                        if (env.isDev)
+                          Padding(
+                            padding: EdgeInsets.only(bottom: t.spacing.xs),
+                            child: Row(
+                              children: [
+                                TextButton.icon(
+                                  onPressed: () => setState(
+                                    () => _showDevMetrics = !_showDevMetrics,
+                                  ),
+                                  icon: Icon(
+                                    _showDevMetrics
+                                        ? Icons.bug_report_rounded
+                                        : Icons.bug_report_outlined,
+                                    size: 18,
+                                  ),
+                                  label: Text(
+                                    _showDevMetrics ? '关闭调试指标' : '显示调试指标',
+                                  ),
                                 ),
-                                label: Text(_showDevMetrics ? '关闭调试指标' : '显示调试指标'),
-                              ),
-                              const SizedBox(width: 8),
-                              TextButton.icon(
-                                onPressed: visibleExplanationRows.isEmpty
-                                    ? null
-                                    : () async {
-                                        final text = _buildDebugSnapshot(visibleExplanationRows);
-                                        await Clipboard.setData(ClipboardData(text: text));
-                                        if (context.mounted) {
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            const SnackBar(content: Text('已复制调试快照')),
+                                const SizedBox(width: 8),
+                                TextButton.icon(
+                                  onPressed: visibleExplanationRows.isEmpty
+                                      ? null
+                                      : () async {
+                                          final text = _buildDebugSnapshot(
+                                            visibleExplanationRows,
                                           );
-                                        }
-                                      },
-                                icon: const Icon(Icons.copy_rounded, size: 18),
-                                label: const Text('复制调试快照'),
-                              ),
-                            ],
-                          ),
-                        ),
-                      if (visibleExplanationRows.isNotEmpty)
-                        _evidenceStrengthOverview(
-                          context,
-                          rows: visibleExplanationRows,
-                          summary: data.evidenceStrengthSummary,
-                          onFilterChange: (v) => setState(() => _evidenceFilter = v),
-                          onWeakModuleTap: _focusWeakModule,
-                        ),
-                      if (visibleExplanationRows.isNotEmpty)
-                        _modulePriorityOverview(
-                          context,
-                          rows: visibleExplanationRows,
-                          onFilterChange: (v) => setState(() => _priorityFilter = v),
-                        ),
-                      _activeFilterSummary(context),
-                      if (evidenceFilteredRows.isNotEmpty)
-                        ...['high', 'medium', 'low'].expand((level) {
-                          final rows = groupedExplanations[level] ?? const <Map<String, dynamic>>[];
-                          if (rows.isEmpty) return const <Widget>[];
-                          return <Widget>[
-                            Padding(
-                              padding: EdgeInsets.only(
-                                top: level == 'high' ? 0 : t.spacing.xs,
-                                bottom: t.spacing.xs,
-                              ),
-                              child: Text(
-                                _riskSectionTitle(level),
-                                style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                                      color: t.textSecondary,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                              ),
+                                          await Clipboard.setData(
+                                            ClipboardData(text: text),
+                                          );
+                                          if (context.mounted) {
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              const SnackBar(
+                                                content: Text('已复制调试快照'),
+                                              ),
+                                            );
+                                          }
+                                        },
+                                  icon: const Icon(
+                                    Icons.copy_rounded,
+                                    size: 18,
+                                  ),
+                                  label: const Text('复制调试快照'),
+                                ),
+                              ],
                             ),
-                            ...rows.map((row) {
-                              final module = (row['label'] ?? '').toString().trim();
-                              final score = (row['score'] as num?)?.toInt() ?? 0;
-                              final confidence = (row['confidence'] as num?)?.toDouble();
-                              final degraded = (row['degraded'] as bool?) ?? false;
-                              final degradeReason = (row['degrade_reason'] ?? '').toString().trim();
-                              final priority = (row['priority'] as num?)?.toInt();
-                              final priorityRank = (row['priority_rank'] as num?)?.toInt();
-                              final priorityLevel = (row['priority_level'] ?? '').toString().trim();
-                              final priorityReason = (row['priority_reason'] ?? '').toString().trim();
-                              final evidenceStrength = (row['evidence_strength'] ?? '').toString().trim();
-                              final evidenceStrengthReason =
-                                  (row['evidence_strength_reason'] ?? '').toString().trim();
-                              final reason = (row['reason'] ?? '暂无说明').toString().trim();
-                              final riskRaw = (row['risk'] ?? '').toString().trim();
-                              final riskLevel = _normalizeRiskLevel(row);
-                              final tags = (row['tags'] as List<dynamic>? ?? const [])
-                                  .map((e) => e.toString().trim())
-                                  .where((e) => e.isNotEmpty)
-                                  .toList();
-                              final coreTags = (row['core_tags'] as List<dynamic>? ?? const [])
-                                  .map((e) => e.toString().trim())
-                                  .where((e) => e.isNotEmpty)
-                                  .toList();
-                              final auxTags = (row['aux_tags'] as List<dynamic>? ?? const [])
-                                  .map((e) => e.toString().trim())
-                                  .where((e) => e.isNotEmpty)
-                                  .toList();
-                              final coreTagExplains =
-                                  (row['core_tag_explains'] as Map<String, dynamic>? ?? const {})
-                                      .map((k, v) => MapEntry(k.toString(), v.toString()));
-                              final auxTagExplains =
-                                  (row['aux_tag_explains'] as Map<String, dynamic>? ?? const {})
-                                      .map((k, v) => MapEntry(k.toString(), v.toString()));
-                              final coreTagRefs =
-                                  (row['core_tag_refs'] as Map<String, dynamic>? ?? const {})
-                                      .map((k, v) => MapEntry(k.toString(), v.toString()));
-                              final auxTagRefs =
-                                  (row['aux_tag_refs'] as Map<String, dynamic>? ?? const {})
-                                      .map((k, v) => MapEntry(k.toString(), v.toString()));
-                              final moduleLabel = module.isEmpty ? '匹配项' : module;
-                              final shouldAnchor = !anchoredLabels.contains(moduleLabel);
-                              if (shouldAnchor) {
-                                anchoredLabels.add(moduleLabel);
-                              }
-                              final highlighted = _focusedModuleLabel.isNotEmpty &&
-                                  moduleLabel == _focusedModuleLabel;
-                              return MatchModuleInsightCard(
-                                key: shouldAnchor
-                                    ? (_moduleAnchorKeys[moduleLabel] ??= GlobalKey())
-                                    : null,
-                                module: moduleLabel,
-                                score: score,
-                                reason: reason.isEmpty ? '暂无说明' : reason,
-                                risk: riskRaw.isEmpty ? null : riskRaw,
-                                riskLevel: riskLevel,
-                                confidence: confidence,
-                                degraded: degraded,
-                                degradeReason: degradeReason.isEmpty ? null : degradeReason,
-                                priority: priority,
-                                priorityRank: priorityRank,
-                                priorityLevel: priorityLevel.isEmpty ? null : priorityLevel,
-                                priorityReason: priorityReason.isEmpty ? null : priorityReason,
-                                evidenceStrength: evidenceStrength.isEmpty ? null : evidenceStrength,
-                                evidenceStrengthReason:
-                                    evidenceStrengthReason.isEmpty ? null : evidenceStrengthReason,
-                                highlighted: highlighted,
-                                showDebugMeta: env.isDev && _showDevMetrics,
-                                debugCopyText: _buildModuleDebugText(row),
-                                tags: tags,
-                                coreTags: coreTags,
-                                auxTags: auxTags,
-                                coreTagExplains: coreTagExplains,
-                                auxTagExplains: auxTagExplains,
-                                coreTagRefs: coreTagRefs,
-                                auxTagRefs: auxTagRefs,
-                                glossary: mergedGlossary,
-                              );
-                            }),
-                          ];
-                        })
-                      else if (visibleExplanationRows.isNotEmpty)
-                        Container(
-                          width: double.infinity,
-                          margin: EdgeInsets.only(bottom: t.spacing.xs),
-                          padding: EdgeInsets.all(t.spacing.cardPadding),
-                          decoration: BoxDecoration(
-                            color: t.browseChip.withValues(alpha: 0.16),
-                            borderRadius: BorderRadius.circular(t.radius.md),
-                            border: Border.all(color: t.browseBorder),
                           ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                '当前筛选无结果',
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                      color: t.textPrimary,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                              ),
-                              SizedBox(height: t.spacing.xxs),
-                              Text(
-                                '试试切换到“全部”或其他证据/关注级别查看模块解释。',
-                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                      color: t.textSecondary,
-                                      height: 1.4,
-                                    ),
-                              ),
-                              SizedBox(height: t.spacing.xs),
-                              TextButton(
-                                onPressed: () => setState(() {
-                                  _priorityFilter = 'all';
-                                  _evidenceFilter = 'all';
-                                }),
-                                child: const Text('重置为全部'),
-                              ),
-                            ],
+                        if (visibleExplanationRows.isNotEmpty)
+                          _evidenceStrengthOverview(
+                            context,
+                            rows: visibleExplanationRows,
+                            summary: data.evidenceStrengthSummary,
+                            onFilterChange: (v) =>
+                                setState(() => _evidenceFilter = v),
+                            onWeakModuleTap: _focusWeakModule,
                           ),
-                        )
-                      else
-                        ...visibleInsights.map(
-                          (line) {
+                        if (visibleExplanationRows.isNotEmpty)
+                          _modulePriorityOverview(
+                            context,
+                            rows: visibleExplanationRows,
+                            onFilterChange: (v) =>
+                                setState(() => _priorityFilter = v),
+                          ),
+                        if (visibleExplanationRows.isNotEmpty)
+                          _confidenceTierOverview(
+                            context,
+                            rows: visibleExplanationRows,
+                            onFilterChange: (v) =>
+                                setState(() => _confidenceFilter = v),
+                          ),
+                        _activeFilterSummary(context),
+                        if (confidenceFilteredRows.isNotEmpty)
+                          ...['high', 'medium', 'low'].expand((level) {
+                            final rows =
+                                groupedExplanations[level] ??
+                                const <Map<String, dynamic>>[];
+                            if (rows.isEmpty) return const <Widget>[];
+                            return <Widget>[
+                              Padding(
+                                padding: EdgeInsets.only(
+                                  top: level == 'high' ? 0 : t.spacing.xs,
+                                  bottom: t.spacing.xs,
+                                ),
+                                child: Text(
+                                  _riskSectionTitle(level),
+                                  style: Theme.of(context).textTheme.labelLarge
+                                      ?.copyWith(
+                                        color: t.textSecondary,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                ),
+                              ),
+                              ...rows.map((row) {
+                                final module = (row['label'] ?? '')
+                                    .toString()
+                                    .trim();
+                                final score =
+                                    (row['score'] as num?)?.toInt() ?? 0;
+                                final confidence = (row['confidence'] as num?)
+                                    ?.toDouble();
+                                final confidenceTier =
+                                    (row['confidence_tier'] ?? '')
+                                        .toString()
+                                        .trim()
+                                        .toLowerCase();
+                                final degraded =
+                                    (row['degraded'] as bool?) ?? false;
+                                final degradeReason =
+                                    (row['degrade_reason'] ?? '')
+                                        .toString()
+                                        .trim();
+                                final priority = (row['priority'] as num?)
+                                    ?.toInt();
+                                final priorityRank =
+                                    (row['priority_rank'] as num?)?.toInt();
+                                final priorityLevel =
+                                    (row['priority_level'] ?? '')
+                                        .toString()
+                                        .trim();
+                                final priorityReason =
+                                    (row['priority_reason'] ?? '')
+                                        .toString()
+                                        .trim();
+                                final evidenceStrength =
+                                    (row['evidence_strength'] ?? '')
+                                        .toString()
+                                        .trim();
+                                final evidenceStrengthReason =
+                                    (row['evidence_strength_reason'] ?? '')
+                                        .toString()
+                                        .trim();
+                                final reason = (row['reason'] ?? '暂无说明')
+                                    .toString()
+                                    .trim();
+                                final riskRaw = (row['risk'] ?? '')
+                                    .toString()
+                                    .trim();
+                                final riskLevel = _normalizeRiskLevel(row);
+                                final tags =
+                                    (row['tags'] as List<dynamic>? ?? const [])
+                                        .map((e) => e.toString().trim())
+                                        .where((e) => e.isNotEmpty)
+                                        .toList();
+                                final coreTags =
+                                    (row['core_tags'] as List<dynamic>? ??
+                                            const [])
+                                        .map((e) => e.toString().trim())
+                                        .where((e) => e.isNotEmpty)
+                                        .toList();
+                                final auxTags =
+                                    (row['aux_tags'] as List<dynamic>? ??
+                                            const [])
+                                        .map((e) => e.toString().trim())
+                                        .where((e) => e.isNotEmpty)
+                                        .toList();
+                                final coreTagExplains =
+                                    (row['core_tag_explains']
+                                                as Map<String, dynamic>? ??
+                                            const {})
+                                        .map(
+                                          (k, v) => MapEntry(
+                                            k.toString(),
+                                            v.toString(),
+                                          ),
+                                        );
+                                final auxTagExplains =
+                                    (row['aux_tag_explains']
+                                                as Map<String, dynamic>? ??
+                                            const {})
+                                        .map(
+                                          (k, v) => MapEntry(
+                                            k.toString(),
+                                            v.toString(),
+                                          ),
+                                        );
+                                final coreTagRefs =
+                                    (row['core_tag_refs']
+                                                as Map<String, dynamic>? ??
+                                            const {})
+                                        .map(
+                                          (k, v) => MapEntry(
+                                            k.toString(),
+                                            v.toString(),
+                                          ),
+                                        );
+                                final auxTagRefs =
+                                    (row['aux_tag_refs']
+                                                as Map<String, dynamic>? ??
+                                            const {})
+                                        .map(
+                                          (k, v) => MapEntry(
+                                            k.toString(),
+                                            v.toString(),
+                                          ),
+                                        );
+                                final moduleLabel = module.isEmpty
+                                    ? '匹配项'
+                                    : module;
+                                final shouldAnchor = !anchoredLabels.contains(
+                                  moduleLabel,
+                                );
+                                if (shouldAnchor) {
+                                  anchoredLabels.add(moduleLabel);
+                                }
+                                final highlighted =
+                                    _focusedModuleLabel.isNotEmpty &&
+                                    moduleLabel == _focusedModuleLabel;
+                                return MatchModuleInsightCard(
+                                  key: shouldAnchor
+                                      ? (_moduleAnchorKeys[moduleLabel] ??=
+                                            GlobalKey())
+                                      : null,
+                                  module: moduleLabel,
+                                  score: score,
+                                  reason: reason.isEmpty ? '暂无说明' : reason,
+                                  risk: riskRaw.isEmpty ? null : riskRaw,
+                                  riskLevel: riskLevel,
+                                  confidence: confidence,
+                                  confidenceTier: confidenceTier.isEmpty
+                                      ? null
+                                      : confidenceTier,
+                                  degraded: degraded,
+                                  degradeReason: degradeReason.isEmpty
+                                      ? null
+                                      : degradeReason,
+                                  priority: priority,
+                                  priorityRank: priorityRank,
+                                  priorityLevel: priorityLevel.isEmpty
+                                      ? null
+                                      : priorityLevel,
+                                  priorityReason: priorityReason.isEmpty
+                                      ? null
+                                      : priorityReason,
+                                  evidenceStrength: evidenceStrength.isEmpty
+                                      ? null
+                                      : evidenceStrength,
+                                  evidenceStrengthReason:
+                                      evidenceStrengthReason.isEmpty
+                                      ? null
+                                      : evidenceStrengthReason,
+                                  highlighted: highlighted,
+                                  showDebugMeta: env.isDev && _showDevMetrics,
+                                  debugCopyText: _buildModuleDebugText(row),
+                                  tags: tags,
+                                  coreTags: coreTags,
+                                  auxTags: auxTags,
+                                  coreTagExplains: coreTagExplains,
+                                  auxTagExplains: auxTagExplains,
+                                  coreTagRefs: coreTagRefs,
+                                  auxTagRefs: auxTagRefs,
+                                  glossary: mergedGlossary,
+                                );
+                              }),
+                            ];
+                          })
+                        else if (visibleExplanationRows.isNotEmpty)
+                          Container(
+                            width: double.infinity,
+                            margin: EdgeInsets.only(bottom: t.spacing.xs),
+                            padding: EdgeInsets.all(t.spacing.cardPadding),
+                            decoration: BoxDecoration(
+                              color: t.browseChip.withValues(alpha: 0.16),
+                              borderRadius: BorderRadius.circular(t.radius.md),
+                              border: Border.all(color: t.browseBorder),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '当前筛选无结果',
+                                  style: Theme.of(context).textTheme.bodyMedium
+                                      ?.copyWith(
+                                        color: t.textPrimary,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                ),
+                                SizedBox(height: t.spacing.xxs),
+                                Text(
+                                  '试试切换到“全部”或其他证据/关注级别查看模块解释。',
+                                  style: Theme.of(context).textTheme.bodySmall
+                                      ?.copyWith(
+                                        color: t.textSecondary,
+                                        height: 1.4,
+                                      ),
+                                ),
+                                SizedBox(height: t.spacing.xs),
+                                TextButton(
+                                  onPressed: () => setState(() {
+                                    _priorityFilter = 'all';
+                                    _evidenceFilter = 'all';
+                                    _confidenceFilter = 'all';
+                                  }),
+                                  child: const Text('重置为全部'),
+                                ),
+                              ],
+                            ),
+                          )
+                        else
+                          ...visibleInsights.map((line) {
                             final parsed = _parseInsightLine(line);
                             return MatchModuleInsightCard(
                               module: parsed.module,
@@ -1182,6 +1676,7 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
                               reason: parsed.reason,
                               risk: parsed.risk,
                               confidence: null,
+                              confidenceTier: null,
                               degraded: false,
                               priority: null,
                               priorityRank: null,
@@ -1189,48 +1684,55 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
                               priorityReason: null,
                               evidenceStrength: null,
                               evidenceStrengthReason: null,
-                              highlighted: _focusedModuleLabel.isNotEmpty &&
+                              highlighted:
+                                  _focusedModuleLabel.isNotEmpty &&
                                   parsed.module == _focusedModuleLabel,
                               showDebugMeta: env.isDev && _showDevMetrics,
-                              debugCopyText: '${parsed.module} | score=${parsed.score} | reason=${parsed.reason}',
+                              debugCopyText:
+                                  '${parsed.module} | score=${parsed.score} | reason=${parsed.reason}',
                               tags: parsed.tags,
                               glossary: mergedGlossary,
                             );
-                          },
-                        ),
-                    ],
-                  ),
-                ),
-              ),
-            if (canExpand)
-              SectionReveal(
-                delay: const Duration(milliseconds: 205),
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: TextButton.icon(
-                      onPressed: () => setState(() => _expanded = !_expanded),
-                      icon: Icon(_expanded ? Icons.unfold_less_rounded : Icons.unfold_more_rounded),
-                      label: Text(_expanded ? '收起详情' : '展开全部'),
+                          }),
+                      ],
                     ),
                   ),
                 ),
-              ),
-            if (glossaryEntries.isNotEmpty)
+              if (canExpand)
+                SectionReveal(
+                  delay: const Duration(milliseconds: 205),
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: TextButton.icon(
+                        onPressed: () => setState(() => _expanded = !_expanded),
+                        icon: Icon(
+                          _expanded
+                              ? Icons.unfold_less_rounded
+                              : Icons.unfold_more_rounded,
+                        ),
+                        label: Text(_expanded ? '收起详情' : '展开全部'),
+                      ),
+                    ),
+                  ),
+                ),
+              if (glossaryEntries.isNotEmpty)
+                SectionReveal(
+                  delay: const Duration(milliseconds: 210),
+                  child: MatchGlossaryCard(entries: glossaryEntries),
+                ),
+              if (referenceSections.isNotEmpty)
+                SectionReveal(
+                  delay: const Duration(milliseconds: 215),
+                  child: MatchEvidenceReferenceCard(
+                    sections: referenceSections,
+                  ),
+                ),
               SectionReveal(
-                delay: const Duration(milliseconds: 210),
-                child: MatchGlossaryCard(entries: glossaryEntries),
+                delay: const Duration(milliseconds: 220),
+                child: MatchWeightBreakdown(weights: data.weights),
               ),
-            if (referenceSections.isNotEmpty)
-              SectionReveal(
-                delay: const Duration(milliseconds: 215),
-                child: MatchEvidenceReferenceCard(sections: referenceSections),
-              ),
-            SectionReveal(
-              delay: const Duration(milliseconds: 220),
-              child: MatchWeightBreakdown(weights: data.weights),
-            ),
             ],
           );
         },

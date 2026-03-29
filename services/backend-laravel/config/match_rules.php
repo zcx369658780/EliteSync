@@ -2,11 +2,11 @@
 
 return [
     'weights' => [
-        'bazi' => 0.45,
-        'zodiac' => 0.25,
-        'constellation' => 0.08,
-        'natal_chart' => 0.07,
-        'pair_chart' => 0.15,
+        'bazi' => (float) env('MATCH_ASTRO_WEIGHT_BAZI', 0.45),
+        'zodiac' => (float) env('MATCH_ASTRO_WEIGHT_ZODIAC', 0.25),
+        'constellation' => (float) env('MATCH_ASTRO_WEIGHT_CONSTELLATION', 0.08),
+        'natal_chart' => (float) env('MATCH_ASTRO_WEIGHT_NATAL_CHART', 0.07),
+        'pair_chart' => (float) env('MATCH_ASTRO_WEIGHT_PAIR_CHART', 0.15),
     ],
 
     'verdict_thresholds' => [
