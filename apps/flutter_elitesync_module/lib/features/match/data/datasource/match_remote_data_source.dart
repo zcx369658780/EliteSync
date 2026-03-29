@@ -11,18 +11,90 @@ class MatchRemoteDataSource {
   final ApiClient apiClient;
   final bool useMock;
   int? _cachedMatchId;
+  int? _cachedPartnerId;
+  Map<String, dynamic>? _cachedDetailRaw;
+  final Map<int, _ExplanationCacheEntry> _explanationCache = <int, _ExplanationCacheEntry>{};
+  static const Duration _explanationCacheTtl = Duration(seconds: 45);
 
   Future<Map<String, dynamic>> _currentMatchRaw() async {
-    final result = await apiClient.get('/api/v1/match/current');
-    if (result is NetworkSuccess<Map<String, dynamic>>) {
-      final matchId = (result.data['match_id'] as num?)?.toInt();
-      if (matchId != null && matchId > 0) {
-        _cachedMatchId = matchId;
+    final paths = <String>[
+      '/api/v1/matches/current',
+      '/api/v1/match/current',
+    ];
+    NetworkFailure<Map<String, dynamic>>? lastFailure;
+    for (final path in paths) {
+      final result = await apiClient.get(path);
+      if (result is NetworkSuccess<Map<String, dynamic>>) {
+        final matchId = (result.data['match_id'] as num?)?.toInt();
+        final partnerId = (result.data['partner_id'] as num?)?.toInt();
+        if (matchId != null && matchId > 0) {
+          _cachedMatchId = matchId;
+        }
+        if (partnerId != null && partnerId > 0) {
+          _cachedPartnerId = partnerId;
+        }
+        _cachedDetailRaw = result.data;
+        return result.data;
       }
-      return result.data;
+      lastFailure = result as NetworkFailure<Map<String, dynamic>>;
     }
-    final failure = result as NetworkFailure<Map<String, dynamic>>;
+    final failure = lastFailure ?? const NetworkFailure<Map<String, dynamic>>(message: 'Request failed');
     throw Exception(failure.message);
+  }
+
+  bool _isCacheValid(_ExplanationCacheEntry entry) {
+    return DateTime.now().difference(entry.cachedAt) <= _explanationCacheTtl;
+  }
+
+  Future<Map<String, dynamic>?> _loadExplanationRawByTarget(int targetUserId) async {
+    final cached = _explanationCache[targetUserId];
+    if (cached != null && _isCacheValid(cached)) {
+      return cached.data;
+    }
+
+    final paths = <String>[
+      '/api/v1/matches/$targetUserId/explanation',
+      '/api/v1/match/$targetUserId/explanation',
+    ];
+
+    for (final path in paths) {
+      final result = await apiClient.get(path);
+      if (result is NetworkSuccess<Map<String, dynamic>>) {
+        final data = result.data;
+        _explanationCache[targetUserId] = _ExplanationCacheEntry(
+          data: data,
+          cachedAt: DateTime.now(),
+        );
+        final matchId = (data['match_id'] as num?)?.toInt();
+        if (matchId != null && matchId > 0) {
+          _cachedMatchId = matchId;
+        }
+        _cachedDetailRaw = data;
+        return data;
+      }
+    }
+    return null;
+  }
+
+  Future<Map<String, dynamic>> _detailRawPreferExplanation() async {
+    Map<String, dynamic> current;
+    try {
+      current = await _currentMatchRaw();
+    } catch (_) {
+      final fallback = _cachedDetailRaw;
+      if (fallback != null && fallback.isNotEmpty) {
+        return fallback;
+      }
+      rethrow;
+    }
+    final targetUserId = _cachedPartnerId ?? (current['partner_id'] as num?)?.toInt();
+    if (targetUserId != null && targetUserId > 0) {
+      final explanation = await _loadExplanationRawByTarget(targetUserId);
+      if (explanation != null && explanation.isNotEmpty) {
+        return explanation;
+      }
+    }
+    return current;
   }
 
   Future<MatchCountdownDto> getCountdown() async {
@@ -93,10 +165,12 @@ class MatchRemoteDataSource {
         moduleInsights: ['八字：五行互补中等偏上，生活节奏较易协调'],
       );
     }
-    final raw = await _currentMatchRaw();
+    final raw = await _detailRawPreferExplanation();
     final reasons = (raw['match_reasons'] as Map<String, dynamic>? ?? const {});
     final reasonGlossary = (reasons['reason_glossary'] as Map<String, dynamic>? ?? const {})
         .map((k, v) => MapEntry(k.toString(), v.toString()));
+    final evidenceStrengthSummary =
+        (reasons['evidence_strength_summary'] as Map<String, dynamic>? ?? const {});
     final astroScoresRaw = (raw['astro_scores'] as Map<String, dynamic>? ?? const {});
     final match = (reasons['match'] as List<dynamic>? ?? const [])
         .whereType<Map<String, dynamic>>()
@@ -127,14 +201,101 @@ class MatchRemoteDataSource {
     final modules = (reasons['modules'] as List<dynamic>? ?? const [])
         .whereType<Map<String, dynamic>>()
         .toList();
+    final serverModuleExplanations = (reasons['module_explanations'] as List<dynamic>? ?? const [])
+        .whereType<Map<String, dynamic>>()
+        .map((row) {
+          final tags = (row['tags'] as List<dynamic>? ?? const [])
+              .map((e) => e.toString().trim())
+              .where((e) => e.isNotEmpty)
+              .toList();
+          final coreTags = (row['core_tags'] as List<dynamic>? ?? const [])
+              .map((e) => e.toString().trim())
+              .where((e) => e.isNotEmpty)
+              .toList();
+          final auxTags = (row['aux_tags'] as List<dynamic>? ?? const [])
+              .map((e) => e.toString().trim())
+              .where((e) => e.isNotEmpty)
+              .toList();
+          final coreTagExplains = (row['core_tag_explains'] as Map<String, dynamic>? ?? const {})
+              .map((k, v) => MapEntry(k.toString(), v.toString()));
+          final auxTagExplains = (row['aux_tag_explains'] as Map<String, dynamic>? ?? const {})
+              .map((k, v) => MapEntry(k.toString(), v.toString()));
+          final coreTagRefs = (row['core_tag_refs'] as Map<String, dynamic>? ?? const {})
+              .map((k, v) => MapEntry(k.toString(), v.toString()));
+          final auxTagRefs = (row['aux_tag_refs'] as Map<String, dynamic>? ?? const {})
+              .map((k, v) => MapEntry(k.toString(), v.toString()));
+          final confidence = (row['confidence'] as num?)?.toDouble() ?? 0.5;
+          final degraded = (row['degraded'] as bool?) ?? false;
+          final degradeReason = (row['degrade_reason'] ?? '').toString().trim();
+          final priority = (row['priority'] as num?)?.toInt() ?? 0;
+          final priorityLevel = (row['priority_level'] ?? '').toString().trim();
+          final priorityReason = (row['priority_reason'] ?? '').toString().trim();
+          final evidenceStrength = (row['evidence_strength'] ?? '').toString().trim();
+          final evidenceStrengthReason = (row['evidence_strength_reason'] ?? '').toString().trim();
+          if (coreTags.isEmpty && auxTags.isEmpty && tags.isNotEmpty) {
+            final guessedCore = tags.where((e) =>
+                e.contains('六合') ||
+                e.contains('三合') ||
+                e.contains('相冲') ||
+                e.contains('相刑') ||
+                e.contains('相害') ||
+                e.contains('五行') ||
+                e.contains('八字') ||
+                e.contains('合盘') ||
+                e.contains('星盘') ||
+                e.contains('MBTI')).toList();
+            final guessedAux = tags.where((e) => !guessedCore.contains(e)).toList();
+            return {
+              ...row,
+              'core_tags': guessedCore,
+              'aux_tags': guessedAux,
+              'core_tag_explains': coreTagExplains,
+              'aux_tag_explains': auxTagExplains,
+              'core_tag_refs': coreTagRefs,
+              'aux_tag_refs': auxTagRefs,
+              'confidence': confidence,
+              'degraded': degraded,
+              'degrade_reason': degradeReason,
+              'priority': priority,
+              'priority_level': priorityLevel,
+              'priority_reason': priorityReason,
+              'evidence_strength': evidenceStrength,
+              'evidence_strength_reason': evidenceStrengthReason,
+            };
+          }
+          return {
+            ...row,
+            'core_tags': coreTags,
+            'aux_tags': auxTags,
+              'core_tag_explains': coreTagExplains,
+              'aux_tag_explains': auxTagExplains,
+              'core_tag_refs': coreTagRefs,
+              'aux_tag_refs': auxTagRefs,
+              'confidence': confidence,
+              'degraded': degraded,
+            'degrade_reason': degradeReason,
+              'priority': priority,
+              'priority_level': priorityLevel,
+              'priority_reason': priorityReason,
+              'evidence_strength': evidenceStrength,
+              'evidence_strength_reason': evidenceStrengthReason,
+            };
+        })
+        .toList();
     final moduleScores = <String, int>{};
     final moduleInsights = <String>[];
+    final moduleExplanations = <Map<String, dynamic>>[
+      ...serverModuleExplanations.map((e) => Map<String, dynamic>.from(e)),
+    ];
     final moduleWeights = <String, int>{};
     for (final m in modules) {
       final label = (m['label'] ?? '').toString().trim().isNotEmpty
           ? (m['label'] ?? '').toString().trim()
           : _moduleName((m['key'] ?? '').toString());
       final score = (m['score'] as num?)?.toInt() ?? 0;
+      final confidence = (m['confidence'] as num?)?.toDouble() ?? 0.5;
+      final degraded = (m['degraded'] as bool?) ?? false;
+      final degradeReason = (m['degrade_reason'] ?? '').toString().trim();
       moduleScores[label] = score;
       final weightPct = ((m['weight'] as num?)?.toDouble() ?? 0) * 100;
       if (weightPct > 0) {
@@ -144,16 +305,108 @@ class MatchRemoteDataSource {
       final reasonShort = (m['reason_short'] ?? '').toString().trim();
       final reasonDetail = (m['reason_detail'] ?? '').toString().trim();
       final riskShort = (m['risk_short'] ?? '').toString().trim();
-      final tags = (m['evidence_tags'] as List<dynamic>? ?? const [])
-          .map((e) => _formatEvidenceTag(e.toString()))
+      final riskLevelRaw = (m['risk_level'] ?? '').toString().trim().toLowerCase();
+      final labelTags = (m['evidence_tag_labels'] as List<dynamic>? ?? const [])
+          .map((e) => e.toString().trim())
           .where((e) => e.isNotEmpty)
           .toList();
+      final tags = labelTags.isNotEmpty
+          ? labelTags
+          : (m['evidence_tags'] as List<dynamic>? ?? const [])
+              .map((e) => _formatEvidenceTag(e.toString()))
+              .where((e) => e.isNotEmpty)
+              .toList();
       final mainExplain = reasonDetail.isNotEmpty
           ? reasonDetail
           : (reasonShort.isNotEmpty ? reasonShort : '暂无解释');
       final riskExplain = riskShort.isNotEmpty ? '；风险提示：$riskShort' : '';
       final tagExplain = tags.isNotEmpty ? '；证据标签：${tags.join("、")}' : '';
       moduleInsights.add('$label（$score分）：$mainExplain$riskExplain$tagExplain');
+      final riskLevel = riskLevelRaw.isNotEmpty
+          ? riskLevelRaw
+          : (score < 60
+              ? 'high'
+              : ((riskShort.isNotEmpty || score < 70) ? 'medium' : 'low'));
+      final riskWeight = riskLevel == 'high' ? 300 : (riskLevel == 'medium' ? 200 : 100);
+      final degradedWeight = degraded ? 30 : 0;
+      final lowConfidenceWeight = ((1.0 - confidence.clamp(0.0, 1.0)) * 80).round();
+      final lowScoreWeight = ((100 - score.clamp(0, 100)) * 0.6).round();
+      final priority = riskWeight + degradedWeight + lowConfidenceWeight + lowScoreWeight;
+      final priorityLevel = priority >= 300 ? 'high' : (priority >= 220 ? 'medium' : 'normal');
+      final priorityReason = [
+        if (riskLevel == 'high') '风险等级高' else if (riskLevel == 'medium') '风险等级中',
+        if (degraded) '存在降级估算',
+        if (confidence < 0.6) '置信度偏低',
+        if (score < 60) '分项得分偏低',
+      ].join('、');
+      final coreTags = tags.where((e) =>
+          e.contains('六合') ||
+          e.contains('三合') ||
+          e.contains('相冲') ||
+          e.contains('相刑') ||
+          e.contains('相害') ||
+          e.contains('五行') ||
+          e.contains('八字') ||
+          e.contains('合盘') ||
+          e.contains('星盘') ||
+          e.contains('MBTI')).toList();
+      final auxTags = tags.where((e) => !coreTags.contains(e)).toList();
+      var evidenceScore = 0;
+      if (coreTags.length >= 2) {
+        evidenceScore += 2;
+      } else if (coreTags.length == 1) {
+        evidenceScore += 1;
+      } else {
+        evidenceScore -= 1;
+      }
+      if (auxTags.length >= 2) evidenceScore += 1;
+      if (confidence >= 0.8) {
+        evidenceScore += 1;
+      } else if (confidence < 0.6) {
+        evidenceScore -= 1;
+      }
+      if (degraded) evidenceScore -= 1;
+      final evidenceStrength = evidenceScore >= 3
+          ? 'high'
+          : (evidenceScore >= 1 ? 'medium' : 'low');
+      final evidenceStrengthReason = [
+        if (coreTags.length >= 2)
+          '核心证据充足'
+        else if (coreTags.length == 1)
+          '具备核心证据'
+        else
+          '核心证据不足',
+        if (auxTags.length >= 2) '辅助证据较多' else if (auxTags.isEmpty) '辅助证据较少',
+        if (confidence >= 0.8)
+          '置信度高'
+        else if (confidence < 0.6)
+          '置信度偏低',
+        if (degraded) '存在降级估算',
+      ].join('、');
+      if (serverModuleExplanations.isEmpty) {
+        moduleExplanations.add({
+          'label': label,
+          'score': score,
+          'confidence': confidence,
+          'degraded': degraded,
+          'degrade_reason': degradeReason,
+          'reason': mainExplain,
+          'risk': riskShort,
+          'risk_level': riskLevel,
+          'priority': priority,
+          'priority_level': priorityLevel,
+          'priority_reason': priorityReason.isEmpty ? '当前为常规关注项' : priorityReason,
+          'tags': tags,
+          'core_tags': coreTags,
+          'aux_tags': auxTags,
+          'core_tag_explains': const <String, String>{},
+          'aux_tag_explains': const <String, String>{},
+          'core_tag_refs': const <String, String>{},
+          'aux_tag_refs': const <String, String>{},
+          'evidence_strength': evidenceStrength,
+          'evidence_strength_reason': evidenceStrengthReason,
+        });
+      }
     }
     if (moduleScores.isEmpty && astroScoresRaw.isNotEmpty) {
       final fallback = <String, int>{};
@@ -183,7 +436,9 @@ class MatchRemoteDataSource {
       },
       'module_scores': moduleScores,
       'module_insights': moduleInsights,
+      'module_explanations': moduleExplanations,
       'reason_glossary': reasonGlossary,
+      'evidence_strength_summary': evidenceStrengthSummary,
     });
   }
 
@@ -195,15 +450,31 @@ class MatchRemoteDataSource {
       throw Exception('match id not found');
     }
     final like = action == 'accept';
-    final result = await apiClient.post(
+    final paths = <String>[
+      '/api/v1/matches/confirm',
       '/api/v1/match/like',
-      body: {
-        'match_id': matchId,
-        'like': like,
-      },
-    );
-    if (result is NetworkFailure<Map<String, dynamic>>) {
-      throw Exception(result.message);
+    ];
+    NetworkFailure<Map<String, dynamic>>? lastFailure;
+    for (final path in paths) {
+      final result = await apiClient.post(
+        path,
+        body: {
+          'match_id': matchId,
+          'like': like,
+        },
+      );
+      if (result is NetworkSuccess<Map<String, dynamic>>) {
+        return;
+      }
+      lastFailure = result as NetworkFailure<Map<String, dynamic>>;
+      final status = lastFailure.statusCode ?? 0;
+      if (status == 404 || status == 405) {
+        continue;
+      }
+      break;
+    }
+    if (lastFailure != null) {
+      throw Exception(lastFailure.message);
     }
   }
 
@@ -329,4 +600,14 @@ class MatchRemoteDataSource {
         return '${_moduleName(key)} $value'.trim();
     }
   }
+}
+
+class _ExplanationCacheEntry {
+  const _ExplanationCacheEntry({
+    required this.data,
+    required this.cachedAt,
+  });
+
+  final Map<String, dynamic> data;
+  final DateTime cachedAt;
 }

@@ -106,6 +106,10 @@ class MatchingEngineService
                     'match' => (array) ($bestDetail['astro']['reasons_match'] ?? []),
                     'mismatch' => (array) ($bestDetail['astro']['reasons_mismatch'] ?? []),
                     'confidence' => (float) ($bestDetail['overall_confidence'] ?? 0.5),
+                    // display_score: user-facing readability
+                    'display_score' => (int) round($bestDetail['final'] * 100),
+                    // rank_score: matching engine ordering score (fairness-adjusted)
+                    'rank_score' => (int) round($bestDetail['fair_adjusted'] * 100),
                     'modules' => (array) ($bestDetail['reason_modules'] ?? []),
                 ],
                 'penalty_factors' => $bestDetail['penalty_factors'],
@@ -975,6 +979,9 @@ class MatchingEngineService
             return [];
         }
 
+        /** @var ChineseZodiacService $zodiacService */
+        $zodiacService = app(ChineseZodiacService::class);
+
         $rows = User::query()
             ->whereIn('id', $userIds)
             ->get(['id', 'city', 'birthday', 'public_mbti', 'gender', 'zodiac_animal', 'public_zodiac_sign', 'private_bazi', 'private_natal_chart']);
@@ -1011,12 +1018,18 @@ class MatchingEngineService
                 'computed_at' => optional($astro->computed_at)->toIso8601String(),
             ] : null;
 
+            $birthday = $row->birthday ? (string) $row->birthday : null;
+            $resolvedZodiac = $zodiacService->fromPreferredSources(
+                $canonicalBazi !== '' ? $canonicalBazi : trim((string) ($row->private_bazi ?? '')),
+                $birthday
+            );
+
             $signals[(int) $row->id] = [
                 'city' => trim((string) ($row->city ?? '')),
-                'birthday' => $row->birthday ? (string) $row->birthday : null,
+                'birthday' => $birthday,
                 'mbti' => trim((string) ($row->public_mbti ?? '')),
                 'gender' => trim((string) ($row->gender ?? '')),
-                'zodiac_animal' => trim((string) ($row->zodiac_animal ?? '')),
+                'zodiac_animal' => trim((string) ($resolvedZodiac ?? $row->zodiac_animal ?? '')),
                 // Canonical source: user_astro_profiles. Fallback: users mirror fields.
                 'public_zodiac_sign' => $canonicalSun !== '' ? $canonicalSun : trim((string) ($row->public_zodiac_sign ?? '')),
                 'private_bazi' => $canonicalBazi !== '' ? $canonicalBazi : trim((string) ($row->private_bazi ?? '')),

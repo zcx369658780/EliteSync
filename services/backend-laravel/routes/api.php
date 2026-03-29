@@ -55,6 +55,8 @@ Route::prefix('v1')->group(function () {
             Route::get('/current', [MatchController::class, 'current']);
             Route::post('/confirm', [MatchController::class, 'confirm']);
             Route::get('/history', [MatchController::class, 'history']);
+            Route::get('/{targetUserId}/explanation', [MatchController::class, 'explanationByTarget'])
+                ->whereNumber('targetUserId');
         });
 
         // 兼容旧设计中的单数路径
@@ -62,6 +64,8 @@ Route::prefix('v1')->group(function () {
             Route::get('/current', [MatchController::class, 'current']);
             Route::post('/like', [MatchController::class, 'confirm']);
             Route::get('/history', [MatchController::class, 'history']);
+            Route::get('/{targetUserId}/explanation', [MatchController::class, 'explanationByTarget'])
+                ->whereNumber('targetUserId');
         });
 
         Route::prefix('messages')->group(function () {

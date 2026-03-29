@@ -1,6 +1,11 @@
 <?php
 
 return [
+    // Runtime-selectable natal engine adapter: default|standard
+    'astro_engine_adapter' => env('MATCHING_ASTRO_ENGINE_ADAPTER', 'default'),
+    // Runtime-selectable western compatibility engine: default|standard
+    'western_engine' => env('MATCHING_WESTERN_ENGINE', 'default'),
+
     'contract' => [
         // Payload contract version for match_reasons.
         'version' => 'v1',

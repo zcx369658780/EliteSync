@@ -34,6 +34,8 @@ class MatchMapper {
         weights: dto.weights,
         moduleScores: dto.moduleScores,
         moduleInsights: dto.moduleInsights,
+        moduleExplanations: dto.moduleExplanations,
         reasonGlossary: dto.reasonGlossary,
+        evidenceStrengthSummary: dto.evidenceStrengthSummary,
       );
 }

@@ -1,0 +1,43 @@
+[
+  {
+    "id": "bazi_jiazi_rat",
+    "input": {
+      "bazi": "甲子年 丙寅月 丁卯日 庚午时",
+      "birthday": "1990-01-01"
+    },
+    "expected": "鼠"
+  },
+  {
+    "id": "bazi_wuchen_dragon",
+    "input": {
+      "bazi": "戊辰年 乙卯月 己巳日 壬申时",
+      "birthday": "1988-07-12"
+    },
+    "expected": "龙"
+  },
+  {
+    "id": "bazi_xinhai_pig",
+    "input": {
+      "bazi": "辛亥年 甲子月 癸酉日 丁巳时",
+      "birthday": "1971-11-06"
+    },
+    "expected": "猪"
+  },
+  {
+    "id": "birthday_fallback_1990",
+    "input": {
+      "bazi": "",
+      "birthday": "1990-06-01"
+    },
+    "expected": "马"
+  },
+  {
+    "id": "bazi_priority_over_birthday",
+    "input": {
+      "bazi": "甲子年 丙寅月 丁卯日 庚午时",
+      "birthday": "1990-06-01"
+    },
+    "expected": "鼠"
+  }
+]
+
