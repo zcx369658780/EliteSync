@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8c7e90301d904e9badab2bd66c8dc7aa",
+    "content-hash": "bdea1cdcb326ec7f6438d09794cae904",
     "packages": [
         {
             "name": "6tail/lunar-php",
@@ -18,13 +18,7 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/6tail/lunar-php/zipball/1443e795c132d63333c358a330117cfe18b1b560",
                 "reference": "1443e795c132d63333c358a330117cfe18b1b560",
-                "shasum": "",
-                "mirrors": [
-                    {
-                        "url": "https://mirrors.aliyun.com/composer/dists/%package%/%reference%.%type%",
-                        "preferred": true
-                    }
-                ]
+                "shasum": ""
             },
             "require": {
                 "php": ">=5.3"
