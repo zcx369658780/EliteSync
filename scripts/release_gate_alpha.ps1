@@ -8,6 +8,16 @@ Param(
     [switch]$SkipAndroidBuild,
     [switch]$SkipBackendSmoke,
     [switch]$SkipAstroRegression,
+    [switch]$RunCalibrationCycle,
+    [int]$CalibrationShadowLimit = 100,
+    [int]$CalibrationOutcomeDays = 30,
+    [int]$CalibrationDays = 90,
+    [int]$CalibrationLimit = 0,
+    [int]$CalibrationOutcomeWindow = 7,
+    [string]$CalibrationWeekTag = "",
+    [switch]$CalibrationOnlyMismatch,
+    [switch]$CalibrationIncludeInjected,
+    [switch]$CalibrationDryRun,
     [switch]$SmokeSkipAuthChecks,
     [switch]$QuickUpdateOnly,
     [string]$GateLogPath = "docs/devlogs/RELEASE_GATE_LOG.md"
@@ -57,6 +67,7 @@ if ($QuickUpdateOnly) {
 $repoRoot = (Resolve-Path "$PSScriptRoot\..").Path
 $appDir = Join-Path $repoRoot "apps\android"
 $smokeScript = Join-Path $repoRoot "scripts\smoke_backend_alpha.ps1"
+$calibrationScript = Join-Path $repoRoot "scripts\run_astro_calibration_cycle.ps1"
 $backendDir = Join-Path $repoRoot "services\backend-laravel"
 
 $results = New-Object 'System.Collections.Generic.List[object]'
@@ -183,6 +194,41 @@ else {
     $results.Add((New-GateStepResult -Name "Astro Regression" -Pass $true -Detail "SKIPPED")) | Out-Null
 }
 
+if ($RunCalibrationCycle) {
+    try {
+        if (-not (Test-Path $calibrationScript)) {
+            throw "Calibration script not found: $calibrationScript"
+        }
+        $calArgs = @(
+            "-NoProfile",
+            "-ExecutionPolicy", "Bypass",
+            "-File", $calibrationScript,
+            "-ShadowLimit", $CalibrationShadowLimit,
+            "-OutcomeDays", $CalibrationOutcomeDays,
+            "-CalibrationDays", $CalibrationDays,
+            "-CalibrationLimit", $CalibrationLimit,
+            "-OutcomeWindow", $CalibrationOutcomeWindow
+        )
+        if ($CalibrationOnlyMismatch) { $calArgs += "-OnlyMismatch" }
+        if ($CalibrationIncludeInjected) { $calArgs += "-IncludeCalibrationInjected" }
+        if ($CalibrationDryRun) { $calArgs += "-DryRun" }
+        if (-not [string]::IsNullOrWhiteSpace($CalibrationWeekTag)) {
+            $calArgs += @("-WeekTag", $CalibrationWeekTag)
+        }
+        & $psRunner @calArgs
+        if ($LASTEXITCODE -ne 0) {
+            throw "Calibration cycle exit code: $LASTEXITCODE"
+        }
+        $results.Add((New-GateStepResult -Name "Calibration Cycle" -Pass $true -Detail "run_astro_calibration_cycle passed")) | Out-Null
+    }
+    catch {
+        $results.Add((New-GateStepResult -Name "Calibration Cycle" -Pass $false -Detail $_.Exception.Message)) | Out-Null
+    }
+}
+else {
+    $results.Add((New-GateStepResult -Name "Calibration Cycle" -Pass $true -Detail "SKIPPED")) | Out-Null
+}
+
 $failCount = @($results | Where-Object { -not $_.Pass }).Count
 $overall = if ($failCount -eq 0) { "PASS" } else { "FAIL" }
 
@@ -212,6 +258,7 @@ $md.Add("- BaseUrl: $BaseUrl")
 $md.Add("- Overall: $overall")
 $md.Add("- QuickUpdateOnly: $QuickUpdateOnly")
 $md.Add("- SkipAstroRegression: $SkipAstroRegression")
+$md.Add("- RunCalibrationCycle: $RunCalibrationCycle")
 $md.Add("- SmokeRetryCount: $SmokeRetryCount")
 $md.Add("- SmokeRetryDelaySec: $SmokeRetryDelaySec")
 $md.Add("- Steps:")

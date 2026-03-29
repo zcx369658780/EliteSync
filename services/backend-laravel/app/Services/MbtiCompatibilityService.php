@@ -19,11 +19,12 @@ class MbtiCompatibilityService
         $cfg = (array) config('match_rules.mbti', []);
         $weights = (array) ($cfg['weights'] ?? []);
         $missingTpl = (array) (($cfg['templates'] ?? [])['missing'] ?? []);
+        $liteCap = (float) config('confidence_policy.mbti.lite_quiz_confidence_cap', 0.62);
 
         if (!$this->isMbti($a) || !$this->isMbti($b)) {
             return [
                 'score' => 55,
-                'confidence' => 0.55,
+                'confidence' => min($liteCap, 0.55),
                 'highlight' => (string) ($missingTpl['highlight'] ?? 'MBTI 数据不完整，采用中性估计'),
                 'risk' => (string) ($missingTpl['risk'] ?? '建议补全 MBTI 结果以提高沟通适配判断可靠性'),
                 'reason_short' => (string) ($missingTpl['short'] ?? 'MBTI 数据不完整，当前仅作中性参考。'),
@@ -72,7 +73,7 @@ class MbtiCompatibilityService
 
         return [
             'score' => $score,
-            'confidence' => 0.62, // lite quiz, confidence should remain moderate.
+            'confidence' => min($liteCap, 0.62), // lite quiz, confidence should remain moderate.
             'highlight' => $reasonShort,
             'risk' => $risk,
             'reason_short' => $reasonShort,

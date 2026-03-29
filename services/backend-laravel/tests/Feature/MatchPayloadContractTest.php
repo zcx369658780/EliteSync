@@ -95,6 +95,7 @@ class MatchPayloadContractTest extends TestCase
                 'display_score',
                 'rank_score',
                 'module_explanations',
+                'compatibility_sections',
                 'evidence_strength_summary',
                 'reason_glossary',
                 'modules' => [[
@@ -125,6 +126,7 @@ class MatchPayloadContractTest extends TestCase
         $this->assertNotSame('', (string) ($reasons['generated_at'] ?? ''));
         $this->assertIsArray($reasons['reason_glossary'] ?? null);
         $this->assertIsArray($reasons['module_explanations'] ?? null);
+        $this->assertIsArray($reasons['compatibility_sections'] ?? null);
         $this->assertIsArray($reasons['evidence_strength_summary'] ?? null);
         $this->assertIsInt($reasons['display_score'] ?? null);
         $this->assertIsInt($reasons['rank_score'] ?? null);
@@ -220,6 +222,7 @@ class MatchPayloadContractTest extends TestCase
                     'display_score',
                     'rank_score',
                     'module_explanations',
+                    'compatibility_sections',
                     'evidence_strength_summary',
                     'reason_glossary',
                     'modules',
@@ -233,6 +236,7 @@ class MatchPayloadContractTest extends TestCase
         $this->assertNotEmpty($moduleExplanations, 'match_reasons.module_explanations should not be empty');
         $this->assertArrayHasKey('label', (array) ($moduleExplanations[0] ?? []));
         $this->assertArrayHasKey('score', (array) ($moduleExplanations[0] ?? []));
+        $this->assertArrayHasKey('confidence_tier', (array) ($moduleExplanations[0] ?? []));
         $this->assertArrayHasKey('reason', (array) ($moduleExplanations[0] ?? []));
         $this->assertArrayHasKey('risk', (array) ($moduleExplanations[0] ?? []));
         $this->assertArrayHasKey('risk_level', (array) ($moduleExplanations[0] ?? []));
@@ -252,6 +256,10 @@ class MatchPayloadContractTest extends TestCase
         $this->assertArrayHasKey('aux_tag_explains', (array) ($moduleExplanations[0] ?? []));
         $this->assertArrayHasKey('core_tag_refs', (array) ($moduleExplanations[0] ?? []));
         $this->assertArrayHasKey('aux_tag_refs', (array) ($moduleExplanations[0] ?? []));
+        $sections = (array) data_get($json, 'match_reasons.compatibility_sections', []);
+        $this->assertArrayHasKey('natal_compatibility', $sections);
+        $this->assertArrayHasKey('synastry', $sections);
+        $this->assertArrayHasKey('composite_like', $sections);
         $summary = (array) data_get($json, 'match_reasons.evidence_strength_summary', []);
         $this->assertArrayHasKey('high', $summary);
         $this->assertArrayHasKey('medium', $summary);

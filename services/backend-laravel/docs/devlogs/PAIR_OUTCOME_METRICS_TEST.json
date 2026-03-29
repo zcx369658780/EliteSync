@@ -1,0 +1,36 @@
+{
+    "generated_at": "2026-03-29T12:38:31+00:00",
+    "window": {
+        "days": 60,
+        "week_tag": "",
+        "since": "2026-01-28T12:38:31+00:00",
+        "limit": 0,
+        "include_calibration_injected": false
+    },
+    "summary": {
+        "total_pairs": 1,
+        "mutual_like_pairs": 1,
+        "first_message_pairs": 1,
+        "reply_24h_pairs": 0,
+        "sustained_7d_pairs": 0,
+        "explanation_view_pairs": 1,
+        "mutual_like_rate_pct": 100,
+        "first_message_rate_pct": 100,
+        "reply_24h_rate_pct": 0,
+        "sustained_7d_rate_pct": 0,
+        "explanation_view_rate_pct": 100
+    },
+    "detail": [
+        {
+            "match_id": 1,
+            "week_tag": "2026-W13",
+            "user_a": 1,
+            "user_b": 2,
+            "mutual_like": true,
+            "first_message": true,
+            "reply_24h": false,
+            "sustained_7d": false,
+            "explanation_view": true
+        }
+    ]
+}

@@ -1,0 +1,6 @@
+﻿[Calibration Weekly Brief 2026W13]
+1) Sample size: 481 pairs; mutual_like=15.8%, first_message=22.66%.
+2) Core conversion: reply_24h=8.94%, sustained_7d=3.53%.
+3) Shadow compare: any_diff_rate=97%; current top gaps remain in house/aspect support.
+4) Data quality: degraded_sample_ratio=0.42. Current round is for tuning validation, not production KPI claim.
+5) Decision: keep small-step tuning + gray rollout; re-check with real user samples next cycle.

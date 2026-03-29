@@ -649,6 +649,19 @@ class AstroCompatibilityService
     private function astroAdapter(): AstroEngineAdapter
     {
         $name = strtolower(trim((string) config('matching.astro_engine_adapter', 'default')));
+        /** @var AstrologyDependencyGateService $gate */
+        $gate = app(AstrologyDependencyGateService::class);
+        $licenseMap = [
+            'swisseph' => 'swisseph',
+            'pyswisseph' => 'pyswisseph',
+            'kerykeion' => 'kerykeion',
+        ];
+        if (isset($licenseMap[$name])) {
+            $allow = $gate->allow($licenseMap[$name]);
+            if (!(bool) ($allow['allowed'] ?? false)) {
+                $name = 'default';
+            }
+        }
         if ($name === 'standard') {
             /** @var AstroEngineAdapter $svc */
             $svc = app(StandardAstroEngineAdapter::class);
@@ -662,6 +675,19 @@ class AstroCompatibilityService
     private function westernEngine(): WesternCompatibilityEngine
     {
         $name = strtolower(trim((string) config('matching.western_engine', 'default')));
+        /** @var AstrologyDependencyGateService $gate */
+        $gate = app(AstrologyDependencyGateService::class);
+        $licenseMap = [
+            'swisseph' => 'swisseph',
+            'pyswisseph' => 'pyswisseph',
+            'kerykeion' => 'kerykeion',
+        ];
+        if (isset($licenseMap[$name])) {
+            $allow = $gate->allow($licenseMap[$name]);
+            if (!(bool) ($allow['allowed'] ?? false)) {
+                $name = 'default';
+            }
+        }
         if ($name === 'standard') {
             /** @var WesternCompatibilityEngine $svc */
             $svc = app(StandardWesternCompatibilityEngine::class);

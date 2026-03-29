@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\AppEvent;
 use App\Models\DatingMatch;
 use App\Models\QuestionnaireQuestion;
 use App\Models\User;
@@ -229,6 +230,12 @@ class MatchApiTest extends TestCase
         $this->getJson('/api/v1/match/'.$userB->id.'/explanation')
             ->assertOk()
             ->assertJsonPath('match_id', $latest->id);
+        $this->assertDatabaseHas('app_events', [
+            'event_name' => 'match_explanation_view',
+            'actor_user_id' => $userA->id,
+            'target_user_id' => $userB->id,
+            'match_id' => $latest->id,
+        ]);
     }
 
     public function test_explanation_by_target_returns_404_when_not_matched(): void

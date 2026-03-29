@@ -7,6 +7,12 @@ powershell -ExecutionPolicy Bypass -File .\scripts\release_gate_alpha.ps1 -Quick
 powershell -ExecutionPolicy Bypass -File .\scripts\release_gate_alpha.ps1 -SkipAndroidBuild -SmokeSkipAuthChecks
 # 完整：编译 + 全链路后端回归（需要测试账号）
 powershell -ExecutionPolicy Bypass -File .\scripts\release_gate_alpha.ps1 -Phone 13800000022 -Password "你的密码"
+# 可选：完整门禁 + 算法校准循环（周度执行）
+powershell -ExecutionPolicy Bypass -File .\scripts\release_gate_alpha.ps1 -Phone 13800000022 -Password "你的密码" -RunCalibrationCycle -CalibrationOnlyMismatch
+# 可选：仅跑算法校准循环（不跑编译/冒烟/回归）
+powershell -ExecutionPolicy Bypass -File .\scripts\release_gate_alpha.ps1 -SkipAndroidBuild -SkipBackendSmoke -SkipAstroRegression -RunCalibrationCycle -CalibrationOnlyMismatch
+# 可选：校准循环预览（DryRun，不实际执行 artisan）
+powershell -ExecutionPolicy Bypass -File .\scripts\release_gate_alpha.ps1 -SkipAndroidBuild -SkipBackendSmoke -SkipAstroRegression -RunCalibrationCycle -CalibrationDryRun -CalibrationOnlyMismatch
 
 # Android 一键更新推送（版本号 + 日志 + 构建 + 上传阿里云 + 更新服务端 + 清理旧APK）
 powershell -ExecutionPolicy Bypass -File .\scripts\release_android_update_aliyun.ps1 -VersionName 0.01.05 -Changelog "这里填写本次更新摘要"
@@ -16,3 +22,32 @@ powershell -ExecutionPolicy Bypass -File .\scripts\smoke_backend_alpha.ps1 -Skip
 
 # 发版后全链路回归（需要测试账号）
 powershell -ExecutionPolicy Bypass -File .\scripts\smoke_backend_alpha.ps1 -Phone 13800000022 -Password "你的密码"
+
+# 算法周校准（直接调用脚本，便于离线调权）
+# 校准模式开关（off / inject_only / inject_and_include）
+powershell -ExecutionPolicy Bypass -File .\scripts\apply_calibration_mode.ps1 -Mode off
+powershell -ExecutionPolicy Bypass -File .\scripts\apply_calibration_mode.ps1 -Mode inject_only
+powershell -ExecutionPolicy Bypass -File .\scripts\apply_calibration_mode.ps1 -Mode inject_and_include
+# 权重档位一键切换（baseline / a1 / b1）
+powershell -ExecutionPolicy Bypass -File .\scripts\apply_match_tuning_profile.ps1 -Profile baseline
+powershell -ExecutionPolicy Bypass -File .\scripts\apply_match_tuning_profile.ps1 -Profile a1
+powershell -ExecutionPolicy Bypass -File .\scripts\apply_match_tuning_profile.ps1 -Profile b1
+# 先注入一批正样本标签（仅测试/预发布环境）
+# 先确保 .env 开关：
+# MATCHING_CALIBRATION_INJECTOR_ENABLED=true
+# (若 APP_ENV=production) MATCHING_CALIBRATION_INJECTOR_ALLOW_IN_PRODUCTION=true
+powershell -ExecutionPolicy Bypass -Command "cd .\\services\\backend-laravel; php artisan app:dev:inject-calibration-positives --days=30 --limit=200 --seed=20260329 --mutual-like-rate=0.35 --first-message-rate=0.30 --reply24h-rate=0.20 --sustained7d-rate=0.10 --explanation-view-rate=0.40"
+# 默认：对拍(100) + 30天漏斗 + 90天导出
+powershell -ExecutionPolicy Bypass -File .\scripts\run_astro_calibration_cycle.ps1
+# 包含注入样本（校准模式）
+powershell -ExecutionPolicy Bypass -File .\scripts\run_astro_calibration_cycle.ps1 -IncludeCalibrationInjected
+# 清理注入数据（恢复为非校准样本状态）
+powershell -ExecutionPolicy Bypass -Command "cd .\\services\\backend-laravel; php artisan app:dev:cleanup-calibration-injected --days=30 --limit=500"
+# 指定周标签 + 限制导出样本
+powershell -ExecutionPolicy Bypass -File .\scripts\run_astro_calibration_cycle.ps1 -WeekTag 2026W13 -CalibrationLimit 3000
+# 仅预览命令
+powershell -ExecutionPolicy Bypass -File .\scripts\run_astro_calibration_cycle.ps1 -DryRun
+# 自动生成顾问简报（从 shadow/outcome/dataset 汇总）
+powershell -ExecutionPolicy Bypass -File .\scripts\generate_calibration_weekly_report.ps1 -WeekTag 2026W13
+# 自动生成微信群短简报（3-5行）
+powershell -ExecutionPolicy Bypass -File .\scripts\generate_calibration_wechat_brief.ps1 -WeekTag 2026W13

@@ -110,6 +110,7 @@ class MatchController extends Controller
                 'label' => $label === '' ? '匹配项' : $label,
                 'score' => $score,
                 'confidence' => round(max(0.0, min(1.0, $confidence)), 2),
+                'confidence_tier' => $this->confidenceTier($confidence, $degraded),
                 'degraded' => $degraded,
                 'degrade_reason' => $degradeReason,
                 'reason' => $reason === '' ? '暂无解释' : $reason,
@@ -150,8 +151,45 @@ class MatchController extends Controller
             $normalized['module_explanations']
         );
         $normalized['reason_glossary'] = $this->buildReasonGlossary($normalized);
+        $normalized['compatibility_sections'] = $this->buildCompatibilitySections(
+            (array) $normalized['module_explanations']
+        );
 
         return $normalized;
+    }
+
+    /**
+     * @param array<int,array<string,mixed>> $modules
+     * @return array<string,array<int,array<string,mixed>>>
+     */
+    private function buildCompatibilitySections(array $modules): array
+    {
+        $out = [
+            'natal_compatibility' => [],
+            'synastry' => [],
+            'composite_like' => [],
+        ];
+        foreach ($modules as $m) {
+            if (!is_array($m)) {
+                continue;
+            }
+            $label = (string) ($m['label'] ?? '');
+            if ($label === '八字' || $label === '属相') {
+                $out['natal_compatibility'][] = $m;
+                continue;
+            }
+            if ($label === '星盘匹配' || $label === '星盘') {
+                $out['synastry'][] = $m;
+                continue;
+            }
+            if ($label === '男女合盘' || $label === '合盘') {
+                $out['composite_like'][] = $m;
+                continue;
+            }
+            // fallthrough: keep process-like modules in synastry section for now
+            $out['synastry'][] = $m;
+        }
+        return $out;
     }
 
     /**
@@ -423,6 +461,21 @@ class MatchController extends Controller
             'level' => $level,
             'reason' => implode('、', array_values(array_unique($reasons))),
         ];
+    }
+
+    private function confidenceTier(float $confidence, bool $degraded): string
+    {
+        if ($degraded) {
+            return 'low';
+        }
+        $c = max(0.0, min(1.0, $confidence));
+        if ($c >= 0.8) {
+            return 'high';
+        }
+        if ($c >= 0.6) {
+            return 'medium';
+        }
+        return 'low';
     }
 
     /**
@@ -734,7 +787,7 @@ class MatchController extends Controller
         ]);
     }
 
-    public function explanationByTarget(Request $request, int $targetUserId): JsonResponse
+    public function explanationByTarget(Request $request, int $targetUserId, EventLogger $events): JsonResponse
     {
         $user = $request->user();
         $includeSyntheticUsers = app(MatchingDebugModeService::class)->includeSyntheticUsers();
@@ -771,6 +824,14 @@ class MatchController extends Controller
         if ($targetUser) {
             $targetNickname = (string) ($targetUser->nickname ?? $targetUser->name ?? $targetUser->phone ?? '');
         }
+
+        $events->log(
+            eventName: 'match_explanation_view',
+            actorUserId: (int) $user->id,
+            targetUserId: (int) $targetUserId,
+            matchId: (int) $match->id,
+            payload: ['week_tag' => (string) $match->week_tag]
+        );
 
         return response()->json([
             'match_id' => (int) $match->id,
