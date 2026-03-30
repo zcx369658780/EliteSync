@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\DatingMatch;
 use App\Models\QuestionnaireAnswer;
 use App\Models\User;
+use App\Support\EvidenceTagMapper;
+use App\Support\ExplanationComposer;
 use App\Services\EventLogger;
 use App\Services\MatchingDebugModeService;
 use Illuminate\Http\JsonResponse;
@@ -43,6 +45,8 @@ class MatchController extends Controller
     private function normalizeMatchReasons(?array $raw, DatingMatch $match): array
     {
         $contractVersion = (string) config('matching.contract.version', 'v1');
+        /** @var EvidenceTagMapper $tagMapper */
+        $tagMapper = app(EvidenceTagMapper::class);
         $normalized = $raw ?? [];
         $normalized['contract_version'] = (string) ($normalized['contract_version'] ?? $contractVersion);
         $normalized['generated_at'] = (string) ($normalized['generated_at'] ?? optional($match->updated_at)->toIso8601String() ?? now()->toIso8601String());
@@ -61,15 +65,10 @@ class MatchController extends Controller
             $key = (string) ($module['key'] ?? '');
             $algoVersion = (string) config("matching.algo_versions.{$key}", 'p1');
             $module['algo_version'] = (string) ($module['algo_version'] ?? $algoVersion);
-            $tags = array_values(array_unique(array_filter(array_map(
-                fn ($v) => strtolower(trim((string) $v)),
-                (array) ($module['evidence_tags'] ?? [])
-            ))));
+            $tags = $tagMapper->normalizeTags((array) ($module['evidence_tags'] ?? []));
             $module['evidence_tags'] = $tags;
-            $module['evidence_tag_labels'] = array_map(function (string $tag): string {
-                $meta = $this->evidenceTagMeta($tag);
-                return (string) ($meta['label'] ?? $tag);
-            }, $tags);
+            $module['display_tags'] = $tagMapper->toDisplayLabels($tags);
+            $module['evidence_tag_labels'] = (array) ($module['display_tags'] ?? []);
         }
         unset($module);
         $normalized['module_explanations'] = array_values(array_map(function ($module): array {
@@ -81,7 +80,7 @@ class MatchController extends Controller
             $degradeReason = trim((string) ($row['degrade_reason'] ?? ''));
             $reason = trim((string) ($row['reason_detail'] ?? $row['reason_short'] ?? '暂无解释'));
             $risk = trim((string) ($row['risk_short'] ?? $row['risk_detail'] ?? ''));
-            $tags = array_values((array) ($row['evidence_tag_labels'] ?? $row['evidence_tags'] ?? []));
+            $tags = array_values((array) ($row['display_tags'] ?? $row['evidence_tag_labels'] ?? []));
             $split = $this->splitEvidenceLabels($tags, $label);
             $tagExplains = $this->buildEvidenceLabelDescriptions($row);
             $tagRefs = $this->buildEvidenceLabelReferences($row);
@@ -113,6 +112,12 @@ class MatchController extends Controller
                 'confidence_tier' => $this->confidenceTier($confidence, $degraded),
                 'degraded' => $degraded,
                 'degrade_reason' => $degradeReason,
+                'engine_source' => (string) ($row['engine_source'] ?? 'unknown'),
+                'engine_mode' => (string) ($row['engine_mode'] ?? 'legacy'),
+                'data_quality' => (string) ($row['data_quality'] ?? 'partial_unknown'),
+                'precision_level' => (string) ($row['precision_level'] ?? 'estimated'),
+                'confidence_reason' => array_values((array) ($row['confidence_reason'] ?? [])),
+                'display_guard' => (array) ($row['display_guard'] ?? []),
                 'reason' => $reason === '' ? '暂无解释' : $reason,
                 'risk' => $risk,
                 'risk_level' => $riskLevel,
@@ -149,6 +154,11 @@ class MatchController extends Controller
         unset($row);
         $normalized['evidence_strength_summary'] = $this->buildEvidenceStrengthSummary(
             $normalized['module_explanations']
+        );
+        /** @var ExplanationComposer $composer */
+        $composer = app(ExplanationComposer::class);
+        $normalized['explanation_blocks'] = $composer->compose(
+            (array) $normalized['module_explanations']
         );
         $normalized['reason_glossary'] = $this->buildReasonGlossary($normalized);
         $normalized['compatibility_sections'] = $this->buildCompatibilitySections(

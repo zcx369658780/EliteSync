@@ -95,6 +95,7 @@ class MatchPayloadContractTest extends TestCase
                 'display_score',
                 'rank_score',
                 'module_explanations',
+                'explanation_blocks',
                 'compatibility_sections',
                 'evidence_strength_summary',
                 'reason_glossary',
@@ -126,6 +127,7 @@ class MatchPayloadContractTest extends TestCase
         $this->assertNotSame('', (string) ($reasons['generated_at'] ?? ''));
         $this->assertIsArray($reasons['reason_glossary'] ?? null);
         $this->assertIsArray($reasons['module_explanations'] ?? null);
+        $this->assertIsArray($reasons['explanation_blocks'] ?? null);
         $this->assertIsArray($reasons['compatibility_sections'] ?? null);
         $this->assertIsArray($reasons['evidence_strength_summary'] ?? null);
         $this->assertIsInt($reasons['display_score'] ?? null);
@@ -222,6 +224,7 @@ class MatchPayloadContractTest extends TestCase
                     'display_score',
                     'rank_score',
                     'module_explanations',
+                    'explanation_blocks',
                     'compatibility_sections',
                     'evidence_strength_summary',
                     'reason_glossary',
@@ -232,8 +235,10 @@ class MatchPayloadContractTest extends TestCase
 
         $modules = (array) data_get($json, 'match_reasons.modules', []);
         $moduleExplanations = (array) data_get($json, 'match_reasons.module_explanations', []);
+        $explanationBlocks = (array) data_get($json, 'match_reasons.explanation_blocks', []);
         $this->assertNotEmpty($modules, 'match_reasons.modules should not be empty');
         $this->assertNotEmpty($moduleExplanations, 'match_reasons.module_explanations should not be empty');
+        $this->assertNotEmpty($explanationBlocks, 'match_reasons.explanation_blocks should not be empty');
         $this->assertArrayHasKey('label', (array) ($moduleExplanations[0] ?? []));
         $this->assertArrayHasKey('score', (array) ($moduleExplanations[0] ?? []));
         $this->assertArrayHasKey('confidence_tier', (array) ($moduleExplanations[0] ?? []));
@@ -243,6 +248,12 @@ class MatchPayloadContractTest extends TestCase
         $this->assertArrayHasKey('confidence', (array) ($moduleExplanations[0] ?? []));
         $this->assertArrayHasKey('degraded', (array) ($moduleExplanations[0] ?? []));
         $this->assertArrayHasKey('degrade_reason', (array) ($moduleExplanations[0] ?? []));
+        $this->assertArrayHasKey('engine_source', (array) ($moduleExplanations[0] ?? []));
+        $this->assertArrayHasKey('engine_mode', (array) ($moduleExplanations[0] ?? []));
+        $this->assertArrayHasKey('data_quality', (array) ($moduleExplanations[0] ?? []));
+        $this->assertArrayHasKey('precision_level', (array) ($moduleExplanations[0] ?? []));
+        $this->assertArrayHasKey('confidence_reason', (array) ($moduleExplanations[0] ?? []));
+        $this->assertArrayHasKey('display_guard', (array) ($moduleExplanations[0] ?? []));
         $this->assertArrayHasKey('priority', (array) ($moduleExplanations[0] ?? []));
         $this->assertArrayHasKey('priority_level', (array) ($moduleExplanations[0] ?? []));
         $this->assertArrayHasKey('priority_reason', (array) ($moduleExplanations[0] ?? []));
@@ -256,6 +267,14 @@ class MatchPayloadContractTest extends TestCase
         $this->assertArrayHasKey('aux_tag_explains', (array) ($moduleExplanations[0] ?? []));
         $this->assertArrayHasKey('core_tag_refs', (array) ($moduleExplanations[0] ?? []));
         $this->assertArrayHasKey('aux_tag_refs', (array) ($moduleExplanations[0] ?? []));
+        $this->assertArrayHasKey('summary', (array) ($explanationBlocks[0] ?? []));
+        $this->assertArrayHasKey('process', (array) ($explanationBlocks[0] ?? []));
+        $this->assertArrayHasKey('risks', (array) ($explanationBlocks[0] ?? []));
+        $this->assertArrayHasKey('advice', (array) ($explanationBlocks[0] ?? []));
+        $this->assertArrayHasKey('core_evidence', (array) ($explanationBlocks[0] ?? []));
+        $this->assertArrayHasKey('supporting_evidence', (array) ($explanationBlocks[0] ?? []));
+        $this->assertArrayHasKey('confidence', (array) ($explanationBlocks[0] ?? []));
+        $this->assertArrayHasKey('priority', (array) ($explanationBlocks[0] ?? []));
         $sections = (array) data_get($json, 'match_reasons.compatibility_sections', []);
         $this->assertArrayHasKey('natal_compatibility', $sections);
         $this->assertArrayHasKey('synastry', $sections);
@@ -289,7 +308,8 @@ class MatchPayloadContractTest extends TestCase
             foreach ([
                 'key', 'label', 'algo_version', 'score', 'weight', 'confidence', 'verdict',
                 'reason_short', 'reason_detail', 'risk_short', 'risk_detail',
-                'evidence_tags', 'evidence_tag_labels', 'evidence', 'highlights', 'risks', 'degraded', 'degrade_reason',
+                'evidence_tags', 'evidence_tag_labels', 'display_tags', 'evidence', 'highlights', 'risks', 'degraded', 'degrade_reason',
+                'engine_source', 'engine_mode', 'data_quality', 'precision_level', 'confidence_tier', 'confidence_reason', 'display_guard',
             ] as $field) {
                 $this->assertArrayHasKey($field, $row, "module {$k} field {$field} missing");
             }
@@ -298,6 +318,9 @@ class MatchPayloadContractTest extends TestCase
             $this->assertIsArray($row['evidence']);
             $this->assertIsArray($row['highlights']);
             $this->assertIsArray($row['risks']);
+            $this->assertIsArray($row['display_tags']);
+            $this->assertIsArray($row['confidence_reason']);
+            $this->assertIsArray($row['display_guard']);
             $this->assertIsBool((bool) $row['degraded']);
         }
     }

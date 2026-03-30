@@ -35,6 +35,7 @@ class MatchMapper {
     moduleScores: dto.moduleScores,
     moduleInsights: dto.moduleInsights,
     moduleExplanations: dto.moduleExplanations,
+    explanationBlocks: dto.explanationBlocks,
     compatibilitySections: dto.compatibilitySections,
     reasonGlossary: dto.reasonGlossary,
     evidenceStrengthSummary: dto.evidenceStrengthSummary,

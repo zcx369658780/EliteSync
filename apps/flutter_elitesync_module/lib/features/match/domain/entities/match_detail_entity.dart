@@ -5,6 +5,7 @@ class MatchDetailEntity {
     this.moduleScores = const {},
     this.moduleInsights = const [],
     this.moduleExplanations = const [],
+    this.explanationBlocks = const [],
     this.compatibilitySections = const {},
     this.reasonGlossary = const {},
     this.evidenceStrengthSummary = const {},
@@ -15,6 +16,7 @@ class MatchDetailEntity {
   final Map<String, int> moduleScores;
   final List<String> moduleInsights;
   final List<Map<String, dynamic>> moduleExplanations;
+  final List<Map<String, dynamic>> explanationBlocks;
   final Map<String, List<Map<String, dynamic>>> compatibilitySections;
   final Map<String, String> reasonGlossary;
   final Map<String, dynamic> evidenceStrengthSummary;

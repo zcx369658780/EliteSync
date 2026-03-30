@@ -7,6 +7,8 @@ use App\Models\QuestionnaireAnswer;
 use App\Models\QuestionnaireQuestion;
 use App\Models\User;
 use App\Models\UserAstroProfile;
+use App\Support\EvidenceTagMapper;
+use App\Support\ExplanationMetaBuilder;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Arr;
 
@@ -827,6 +829,11 @@ class MatchingEngineService
         }
 
         // Remove empty rows to reduce payload noise.
+        /** @var ExplanationMetaBuilder $metaBuilder */
+        $metaBuilder = app(ExplanationMetaBuilder::class);
+        /** @var EvidenceTagMapper $tagMapper */
+        $tagMapper = app(EvidenceTagMapper::class);
+
         foreach ($modules as &$m) {
             $m['highlights'] = array_values(array_filter((array) ($m['highlights'] ?? []), fn ($x) => trim((string) ($x['text'] ?? '')) !== ''));
             $m['risks'] = array_values(array_filter((array) ($m['risks'] ?? []), fn ($x) => trim((string) ($x['text'] ?? '')) !== ''));
@@ -862,6 +869,17 @@ class MatchingEngineService
             }
 
             $m = $this->applyConfidenceNarrativePolicy($m);
+
+            $meta = $metaBuilder->build($m);
+            $m['engine_source'] = (string) ($meta['engine_source'] ?? 'unknown');
+            $m['engine_mode'] = (string) ($meta['engine_mode'] ?? 'legacy');
+            $m['data_quality'] = (string) ($meta['data_quality'] ?? 'partial_unknown');
+            $m['precision_level'] = (string) ($meta['precision_level'] ?? 'estimated');
+            $m['confidence_tier'] = (string) ($meta['confidence_tier'] ?? 'low');
+            $m['confidence_reason'] = (array) ($meta['confidence_reason'] ?? []);
+            $m['display_guard'] = (array) ($meta['display_guard'] ?? []);
+
+            $m['display_tags'] = $tagMapper->toDisplayLabels((array) ($m['evidence_tags'] ?? []));
         }
         unset($m);
 
