@@ -349,6 +349,125 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
     );
   }
 
+  Widget _explanationBlockCard(
+    BuildContext context, {
+    required Map<String, dynamic> block,
+  }) {
+    final t = context.appTokens;
+    final summary = (block['summary'] ?? '').toString().trim();
+    final process = (block['process'] as List<dynamic>? ?? const [])
+        .map((e) => e.toString().trim())
+        .where((e) => e.isNotEmpty)
+        .toList();
+    final risks = (block['risks'] as List<dynamic>? ?? const [])
+        .map((e) => e.toString().trim())
+        .where((e) => e.isNotEmpty)
+        .toList();
+    final advice = (block['advice'] as List<dynamic>? ?? const [])
+        .map((e) => e.toString().trim())
+        .where((e) => e.isNotEmpty)
+        .toList();
+    final label = (block['label'] ?? '').toString().trim();
+    final confidence = (block['confidence'] ?? '').toString().trim();
+    final priority = (block['priority'] ?? '').toString().trim();
+
+    if (summary.isEmpty && process.isEmpty && risks.isEmpty && advice.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    Widget section(String title, List<String> rows, Color color) {
+      if (rows.isEmpty) return const SizedBox.shrink();
+      return Padding(
+        padding: const EdgeInsets.only(top: 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                color: color,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 4),
+            ...rows.map(
+              (e) => Padding(
+                padding: const EdgeInsets.only(bottom: 4),
+                child: Text(
+                  '• $e',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: t.textSecondary,
+                    height: 1.4,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Container(
+      margin: EdgeInsets.only(bottom: t.spacing.sm),
+      padding: EdgeInsets.all(t.spacing.cardPadding),
+      decoration: BoxDecoration(
+        color: t.browseSurface,
+        borderRadius: BorderRadius.circular(t.radius.lg),
+        border: Border.all(color: t.browseBorder),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  label.isEmpty ? '模块解释' : label,
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    color: t.textPrimary,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              if (confidence.isNotEmpty)
+                Text(
+                  confidence.toUpperCase(),
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: t.info,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              if (priority.isNotEmpty) ...[
+                const SizedBox(width: 8),
+                Text(
+                  priority.toUpperCase(),
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: t.warning,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ],
+          ),
+          if (summary.isNotEmpty) ...[
+            const SizedBox(height: 6),
+            Text(
+              summary,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: t.textPrimary,
+                height: 1.45,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+          section('过程', process, t.info),
+          section('风险', risks, t.warning),
+          section('建议', advice, t.success),
+        ],
+      ),
+    );
+  }
+
   Widget _modulePriorityOverview(
     BuildContext context, {
     required List<Map<String, dynamic>> rows,
@@ -1034,6 +1153,19 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
         .map((e) => e.toString().trim())
         .where((e) => e.isNotEmpty)
         .join('、');
+    final engineSource = (row['engine_source'] ?? '').toString().trim();
+    final engineMode = (row['engine_mode'] ?? '').toString().trim();
+    final dataQuality = (row['data_quality'] ?? '').toString().trim();
+    final precisionLevel = (row['precision_level'] ?? '').toString().trim();
+    final confidenceReasons =
+        (row['confidence_reason'] as List<dynamic>? ?? const [])
+            .map((e) => e.toString().trim())
+            .where((e) => e.isNotEmpty)
+            .join('|');
+    final guard = (row['display_guard'] as Map<String, dynamic>? ?? const {});
+    final hc = (guard['allow_high_confidence_badge'] as bool?) ?? false;
+    final se = (guard['allow_strong_evidence_badge'] as bool?) ?? false;
+    final pw = (guard['allow_precise_wording'] as bool?) ?? false;
     return [
       '$label | score=$score',
       'priority=$priority($priorityLevel)',
@@ -1042,6 +1174,12 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
       'risk_level=$riskLevel',
       if (risk.isNotEmpty) 'risk=$risk',
       if (tags.isNotEmpty) 'tags=$tags',
+      if (engineSource.isNotEmpty) 'engine_source=$engineSource',
+      if (engineMode.isNotEmpty) 'engine_mode=$engineMode',
+      if (dataQuality.isNotEmpty) 'data_quality=$dataQuality',
+      if (precisionLevel.isNotEmpty) 'precision=$precisionLevel',
+      if (confidenceReasons.isNotEmpty) 'confidence_reason=$confidenceReasons',
+      if (guard.isNotEmpty) 'guard(HC/SE/PW)=${hc ? 1 : 0}/${se ? 1 : 0}/${pw ? 1 : 0}',
       'degraded=$degraded',
       if (reason.isNotEmpty) 'reason=$reason',
     ].join(' | ');
@@ -1080,6 +1218,22 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
           final visibleInsights = data.moduleInsights
               .take(maxInsightCount)
               .toList();
+          final explanationBlocksAll = data.explanationBlocks
+              .where((e) {
+                final summary = (e['summary'] ?? '').toString().trim();
+                final process = (e['process'] as List<dynamic>? ?? const []);
+                final risks = (e['risks'] as List<dynamic>? ?? const []);
+                final advice = (e['advice'] as List<dynamic>? ?? const []);
+                return summary.isNotEmpty ||
+                    process.isNotEmpty ||
+                    risks.isNotEmpty ||
+                    advice.isNotEmpty;
+              })
+              .toList();
+          final visibleExplanationBlocks = explanationBlocksAll
+              .take(maxInsightCount)
+              .toList();
+          final hasExplanationBlocks = visibleExplanationBlocks.isNotEmpty;
           final explanationRowsAll =
               data.moduleExplanations
                   .where(
@@ -1149,20 +1303,37 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
             groupedExplanations[_normalizeRiskLevel(row)]!.add(row);
           }
           final hasMoreReasons =
-              grouped.highlights.length > visibleHighlights.length ||
-              grouped.risks.length > visibleRisks.length;
+              !hasExplanationBlocks &&
+              (grouped.highlights.length > visibleHighlights.length ||
+                  grouped.risks.length > visibleRisks.length);
           final hasMoreInsights = explanationRowsAll.isNotEmpty
               ? explanationRowsAll.length > visibleExplanationRows.length
               : data.moduleInsights.length > visibleInsights.length;
-          final canExpand = hasMoreReasons || hasMoreInsights;
+          final hasMoreExplanationBlocks =
+              explanationBlocksAll.length > visibleExplanationBlocks.length;
+          final canExpand =
+              hasMoreReasons || hasMoreInsights || hasMoreExplanationBlocks;
           final mergedGlossary = <String, String>{
             ..._termGlossary,
             ...data.reasonGlossary,
           };
-          final glossaryEntries = _collectGlossary([
-            ...data.reasons,
-            ...visibleInsights,
-          ], serverGlossary: data.reasonGlossary);
+          final blockTexts = <String>[
+            for (final b in visibleExplanationBlocks)
+              (b['summary'] ?? '').toString(),
+            for (final b in visibleExplanationBlocks)
+              ...((b['process'] as List<dynamic>? ?? const [])
+                  .map((e) => e.toString())),
+            for (final b in visibleExplanationBlocks)
+              ...((b['risks'] as List<dynamic>? ?? const [])
+                  .map((e) => e.toString())),
+            for (final b in visibleExplanationBlocks)
+              ...((b['advice'] as List<dynamic>? ?? const [])
+                  .map((e) => e.toString())),
+          ];
+          final glossaryEntries = _collectGlossary(
+            hasExplanationBlocks ? blockTexts : [...data.reasons, ...visibleInsights],
+            serverGlossary: data.reasonGlossary,
+          );
           final compatibilitySections = data.compatibilitySections.entries
               .where((entry) => entry.value.isNotEmpty)
               .toList();
@@ -1173,7 +1344,7 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
                 child: PageTitleRail(title: '匹配解释', subtitle: '先看关系解释，再看参数补充'),
               ),
               SizedBox(height: t.spacing.md),
-              if (grouped.highlights.isNotEmpty)
+              if (!hasExplanationBlocks && grouped.highlights.isNotEmpty)
                 SectionReveal(
                   delay: const Duration(milliseconds: 60),
                   child: _reasonSectionCard(
@@ -1184,7 +1355,7 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
                     color: t.success,
                   ),
                 ),
-              if (grouped.risks.isNotEmpty)
+              if (!hasExplanationBlocks && grouped.risks.isNotEmpty)
                 SectionReveal(
                   delay: const Duration(milliseconds: 90),
                   child: _reasonSectionCard(
@@ -1195,7 +1366,9 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
                     color: t.warning,
                   ),
                 ),
-              if (grouped.highlights.isEmpty && grouped.risks.isEmpty)
+              if (!hasExplanationBlocks &&
+                  grouped.highlights.isEmpty &&
+                  grouped.risks.isEmpty)
                 ...List.generate(data.reasons.length, (index) {
                   return SectionReveal(
                     delay: Duration(milliseconds: 40 * (index + 1)),
@@ -1208,6 +1381,20 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
                     ),
                   );
                 }),
+              if (visibleExplanationBlocks.isNotEmpty)
+                SectionReveal(
+                  delay: const Duration(milliseconds: 140),
+                  child: Column(
+                    children: visibleExplanationBlocks
+                        .map(
+                          (row) => _explanationBlockCard(
+                            context,
+                            block: row,
+                          ),
+                        )
+                        .toList(),
+                  ),
+                ),
               if (compatibilitySections.isNotEmpty)
                 SectionReveal(
                   delay: const Duration(milliseconds: 160),
@@ -1493,6 +1680,32 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
                                     (row['priority_reason'] ?? '')
                                         .toString()
                                         .trim();
+                                final engineSource =
+                                    (row['engine_source'] ?? '')
+                                        .toString()
+                                        .trim();
+                                final engineMode = (row['engine_mode'] ?? '')
+                                    .toString()
+                                    .trim();
+                                final dataQuality =
+                                    (row['data_quality'] ?? '')
+                                        .toString()
+                                        .trim();
+                                final precisionLevel =
+                                    (row['precision_level'] ?? '')
+                                        .toString()
+                                        .trim();
+                                final confidenceReasons =
+                                    (row['confidence_reason']
+                                                as List<dynamic>? ??
+                                            const [])
+                                        .map((e) => e.toString().trim())
+                                        .where((e) => e.isNotEmpty)
+                                        .toList();
+                                final displayGuard =
+                                    (row['display_guard']
+                                                as Map<String, dynamic>? ??
+                                            const {});
                                 final evidenceStrength =
                                     (row['evidence_strength'] ?? '')
                                         .toString()
@@ -1613,6 +1826,20 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
                                   highlighted: highlighted,
                                   showDebugMeta: env.isDev && _showDevMetrics,
                                   debugCopyText: _buildModuleDebugText(row),
+                                  engineSource: engineSource.isEmpty
+                                      ? null
+                                      : engineSource,
+                                  engineMode: engineMode.isEmpty
+                                      ? null
+                                      : engineMode,
+                                  dataQuality: dataQuality.isEmpty
+                                      ? null
+                                      : dataQuality,
+                                  precisionLevel: precisionLevel.isEmpty
+                                      ? null
+                                      : precisionLevel,
+                                  confidenceReasons: confidenceReasons,
+                                  displayGuard: displayGuard,
                                   tags: tags,
                                   coreTags: coreTags,
                                   auxTags: auxTags,
@@ -1690,6 +1917,12 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
                               showDebugMeta: env.isDev && _showDevMetrics,
                               debugCopyText:
                                   '${parsed.module} | score=${parsed.score} | reason=${parsed.reason}',
+                              engineSource: null,
+                              engineMode: null,
+                              dataQuality: null,
+                              precisionLevel: null,
+                              confidenceReasons: const [],
+                              displayGuard: const {},
                               tags: parsed.tags,
                               glossary: mergedGlossary,
                             );

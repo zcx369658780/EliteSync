@@ -114,15 +114,14 @@ class MatchRemoteDataSource {
   Future<MatchResultDto> getResult() async {
     if (useMock) return MatchResultDto.fromJson(MatchMock.resultHappy);
     final raw = await _currentMatchRaw();
-    final tags = (raw['explanation_tags'] as List<dynamic>? ?? const [])
+    final tags = _asList(raw['explanation_tags'])
         .map((e) => _formatTag(e.toString()))
         .where((e) => e.isNotEmpty)
         .toList();
-    final core = (raw['core_scores'] as Map<String, dynamic>? ?? const {});
-    final astro = (raw['astro_scores'] as Map<String, dynamic>? ?? const {});
-    final reasons = (raw['match_reasons'] as Map<String, dynamic>? ?? const {});
-    final reasonMatch = (reasons['match'] as List<dynamic>? ?? const [])
-        .whereType<Map<String, dynamic>>()
+    final core = _asMap(raw['core_scores']);
+    final astro = _asMap(raw['astro_scores']);
+    final reasons = _asMap(raw['match_reasons']);
+    final reasonMatch = _toListOfMap(reasons['match'])
         .take(3)
         .map(
           (e) => {
@@ -171,29 +170,20 @@ class MatchRemoteDataSource {
       );
     }
     final raw = await _detailRawPreferExplanation();
-    final reasons = (raw['match_reasons'] as Map<String, dynamic>? ?? const {});
-    final reasonGlossary =
-        (reasons['reason_glossary'] as Map<String, dynamic>? ?? const {}).map(
-          (k, v) => MapEntry(k.toString(), v.toString()),
+    final reasons = _asMap(raw['match_reasons']);
+    final reasonGlossary = _asMap(
+      reasons['reason_glossary'],
+    ).map((k, v) => MapEntry(k.toString(), v.toString()));
+    final evidenceStrengthSummary = _asMap(reasons['evidence_strength_summary']);
+    final serverCompatibilitySections = _asMap(reasons['compatibility_sections'])
+        .map(
+          (k, v) => MapEntry(
+            k.toString(),
+            _toListOfMap(v),
+          ),
         );
-    final evidenceStrengthSummary =
-        (reasons['evidence_strength_summary'] as Map<String, dynamic>? ??
-        const {});
-    final serverCompatibilitySections =
-        (reasons['compatibility_sections'] as Map<String, dynamic>? ?? const {})
-            .map(
-              (k, v) => MapEntry(
-                k.toString(),
-                (v as List<dynamic>? ?? const [])
-                    .whereType<Map<String, dynamic>>()
-                    .map((e) => Map<String, dynamic>.from(e))
-                    .toList(),
-              ),
-            );
-    final astroScoresRaw =
-        (raw['astro_scores'] as Map<String, dynamic>? ?? const {});
-    final match = (reasons['match'] as List<dynamic>? ?? const [])
-        .whereType<Map<String, dynamic>>()
+    final astroScoresRaw = _asMap(raw['astro_scores']);
+    final match = _toListOfMap(reasons['match'])
         .map((e) {
           final module = _moduleName((e['module'] ?? '').toString());
           final score = (e['score'] as num?)?.toInt();
@@ -203,8 +193,7 @@ class MatchRemoteDataSource {
         })
         .where((e) => e.isNotEmpty)
         .toList();
-    final mismatch = (reasons['mismatch'] as List<dynamic>? ?? const [])
-        .whereType<Map<String, dynamic>>()
+    final mismatch = _toListOfMap(reasons['mismatch'])
         .map((e) {
           final module = _moduleName((e['module'] ?? '').toString());
           final score = (e['score'] as num?)?.toInt();
@@ -215,38 +204,33 @@ class MatchRemoteDataSource {
         .where((e) => e.isNotEmpty)
         .toList();
     final detailReasons = <String>[...match, ...mismatch];
-    final modules = (reasons['modules'] as List<dynamic>? ?? const [])
-        .whereType<Map<String, dynamic>>()
-        .toList();
-    final serverModuleExplanations =
-        (reasons['module_explanations'] as List<dynamic>? ?? const [])
-            .whereType<Map<String, dynamic>>()
+    final modules = _toListOfMap(reasons['modules']);
+    final serverModuleExplanations = _toListOfMap(reasons['module_explanations'])
             .map((row) {
-              final tags = (row['tags'] as List<dynamic>? ?? const [])
+              final tags = _asList(row['tags'])
                   .map((e) => e.toString().trim())
                   .where((e) => e.isNotEmpty)
                   .toList();
-              final coreTags = (row['core_tags'] as List<dynamic>? ?? const [])
+              final coreTags = _asList(row['core_tags'])
                   .map((e) => e.toString().trim())
                   .where((e) => e.isNotEmpty)
                   .toList();
-              final auxTags = (row['aux_tags'] as List<dynamic>? ?? const [])
+              final auxTags = _asList(row['aux_tags'])
                   .map((e) => e.toString().trim())
                   .where((e) => e.isNotEmpty)
                   .toList();
-              final coreTagExplains =
-                  (row['core_tag_explains'] as Map<String, dynamic>? ??
-                          const {})
-                      .map((k, v) => MapEntry(k.toString(), v.toString()));
-              final auxTagExplains =
-                  (row['aux_tag_explains'] as Map<String, dynamic>? ?? const {})
-                      .map((k, v) => MapEntry(k.toString(), v.toString()));
-              final coreTagRefs =
-                  (row['core_tag_refs'] as Map<String, dynamic>? ?? const {})
-                      .map((k, v) => MapEntry(k.toString(), v.toString()));
-              final auxTagRefs =
-                  (row['aux_tag_refs'] as Map<String, dynamic>? ?? const {})
-                      .map((k, v) => MapEntry(k.toString(), v.toString()));
+              final coreTagExplains = _asMap(
+                row['core_tag_explains'],
+              ).map((k, v) => MapEntry(k.toString(), v.toString()));
+              final auxTagExplains = _asMap(
+                row['aux_tag_explains'],
+              ).map((k, v) => MapEntry(k.toString(), v.toString()));
+              final coreTagRefs = _asMap(
+                row['core_tag_refs'],
+              ).map((k, v) => MapEntry(k.toString(), v.toString()));
+              final auxTagRefs = _asMap(
+                row['aux_tag_refs'],
+              ).map((k, v) => MapEntry(k.toString(), v.toString()));
               final confidence = (row['confidence'] as num?)?.toDouble() ?? 0.5;
               final degraded = (row['degraded'] as bool?) ?? false;
               final tierRaw = (row['confidence_tier'] ?? '')
@@ -333,6 +317,41 @@ class MatchRemoteDataSource {
               };
             })
             .toList();
+    final serverExplanationBlocks = _toListOfMap(
+      reasons['explanation_blocks'],
+    ).map((row) {
+      final process = _asList(row['process'])
+          .map((e) => e.toString().trim())
+          .where((e) => e.isNotEmpty)
+          .toList();
+      final risks = _asList(row['risks'])
+          .map((e) => e.toString().trim())
+          .where((e) => e.isNotEmpty)
+          .toList();
+      final advice = _asList(row['advice'])
+          .map((e) => e.toString().trim())
+          .where((e) => e.isNotEmpty)
+          .toList();
+      final coreEvidence = _asList(row['core_evidence'])
+          .map((e) => e.toString().trim())
+          .where((e) => e.isNotEmpty)
+          .toList();
+      final supportingEvidence = _asList(row['supporting_evidence'])
+          .map((e) => e.toString().trim())
+          .where((e) => e.isNotEmpty)
+          .toList();
+      return {
+        ...row,
+        'summary': (row['summary'] ?? '').toString().trim(),
+        'process': process,
+        'risks': risks,
+        'advice': advice,
+        'core_evidence': coreEvidence,
+        'supporting_evidence': supportingEvidence,
+        'confidence': (row['confidence'] ?? '').toString().trim(),
+        'priority': (row['priority'] ?? '').toString().trim(),
+      };
+    }).toList();
     final moduleScores = <String, int>{};
     final moduleInsights = <String>[];
     final moduleExplanations = <Map<String, dynamic>>[
@@ -366,13 +385,13 @@ class MatchRemoteDataSource {
           .toString()
           .trim()
           .toLowerCase();
-      final labelTags = (m['evidence_tag_labels'] as List<dynamic>? ?? const [])
+      final labelTags = _asList(m['evidence_tag_labels'])
           .map((e) => e.toString().trim())
           .where((e) => e.isNotEmpty)
           .toList();
       final tags = labelTags.isNotEmpty
           ? labelTags
-          : (m['evidence_tags'] as List<dynamic>? ?? const [])
+          : _asList(m['evidence_tags'])
                 .map((e) => _formatEvidenceTag(e.toString()))
                 .where((e) => e.isNotEmpty)
                 .toList();
@@ -525,6 +544,7 @@ class MatchRemoteDataSource {
       'module_scores': moduleScores,
       'module_insights': moduleInsights,
       'module_explanations': moduleExplanations,
+      'explanation_blocks': serverExplanationBlocks,
       'compatibility_sections': compatibilitySections,
       'reason_glossary': reasonGlossary,
       'evidence_strength_summary': evidenceStrengthSummary,
@@ -682,6 +702,24 @@ class MatchRemoteDataSource {
       default:
         return '${_moduleName(key)} $value'.trim();
     }
+  }
+
+  Map<String, dynamic> _asMap(dynamic value) {
+    if (value is Map<String, dynamic>) return value;
+    if (value is Map) {
+      return value.map((key, val) => MapEntry(key.toString(), val));
+    }
+    return <String, dynamic>{};
+  }
+
+  List<dynamic> _asList(dynamic value) {
+    if (value is List<dynamic>) return value;
+    if (value is List) return List<dynamic>.from(value);
+    return const <dynamic>[];
+  }
+
+  List<Map<String, dynamic>> _toListOfMap(dynamic value) {
+    return _asList(value).map(_asMap).where((e) => e.isNotEmpty).toList();
   }
 }
 

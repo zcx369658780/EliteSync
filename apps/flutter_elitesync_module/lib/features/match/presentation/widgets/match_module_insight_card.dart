@@ -23,6 +23,12 @@ class MatchModuleInsightCard extends StatelessWidget {
     this.highlighted = false,
     this.showDebugMeta = false,
     this.debugCopyText,
+    this.engineSource,
+    this.engineMode,
+    this.dataQuality,
+    this.precisionLevel,
+    this.confidenceReasons = const [],
+    this.displayGuard = const {},
     this.tags = const [],
     this.coreTags = const [],
     this.auxTags = const [],
@@ -51,6 +57,12 @@ class MatchModuleInsightCard extends StatelessWidget {
   final bool highlighted;
   final bool showDebugMeta;
   final String? debugCopyText;
+  final String? engineSource;
+  final String? engineMode;
+  final String? dataQuality;
+  final String? precisionLevel;
+  final List<String> confidenceReasons;
+  final Map<String, dynamic> displayGuard;
   final List<String> tags;
   final List<String> coreTags;
   final List<String> auxTags;
@@ -463,23 +475,128 @@ class MatchModuleInsightCard extends StatelessWidget {
             if (showDebugMeta) ...[
               SizedBox(height: t.spacing.xs),
               Container(
-                width: double.infinity,
-                padding: EdgeInsets.symmetric(
-                  horizontal: t.spacing.xs,
-                  vertical: t.spacing.xxs,
-                ),
                 decoration: BoxDecoration(
-                  color: t.secondarySurface.withValues(alpha: 0.6),
+                  color: t.secondarySurface.withValues(alpha: 0.52),
                   borderRadius: BorderRadius.circular(t.radius.sm),
                   border: Border.all(
-                    color: t.browseBorder.withValues(alpha: 0.45),
+                    color: t.browseBorder.withValues(alpha: 0.42),
                   ),
                 ),
-                child: Text(
-                  'debug: p=${priority ?? -1}, level=${(priorityLevel ?? "-").toLowerCase()}, conf=${((confidence ?? 0.5) * 100).toStringAsFixed(0)}%, degraded=${degraded ? "1" : "0"}',
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: t.textSecondary,
-                    fontWeight: FontWeight.w600,
+                child: Theme(
+                  data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+                  child: ExpansionTile(
+                    tilePadding: EdgeInsets.symmetric(
+                      horizontal: t.spacing.xs,
+                      vertical: 0,
+                    ),
+                    childrenPadding: EdgeInsets.fromLTRB(
+                      t.spacing.xs,
+                      0,
+                      t.spacing.xs,
+                      t.spacing.xs,
+                    ),
+                    iconColor: t.textSecondary,
+                    collapsedIconColor: t.textSecondary,
+                    title: Text(
+                      '调试元数据',
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: t.textSecondary,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    subtitle: Text(
+                      'p=${priority ?? -1} · conf=${((confidence ?? 0.5) * 100).toStringAsFixed(0)}% · degraded=${degraded ? "1" : "0"}',
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: t.textSecondary.withValues(alpha: 0.9),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    children: [
+                      Container(
+                        width: double.infinity,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: t.spacing.xs,
+                          vertical: t.spacing.xxs,
+                        ),
+                        decoration: BoxDecoration(
+                          color: t.secondarySurface.withValues(alpha: 0.6),
+                          borderRadius: BorderRadius.circular(t.radius.sm),
+                          border: Border.all(
+                            color: t.browseBorder.withValues(alpha: 0.45),
+                          ),
+                        ),
+                        child: Text(
+                          'debug: p=${priority ?? -1}, level=${(priorityLevel ?? "-").toLowerCase()}, conf=${((confidence ?? 0.5) * 100).toStringAsFixed(0)}%, degraded=${degraded ? "1" : "0"}',
+                          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                            color: t.textSecondary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      if ((engineSource ?? '').trim().isNotEmpty ||
+                          (engineMode ?? '').trim().isNotEmpty ||
+                          (dataQuality ?? '').trim().isNotEmpty ||
+                          (precisionLevel ?? '').trim().isNotEmpty) ...[
+                        SizedBox(height: t.spacing.xxs),
+                        Container(
+                          width: double.infinity,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: t.spacing.xs,
+                            vertical: t.spacing.xxs,
+                          ),
+                          decoration: BoxDecoration(
+                            color: t.secondarySurface.withValues(alpha: 0.52),
+                            borderRadius: BorderRadius.circular(t.radius.sm),
+                            border: Border.all(
+                              color: t.browseBorder.withValues(alpha: 0.4),
+                            ),
+                          ),
+                          child: Text(
+                            'engine=${(engineSource ?? "-").trim()} | mode=${(engineMode ?? "-").trim()} | quality=${(dataQuality ?? "-").trim()} | precision=${(precisionLevel ?? "-").trim()}',
+                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                              color: t.textSecondary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                      if (displayGuard.isNotEmpty) ...[
+                        SizedBox(height: t.spacing.xxs),
+                        Wrap(
+                          spacing: t.spacing.xs,
+                          runSpacing: t.spacing.xxs,
+                          children: [
+                            _debugGuardChip(
+                              context,
+                              'HC',
+                              (displayGuard['allow_high_confidence_badge'] as bool?) ??
+                                  false,
+                            ),
+                            _debugGuardChip(
+                              context,
+                              'SE',
+                              (displayGuard['allow_strong_evidence_badge'] as bool?) ??
+                                  false,
+                            ),
+                            _debugGuardChip(
+                              context,
+                              'PW',
+                              (displayGuard['allow_precise_wording'] as bool?) ?? false,
+                            ),
+                          ],
+                        ),
+                      ],
+                      if (confidenceReasons.isNotEmpty) ...[
+                        SizedBox(height: t.spacing.xxs),
+                        Text(
+                          'reasons: ${confidenceReasons.join(" | ")}',
+                          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                            color: t.textSecondary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
                 ),
               ),
@@ -617,6 +734,29 @@ class MatchModuleInsightCard extends StatelessWidget {
               ),
             ],
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _debugGuardChip(BuildContext context, String key, bool ok) {
+    final t = context.appTokens;
+    final color = ok ? t.success : t.error;
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: t.spacing.xs,
+        vertical: t.spacing.xxs,
+      ),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.14),
+        borderRadius: BorderRadius.circular(t.radius.pill),
+        border: Border.all(color: color.withValues(alpha: 0.35)),
+      ),
+      child: Text(
+        '$key:${ok ? "1" : "0"}',
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+          color: color,
+          fontWeight: FontWeight.w700,
         ),
       ),
     );
