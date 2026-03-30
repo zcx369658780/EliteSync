@@ -165,7 +165,7 @@ class MediaFeedCard extends StatelessWidget {
     if (tags.isEmpty) {
       if (text.contains('沟通')) tags.add('沟通技巧');
       if (text.contains('星') || text.contains('盘')) tags.add('星盘');
-      if (text.contains('mbti')) tags.add('MBTI');
+      if (text.contains('mbti')) tags.add('性格');
       if (text.contains('匹配')) tags.add('匹配提升');
       if (text.contains('关系')) tags.add('关系研究');
     }

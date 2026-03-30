@@ -126,6 +126,23 @@ class QuestionnaireNotifier extends AsyncNotifier<QuestionnaireState> {
     }
   }
 
+  Future<void> selectOptionAndProceed(int optionIndex) async {
+    final before = _current;
+    if (before == null) return;
+
+    selectOption(optionIndex);
+
+    final after = _current;
+    if (after == null) return;
+
+    if (after.isLast) {
+      await submit();
+      return;
+    }
+
+    next();
+  }
+
   void next() {
     final current = _current;
     if (current == null || current.questions.isEmpty) return;

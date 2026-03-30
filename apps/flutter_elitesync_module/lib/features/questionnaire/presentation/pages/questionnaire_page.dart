@@ -3,8 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_elitesync_module/app/router/app_route_names.dart';
 import 'package:flutter_elitesync_module/design_system/components/bars/app_top_bar.dart';
-import 'package:flutter_elitesync_module/design_system/components/buttons/app_primary_button.dart';
-import 'package:flutter_elitesync_module/design_system/components/buttons/app_secondary_button.dart';
 import 'package:flutter_elitesync_module/design_system/components/cards/app_card.dart';
 import 'package:flutter_elitesync_module/design_system/components/states/app_error_state.dart';
 import 'package:flutter_elitesync_module/design_system/components/states/app_loading_skeleton.dart';
@@ -117,7 +115,7 @@ class _QuestionnairePageState extends ConsumerState<QuestionnairePage> {
                                 selected: selected == index,
                                 onTap: () => ref
                                     .read(questionnaireProvider.notifier)
-                                    .selectOption(index),
+                                    .selectOptionAndProceed(index),
                               ),
                             );
                           }),
@@ -143,65 +141,10 @@ class _QuestionnairePageState extends ConsumerState<QuestionnairePage> {
                       ).textTheme.bodySmall?.copyWith(color: t.success),
                     ),
                   ],
-                  SizedBox(height: t.spacing.md),
-                  SectionReveal(
-                    delay: const Duration(milliseconds: 110),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: AppSecondaryButton(
-                            label: '上一题',
-                            onPressed: state.isFirst
-                                ? null
-                                : () => ref
-                                      .read(questionnaireProvider.notifier)
-                                      .previous(),
-                          ),
-                        ),
-                        SizedBox(width: t.spacing.sm),
-                        Expanded(
-                          child: AppSecondaryButton(
-                            label: '下一题',
-                            onPressed: state.isLast
-                                ? null
-                                : () => ref
-                                      .read(questionnaireProvider.notifier)
-                                      .next(),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: t.spacing.sm),
-                  SectionReveal(
-                    delay: const Duration(milliseconds: 150),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: AppSecondaryButton(
-                            label: state.isSavingDraft ? '保存中...' : '保存草稿',
-                            onPressed: state.isSavingDraft
-                                ? null
-                                : () => ref
-                                      .read(questionnaireProvider.notifier)
-                                      .saveDraft(),
-                          ),
-                        ),
-                        SizedBox(width: t.spacing.sm),
-                        Expanded(
-                          child: AppPrimaryButton(
-                            label: state.submitted ? '已提交' : '提交问卷',
-                            isLoading: state.isSubmitting,
-                            onPressed: (state.submitted || state.isSubmitting)
-                                ? null
-                                : () => ref
-                                      .read(questionnaireProvider.notifier)
-                                      .submit(),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  if (state.isSubmitting) ...[
+                    SizedBox(height: t.spacing.md),
+                    const Center(child: CircularProgressIndicator()),
+                  ],
                 ],
               ),
             ),

@@ -1,22 +1,824 @@
 [
-  {"case_id":"C01_full_high","module_key":"bazi","summary":"八字层结论：结构互补度高","process":["五行互补明显","核心证据：五行互补、地支六合"],"risks":["当前风险等级：low"],"advice":["保持作息节奏同步"],"core_evidence":["五行互补","地支六合"],"supporting_evidence":["岁运节律同步"],"confidence":"high","priority":"normal"},
-  {"case_id":"C02_full_medium","module_key":"bazi","summary":"八字层结论：结构可磨合","process":["结构偏互补","核心证据：五行互补"],"risks":["存在节律磨合点"],"advice":["建立固定复盘机制"],"core_evidence":["五行互补"],"supporting_evidence":["岁运节律偏差"],"confidence":"medium","priority":"medium"},
-  {"case_id":"C03_date_only","module_key":"bazi","summary":"八字层结论：信息不完整，仅供参考","process":["当前为降级估算"],"risks":["当前风险等级：medium"],"advice":["补全出生时刻后复核"],"core_evidence":["缺少完整八字"],"supporting_evidence":[],"confidence":"low","priority":"high"},
-  {"case_id":"C04_zodiac_liuhe","module_key":"zodiac","summary":"属相层结论：协同度较高","process":["属相关系为六合"],"risks":[],"advice":["属相仅作辅助参考，优先看真实互动"],"core_evidence":["属相六合"],"supporting_evidence":[],"confidence":"high","priority":"normal"},
-  {"case_id":"C05_zodiac_chong","module_key":"zodiac","summary":"属相层结论：磨合成本偏高","process":["属相关系为相冲"],"risks":["沟通成本可能偏高"],"advice":["提前对齐边界与冲突处理机制"],"core_evidence":["属相相冲"],"supporting_evidence":[],"confidence":"high","priority":"high"},
-  {"case_id":"C06_constellation_same","module_key":"constellation","summary":"星座层结论：表达节奏接近","process":["同元素倾向"],"risks":[],"advice":["保持表达透明度"],"core_evidence":["同元素"],"supporting_evidence":[],"confidence":"medium","priority":"normal"},
-  {"case_id":"C07_constellation_tension","module_key":"constellation","summary":"星座层结论：互动张力偏高","process":["元素张力"],"risks":["表达偏好差异明显"],"advice":["使用反馈式沟通"],"core_evidence":["元素张力"],"supporting_evidence":[],"confidence":"medium","priority":"medium"},
-  {"case_id":"C08_natal_full","module_key":"natal_chart","summary":"星盘过程层结论：情绪同步较好","process":["日月互动和谐","核心证据：日月互动和谐、上升风格协调"],"risks":[],"advice":["持续保持节奏同步"],"core_evidence":["日月互动和谐","上升风格协调"],"supporting_evidence":["关系方向一致"],"confidence":"high","priority":"normal"},
-  {"case_id":"C09_natal_partial","module_key":"natal_chart","summary":"星盘过程层结论：存在估算成分","process":["缺少完整上升信息"],"risks":["当前风险等级：medium"],"advice":["补全地点信息后复核"],"core_evidence":["星盘信息不完整"],"supporting_evidence":[],"confidence":"low","priority":"high"},
-  {"case_id":"C10_pair_harmony","module_key":"pair_chart","summary":"合盘关系层结论：推进路径清晰","process":["合盘协同较高"],"risks":[],"advice":["保持稳定互动频率"],"core_evidence":["合盘协同"],"supporting_evidence":["情绪节奏一致"],"confidence":"high","priority":"normal"},
-  {"case_id":"C11_pair_tension","module_key":"pair_chart","summary":"合盘关系层结论：存在温差","process":["互动节奏差异"],"risks":["磨合期成本偏高"],"advice":["先建立边界与确认机制"],"core_evidence":["合盘张力"],"supporting_evidence":[],"confidence":"medium","priority":"high"},
-  {"case_id":"C12_pair_degraded","module_key":"pair_chart","summary":"合盘关系层结论：简化估算","process":["存在降级估算"],"risks":["结论稳定性受限"],"advice":["补全出生信息后再判断"],"core_evidence":["合盘降级估算"],"supporting_evidence":[],"confidence":"low","priority":"high"},
-  {"case_id":"C13_mbti_match","module_key":"mbti","summary":"MBTI层结论：沟通偏好相近","process":["字母匹配度中等"],"risks":[],"advice":["MBTI仅作轻量参考"],"core_evidence":["mbti_letter_match"],"supporting_evidence":[],"confidence":"medium","priority":"normal"},
-  {"case_id":"C14_mbti_gap","module_key":"mbti","summary":"MBTI层结论：沟通风格有差异","process":["偏好存在错位"],"risks":["误解概率偏高"],"advice":["先对齐沟通节奏"],"core_evidence":["mbti_style_gap"],"supporting_evidence":[],"confidence":"low","priority":"medium"},
-  {"case_id":"C15_personality_high","module_key":"personality","summary":"人格层结论：互补协作较好","process":["依恋安全感与修复倾向匹配"],"risks":[],"advice":["在冲突后及时复盘"],"core_evidence":["communication_style_match"],"supporting_evidence":["attachment_safe"],"confidence":"high","priority":"normal"},
-  {"case_id":"C16_personality_low","module_key":"personality","summary":"人格层结论：冲突修复成本偏高","process":["冲突应对偏好差异大"],"risks":["冲突后恢复慢"],"advice":["约定冲突处理流程"],"core_evidence":["conflict_repair_gap"],"supporting_evidence":[],"confidence":"medium","priority":"high"},
-  {"case_id":"C17_cross_highrisk","module_key":"pair_chart","summary":"合盘关系层结论：高分但高风险","process":["吸引强但节律不稳"],"risks":["易热易冷"],"advice":["避免过早做高承诺"],"core_evidence":["sun_moon_harmony"],"supporting_evidence":["pair_chart_tension"],"confidence":"medium","priority":"high"},
-  {"case_id":"C18_cross_stable","module_key":"bazi","summary":"八字层结论：中分但稳定","process":["结构中性偏稳"],"risks":[],"advice":["持续累积共同生活节律"],"core_evidence":["wu_xing_balance"],"supporting_evidence":[],"confidence":"medium","priority":"normal"},
-  {"case_id":"C19_conflict_modules","module_key":"natal_chart","summary":"星盘过程层结论：过程顺滑但长期待观察","process":["过程层协同优于结构层"],"risks":["长期承压能力待验证"],"advice":["过程层顺滑不等于长期稳定"],"core_evidence":["emotion_rhythm"],"supporting_evidence":["long_term_stability_low"],"confidence":"medium","priority":"medium"},
-  {"case_id":"C20_fallback_manual","module_key":"zodiac","summary":"属相层结论：人工兜底估算","process":["fallback数据"],"risks":["结论不稳定"],"advice":["补全资料后自动重算"],"core_evidence":["manual_fallback"],"supporting_evidence":[],"confidence":"low","priority":"high"}
+  {
+    "case_id": "C01_full_high",
+    "module_key": "bazi",
+    "summary": "八字层结论：结构互补度高",
+    "process": [
+      "五行互补明显",
+      "核心证据：五行互补、地支六合"
+    ],
+    "risks": [
+      "当前风险等级：low"
+    ],
+    "advice": [
+      "保持作息节奏同步"
+    ],
+    "core_evidence": [
+      "五行互补",
+      "地支六合"
+    ],
+    "supporting_evidence": [
+      "岁运节律同步"
+    ],
+    "confidence": "high",
+    "priority": "normal"
+  },
+  {
+    "case_id": "C02_full_medium",
+    "module_key": "bazi",
+    "summary": "八字层结论：结构可磨合",
+    "process": [
+      "结构偏互补",
+      "核心证据：五行互补"
+    ],
+    "risks": [
+      "存在节律磨合点"
+    ],
+    "advice": [
+      "建立固定复盘机制"
+    ],
+    "core_evidence": [
+      "五行互补"
+    ],
+    "supporting_evidence": [
+      "岁运节律偏差"
+    ],
+    "confidence": "medium",
+    "priority": "medium"
+  },
+  {
+    "case_id": "C03_date_only",
+    "module_key": "bazi",
+    "summary": "八字层结论：信息不完整，仅供参考",
+    "process": [
+      "当前为降级估算"
+    ],
+    "risks": [
+      "当前风险等级：medium"
+    ],
+    "advice": [
+      "补全出生时刻后复核"
+    ],
+    "core_evidence": [
+      "缺少完整八字"
+    ],
+    "supporting_evidence": [],
+    "confidence": "low",
+    "priority": "high"
+  },
+  {
+    "case_id": "C04_zodiac_liuhe",
+    "module_key": "zodiac",
+    "summary": "属相层结论：协同度较高",
+    "process": [
+      "属相关系为六合"
+    ],
+    "risks": [],
+    "advice": [
+      "属相仅作辅助参考，优先看真实互动"
+    ],
+    "core_evidence": [
+      "属相六合"
+    ],
+    "supporting_evidence": [],
+    "confidence": "high",
+    "priority": "normal"
+  },
+  {
+    "case_id": "C05_zodiac_chong",
+    "module_key": "zodiac",
+    "summary": "属相层结论：磨合成本偏高",
+    "process": [
+      "属相关系为相冲"
+    ],
+    "risks": [
+      "沟通成本可能偏高"
+    ],
+    "advice": [
+      "提前对齐边界与冲突处理机制"
+    ],
+    "core_evidence": [
+      "属相相冲"
+    ],
+    "supporting_evidence": [],
+    "confidence": "high",
+    "priority": "high"
+  },
+  {
+    "case_id": "C06_constellation_same",
+    "module_key": "constellation",
+    "summary": "星座层结论：表达节奏接近",
+    "process": [
+      "同元素倾向"
+    ],
+    "risks": [],
+    "advice": [
+      "保持表达透明度"
+    ],
+    "core_evidence": [
+      "同元素"
+    ],
+    "supporting_evidence": [],
+    "confidence": "medium",
+    "priority": "normal"
+  },
+  {
+    "case_id": "C07_constellation_tension",
+    "module_key": "constellation",
+    "summary": "星座层结论：互动张力偏高",
+    "process": [
+      "元素张力"
+    ],
+    "risks": [
+      "表达偏好差异明显"
+    ],
+    "advice": [
+      "使用反馈式沟通"
+    ],
+    "core_evidence": [
+      "元素张力"
+    ],
+    "supporting_evidence": [],
+    "confidence": "medium",
+    "priority": "medium"
+  },
+  {
+    "case_id": "C08_natal_full",
+    "module_key": "natal_chart",
+    "summary": "星盘过程层结论：情绪同步较好",
+    "process": [
+      "日月互动和谐",
+      "核心证据：日月互动和谐、上升风格协调"
+    ],
+    "risks": [],
+    "advice": [
+      "持续保持节奏同步"
+    ],
+    "core_evidence": [
+      "日月互动和谐",
+      "上升风格协调"
+    ],
+    "supporting_evidence": [
+      "关系方向一致"
+    ],
+    "confidence": "high",
+    "priority": "normal"
+  },
+  {
+    "case_id": "C09_natal_partial",
+    "module_key": "natal_chart",
+    "summary": "星盘过程层结论：存在估算成分",
+    "process": [
+      "缺少完整上升信息"
+    ],
+    "risks": [
+      "当前风险等级：medium"
+    ],
+    "advice": [
+      "补全地点信息后复核"
+    ],
+    "core_evidence": [
+      "星盘信息不完整"
+    ],
+    "supporting_evidence": [],
+    "confidence": "low",
+    "priority": "high"
+  },
+  {
+    "case_id": "C10_pair_harmony",
+    "module_key": "pair_chart",
+    "summary": "合盘关系层结论：推进路径清晰",
+    "process": [
+      "合盘协同较高"
+    ],
+    "risks": [],
+    "advice": [
+      "保持稳定互动频率"
+    ],
+    "core_evidence": [
+      "合盘协同"
+    ],
+    "supporting_evidence": [
+      "情绪节奏一致"
+    ],
+    "confidence": "high",
+    "priority": "normal"
+  },
+  {
+    "case_id": "C11_pair_tension",
+    "module_key": "pair_chart",
+    "summary": "合盘关系层结论：存在温差",
+    "process": [
+      "互动节奏差异"
+    ],
+    "risks": [
+      "磨合期成本偏高"
+    ],
+    "advice": [
+      "先建立边界与确认机制"
+    ],
+    "core_evidence": [
+      "合盘张力"
+    ],
+    "supporting_evidence": [],
+    "confidence": "medium",
+    "priority": "high"
+  },
+  {
+    "case_id": "C12_pair_degraded",
+    "module_key": "pair_chart",
+    "summary": "合盘关系层结论：简化估算",
+    "process": [
+      "存在降级估算"
+    ],
+    "risks": [
+      "结论稳定性受限"
+    ],
+    "advice": [
+      "补全出生信息后再判断"
+    ],
+    "core_evidence": [
+      "合盘降级估算"
+    ],
+    "supporting_evidence": [],
+    "confidence": "low",
+    "priority": "high"
+  },
+  {
+    "case_id": "C13_mbti_match",
+    "module_key": "mbti",
+    "summary": "MBTI层结论：沟通偏好相近",
+    "process": [
+      "字母匹配度中等"
+    ],
+    "risks": [],
+    "advice": [
+      "MBTI仅作轻量参考"
+    ],
+    "core_evidence": [
+      "mbti_letter_match"
+    ],
+    "supporting_evidence": [],
+    "confidence": "medium",
+    "priority": "normal"
+  },
+  {
+    "case_id": "C14_mbti_gap",
+    "module_key": "mbti",
+    "summary": "MBTI层结论：沟通风格有差异",
+    "process": [
+      "偏好存在错位"
+    ],
+    "risks": [
+      "误解概率偏高"
+    ],
+    "advice": [
+      "先对齐沟通节奏"
+    ],
+    "core_evidence": [
+      "mbti_style_gap"
+    ],
+    "supporting_evidence": [],
+    "confidence": "low",
+    "priority": "medium"
+  },
+  {
+    "case_id": "C15_personality_high",
+    "module_key": "personality",
+    "summary": "人格层结论：互补协作较好",
+    "process": [
+      "依恋安全感与修复倾向匹配"
+    ],
+    "risks": [],
+    "advice": [
+      "在冲突后及时复盘"
+    ],
+    "core_evidence": [
+      "communication_style_match"
+    ],
+    "supporting_evidence": [
+      "attachment_safe"
+    ],
+    "confidence": "high",
+    "priority": "normal"
+  },
+  {
+    "case_id": "C16_personality_low",
+    "module_key": "personality",
+    "summary": "人格层结论：冲突修复成本偏高",
+    "process": [
+      "冲突应对偏好差异大"
+    ],
+    "risks": [
+      "冲突后恢复慢"
+    ],
+    "advice": [
+      "约定冲突处理流程"
+    ],
+    "core_evidence": [
+      "conflict_repair_gap"
+    ],
+    "supporting_evidence": [],
+    "confidence": "medium",
+    "priority": "high"
+  },
+  {
+    "case_id": "C17_cross_highrisk",
+    "module_key": "pair_chart",
+    "summary": "合盘关系层结论：高分但高风险",
+    "process": [
+      "吸引强但节律不稳"
+    ],
+    "risks": [
+      "易热易冷"
+    ],
+    "advice": [
+      "避免过早做高承诺"
+    ],
+    "core_evidence": [
+      "sun_moon_harmony"
+    ],
+    "supporting_evidence": [
+      "pair_chart_tension"
+    ],
+    "confidence": "medium",
+    "priority": "high"
+  },
+  {
+    "case_id": "C18_cross_stable",
+    "module_key": "bazi",
+    "summary": "八字层结论：中分但稳定",
+    "process": [
+      "结构中性偏稳"
+    ],
+    "risks": [],
+    "advice": [
+      "持续累积共同生活节律"
+    ],
+    "core_evidence": [
+      "wu_xing_balance"
+    ],
+    "supporting_evidence": [],
+    "confidence": "medium",
+    "priority": "normal"
+  },
+  {
+    "case_id": "C19_conflict_modules",
+    "module_key": "natal_chart",
+    "summary": "星盘过程层结论：过程顺滑但长期待观察",
+    "process": [
+      "过程层协同优于结构层"
+    ],
+    "risks": [
+      "长期承压能力待验证"
+    ],
+    "advice": [
+      "过程层顺滑不等于长期稳定"
+    ],
+    "core_evidence": [
+      "emotion_rhythm"
+    ],
+    "supporting_evidence": [
+      "long_term_stability_low"
+    ],
+    "confidence": "medium",
+    "priority": "medium"
+  },
+  {
+    "case_id": "C20_fallback_manual",
+    "module_key": "zodiac",
+    "summary": "属相层结论：人工兜底估算",
+    "process": [
+      "fallback数据"
+    ],
+    "risks": [
+      "结论不稳定"
+    ],
+    "advice": [
+      "补全资料后自动重算"
+    ],
+    "core_evidence": [
+      "manual_fallback"
+    ],
+    "supporting_evidence": [],
+    "confidence": "low",
+    "priority": "high"
+  },
+  {
+    "core_evidence": [
+      "五行互补"
+    ],
+    "priority": "high",
+    "module_key": "bazi",
+    "risks": [
+      "高分不代表高稳定性"
+    ],
+    "summary": "八字层结论：分高但置信偏低",
+    "supporting_evidence": [
+      "缺少完整八字"
+    ],
+    "process": [
+      "有明显互补信号",
+      "但出生信息不完整"
+    ],
+    "advice": [
+      "补全出生时刻后再判断"
+    ],
+    "case_id": "C21_bazi_low_confidence_high_score",
+    "confidence": "low"
+  },
+  {
+    "core_evidence": [
+      "五行失衡"
+    ],
+    "priority": "high",
+    "module_key": "bazi",
+    "risks": [
+      "磨合成本偏高"
+    ],
+    "summary": "八字层结论：结构存在冲突",
+    "supporting_evidence": [
+      "岁运节律偏差"
+    ],
+    "process": [
+      "核心结构差异较明显"
+    ],
+    "advice": [
+      "把冲突点前置沟通"
+    ],
+    "case_id": "C22_bazi_conflict",
+    "confidence": "medium"
+  },
+  {
+    "core_evidence": [
+      "同属相"
+    ],
+    "priority": "normal",
+    "module_key": "zodiac",
+    "risks": [
+      "仅能作辅助参考"
+    ],
+    "summary": "属相层结论：同属相参考",
+    "supporting_evidence": [],
+    "process": [
+      "同属相"
+    ],
+    "advice": [
+      "优先看实际互动"
+    ],
+    "case_id": "C23_zodiac_same",
+    "confidence": "medium"
+  },
+  {
+    "core_evidence": [
+      "属相三合"
+    ],
+    "priority": "normal",
+    "module_key": "zodiac",
+    "risks": [],
+    "summary": "属相层结论：三合协同",
+    "supporting_evidence": [],
+    "process": [
+      "属相关系为三合"
+    ],
+    "advice": [
+      "继续观察长期互动"
+    ],
+    "case_id": "C24_zodiac_sanhe",
+    "confidence": "high"
+  },
+  {
+    "core_evidence": [
+      "同元素"
+    ],
+    "priority": "normal",
+    "module_key": "constellation",
+    "risks": [],
+    "summary": "星座层结论：同元素共鸣",
+    "supporting_evidence": [
+      "表达风格相近"
+    ],
+    "process": [
+      "元素相近"
+    ],
+    "advice": [
+      "继续保持表达透明"
+    ],
+    "case_id": "C25_constellation_same_element",
+    "confidence": "medium"
+  },
+  {
+    "core_evidence": [
+      "元素互补"
+    ],
+    "priority": "medium",
+    "module_key": "constellation",
+    "risks": [
+      "沟通节奏易错位"
+    ],
+    "summary": "星座层结论：表达差异较大",
+    "supporting_evidence": [
+      "表达偏好不同"
+    ],
+    "process": [
+      "元素差异明显"
+    ],
+    "advice": [
+      "使用反馈式沟通"
+    ],
+    "case_id": "C26_constellation_gap",
+    "confidence": "low"
+  },
+  {
+    "core_evidence": [
+      "日月互动和谐",
+      "上升风格协调"
+    ],
+    "priority": "normal",
+    "module_key": "natal_chart",
+    "risks": [],
+    "summary": "星盘过程层结论：情绪同步较稳定",
+    "supporting_evidence": [
+      "关系方向一致"
+    ],
+    "process": [
+      "日月互动和谐",
+      "上升风格协调"
+    ],
+    "advice": [
+      "保持稳定互动频率"
+    ],
+    "case_id": "C27_natal_high_confidence",
+    "confidence": "high"
+  },
+  {
+    "core_evidence": [
+      "emotion_rhythm"
+    ],
+    "priority": "medium",
+    "module_key": "natal_chart",
+    "risks": [
+      "长期稳定性待观察"
+    ],
+    "summary": "星盘过程层结论：节奏略有漂移",
+    "supporting_evidence": [
+      "部分坐标缺失"
+    ],
+    "process": [
+      "过程层协同尚可"
+    ],
+    "advice": [
+      "补全地点和时刻后再复核"
+    ],
+    "case_id": "C28_natal_drift",
+    "confidence": "medium"
+  },
+  {
+    "core_evidence": [
+      "pair_chart_tension"
+    ],
+    "priority": "high",
+    "module_key": "pair_chart",
+    "risks": [
+      "节奏不稳定"
+    ],
+    "summary": "合盘关系层结论：张力较高",
+    "supporting_evidence": [
+      "情绪起伏较大"
+    ],
+    "process": [
+      "吸引强"
+    ],
+    "advice": [
+      "避免过早高承诺"
+    ],
+    "case_id": "C29_pair_high_tension",
+    "confidence": "medium"
+  },
+  {
+    "core_evidence": [
+      "pair_chart_harmony"
+    ],
+    "priority": "normal",
+    "module_key": "pair_chart",
+    "risks": [],
+    "summary": "合盘关系层结论：稳定性较好",
+    "supporting_evidence": [
+      "情绪节奏一致"
+    ],
+    "process": [
+      "关系推进平稳"
+    ],
+    "advice": [
+      "保持当前节奏"
+    ],
+    "case_id": "C30_pair_stable",
+    "confidence": "high"
+  },
+  {
+    "core_evidence": [
+      "pair_chart_degraded"
+    ],
+    "priority": "high",
+    "module_key": "pair_chart",
+    "risks": [
+      "当前结论稳定性受限"
+    ],
+    "summary": "合盘关系层结论：部分信息估算",
+    "supporting_evidence": [],
+    "process": [
+      "存在降级估算"
+    ],
+    "advice": [
+      "补全出生信息再判断"
+    ],
+    "case_id": "C31_pair_degraded_partial",
+    "confidence": "low"
+  },
+  {
+    "core_evidence": [
+      "mbti_letter_match"
+    ],
+    "priority": "normal",
+    "module_key": "mbti",
+    "risks": [],
+    "summary": "MBTI层结论：沟通偏好接近",
+    "supporting_evidence": [
+      "沟通节奏接近"
+    ],
+    "process": [
+      "字母匹配度较高"
+    ],
+    "advice": [
+      "MBTI仅作轻量参考"
+    ],
+    "case_id": "C32_mbti_match_strong",
+    "confidence": "high"
+  },
+  {
+    "core_evidence": [
+      "mbti_style_gap"
+    ],
+    "priority": "high",
+    "module_key": "mbti",
+    "risks": [
+      "沟通误解概率偏高"
+    ],
+    "summary": "MBTI层结论：沟通偏好差异明显",
+    "supporting_evidence": [],
+    "process": [
+      "偏好错位明显"
+    ],
+    "advice": [
+      "提前对齐沟通节奏"
+    ],
+    "case_id": "C33_mbti_gap_high",
+    "confidence": "low"
+  },
+  {
+    "core_evidence": [
+      "attachment_safe"
+    ],
+    "priority": "normal",
+    "module_key": "personality",
+    "risks": [],
+    "summary": "人格层结论：安全感较高",
+    "supporting_evidence": [
+      "冲突修复倾向高"
+    ],
+    "process": [
+      "依恋安全感较好"
+    ],
+    "advice": [
+      "冲突后及时复盘"
+    ],
+    "case_id": "C34_personality_safe",
+    "confidence": "high"
+  },
+  {
+    "core_evidence": [
+      "conflict_repair_gap"
+    ],
+    "priority": "high",
+    "module_key": "personality",
+    "risks": [
+      "冲突后恢复慢"
+    ],
+    "summary": "人格层结论：修复成本偏高",
+    "supporting_evidence": [],
+    "process": [
+      "冲突修复倾向偏弱"
+    ],
+    "advice": [
+      "约定冲突处理流程"
+    ],
+    "case_id": "C35_personality_repair_gap",
+    "confidence": "medium"
+  },
+  {
+    "core_evidence": [
+      "五行互补"
+    ],
+    "priority": "normal",
+    "module_key": "bazi",
+    "risks": [
+      "长期节律差异仍需观察"
+    ],
+    "summary": "八字层结论：互补但需稳态经营",
+    "supporting_evidence": [
+      "岁运节律同步"
+    ],
+    "process": [
+      "五行互补明显"
+    ],
+    "advice": [
+      "建立稳定生活节奏"
+    ],
+    "case_id": "C36_cross_bazi_strong",
+    "confidence": "high"
+  },
+  {
+    "core_evidence": [
+      "partial_unknown"
+    ],
+    "priority": "high",
+    "module_key": "natal_chart",
+    "risks": [
+      "结论稳定性有限"
+    ],
+    "summary": "星盘过程层结论：轻量参考",
+    "supporting_evidence": [],
+    "process": [
+      "信息较少，采用轻量解释"
+    ],
+    "advice": [
+      "等待更完整输入再判断"
+    ],
+    "case_id": "C37_cross_western_lite",
+    "confidence": "low"
+  },
+  {
+    "core_evidence": [
+      "sun_moon_harmony"
+    ],
+    "priority": "high",
+    "module_key": "pair_chart",
+    "risks": [
+      "高分不等于低风险"
+    ],
+    "summary": "合盘关系层结论：高分但建议保守",
+    "supporting_evidence": [
+      "pair_chart_tension"
+    ],
+    "process": [
+      "互动吸引强"
+    ],
+    "advice": [
+      "先观察稳定互动周期"
+    ],
+    "case_id": "C38_cross_warn_high_score",
+    "confidence": "medium"
+  },
+  {
+    "core_evidence": [
+      "emotion_rhythm"
+    ],
+    "priority": "medium",
+    "module_key": "constellation",
+    "risks": [
+      "长期承压能力待验证"
+    ],
+    "summary": "星座层结论：过程顺滑但长期待观察",
+    "supporting_evidence": [
+      "long_term_stability_low"
+    ],
+    "process": [
+      "过程层协同优于结构层"
+    ],
+    "advice": [
+      "过程顺滑不等于长期稳定"
+    ],
+    "case_id": "C39_cross_module_conflict",
+    "confidence": "medium"
+  },
+  {
+    "core_evidence": [
+      "manual_fallback"
+    ],
+    "priority": "high",
+    "module_key": "natal_chart",
+    "risks": [
+      "结论不稳定"
+    ],
+    "summary": "星盘过程层结论：手动兜底估算",
+    "supporting_evidence": [],
+    "process": [
+      "fallback 数据"
+    ],
+    "advice": [
+      "补全资料后自动重算"
+    ],
+    "case_id": "C40_manual_fallback_western",
+    "confidence": "low"
+  }
 ]

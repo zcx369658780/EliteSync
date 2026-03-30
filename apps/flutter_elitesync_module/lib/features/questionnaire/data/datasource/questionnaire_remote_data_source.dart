@@ -41,24 +41,9 @@ class QuestionnaireRemoteDataSource {
     if (_useMockQuestionnaire) {
       return;
     }
-
-    final result = await _apiClient.post(
-      '/api/v1/questionnaire/draft',
-      body: {
-        'current_index': currentIndex,
-        'answers': answers.map((k, v) => MapEntry(k.toString(), v)),
-      },
-    );
-
-    if (result is NetworkSuccess<Map<String, dynamic>>) {
-      return;
-    }
-
-    final failure = result as NetworkFailure<Map<String, dynamic>>;
-    throw ValidationException(
-      failure.message,
-      code: failure.code ?? 'QUESTIONNAIRE_DRAFT_FAILED',
-    );
+    // Backend draft endpoint has been removed in unified questionnaire API.
+    // Keep local draft only to avoid noisy 404/network errors.
+    return;
   }
 
   Future<void> submitAnswers(Map<int, int> answers) async {
@@ -66,9 +51,21 @@ class QuestionnaireRemoteDataSource {
       return;
     }
 
+    final normalizedAnswers = answers.entries
+        .map(
+          (entry) => <String, dynamic>{
+            'question_id': entry.key,
+            // backend accepts legacy "answer" string
+            'answer': entry.value.toString(),
+            'importance': 2,
+            'version': 1,
+          },
+        )
+        .toList();
+
     final result = await _apiClient.post(
-      '/api/v1/questionnaire/submit',
-      body: {'answers': answers.map((k, v) => MapEntry(k.toString(), v))},
+      '/api/v1/questionnaire/answers',
+      body: {'answers': normalizedAnswers},
     );
 
     if (result is NetworkSuccess<Map<String, dynamic>>) {

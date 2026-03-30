@@ -140,9 +140,9 @@ class MatchRemoteDataSource {
               'desc': '问卷人格维度匹配',
             },
             {
-              'title': 'MBTI',
+              'title': '性格',
               'value': (core['mbti'] as num?)?.toInt() ?? 0,
-              'desc': 'MBTI 互补度',
+              'desc': '性格特征互补度',
             },
             {
               'title': '玄学综合',
@@ -596,7 +596,7 @@ class MatchRemoteDataSource {
       case 'astrology':
         return '星盘';
       case 'mbti':
-        return 'MBTI';
+        return '性格';
       case 'personality':
       case 'questionnaire':
         return '性格问卷';
@@ -662,8 +662,8 @@ class MatchRemoteDataSource {
         'pair_chart_degraded': '合盘降级估算',
         'sun_moon_harmony': '日月互动',
         'emotion_rhythm': '情绪节奏',
-        'mbti_lite_low_confidence': 'MBTI低置信度',
-        'missing_mbti': '缺少MBTI',
+        'mbti_lite_low_confidence': '性格低置信度',
+        'missing_mbti': '缺少性格结果',
         'profile_similarity_high': '人格相似度高',
         'bidirectional_acceptance_high': '双向接受度高',
         'key_dimension_gap_high': '关键维度差距高',
@@ -682,7 +682,7 @@ class MatchRemoteDataSource {
       case 'age_gap_adjustment':
         return '年龄差修正 $value';
       case 'mbti_letter_match':
-        return 'MBTI 协同 $value';
+        return '性格协同 $value';
       case 'communication_mismatch':
         return '沟通磨合系数 $value';
       case 'relation_type':

@@ -164,12 +164,15 @@ class MatchModuleInsightCard extends StatelessWidget {
       '星盘',
       '日月',
       '上升',
-      'MBTI',
+      '性格',
     ];
     return coreKeys.any((k) => tag.contains(k));
   }
 
   String _resolveTagExplain(String tag) {
+    if (tag == 'MBTI' || tag == '性格') {
+      return '性格测试结果，用于补充关系中的沟通风格、决策节奏与互动偏好。';
+    }
     final fromCore = coreTagExplains[tag];
     if (fromCore != null && fromCore.trim().isNotEmpty) return fromCore.trim();
     final fromAux = auxTagExplains[tag];
