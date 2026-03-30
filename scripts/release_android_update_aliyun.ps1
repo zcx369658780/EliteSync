@@ -144,8 +144,7 @@ if (-not $SkipRemote) {
     }
 
 $changelogEnv = $Changelog.Replace("`r", " ").Replace("`n", " ")
-$changelogEnv = $changelogEnv.Replace("'", "'\"'\"'")
-$downloadUrlEnv = $downloadUrl.Replace("'", "'\"'\"'")
+$downloadUrlEnv = $downloadUrl
 
     $remoteScript = @"
 set -euo pipefail
