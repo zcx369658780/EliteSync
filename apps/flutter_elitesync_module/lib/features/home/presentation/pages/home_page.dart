@@ -612,7 +612,7 @@ class _HomeHeroCard extends StatelessWidget {
             spacing: t.spacing.xs,
             runSpacing: t.spacing.xs,
             children: const [
-              _HeroHintChip(label: 'MBTI 可刷新'),
+              _HeroHintChip(label: '性格结果可刷新'),
               _HeroHintChip(label: '星盘画像可查看'),
             ],
           ),

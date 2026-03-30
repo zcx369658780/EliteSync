@@ -1,4 +1,4 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+﻿import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.io.File
 import java.util.Properties
 
@@ -61,8 +61,8 @@ android {
         // major: product major stage (0 before launch, 1+ after launch)
         // minor: 01=Alpha, 02-99=Beta
         // patch: current stage incremental version
-        versionCode = 202
-        versionName = "0.02.02"
+        versionCode = 204
+        versionName = "0.02.04"
         ndk {
             // Google Play 16KB page-size compliance: avoid x86_64 native libs from third-party SDKs.
             // Keep ARM ABIs for real-device testing and release publishing.
@@ -157,6 +157,11 @@ configurations.all {
         force("androidx.browser:browser:1.8.0")
     }
 }
+
+
+
+
+
 
 
 

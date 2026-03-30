@@ -1,6 +1,6 @@
 # 文档索引（当前有效）
 
-更新日期：2026-03-29
+更新日期：2026-03-30
 
 ## 根目录
 - `README.md`：项目总览
@@ -9,20 +9,31 @@
 - `LICENSE_DEPENDENCY_STATUS.md`：依赖许可证状态总表（长期维护）
 
 ## 算法（bazi_example）
-- `算法2.2最终实施报告_2026-03-29.md`：2.2 主报告（建议优先看）
-- `算法2.2_对拍与灰度运行手册_2026-03-29.md`
-- `算法2.2_调权字段字典与实操流程_2026-03-29.md`
-- `算法2.2_第一轮调权建议_2026-03-29.md`
-- `算法2.2_第二轮候选执行状态_2026-03-29.md`
-- `算法2.2_基线快照_2026-03-29.md`
-- `玄学算法2.2执行清单_2026-03-29.md`
-- `当前版本全算法报告_2026-03-29.md`
-- `匹配解释接口契约_v2_2026-03-29.md`
+- `算法2.3-0基线文档_2026-03-30.md`
+- `算法2.3版本开发规划_2026-03-29.md`
+- `算法2.3执行进度_2026-03-30.md`
+- `算法2.3落地简报_2026-03-30.md`
+- `算法2.4版本开发规划_2026-03-30.md`
+- `算法2.4执行拆解清单_2026-03-30.md`
+- `2.4算法与数据接口总览_2026-03-30.md`
+- `Codex 2.3验收报告_2026-03-30.md`
 - `顾问Agent玄学算法修改规划_2026-03-28.md`
 - `app算法资源与任务规划_修订版——2026-03-29.md`
+- `OpenSource_Review_2026-03-28.md`
 
 ## docs
 - `docs/dependency_audit_astrology.md`：玄学依赖审计
+- `docs/western_execution_decision_2_4.md`：2.4 西占执行决策
+- `docs/western_lite_contract.md`：western_lite 合同边界
+- `docs/explanation_release_gate_2_4.md`：Explanation 发布门禁
+- `docs/drill_evidence_index_2_4.md`：演练证据索引
+- `docs/compat_cleanup_plan_2_4.md`：兼容层收束计划
+- `docs/deprecation_register_2_4.md`：退役登记
+- `docs/dashboard_metric_spec_2_4.md`：看板指标规范
+- `docs/cleanup_todo_2_5.md`：2.5 待删清单
+- `docs/project_memory.md`：项目长期记忆
+- `reports/2_4_final_acceptance.md`：2.4 最终验收包
+- `reports/drills/drill_sample_full_2026-03-30.md`：完整 drill 样本
 - `docs/devlogs/ALGO22_PR_CHANGESET_2026-03-29.md`：PR分组与回滚清单
 - `docs/devlogs/CALIBRATION_CYCLE_LOG.md`：校准周期日志
 - `docs/devlogs/CALIBRATION_WEEKLY_REPORT_2026W13_AUTO.md`：自动周报

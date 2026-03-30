@@ -6,7 +6,7 @@ use Tests\TestCase;
 
 class ExplanationFixturesTest extends TestCase
 {
-    public function test_explanation_fixture_has_at_least_twenty_cases_and_required_keys(): void
+    public function test_explanation_fixture_has_at_least_forty_cases_and_required_keys(): void
     {
         $path = base_path('tests/Fixtures/explanations/explanation_cases_20.json');
         $this->assertFileExists($path);
@@ -15,7 +15,7 @@ class ExplanationFixturesTest extends TestCase
         $this->assertNotFalse($raw);
         $data = json_decode((string) $raw, true);
         $this->assertIsArray($data);
-        $this->assertGreaterThanOrEqual(20, count($data));
+        $this->assertGreaterThanOrEqual(40, count($data));
 
         $required = [
             'case_id',
@@ -43,4 +43,3 @@ class ExplanationFixturesTest extends TestCase
         }
     }
 }
-

@@ -22,9 +22,9 @@ class QuestionnaireResultPage extends ConsumerWidget {
     final state = asyncState.asData?.value;
 
     return AppScaffold(
-      appBar: const AppTopBar(title: '问卷结果', mode: AppTopBarMode.backTitle),
+      appBar: const AppTopBar(title: '性格结果', mode: AppTopBarMode.backTitle),
       body: state == null
-          ? const Center(child: Text('暂无问卷结果'))
+          ? const Center(child: Text('暂无性格结果'))
           : SingleChildScrollView(
               child: Padding(
                 padding: EdgeInsets.only(
@@ -36,15 +36,15 @@ class QuestionnaireResultPage extends ConsumerWidget {
                   children: [
                     const SectionReveal(
                       child: PageTitleRail(
-                        title: '问卷提交成功',
-                        subtitle: '结果将用于匹配解释与个性画像',
+                        title: '性格提交成功',
+                        subtitle: '结果将用于匹配解释与性格画像',
                         trailing: Icon(Icons.verified_rounded, color: Color(0xFF28C98B), size: 28),
                       ),
                     ),
                     SizedBox(height: t.spacing.xs),
                     SectionReveal(
                       delay: const Duration(milliseconds: 70),
-                      child: Text(
+                        child: Text(
                         '你已完成 ${state.answeredCount}/${state.questions.length} 题，后续将用于匹配与画像。',
                         style: Theme.of(
                           context,
@@ -55,7 +55,7 @@ class QuestionnaireResultPage extends ConsumerWidget {
                     SectionReveal(
                       delay: const Duration(milliseconds: 120),
                       child: AppInfoCard(
-                        title: '问卷版本',
+                        title: '性格版本',
                         description:
                             '${state.version} · 预计 ${state.estimatedMinutes} 分钟 · 已提交',
                       ),

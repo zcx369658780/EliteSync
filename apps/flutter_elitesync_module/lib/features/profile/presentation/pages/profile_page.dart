@@ -151,8 +151,8 @@ class ProfilePage extends ConsumerWidget {
                   ProfileResultTagList(tags: summary.tags),
                   SizedBox(height: t.spacing.md),
                   SoulStyleFeatureCard(
-                    title: 'MBTI 测试',
-                    subtitle: '查看/刷新 MBTI 结果',
+                    title: '性格测试',
+                    subtitle: '查看/刷新性格结果',
                     icon: Icons.psychology_alt_outlined,
                     onTap: () => context.push(AppRouteNames.mbtiCenter),
                   ),

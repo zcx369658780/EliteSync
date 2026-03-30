@@ -292,7 +292,10 @@ class QuestionnaireController extends Controller
 
     public function submitAnswers(Request $request): JsonResponse
     {
-        $data = $request->validate([
+        $payload = $request->all();
+        $payload['answers'] = $this->normalizeLegacyAnswersPayload($payload['answers'] ?? []);
+
+        $data = validator($payload, [
             'answers' => ['required', 'array', 'min:1'],
             'answers.*.question_id' => ['required', 'integer', 'exists:questionnaire_questions,id'],
             // legacy payload
@@ -304,7 +307,7 @@ class QuestionnaireController extends Controller
             'answers.*.acceptable_answers.*' => ['string'],
             'answers.*.importance' => ['nullable', 'integer', 'between:0,3'],
             'answers.*.version' => ['nullable', 'integer', 'min:1'],
-        ]);
+        ])->validate();
 
         $user = $request->user();
 
@@ -341,6 +344,13 @@ class QuestionnaireController extends Controller
         }
 
         return response()->json(['ok' => true]);
+    }
+
+    public function saveDraftLegacy(Request $request): JsonResponse
+    {
+        // Draft persistence is now handled client-side.
+        // Keep endpoint for legacy clients to avoid hard failure.
+        return response()->json(['ok' => true, 'legacy' => true]);
     }
 
     public function progress(Request $request): JsonResponse
@@ -385,6 +395,36 @@ class QuestionnaireController extends Controller
             return [(string) $item['answer']];
         }
         return [];
+    }
+
+    /**
+     * Legacy format support:
+     * - map: { "12": 3, "15": 1 }
+     * - list (already normalized): [{question_id: 12, answer: "3"}]
+     */
+    private function normalizeLegacyAnswersPayload(mixed $raw): array
+    {
+        if (!is_array($raw)) {
+            return [];
+        }
+
+        if (array_is_list($raw)) {
+            return array_values(array_filter($raw, fn ($row) => is_array($row)));
+        }
+
+        $out = [];
+        foreach ($raw as $qid => $answer) {
+            if (!is_numeric($qid)) {
+                continue;
+            }
+            $out[] = [
+                'question_id' => (int) $qid,
+                'answer' => (string) $answer,
+                'importance' => 2,
+                'version' => 1,
+            ];
+        }
+        return $out;
     }
 
     private function normalizeAcceptableAnswers(array $item, array $selected): array

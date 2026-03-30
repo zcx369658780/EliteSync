@@ -143,7 +143,8 @@ if (-not $SkipRemote) {
             "$User@${ServerHost}:$apkRemotePath"
     }
 
-    $changelogEnv = $Changelog.Replace("`r", " ").Replace("`n", " ")
+$changelogEnv = $Changelog.Replace("`r", " ").Replace("`n", " ")
+$downloadUrlEnv = $downloadUrl
 
     $remoteScript = @"
 set -euo pipefail
@@ -156,8 +157,8 @@ cat >> "`$tmp_env" <<'EOF'
 ANDROID_LATEST_VERSION_NAME=$VersionName
 ANDROID_LATEST_VERSION_CODE=$VersionCode
 ANDROID_MIN_SUPPORTED_VERSION_NAME=$MinSupportedVersionName
-ANDROID_DOWNLOAD_URL=$downloadUrl
-ANDROID_CHANGELOG=$changelogEnv
+ANDROID_DOWNLOAD_URL='$downloadUrlEnv'
+ANDROID_CHANGELOG='$changelogEnv'
 ANDROID_APK_SHA256=$sha256
 ANDROID_FORCE_UPDATE=false
 EOF

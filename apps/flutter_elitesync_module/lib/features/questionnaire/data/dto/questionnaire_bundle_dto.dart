@@ -15,10 +15,20 @@ class QuestionnaireBundleDto {
 
   factory QuestionnaireBundleDto.fromJson(Map<String, dynamic> json) {
     final meta = (json['meta'] as Map<String, dynamic>?) ?? const {};
-    final rawQuestions = (json['questions'] as List?) ?? const [];
+    final rawQuestions =
+        (json['questions'] as List?) ??
+        (json['items'] as List?) ??
+        const [];
+    final fallbackTotal =
+        (json['total'] as num?)?.toInt() ??
+        (json['required'] as num?)?.toInt() ??
+        rawQuestions.length;
     return QuestionnaireBundleDto(
-      version: (meta['version'] as String?) ?? 'q_v1',
-      total: (meta['total'] as num?)?.toInt() ?? rawQuestions.length,
+      version:
+          (meta['version'] as String?) ??
+          (json['version'] as String?) ??
+          'q_v1',
+      total: (meta['total'] as num?)?.toInt() ?? fallbackTotal,
       estimatedMinutes: (meta['estimated_minutes'] as num?)?.toInt() ?? 5,
       questions: rawQuestions
           .whereType<Map<String, dynamic>>()

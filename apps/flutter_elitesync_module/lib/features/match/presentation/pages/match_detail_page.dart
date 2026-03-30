@@ -206,6 +206,35 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
     }
   }
 
+  List<String> _asStringList(dynamic raw) {
+    if (raw is List) {
+      return raw
+          .map((e) => e.toString().trim())
+          .where((e) => e.isNotEmpty)
+          .toList();
+    }
+    if (raw == null) return const [];
+    final one = raw.toString().trim();
+    return one.isEmpty ? const [] : [one];
+  }
+
+  Map<String, String> _asStringMap(dynamic raw) {
+    if (raw is Map) {
+      return raw.map(
+        (k, v) => MapEntry(k.toString(), v.toString()),
+      );
+    }
+    return const <String, String>{};
+  }
+
+  Map<String, dynamic> _asDynamicMap(dynamic raw) {
+    if (raw is Map<String, dynamic>) return raw;
+    if (raw is Map) {
+      return raw.map((k, v) => MapEntry(k.toString(), v));
+    }
+    return const <String, dynamic>{};
+  }
+
   List<MapEntry<String, String>> _collectGlossary(
     Iterable<String> textLines, {
     Map<String, String> serverGlossary = const {},
@@ -355,18 +384,9 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
   }) {
     final t = context.appTokens;
     final summary = (block['summary'] ?? '').toString().trim();
-    final process = (block['process'] as List<dynamic>? ?? const [])
-        .map((e) => e.toString().trim())
-        .where((e) => e.isNotEmpty)
-        .toList();
-    final risks = (block['risks'] as List<dynamic>? ?? const [])
-        .map((e) => e.toString().trim())
-        .where((e) => e.isNotEmpty)
-        .toList();
-    final advice = (block['advice'] as List<dynamic>? ?? const [])
-        .map((e) => e.toString().trim())
-        .where((e) => e.isNotEmpty)
-        .toList();
+    final process = _asStringList(block['process']);
+    final risks = _asStringList(block['risks']);
+    final advice = _asStringList(block['advice']);
     final label = (block['label'] ?? '').toString().trim();
     final confidence = (block['confidence'] ?? '').toString().trim();
     final priority = (block['priority'] ?? '').toString().trim();
@@ -1313,6 +1333,25 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
               explanationBlocksAll.length > visibleExplanationBlocks.length;
           final canExpand =
               hasMoreReasons || hasMoreInsights || hasMoreExplanationBlocks;
+          final compatibilitySections = data.compatibilitySections.entries
+              .where((entry) => entry.value.isNotEmpty)
+              .toList();
+          final hasRenderableContent =
+              visibleHighlights.isNotEmpty ||
+              visibleRisks.isNotEmpty ||
+              visibleExplanationBlocks.isNotEmpty ||
+              compatibilitySections.isNotEmpty ||
+              data.moduleScores.isNotEmpty ||
+              visibleExplanationRows.isNotEmpty ||
+              visibleInsights.isNotEmpty;
+          final summaryRows = <String>[
+            if (data.reasons.isNotEmpty) '原因数: ${data.reasons.length}',
+            if (data.weights.isNotEmpty) '权重项: ${data.weights.length}',
+            if (data.moduleScores.isNotEmpty) '分项数: ${data.moduleScores.length}',
+            if (data.moduleInsights.isNotEmpty) '模块说明: ${data.moduleInsights.length}',
+            if (data.moduleExplanations.isNotEmpty) '解释项: ${data.moduleExplanations.length}',
+            if (data.explanationBlocks.isNotEmpty) '解释块: ${data.explanationBlocks.length}',
+          ];
           final mergedGlossary = <String, String>{
             ..._termGlossary,
             ...data.reasonGlossary,
@@ -1334,9 +1373,6 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
             hasExplanationBlocks ? blockTexts : [...data.reasons, ...visibleInsights],
             serverGlossary: data.reasonGlossary,
           );
-          final compatibilitySections = data.compatibilitySections.entries
-              .where((entry) => entry.value.isNotEmpty)
-              .toList();
           return ListView(
             padding: EdgeInsets.only(top: t.spacing.sm, bottom: t.spacing.xl),
             children: [
@@ -1344,6 +1380,125 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
                 child: PageTitleRail(title: '匹配解释', subtitle: '先看关系解释，再看参数补充'),
               ),
               SizedBox(height: t.spacing.md),
+              SectionReveal(
+                delay: const Duration(milliseconds: 20),
+                child: Container(
+                  width: double.infinity,
+                  margin: EdgeInsets.only(bottom: t.spacing.sm),
+                  padding: EdgeInsets.all(t.spacing.cardPadding),
+                  decoration: BoxDecoration(
+                    color: t.browseSurface,
+                    borderRadius: BorderRadius.circular(t.radius.lg),
+                    border: Border.all(color: t.browseBorder),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '匹配摘要',
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          color: t.textPrimary,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      if (summaryRows.isEmpty)
+                        Text(
+                          '当前结果已返回，但摘要暂未解析出结构化内容。请向下继续查看原始说明。',
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: t.textSecondary,
+                            height: 1.45,
+                          ),
+                        )
+                      else
+                        ...summaryRows.map(
+                          (line) => Padding(
+                            padding: const EdgeInsets.only(bottom: 6),
+                            child: Text(
+                              line,
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                color: t.textSecondary,
+                                height: 1.45,
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+              if (data.reasons.isNotEmpty && visibleExplanationRows.isEmpty)
+                SectionReveal(
+                  delay: const Duration(milliseconds: 40),
+                  child: Container(
+                    margin: EdgeInsets.only(bottom: t.spacing.sm),
+                    padding: EdgeInsets.all(t.spacing.cardPadding),
+                    decoration: BoxDecoration(
+                      color: t.browseSurface,
+                      borderRadius: BorderRadius.circular(t.radius.lg),
+                      border: Border.all(color: t.browseBorder),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '基础匹配说明',
+                          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                            color: t.textPrimary,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        ...data.reasons.map(
+                          (line) => Padding(
+                            padding: const EdgeInsets.only(bottom: 6),
+                            child: Text(
+                              line,
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                color: t.textSecondary,
+                                height: 1.45,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              if (!hasRenderableContent)
+                SectionReveal(
+                  delay: const Duration(milliseconds: 50),
+                  child: Container(
+                    width: double.infinity,
+                    margin: EdgeInsets.only(bottom: t.spacing.sm),
+                    padding: EdgeInsets.all(t.spacing.cardPadding),
+                    decoration: BoxDecoration(
+                      color: t.browseSurface,
+                      borderRadius: BorderRadius.circular(t.radius.lg),
+                      border: Border.all(color: t.browseBorder),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '当前解释暂不可展开',
+                          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                            color: t.textPrimary,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          '当前版本已收到了匹配结果，但解释块尚未完整返回。你可以先查看基础原因与分项解释，后续再刷新重试。',
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: t.textSecondary,
+                            height: 1.45,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               if (!hasExplanationBlocks && grouped.highlights.isNotEmpty)
                 SectionReveal(
                   delay: const Duration(milliseconds: 60),
@@ -1420,7 +1575,7 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
                         SizedBox(height: t.spacing.xs),
                         ...compatibilitySections.map((entry) {
                           final rows = entry.value;
-                          final avg = rows.isEmpty
+                final avg = rows.isEmpty
                               ? 0
                               : (rows
                                             .map(
@@ -1696,16 +1851,10 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
                                         .toString()
                                         .trim();
                                 final confidenceReasons =
-                                    (row['confidence_reason']
-                                                as List<dynamic>? ??
-                                            const [])
-                                        .map((e) => e.toString().trim())
-                                        .where((e) => e.isNotEmpty)
-                                        .toList();
-                                final displayGuard =
-                                    (row['display_guard']
-                                                as Map<String, dynamic>? ??
-                                            const {});
+                                    _asStringList(row['confidence_reason']);
+                                final displayGuard = _asDynamicMap(
+                                  row['display_guard'],
+                                );
                                 final evidenceStrength =
                                     (row['evidence_strength'] ?? '')
                                         .toString()
@@ -1721,63 +1870,21 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
                                     .toString()
                                     .trim();
                                 final riskLevel = _normalizeRiskLevel(row);
-                                final tags =
-                                    (row['tags'] as List<dynamic>? ?? const [])
-                                        .map((e) => e.toString().trim())
-                                        .where((e) => e.isNotEmpty)
-                                        .toList();
-                                final coreTags =
-                                    (row['core_tags'] as List<dynamic>? ??
-                                            const [])
-                                        .map((e) => e.toString().trim())
-                                        .where((e) => e.isNotEmpty)
-                                        .toList();
-                                final auxTags =
-                                    (row['aux_tags'] as List<dynamic>? ??
-                                            const [])
-                                        .map((e) => e.toString().trim())
-                                        .where((e) => e.isNotEmpty)
-                                        .toList();
-                                final coreTagExplains =
-                                    (row['core_tag_explains']
-                                                as Map<String, dynamic>? ??
-                                            const {})
-                                        .map(
-                                          (k, v) => MapEntry(
-                                            k.toString(),
-                                            v.toString(),
-                                          ),
-                                        );
-                                final auxTagExplains =
-                                    (row['aux_tag_explains']
-                                                as Map<String, dynamic>? ??
-                                            const {})
-                                        .map(
-                                          (k, v) => MapEntry(
-                                            k.toString(),
-                                            v.toString(),
-                                          ),
-                                        );
-                                final coreTagRefs =
-                                    (row['core_tag_refs']
-                                                as Map<String, dynamic>? ??
-                                            const {})
-                                        .map(
-                                          (k, v) => MapEntry(
-                                            k.toString(),
-                                            v.toString(),
-                                          ),
-                                        );
-                                final auxTagRefs =
-                                    (row['aux_tag_refs']
-                                                as Map<String, dynamic>? ??
-                                            const {})
-                                        .map(
-                                          (k, v) => MapEntry(
-                                            k.toString(),
-                                            v.toString(),
-                                          ),
-                                        );
+                                final tags = _asStringList(row['tags']);
+                                final coreTags = _asStringList(row['core_tags']);
+                                final auxTags = _asStringList(row['aux_tags']);
+                                final coreTagExplains = _asStringMap(
+                                  row['core_tag_explains'],
+                                );
+                                final auxTagExplains = _asStringMap(
+                                  row['aux_tag_explains'],
+                                );
+                                final coreTagRefs = _asStringMap(
+                                  row['core_tag_refs'],
+                                );
+                                final auxTagRefs = _asStringMap(
+                                  row['aux_tag_refs'],
+                                );
                                 final moduleLabel = module.isEmpty
                                     ? '匹配项'
                                     : module;
@@ -1890,6 +1997,45 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
                                     _confidenceFilter = 'all';
                                   }),
                                   child: const Text('重置为全部'),
+                                ),
+                              ],
+                            ),
+                          )
+                        else if (data.moduleExplanations.isNotEmpty ||
+                            data.moduleInsights.isNotEmpty ||
+                            data.explanationBlocks.isNotEmpty)
+                          Container(
+                            width: double.infinity,
+                            margin: EdgeInsets.only(bottom: t.spacing.xs),
+                            padding: EdgeInsets.all(t.spacing.cardPadding),
+                            decoration: BoxDecoration(
+                              color: t.browseChip.withValues(alpha: 0.16),
+                              borderRadius: BorderRadius.circular(t.radius.md),
+                              border: Border.all(color: t.browseBorder),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '解释已加载',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.copyWith(
+                                        color: t.textPrimary,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                ),
+                                SizedBox(height: t.spacing.xxs),
+                                Text(
+                                  '当前结果已返回说明内容，但本次筛选条件下没有可直接展开的模块卡。你可以点“展开全部”查看完整内容。',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodySmall
+                                      ?.copyWith(
+                                        color: t.textSecondary,
+                                        height: 1.4,
+                                      ),
                                 ),
                               ],
                             ),
