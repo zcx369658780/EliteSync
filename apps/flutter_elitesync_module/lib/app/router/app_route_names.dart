@@ -30,5 +30,10 @@ abstract class AppRouteNames {
   static const privacySettings = '/profile/settings/privacy';
   static const aboutUpdate = '/profile/settings/about';
   static const mbtiCenter = '/profile/mbti';
+  static const astroOverview = '/profile/astro/overview';
+  static const astroBazi = '/profile/astro/bazi';
+  static const astroNatalChart = '/profile/astro/natal';
+  static const astroZiwei = '/profile/astro/ziwei';
+  static const astroChartSettings = '/profile/astro/chart-settings';
   static const astroProfile = '/profile/astro';
 }

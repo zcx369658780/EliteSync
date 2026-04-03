@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\User;
 use App\Models\UserAstroProfile;
 use App\Services\UserAstroMirrorService;
+use App\Services\ZiweiCanonicalService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -14,16 +15,18 @@ class DevSyncUserAstroMirrorCommand extends Command
         {--batch= : Optional synthetic_batch filter}
         {--limit=0 : Max users to process (0 means no limit)}
         {--dry-run : Preview only, do not write}
-        {--users-to-profiles=0 : Bootstrap missing user_astro_profiles from users.private_* (0|1)}';
+        {--users-to-profiles=0 : Bootstrap missing user_astro_profiles from users.private_* (0|1)}
+        {--include-ziwei=1 : Rebuild ziwei data when bootstrapping profiles (0|1)}';
 
     protected $description = 'Sync astro mirror fields on users from canonical user_astro_profiles.';
 
-    public function handle(UserAstroMirrorService $mirror): int
+    public function handle(UserAstroMirrorService $mirror, ZiweiCanonicalService $ziwei): int
     {
         $dryRun = (bool) $this->option('dry-run');
         $limit = max(0, (int) $this->option('limit'));
         $batch = trim((string) $this->option('batch'));
         $bootstrap = in_array((string) $this->option('users-to-profiles'), ['1', 'true', 'yes', 'on'], true);
+        $includeZiwei = in_array((string) $this->option('include-ziwei'), ['1', 'true', 'yes', 'on'], true);
 
         $q = User::query()
             ->when($batch !== '', function ($query) use ($batch) {
@@ -42,6 +45,7 @@ class DevSyncUserAstroMirrorCommand extends Command
         $this->line('users_selected='.$users->count());
         $this->line('dry_run='.($dryRun ? 'true' : 'false'));
         $this->line('bootstrap_users_to_profiles='.($bootstrap ? 'true' : 'false'));
+        $this->line('include_ziwei='.($includeZiwei ? 'true' : 'false'));
 
         $synced = 0;
         $bootstrapped = 0;
@@ -73,6 +77,20 @@ class DevSyncUserAstroMirrorCommand extends Command
                                 'da_yun' => data_get($chart, 'da_yun', []),
                                 'liu_nian' => data_get($chart, 'liu_nian', []),
                                 'wu_xing' => data_get($chart, 'wu_xing', []),
+                                'ziwei' => $includeZiwei
+                                    ? (array) $ziwei->canonicalize([
+                                        'birthday' => optional($user->birthday)->format('Y-m-d'),
+                                        'birth_time' => preg_match('/^\d{2}:\d{2}$/', $time) ? $time : '12:00',
+                                        'birth_place' => $user->private_birth_place,
+                                        'birth_lat' => $user->private_birth_lat,
+                                        'birth_lng' => $user->private_birth_lng,
+                                        'gender' => (string) ($user->gender ?? ''),
+                                        'user_id' => (int) $user->id,
+                                        'platform' => 'android',
+                                        'profile_version' => 0,
+                                        'notes' => data_get($chart, 'notes', ['bootstrap_from_users_private']),
+                                    ])['ziwei'] ?? []
+                                    : [],
                                 'notes' => data_get($chart, 'notes', ['bootstrap_from_users_private']),
                                 'computed_at' => now(),
                             ]);
@@ -105,4 +123,3 @@ class DevSyncUserAstroMirrorCommand extends Command
         return self::SUCCESS;
     }
 }
-

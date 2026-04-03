@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_elitesync_module/app/router/app_route_names.dart';
+import 'package:flutter_elitesync_module/app/router/app_route_observer.dart';
 import 'package:flutter_elitesync_module/app/router/app_shell.dart';
 import 'package:flutter_elitesync_module/core/ui/app_motion.dart';
 import 'package:flutter_elitesync_module/features/auth/presentation/pages/login_page.dart';
@@ -13,8 +14,13 @@ import 'package:flutter_elitesync_module/features/match/presentation/pages/match
 import 'package:flutter_elitesync_module/features/match/presentation/pages/match_detail_page.dart';
 import 'package:flutter_elitesync_module/features/match/presentation/pages/match_intention_page.dart';
 import 'package:flutter_elitesync_module/features/match/presentation/pages/match_result_page.dart';
+import 'package:flutter_elitesync_module/features/profile/presentation/pages/astro_bazi_page.dart';
+import 'package:flutter_elitesync_module/features/profile/presentation/pages/astro_natal_chart_page.dart';
 import 'package:flutter_elitesync_module/features/profile/presentation/pages/edit_profile_page.dart';
+import 'package:flutter_elitesync_module/features/profile/presentation/pages/astro_overview_page.dart';
 import 'package:flutter_elitesync_module/features/profile/presentation/pages/astro_profile_page.dart';
+import 'package:flutter_elitesync_module/features/profile/presentation/pages/astro_chart_settings_page.dart';
+import 'package:flutter_elitesync_module/features/profile/presentation/pages/astro_ziwei_page.dart';
 import 'package:flutter_elitesync_module/features/profile/presentation/pages/mbti_center_page.dart';
 import 'package:flutter_elitesync_module/features/profile/presentation/pages/about_update_page.dart';
 import 'package:flutter_elitesync_module/features/profile/presentation/pages/change_password_page.dart';
@@ -28,8 +34,10 @@ import 'package:flutter_elitesync_module/shared/providers/navigation_guard_provi
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   ref.watch(navigationGuardProvider);
+  final routeObserver = ref.watch(appRouteObserverProvider);
 
   return GoRouter(
+    observers: [routeObserver],
     initialLocation: AppRouteNames.splash,
     redirect: (context, state) {
       final nav = ref.read(navigationGuardProvider);
@@ -114,14 +122,34 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           );
         },
       ),
-      GoRoute(
-        path: AppRouteNames.editProfile,
-        pageBuilder: (context, state) => _fadeSlidePage(state, const EditProfilePage()),
-      ),
-      GoRoute(
-        path: AppRouteNames.settings,
-        pageBuilder: (context, state) => _fadeSlidePage(state, const SettingsPage()),
-      ),
+        GoRoute(
+          path: AppRouteNames.editProfile,
+          pageBuilder: (context, state) => _fadeSlidePage(state, const EditProfilePage()),
+        ),
+        GoRoute(
+          path: AppRouteNames.astroOverview,
+          pageBuilder: (context, state) => _fadeSlidePage(state, const AstroOverviewPage()),
+        ),
+        GoRoute(
+          path: AppRouteNames.astroBazi,
+          pageBuilder: (context, state) => _fadeSlidePage(state, const AstroBaziPage()),
+        ),
+        GoRoute(
+          path: AppRouteNames.astroNatalChart,
+          pageBuilder: (context, state) => _fadeSlidePage(state, const AstroNatalChartPage()),
+        ),
+        GoRoute(
+          path: AppRouteNames.astroChartSettings,
+          pageBuilder: (context, state) => _fadeSlidePage(state, const AstroChartSettingsPage()),
+        ),
+        GoRoute(
+          path: AppRouteNames.astroZiwei,
+          pageBuilder: (context, state) => _fadeSlidePage(state, const AstroZiweiPage()),
+        ),
+        GoRoute(
+          path: AppRouteNames.settings,
+          pageBuilder: (context, state) => _fadeSlidePage(state, const SettingsPage()),
+        ),
       GoRoute(
         path: AppRouteNames.changePassword,
         pageBuilder: (context, state) => _fadeSlidePage(state, const ChangePasswordPage()),

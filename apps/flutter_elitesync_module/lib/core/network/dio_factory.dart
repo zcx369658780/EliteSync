@@ -39,7 +39,8 @@ class DioFactory {
         refreshAccessToken: _refreshAccessToken,
       ),
       RetryInterceptor(),
-      if (_env.isDev) LoggingInterceptor(logger: _logger),
+      // Keep request logging on during the current astro-loading investigation.
+      LoggingInterceptor(logger: _logger),
     ]);
 
     return dio;

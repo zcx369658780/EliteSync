@@ -23,6 +23,15 @@ class AstroCanonicalRolloutService
     }
 
     /**
+     * @param array<string,mixed> $payload
+     * @return array{enabled:bool,reason:string}
+     */
+    public function decideZiwei(array $payload): array
+    {
+        return $this->decide((array) config('astro_rollout.ziwei', []), $payload, 'ziwei');
+    }
+
+    /**
      * @param array<string,mixed> $rule
      * @param array<string,mixed> $payload
      * @return array{enabled:bool,reason:string}
@@ -65,4 +74,3 @@ class AstroCanonicalRolloutService
         return ['enabled' => false, 'reason' => "{$domain}_global_disabled"];
     }
 }
-

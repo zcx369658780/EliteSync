@@ -13,7 +13,16 @@ class AuthMapper {
       phone: (userJson['phone'] as String?) ?? '',
       nickname:
           (userJson['nickname'] as String?) ?? (userJson['name'] as String?),
+      birthday: userJson['birthday'] as String?,
+      birthTime: userJson['birth_time'] as String?,
+      gender: userJson['gender'] as String?,
       city: userJson['city'] as String?,
+      relationshipGoal:
+          (userJson['relationship_goal'] as String?) ??
+          (userJson['target'] as String?),
+      birthPlace: (userJson['birth_place'] as String?) ?? (userJson['private_birth_place'] as String?),
+      birthLat: (userJson['birth_lat'] as num?)?.toDouble() ?? (userJson['private_birth_lat'] as num?)?.toDouble(),
+      birthLng: (userJson['birth_lng'] as num?)?.toDouble() ?? (userJson['private_birth_lng'] as num?)?.toDouble(),
       avatarUrl: userJson['avatar_url'] as String?,
       verified:
           (userJson['verified'] as bool?) ??

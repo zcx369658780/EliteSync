@@ -38,11 +38,18 @@ class LoginFormNotifier extends Notifier<LoginFormState> {
           .setAuthenticated(
             accessToken: session.accessToken,
             refreshToken: session.refreshToken,
-            user: UserSummary(
+              user: UserSummary(
               id: session.user.id,
               phone: session.user.phone,
               nickname: session.user.nickname,
+              birthday: session.user.birthday,
+              birthTime: session.user.birthTime,
+              gender: session.user.gender,
               city: session.user.city,
+              relationshipGoal: session.user.relationshipGoal,
+              birthPlace: session.user.birthPlace,
+              birthLat: session.user.birthLat,
+              birthLng: session.user.birthLng,
               avatarUrl: session.user.avatarUrl,
               verified: session.user.verified,
             ),

@@ -39,8 +39,9 @@ final accessTokenProvider = Provider<AccessTokenProvider>((ref) {
 
 final refreshAccessTokenProvider = Provider<RefreshAccessToken>((ref) {
   return () async {
-    // T10 再接真实刷新逻辑；当前返回现有 token 作为占位。
-    return ref.read(secureStorageProvider).read(CacheKeys.accessToken);
+    // 目前没有真实 refresh token 流程。
+    // 不要返回旧 access token 做伪刷新，否则 401 会被重试并掩盖成长时间 loading。
+    return null;
   };
 });
 

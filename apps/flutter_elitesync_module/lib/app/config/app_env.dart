@@ -6,12 +6,12 @@ class AppEnv {
     required this.appName,
     required this.apiBaseUrl,
     required this.useMockData,
-    this.useMockAuth = true,
-    this.useMockQuestionnaire = true,
-    this.useMockHome = true,
-    this.useMockMatch = true,
-    this.useMockChat = true,
-    this.useMockProfile = true,
+    this.useMockAuth = false,
+    this.useMockQuestionnaire = false,
+    this.useMockHome = false,
+    this.useMockMatch = false,
+    this.useMockChat = false,
+    this.useMockProfile = false,
   });
 
   final AppFlavor flavor;

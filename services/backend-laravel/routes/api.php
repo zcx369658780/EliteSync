@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\AdminController;
 use App\Http\Controllers\Api\V1\AppVersionController;
+use App\Http\Controllers\Api\V1\GeoController;
 use App\Http\Controllers\Api\V1\AstroProfileController;
 use App\Http\Controllers\Api\V1\HomeController;
 use App\Http\Controllers\Api\V1\MatchController;
@@ -47,6 +48,8 @@ Route::prefix('v1')->group(function () {
             Route::get('/basic', [ProfileController::class, 'basic']);
             Route::post('/basic', [ProfileController::class, 'saveBasic']);
             Route::post('/city', [ProfileController::class, 'saveCity']);
+            Route::get('/astro/summary', [AstroProfileController::class, 'showSummary']);
+            Route::get('/astro/chart', [AstroProfileController::class, 'showChart']);
             Route::get('/astro', [AstroProfileController::class, 'show']);
             Route::post('/astro', [AstroProfileController::class, 'save']);
             Route::get('/mbti/quiz', [MbtiProfileController::class, 'quiz']);
@@ -89,6 +92,10 @@ Route::prefix('v1')->group(function () {
         });
 
         Route::get('/content/{contentId}', [HomeController::class, 'content']);
+
+        Route::prefix('geo')->group(function () {
+            Route::get('/places', [GeoController::class, 'places']);
+        });
 
         Route::prefix('admin')->middleware('admin.phone')->group(function () {
             Route::get('/users', [AdminController::class, 'users']);

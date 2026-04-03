@@ -33,5 +33,19 @@ return [
         ],
         'min_profile_version' => (int) env('ASTRO_WESTERN_MIN_PROFILE_VERSION', 0),
     ],
-];
 
+    // Ziwei canonical rollout controls.
+    'ziwei' => [
+        'enabled' => env('ASTRO_ZIWEI_CANONICAL_ENABLED', true),
+        'whitelist_user_ids' => array_values(array_filter(array_map(
+            fn ($v) => (int) trim($v),
+            explode(',', (string) env('ASTRO_ZIWEI_CANONICAL_WHITELIST', ''))
+        ), fn ($v) => $v > 0)),
+        'platform_overrides' => [
+            'android' => env('ASTRO_ZIWEI_CANONICAL_ANDROID', ''),
+            'ios' => env('ASTRO_ZIWEI_CANONICAL_IOS', ''),
+            'web' => env('ASTRO_ZIWEI_CANONICAL_WEB', ''),
+        ],
+        'min_profile_version' => (int) env('ASTRO_ZIWEI_MIN_PROFILE_VERSION', 0),
+    ],
+];

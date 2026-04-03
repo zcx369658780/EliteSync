@@ -5,13 +5,13 @@ namespace App\Services;
 class AstroCompatibilityService
 {
     /**
-     * @param array{zodiac_animal:string,public_zodiac_sign:string,private_bazi:string,private_natal_chart:mixed,birthday:?string,gender:string} $a
-     * @param array{zodiac_animal:string,public_zodiac_sign:string,private_bazi:string,private_natal_chart:mixed,birthday:?string,gender:string} $b
+     * @param array{zodiac_animal:string,public_zodiac_sign:string,private_bazi:string,private_natal_chart:mixed,private_ziwei:mixed,birthday:?string,gender:string} $a
+     * @param array{zodiac_animal:string,public_zodiac_sign:string,private_bazi:string,private_natal_chart:mixed,private_ziwei:mixed,birthday:?string,gender:string} $b
      * @return array{
-      *  bazi:int,zodiac:int,constellation:int,natal_chart:int,pair_chart:int,total:int,verdict:string,
-     *  reasons_match:array<int,string>,reasons_mismatch:array<int,string>,confidence:float,
-     *  module_details:array<string,array<string,mixed>>
-     * }
+      *  bazi:int,zodiac:int,constellation:int,natal_chart:int,ziwei:int,pair_chart:int,total:int,verdict:string,
+      *  reasons_match:array<int,string>,reasons_mismatch:array<int,string>,confidence:float,
+      *  module_details:array<string,array<string,mixed>>
+      * }
      */
     public function score(array $a, array $b): array
     {
@@ -19,6 +19,7 @@ class AstroCompatibilityService
         $constellation = $this->scoreConstellation((string) ($a['public_zodiac_sign'] ?? ''), (string) ($b['public_zodiac_sign'] ?? ''));
         $bazi = $this->scoreBazi((string) ($a['private_bazi'] ?? ''), (string) ($b['private_bazi'] ?? ''), $a['private_natal_chart'] ?? null, $b['private_natal_chart'] ?? null);
         $chart = $this->scoreNatalChart($a['private_natal_chart'] ?? null, $b['private_natal_chart'] ?? null, (string) ($a['public_zodiac_sign'] ?? ''), (string) ($b['public_zodiac_sign'] ?? ''));
+        $ziwei = $this->scoreZiwei($a['private_ziwei'] ?? null, $b['private_ziwei'] ?? null, (string) ($a['gender'] ?? ''), (string) ($b['gender'] ?? ''));
         $pairChart = $this->scorePairChart(
             $a['private_natal_chart'] ?? null,
             $b['private_natal_chart'] ?? null,
@@ -35,12 +36,14 @@ class AstroCompatibilityService
         $weightZodiac = (float) ($w['zodiac'] ?? 0.25);
         $weightConstellation = (float) ($w['constellation'] ?? 0.15);
         $weightChart = (float) ($w['natal_chart'] ?? 0.10);
+        $weightZiwei = (float) ($w['ziwei'] ?? 0.0);
         $weightPairChart = (float) ($w['pair_chart'] ?? 0.0);
         $total = (int) round(
             ($bazi['score'] * $weightBazi)
             + ($zodiac['score'] * $weightZodiac)
             + ($constellation['score'] * $weightConstellation)
             + ($chart['score'] * $weightChart)
+            + ($ziwei['score'] * $weightZiwei)
             + ($pairChart['score'] * $weightPairChart)
         );
 
@@ -82,6 +85,14 @@ class AstroCompatibilityService
                 'match' => (string) $chart['match'],
                 'mismatch' => (string) $chart['mismatch'],
             ],
+            [
+                'key' => 'ziwei',
+                'name' => '紫微斗数',
+                'score' => (int) $ziwei['score'],
+                'weight' => $weightZiwei,
+                'match' => (string) $ziwei['match'],
+                'mismatch' => (string) $ziwei['mismatch'],
+            ],
         ];
         if ($weightPairChart > 0.0) {
             $modules[] = [
@@ -117,12 +128,13 @@ class AstroCompatibilityService
         $reasonsMismatch = array_slice($reasonsMismatch, 0, 2);
 
         $summary = sprintf(
-            '综合匹配度%d分（八字%d%%、属相%d%%、星座%d%%、星盘%d%%、合盘%d%%）',
+            '综合匹配度%d分（八字%d%%、属相%d%%、星座%d%%、星盘%d%%、紫微%d%%、合盘%d%%）',
             max(0, min(100, $total)),
             $this->toPercent($weightBazi),
             $this->toPercent($weightZodiac),
             $this->toPercent($weightConstellation),
             $this->toPercent($weightChart),
+            $this->toPercent($weightZiwei),
             $this->toPercent($weightPairChart)
         );
 
@@ -131,18 +143,20 @@ class AstroCompatibilityService
             'zodiac' => $zodiac['score'],
             'constellation' => $constellation['score'],
             'natal_chart' => $chart['score'],
+            'ziwei' => $ziwei['score'],
             'pair_chart' => $pairChart['score'],
             'total' => max(0, min(100, $total)),
             'verdict' => $verdict,
             'summary' => $summary,
             'reasons_match' => $reasonsMatch,
             'reasons_mismatch' => $reasonsMismatch,
-            'confidence' => round(($bazi['confidence'] + $chart['confidence'] + $pairChart['confidence'] + 1.0 + 1.0) / 5, 2),
+            'confidence' => round(($bazi['confidence'] + $chart['confidence'] + $ziwei['confidence'] + $pairChart['confidence'] + 1.0 + 1.0) / 6, 2),
             'module_details' => [
                 'bazi' => $bazi,
                 'zodiac' => $zodiac,
                 'constellation' => $constellation,
                 'natal_chart' => $chart,
+                'ziwei' => $ziwei,
                 'pair_chart' => $pairChart,
             ],
         ];
@@ -460,6 +474,145 @@ class AstroCompatibilityService
             ],
             'degraded' => $conf < 0.8,
             'degrade_reason' => $conf < 0.8 ? 'partial_natal_chart' : '',
+        ];
+    }
+
+    /**
+     * @return array{
+     *   score:int,match:string,mismatch:string,confidence:float,
+     *   reason_short:string,reason_detail:string,risk_detail:string,
+     *   evidence_tags:array<int,string>,evidence:array<string,mixed>,
+     *   degraded:bool,degrade_reason:string
+     * }
+     */
+    private function scoreZiwei(mixed $ziweiA, mixed $ziweiB, string $genderA, string $genderB): array
+    {
+        $tpl = (array) config('match_rules.ziwei.templates', []);
+        $a = is_array($ziweiA) ? $ziweiA : [];
+        $b = is_array($ziweiB) ? $ziweiB : [];
+        if (empty($a) || empty($b)) {
+            return [
+                'score' => 58,
+                'match' => (string) data_get($tpl, 'degraded.match', '紫微信息不完整，采用保守估计'),
+                'mismatch' => '',
+                'confidence' => 0.46,
+                'reason_short' => (string) data_get($tpl, 'degraded.short', '紫微斗数数据不完整，当前仅作保守参考。'),
+                'reason_detail' => (string) data_get($tpl, 'degraded.detail', '缺少完整紫微命盘，系统只能按已知宫位做简化估算。'),
+                'risk_detail' => (string) data_get($tpl, 'degraded.risk', '建议补全出生时刻与地点后再判断紫微画像稳定性。'),
+                'evidence_tags' => ['ziwei_degraded_estimation', 'missing_ziwei'],
+                'evidence' => [
+                    'has_a' => !empty($a),
+                    'has_b' => !empty($b),
+                ],
+                'degraded' => true,
+                'degrade_reason' => 'missing_ziwei',
+            ];
+        }
+
+        $lifeA = trim((string) data_get($a, 'life_palace', ''));
+        $lifeB = trim((string) data_get($b, 'life_palace', ''));
+        $bodyA = trim((string) data_get($a, 'body_palace', ''));
+        $bodyB = trim((string) data_get($b, 'body_palace', ''));
+        $relA = trim((string) data_get($a, 'major_themes.relationship_bias', ''));
+        $relB = trim((string) data_get($b, 'major_themes.relationship_bias', ''));
+        $careerA = trim((string) data_get($a, 'major_themes.career_bias', ''));
+        $careerB = trim((string) data_get($b, 'major_themes.career_bias', ''));
+        $wealthA = trim((string) data_get($a, 'major_themes.wealth_bias', ''));
+        $wealthB = trim((string) data_get($b, 'major_themes.wealth_bias', ''));
+
+        $score = 55;
+        $matchParts = [];
+        $riskParts = [];
+        $evidence = [
+            'life_palace_a' => $lifeA,
+            'life_palace_b' => $lifeB,
+            'body_palace_a' => $bodyA,
+            'body_palace_b' => $bodyB,
+            'relationship_bias_a' => $relA,
+            'relationship_bias_b' => $relB,
+            'career_bias_a' => $careerA,
+            'career_bias_b' => $careerB,
+            'wealth_bias_a' => $wealthA,
+            'wealth_bias_b' => $wealthB,
+        ];
+        $tags = ['ziwei_canonical', 'ziwei_long_term_profile'];
+
+        if ($lifeA !== '' && $lifeA === $lifeB) {
+            $score += 12;
+            $matchParts[] = '命宫主轴较接近，长期画像节奏更易同频';
+            $tags[] = 'life_palace_aligned';
+        } elseif ($lifeA !== '' && $lifeB !== '' && $lifeA !== $lifeB) {
+            $score += 4;
+            $matchParts[] = '命宫主题存在差异，可形成互补视角';
+            $tags[] = 'life_palace_complementary';
+        }
+
+        if ($bodyA !== '' && $bodyA === $bodyB) {
+            $score += 8;
+            $matchParts[] = '身宫落点一致，日常行为节律较容易贴近';
+            $tags[] = 'body_palace_aligned';
+        } elseif ($bodyA !== '' && $bodyB !== '' && $bodyA !== $bodyB) {
+            $score += 3;
+            $matchParts[] = '身宫落点不同，现实互动中更容易形成分工';
+            $tags[] = 'body_palace_complementary';
+        }
+
+        $relationOverlap = 0;
+        foreach ([$relA, $careerA, $wealthA] as $vA) {
+            foreach ([$relB, $careerB, $wealthB] as $vB) {
+                if ($vA !== '' && $vA === $vB) {
+                    $relationOverlap++;
+                }
+            }
+        }
+        if ($relationOverlap >= 2) {
+            $score += 10;
+            $matchParts[] = '关系/事业/财富主题出现较多重合，长期目标更易对齐';
+            $tags[] = 'major_themes_overlap';
+        } elseif ($relationOverlap === 1) {
+            $score += 5;
+            $matchParts[] = '部分核心主题重合，关系推进存在共同抓手';
+            $tags[] = 'major_themes_partial_overlap';
+        } else {
+            $riskParts[] = '核心主题差异较大，需要先确认关系目标与资源节奏';
+            $tags[] = 'major_themes_divergent';
+        }
+
+        if ($genderA !== '' && $genderB !== '' && $genderA !== $genderB) {
+            $score += 4;
+            $matchParts[] = '双方性别角色配置互补，可降低关系解释成本';
+            $tags[] = 'gender_complement';
+        }
+
+        $palaceCountA = is_array(data_get($a, 'palaces')) ? count((array) data_get($a, 'palaces')) : 0;
+        $palaceCountB = is_array(data_get($b, 'palaces')) ? count((array) data_get($b, 'palaces')) : 0;
+        if ($palaceCountA > 0 && $palaceCountB > 0) {
+            $score += 4;
+            $tags[] = 'ziwei_full_palace_profile';
+        }
+
+        $score = max(0, min(100, $score));
+        $confidence = 0.84;
+        $reasonShort = $matchParts[0] ?? (string) data_get($tpl, 'high.short', '紫微命盘显示关系气质较稳定，长期画像层更容易判断。');
+        $reasonDetail = !empty($matchParts)
+            ? implode('；', $matchParts)
+            : (string) data_get($tpl, 'high.detail', '紫微命盘用于长期画像，重点看命宫、身宫及主要主题落点的协同性。');
+        $riskDetail = !empty($riskParts)
+            ? implode('；', $riskParts)
+            : (string) data_get($tpl, 'high.risk', '紫微斗数更适合长期画像，不建议把单次波动当成最终结论。');
+
+        return [
+            'score' => $score,
+            'match' => $matchParts[0] ?? (string) data_get($tpl, 'high.match', '紫微命盘主轴较协调，长期画像一致性较高'),
+            'mismatch' => $score < 60 ? $riskDetail : '',
+            'confidence' => $confidence,
+            'reason_short' => $reasonShort,
+            'reason_detail' => $reasonDetail,
+            'risk_detail' => $riskDetail,
+            'evidence_tags' => $tags,
+            'evidence' => $evidence,
+            'degraded' => false,
+            'degrade_reason' => '',
         ];
     }
 

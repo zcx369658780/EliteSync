@@ -36,6 +36,7 @@ class User extends Authenticatable
         'public_personality',
         'private_bazi',
         'private_natal_chart',
+        'private_ziwei',
         'private_birth_place',
         'private_birth_lat',
         'private_birth_lng',
@@ -63,6 +64,7 @@ class User extends Authenticatable
             'realname_verified' => 'boolean',
             'public_personality' => 'array',
             'private_natal_chart' => 'array',
+            'private_ziwei' => 'array',
         ];
     }
 

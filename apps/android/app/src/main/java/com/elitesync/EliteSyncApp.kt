@@ -15,13 +15,17 @@ class EliteSyncApp : Application() {
             "c++_shared",
             "tiny_magic",
             "locSDK8b",
-            "BaiduMapSDK_base_v7_6_7",
-            "BaiduMapSDK_map_v7_6_7"
+            "BaiduMapSDK_base_v8_0_0",
+            "BaiduMapSDK_map_v8_0_0"
         )
     }
 
     override fun onCreate() {
         super.onCreate()
+        if (!BuildConfig.ENABLE_BAIDU_NATIVE_SDK) {
+            Log.i(TAG, "Baidu native SDK bootstrap disabled for current Flutter host build")
+            return
+        }
         REQUIRED_LIBS.forEach { lib ->
             runCatching { System.loadLibrary(lib) }
                 .onFailure { Log.w(TAG, "loadLibrary failed: $lib -> ${it.message}") }

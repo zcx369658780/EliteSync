@@ -140,9 +140,9 @@ class MatchRemoteDataSource {
               'desc': '问卷人格维度匹配',
             },
             {
-              'title': '性格',
+              'title': '性格（已关闭）',
               'value': (core['mbti'] as num?)?.toInt() ?? 0,
-              'desc': '性格特征互补度',
+              'desc': '历史性格结果已关闭，不再参与排序',
             },
             {
               'title': '玄学综合',
@@ -596,10 +596,18 @@ class MatchRemoteDataSource {
       case 'astrology':
         return '星盘';
       case 'mbti':
-        return '性格';
+        return '性格（已关闭）';
       case 'personality':
       case 'questionnaire':
-        return '性格问卷';
+        return '性格';
+      case 'ziwei':
+        return '紫微斗数';
+      case 'life_palace':
+        return '命宫';
+      case 'body_palace':
+        return '身宫';
+      case 'major_themes':
+        return '主题倾向';
       case 'city':
       case 'same_city':
         return '同城';
@@ -668,6 +676,13 @@ class MatchRemoteDataSource {
         'bidirectional_acceptance_high': '双向接受度高',
         'key_dimension_gap_high': '关键维度差距高',
         'missing_personality_vector': '缺少人格向量',
+        'ziwei_canonical': '紫微 canonical',
+        'ziwei_long_term_profile': '紫微持久画像',
+        'ziwei_degraded_estimation': '紫微降级估算',
+        'missing_ziwei': '缺少紫微画像',
+        'life_palace_aligned': '命宫一致',
+        'body_palace_aligned': '身宫一致',
+        'major_themes_overlap': '主题倾向重叠',
       };
       return tagMap[v.toLowerCase()] ?? _moduleName(v);
     }
@@ -685,6 +700,8 @@ class MatchRemoteDataSource {
         return '性格协同 $value';
       case 'communication_mismatch':
         return '沟通磨合系数 $value';
+      case 'ziwei_alignment':
+        return '紫微协同性 $value';
       case 'relation_type':
         {
           const relationMap = <String, String>{

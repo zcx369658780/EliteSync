@@ -193,6 +193,22 @@ if ($runAuth) {
         $pass = ($quiz.version_code -eq "lite3_v1") -and ($count -eq 3)
         Add-Result -List $results -Name "MBTI Quiz GET" -Pass $pass -Detail ("version={0}, total={1}" -f $quiz.version_code, $count)
     }
+    catch [System.Net.WebException] {
+        $resp = $_.Exception.Response
+        $code = $null
+        if ($null -ne $resp -and $null -ne $resp.StatusCode) {
+            $code = [int]$resp.StatusCode
+        }
+        elseif ($null -ne $resp -and $null -ne $resp.BaseResponse -and $null -ne $resp.BaseResponse.StatusCode) {
+            $code = [int]$resp.BaseResponse.StatusCode
+        }
+        if ($code -eq 410) {
+            Add-Result -List $results -Name "MBTI Quiz GET" -Pass $true -Detail "410 Gone (feature closed)"
+        }
+        else {
+            Add-Result -List $results -Name "MBTI Quiz GET" -Pass $false -Detail $_.Exception.Message
+        }
+    }
     catch {
         Add-Result -List $results -Name "MBTI Quiz GET" -Pass $false -Detail $_.Exception.Message
     }
@@ -202,6 +218,22 @@ if ($runAuth) {
         $mr = Invoke-RestMethod -Uri "$BaseUrl/api/v1/profile/mbti/result" -Method Get -Headers $headers -TimeoutSec $TimeoutSec
         $pass = ($mr.PSObject.Properties.Name -contains "exists")
         Add-Result -List $results -Name "MBTI Result GET" -Pass $pass -Detail ("exists={0}" -f $mr.exists)
+    }
+    catch [System.Net.WebException] {
+        $resp = $_.Exception.Response
+        $code = $null
+        if ($null -ne $resp -and $null -ne $resp.StatusCode) {
+            $code = [int]$resp.StatusCode
+        }
+        elseif ($null -ne $resp -and $null -ne $resp.BaseResponse -and $null -ne $resp.BaseResponse.StatusCode) {
+            $code = [int]$resp.BaseResponse.StatusCode
+        }
+        if ($code -eq 410) {
+            Add-Result -List $results -Name "MBTI Result GET" -Pass $true -Detail "410 Gone (feature closed)"
+        }
+        else {
+            Add-Result -List $results -Name "MBTI Result GET" -Pass $false -Detail $_.Exception.Message
+        }
     }
     catch {
         Add-Result -List $results -Name "MBTI Result GET" -Pass $false -Detail $_.Exception.Message

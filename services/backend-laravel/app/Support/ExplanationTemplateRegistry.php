@@ -46,6 +46,12 @@ class ExplanationTemplateRegistry
                     '优先关注情绪同步与表达节奏，避免只看单点分数。',
                 ],
             ],
+            'ziwei' => [
+                'summary_prefix' => '紫微斗数长期画像结论：',
+                'default_advice' => [
+                    '紫微斗数更适合长期画像判断，建议结合命宫、身宫与主题落点综合理解。',
+                ],
+            ],
             'pair_chart' => [
                 'summary_prefix' => '合盘关系层结论：',
                 'default_advice' => [
@@ -59,9 +65,9 @@ class ExplanationTemplateRegistry
                 ],
             ],
             'mbti' => [
-                'summary_prefix' => 'MBTI层结论：',
+                'summary_prefix' => '性格测试层结论：',
                 'default_advice' => [
-                    'MBTI为轻量参考项，建议与实际相处体验联合判断。',
+                    '性格测试已关闭，当前仅保留历史兼容数据，不再作为排序依据。',
                 ],
             ],
             'default' => [
@@ -73,4 +79,3 @@ class ExplanationTemplateRegistry
         ];
     }
 }
-

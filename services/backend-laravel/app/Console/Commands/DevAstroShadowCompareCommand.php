@@ -8,6 +8,7 @@ use App\Services\LegacyClientBaziEngine;
 use App\Services\LegacyInputWesternNatalEngine;
 use App\Services\LunarPhpBaziEngine;
 use App\Services\WesternNatalCanonicalService;
+use App\Services\ZiweiCanonicalService;
 use Illuminate\Console\Command;
 
 class DevAstroShadowCompareCommand extends Command
@@ -32,6 +33,7 @@ class DevAstroShadowCompareCommand extends Command
         $lunarBazi = app(LunarPhpBaziEngine::class);
         $legacyWestern = app(LegacyInputWesternNatalEngine::class);
         $westernCanonical = app(WesternNatalCanonicalService::class);
+        $ziweiCanonical = app(ZiweiCanonicalService::class);
 
         $query = User::query()
             ->whereNotNull('birthday')
@@ -80,6 +82,7 @@ class DevAstroShadowCompareCommand extends Command
             'western_precision_diff' => 0,
             'western_engine_diff' => 0,
             'western_confidence_major_diff' => 0, // >0.2
+            'ziwei_diff' => 0,
             'house_unsupported' => 0,
             'aspect_unsupported' => 0,
             'any_diff' => 0,
@@ -87,11 +90,18 @@ class DevAstroShadowCompareCommand extends Command
 
         foreach ($users as $user) {
             $payload = $this->buildPayload($user);
+            $profile = $user->astroProfile;
 
             $oldBazi = $legacyBazi->canonicalize($payload);
             $newBazi = $lunarBazi->canonicalize($payload);
             $oldWestern = $legacyWestern->compute($payload);
             $newWestern = $westernCanonical->compute(array_merge($payload, [
+                'user_id' => (int) $user->id,
+                'platform' => 'android',
+                'profile_version' => 0,
+            ]));
+            $oldZiwei = (array) ($profile?->ziwei ?? []);
+            $newZiwei = $ziweiCanonical->canonicalize(array_merge($payload, [
                 'user_id' => (int) $user->id,
                 'platform' => 'android',
                 'profile_version' => 0,
@@ -110,6 +120,7 @@ class DevAstroShadowCompareCommand extends Command
             $oldConf = (float) ($oldWestern['confidence'] ?? 0.0);
             $newConf = (float) ($newWestern['confidence'] ?? 0.0);
             $westernConfidenceMajorDiff = abs($oldConf - $newConf) > 0.2;
+            $ziweiDiff = json_encode($oldZiwei, JSON_UNESCAPED_UNICODE) !== json_encode((array) ($newZiwei['ziwei'] ?? []), JSON_UNESCAPED_UNICODE);
 
             $profile = $user->astroProfile;
             $chart = is_array($user->private_natal_chart) ? $user->private_natal_chart : [];
@@ -119,6 +130,7 @@ class DevAstroShadowCompareCommand extends Command
             $anyDiff = $baziSunDiff || $baziTextDiff || $baziWuxingDiff ||
                 $westernSunDiff || $westernMoonDiff || $westernAscDiff ||
                 $westernPrecisionDiff || $westernEngineDiff || $westernConfidenceMajorDiff;
+            $anyDiff = $anyDiff || $ziweiDiff;
 
             $stat['total']++;
             $stat['bazi_sun_diff'] += $baziSunDiff ? 1 : 0;
@@ -130,6 +142,7 @@ class DevAstroShadowCompareCommand extends Command
             $stat['western_precision_diff'] += $westernPrecisionDiff ? 1 : 0;
             $stat['western_engine_diff'] += $westernEngineDiff ? 1 : 0;
             $stat['western_confidence_major_diff'] += $westernConfidenceMajorDiff ? 1 : 0;
+            $stat['ziwei_diff'] += $ziweiDiff ? 1 : 0;
             $stat['house_unsupported'] += $houseUnsupported ? 1 : 0;
             $stat['aspect_unsupported'] += $aspectUnsupported ? 1 : 0;
             $stat['any_diff'] += $anyDiff ? 1 : 0;
@@ -142,6 +155,7 @@ class DevAstroShadowCompareCommand extends Command
             $dimensionCount['western_precision'] += $westernPrecisionDiff ? 1 : 0;
             $dimensionCount['western_engine'] += $westernEngineDiff ? 1 : 0;
             $dimensionCount['western_confidence_major'] += $westernConfidenceMajorDiff ? 1 : 0;
+            $dimensionCount['ziwei'] = ($dimensionCount['ziwei'] ?? 0) + ($ziweiDiff ? 1 : 0);
             $dimensionCount['house_unsupported'] += $houseUnsupported ? 1 : 0;
             $dimensionCount['aspect_unsupported'] += $aspectUnsupported ? 1 : 0;
 
@@ -155,6 +169,7 @@ class DevAstroShadowCompareCommand extends Command
                 $westernPrecisionDiff ? 1 : 0,
                 $westernEngineDiff ? 1 : 0,
                 $westernConfidenceMajorDiff ? 1 : 0,
+                $ziweiDiff ? 1 : 0,
                 $houseUnsupported ? 1 : 0,
                 $aspectUnsupported ? 1 : 0,
             ]);
@@ -222,6 +237,11 @@ class DevAstroShadowCompareCommand extends Command
                     ],
                     'house_supported' => !$houseUnsupported,
                     'aspect_supported' => !$aspectUnsupported,
+                    'ziwei' => [
+                        'legacy' => $oldZiwei,
+                        'candidate' => (array) ($newZiwei['ziwei'] ?? []),
+                        'diff' => $ziweiDiff,
+                    ],
                 ],
             ];
         }
@@ -351,9 +371,11 @@ class DevAstroShadowCompareCommand extends Command
             .($s['western_precision_diff'] ?? 0).'/'
             .($s['western_engine_diff'] ?? 0).'/'
             .($s['western_confidence_major_diff'] ?? 0);
+        $md[] = '- ziwei diff: '.($s['ziwei_diff'] ?? 0);
         $md[] = '- unsupported house/aspect: '
             .($s['house_unsupported'] ?? 0).' ('.($s['house_unsupported_rate_pct'] ?? 0).'%)/'
             .($s['aspect_unsupported'] ?? 0).' ('.($s['aspect_unsupported_rate_pct'] ?? 0).'%)';
+        $md[] = '- ziwei diff口径: legacy 为空/候选非空、或字段 JSON 不一致即计 1；当前对比样本中以 canonical ziwei 生成结果为准。';
         $md[] = '';
         $md[] = '## Top Diff Dimensions';
         foreach ((array) ($s['top_diff_dimensions'] ?? []) as $row) {

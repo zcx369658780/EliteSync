@@ -8,7 +8,11 @@ class ProfileMapper {
 
   ProfileSummaryEntity toSummary(ProfileSummaryDto dto) => ProfileSummaryEntity(
         nickname: dto.nickname,
+        birthday: dto.birthday,
+        birthTime: dto.birthTime,
+        birthPlace: dto.birthPlace,
         city: dto.city,
+        target: dto.target,
         verified: dto.verified,
         completion: dto.completion,
         tags: dto.tags,
@@ -18,7 +22,11 @@ class ProfileMapper {
         nickname: dto.nickname,
         gender: dto.gender,
         birthday: dto.birthday,
+        birthTime: dto.birthTime,
         city: dto.city,
         target: dto.target,
+        birthPlace: dto.birthPlace,
+        birthLat: dto.birthLat,
+        birthLng: dto.birthLng,
       );
 }

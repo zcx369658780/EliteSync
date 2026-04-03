@@ -30,11 +30,16 @@ class AuthInterceptor extends Interceptor {
     if (err.response?.statusCode == 401 && _refreshAccessToken != null) {
       final req = err.requestOptions;
       final hasRetried = req.extra['__retried_401__'] == true;
+      final currentAuthorization = req.headers['Authorization']?.toString();
       if (!hasRetried) {
         final refreshed = await _refreshAccessToken();
-        if (refreshed != null && refreshed.isNotEmpty) {
+        final nextAuthorization =
+            (refreshed != null && refreshed.isNotEmpty) ? 'Bearer $refreshed' : null;
+        if (nextAuthorization != null &&
+            nextAuthorization.isNotEmpty &&
+            nextAuthorization != currentAuthorization) {
           req.extra['__retried_401__'] = true;
-          req.headers['Authorization'] = 'Bearer $refreshed';
+          req.headers['Authorization'] = nextAuthorization;
           try {
             final response = await Dio().fetch(req);
             handler.resolve(response);
