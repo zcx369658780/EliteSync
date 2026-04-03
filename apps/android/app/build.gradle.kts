@@ -1,4 +1,4 @@
-﻿import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.io.File
 import java.util.Properties
 
@@ -15,6 +15,8 @@ val localProps = Properties().apply {
 }
 val baiduAkFromProp = (project.findProperty("BAIDU_MAP_AK") as String?)
     ?: localProps.getProperty("BAIDU_MAP_AK", "")
+val baiduSecurityCodeFromProp = (project.findProperty("BAIDU_MAP_SECURITY_CODE") as String?)
+    ?: localProps.getProperty("BAIDU_MAP_SECURITY_CODE", "")
 
 val flutterModuleDir = rootProject.file("../flutter_elitesync_module")
 val flutterModuleLocalProps = Properties().apply {
@@ -61,8 +63,8 @@ android {
         // major: product major stage (0 before launch, 1+ after launch)
         // minor: 01=Alpha, 02-99=Beta
         // patch: current stage incremental version
-        versionCode = 205
-        versionName = "0.02.05"
+        versionCode = 206
+        versionName = "0.02.06"
         ndk {
             // Google Play 16KB page-size compliance: avoid x86_64 native libs from third-party SDKs.
             // Keep ARM ABIs for real-device testing and release publishing.
@@ -71,6 +73,8 @@ android {
         buildConfigField("String", "API_BASE_URL", "\"https://slowdate.top/\"")
         buildConfigField("String", "WS_BASE_URL", "\"wss://slowdate.top/\"")
         buildConfigField("String", "BAIDU_MAP_AK", "\"$baiduAkFromProp\"")
+        buildConfigField("String", "BAIDU_MAP_SECURITY_CODE", "\"$baiduSecurityCodeFromProp\"")
+        buildConfigField("boolean", "ENABLE_BAIDU_NATIVE_SDK", "false")
         manifestPlaceholders["BAIDU_MAP_AK"] = baiduAkFromProp
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -84,6 +88,8 @@ android {
             buildConfigField("String", "API_BASE_URL", "\"http://101.133.161.203/\"")
             buildConfigField("String", "WS_BASE_URL", "\"ws://101.133.161.203:8081/\"")
             buildConfigField("String", "BAIDU_MAP_AK", "\"$baiduAkFromProp\"")
+            buildConfigField("String", "BAIDU_MAP_SECURITY_CODE", "\"$baiduSecurityCodeFromProp\"")
+            buildConfigField("boolean", "ENABLE_BAIDU_NATIVE_SDK", "false")
         }
         create("profile") {
             initWith(getByName("debug"))
@@ -94,6 +100,8 @@ android {
             buildConfigField("String", "API_BASE_URL", "\"https://slowdate.top/\"")
             buildConfigField("String", "WS_BASE_URL", "\"wss://slowdate.top/\"")
             buildConfigField("String", "BAIDU_MAP_AK", "\"$baiduAkFromProp\"")
+            buildConfigField("String", "BAIDU_MAP_SECURITY_CODE", "\"$baiduSecurityCodeFromProp\"")
+            buildConfigField("boolean", "ENABLE_BAIDU_NATIVE_SDK", "false")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -157,5 +165,6 @@ configurations.all {
         force("androidx.browser:browser:1.8.0")
     }
 }
+
 
 
