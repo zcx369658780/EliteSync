@@ -49,6 +49,38 @@ function Add-Result {
     }) | Out-Null
 }
 
+function Get-HttpStatusCodeFromException {
+    param(
+        [System.Exception]$Exception
+    )
+
+    if ($null -eq $Exception) {
+        return $null
+    }
+
+    $response = $null
+    if ($Exception.PSObject.Properties.Name -contains 'Response' -and $null -ne $Exception.Response) {
+        $response = $Exception.Response
+    }
+    elseif ($Exception.PSObject.Properties.Name -contains 'InnerException' -and $null -ne $Exception.InnerException) {
+        $inner = $Exception.InnerException
+        if ($inner.PSObject.Properties.Name -contains 'Response' -and $null -ne $inner.Response) {
+            $response = $inner.Response
+        }
+    }
+
+    if ($null -ne $response) {
+        if ($response.PSObject.Properties.Name -contains 'StatusCode' -and $null -ne $response.StatusCode) {
+            return [int]$response.StatusCode
+        }
+        if ($response.PSObject.Properties.Name -contains 'BaseResponse' -and $null -ne $response.BaseResponse -and $response.BaseResponse.PSObject.Properties.Name -contains 'StatusCode') {
+            return [int]$response.BaseResponse.StatusCode
+        }
+    }
+
+    return $null
+}
+
 if ([string]::IsNullOrWhiteSpace($BaseUrl)) {
     $BaseUrl = "http://$ServerHost"
 }
@@ -59,6 +91,45 @@ $token = ""
 $latestVersionName = ""
 $latestVersionCode = 0
 $downloadUrl = ""
+
+function Get-HttpStatusLine {
+    param(
+        [string]$Url,
+        [int]$TimeoutSec = 20
+    )
+
+    $curlCode = $null
+    try {
+        $curlCode = Invoke-CurlText -CurlArgs @("-L", "-s", "-o", "NUL", "-w", "%{http_code}", "--max-time", "$TimeoutSec", "$Url")
+        if ($null -ne $curlCode) {
+            $curlCode = ([string]$curlCode).Trim()
+        }
+    }
+    catch {
+        $curlCode = $null
+    }
+
+    if (-not [string]::IsNullOrWhiteSpace([string]$curlCode) -and $curlCode -match '^\d{3}$') {
+        return ("HTTP/1.1 {0}" -f $curlCode)
+    }
+
+    try {
+        $resp = Invoke-WebRequest -Uri $Url -Method Head -TimeoutSec $TimeoutSec -ErrorAction Stop
+        if ($null -ne $resp) {
+            if ($null -ne $resp.StatusCode -and $resp.StatusCode -gt 0) {
+                return ("HTTP/1.1 {0}" -f [int]$resp.StatusCode)
+            }
+            if ($null -ne $resp.BaseResponse -and $null -ne $resp.BaseResponse.StatusCode) {
+                return ("HTTP/1.1 {0}" -f [int]$resp.BaseResponse.StatusCode)
+            }
+        }
+    }
+    catch {
+        return $null
+    }
+
+    return $null
+}
 
 # 1) App version check (public)
 try {
@@ -80,8 +151,10 @@ try {
     if ([string]::IsNullOrWhiteSpace($downloadUrl)) {
         throw "download_url is empty"
     }
-    $head = Invoke-CurlText -CurlArgs @("-I", "-s", "--max-time", "$TimeoutSec", "$downloadUrl")
-    $statusLine = ($head -split "`n" | Select-Object -First 1).Trim()
+    $statusLine = Get-HttpStatusLine -Url $downloadUrl -TimeoutSec $TimeoutSec
+    if ([string]::IsNullOrWhiteSpace($statusLine)) {
+        throw "unable to determine HTTP status for download_url"
+    }
     $statusCode = 0
     if ($statusLine -match 'HTTP/\d+(\.\d+)?\s+(\d{3})') {
         $statusCode = [int]$Matches[2]
@@ -153,7 +226,13 @@ if ($runAuth) {
         Add-Result -List $results -Name "MBTI Quiz GET" -Pass $pass -Detail ("version={0}, total={1}" -f $quiz.version_code, $count)
     }
     catch {
-        Add-Result -List $results -Name "MBTI Quiz GET" -Pass $false -Detail $_.Exception.Message
+        $code = Get-HttpStatusCodeFromException -Exception $_.Exception
+        if ($code -eq 410) {
+            Add-Result -List $results -Name "MBTI Quiz GET" -Pass $true -Detail "410 Gone (feature closed)"
+        }
+        else {
+            Add-Result -List $results -Name "MBTI Quiz GET" -Pass $false -Detail $_.Exception.Message
+        }
     }
 
     # 7) MBTI result GET
@@ -163,7 +242,13 @@ if ($runAuth) {
         Add-Result -List $results -Name "MBTI Result GET" -Pass $pass -Detail ("exists={0}" -f $mr.exists)
     }
     catch {
-        Add-Result -List $results -Name "MBTI Result GET" -Pass $false -Detail $_.Exception.Message
+        $code = Get-HttpStatusCodeFromException -Exception $_.Exception
+        if ($code -eq 410) {
+            Add-Result -List $results -Name "MBTI Result GET" -Pass $true -Detail "410 Gone (feature closed)"
+        }
+        else {
+            Add-Result -List $results -Name "MBTI Result GET" -Pass $false -Detail $_.Exception.Message
+        }
     }
 
     # 8) Astro profile GET

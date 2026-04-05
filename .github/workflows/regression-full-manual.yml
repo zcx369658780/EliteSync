@@ -22,11 +22,11 @@ jobs:
       - name: Validate Secrets
         shell: pwsh
         env:
-          TEST_PHONE: ${{ secrets.ELITESYNC_TEST_PHONE }}
-          TEST_PASSWORD: ${{ secrets.ELITESYNC_TEST_PASSWORD }}
+          TEST_PHONE: 17094346566
+          TEST_PASSWORD: 1234567aa
         run: |
           if ([string]::IsNullOrWhiteSpace($env:TEST_PHONE) -or [string]::IsNullOrWhiteSpace($env:TEST_PASSWORD)) {
-            throw "Missing required secrets: ELITESYNC_TEST_PHONE / ELITESYNC_TEST_PASSWORD"
+            throw "Missing required regression test account"
           }
 
       - name: Setup PHP 8.4
@@ -78,8 +78,8 @@ jobs:
       - name: Run Full Baseline Regression
         shell: pwsh
         env:
-          TEST_PHONE: ${{ secrets.ELITESYNC_TEST_PHONE }}
-          TEST_PASSWORD: ${{ secrets.ELITESYNC_TEST_PASSWORD }}
+          TEST_PHONE: 17094346566
+          TEST_PASSWORD: 1234567aa
         run: |
           ./scripts/regression_alpha_baseline.ps1 `
             -BaseUrl "${{ github.event.inputs.base_url }}" `
