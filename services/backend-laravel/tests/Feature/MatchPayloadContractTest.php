@@ -168,6 +168,16 @@ class MatchPayloadContractTest extends TestCase
                 'asc_sign' => '天秤座',
                 'wu_xing' => ['木' => 2, '火' => 3, '土' => 2, '金' => 1, '水' => 2],
             ],
+            'private_ziwei' => [
+                'life_palace' => '命宫',
+                'body_palace' => '身宫',
+                'major_themes' => [
+                    'relationship_bias' => '夫妻宫',
+                    'career_bias' => '官禄宫',
+                    'wealth_bias' => '财帛宫',
+                ],
+                'palaces' => [['name' => '命宫']],
+            ],
         ]);
         $b = User::create([
             'phone' => '13800000913',
@@ -184,6 +194,16 @@ class MatchPayloadContractTest extends TestCase
                 'moon_sign' => '巨蟹座',
                 'asc_sign' => '白羊座',
                 'wu_xing' => ['木' => 1, '火' => 3, '土' => 3, '金' => 2, '水' => 1],
+            ],
+            'private_ziwei' => [
+                'life_palace' => '夫妻宫',
+                'body_palace' => '财帛宫',
+                'major_themes' => [
+                    'relationship_bias' => '夫妻宫',
+                    'career_bias' => '官禄宫',
+                    'wealth_bias' => '福德宫',
+                ],
+                'palaces' => [['name' => '夫妻宫']],
             ],
         ]);
 
@@ -301,7 +321,7 @@ class MatchPayloadContractTest extends TestCase
             }
         }
 
-        $expected = ['personality', 'mbti', 'bazi', 'zodiac', 'constellation', 'natal_chart', 'pair_chart'];
+        $expected = ['bazi', 'zodiac', 'constellation', 'natal_chart', 'ziwei', 'pair_chart'];
         foreach ($expected as $k) {
             $this->assertArrayHasKey($k, $byKey, "module {$k} missing");
             $row = (array) $byKey[$k];

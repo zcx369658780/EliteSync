@@ -17,6 +17,32 @@ class MatchRemoteDataSource {
       <int, _ExplanationCacheEntry>{};
   static const Duration _explanationCacheTtl = Duration(seconds: 45);
 
+  DateTime _nextDropAtLocal() {
+    final now = DateTime.now().toLocal();
+    final todayAt21 = DateTime(now.year, now.month, now.day, 21);
+    if (now.isBefore(todayAt21)) {
+      return todayAt21;
+    }
+    return DateTime(now.year, now.month, now.day + 1, 21);
+  }
+
+  String _formatDateTimeLabel(DateTime value) {
+    String two(int v) => v.toString().padLeft(2, '0');
+    return '${value.month}月${two(value.day)}日 ${two(value.hour)}:${two(value.minute)}';
+  }
+
+  String _formatDropHint(DateTime revealAt) {
+    final now = DateTime.now().toLocal();
+    final sameDay =
+        now.year == revealAt.year &&
+        now.month == revealAt.month &&
+        now.day == revealAt.day;
+    if (sameDay) {
+      return '预计今晚 ${revealAt.hour.toString().padLeft(2, '0')}:${revealAt.minute.toString().padLeft(2, '0')} 揭晓';
+    }
+    return '预计 ${_formatDateTimeLabel(revealAt)} 揭晓';
+  }
+
   Future<Map<String, dynamic>> _currentMatchRaw() async {
     final paths = <String>['/api/v1/matches/current', '/api/v1/match/current'];
     NetworkFailure<Map<String, dynamic>>? lastFailure;
@@ -39,7 +65,11 @@ class MatchRemoteDataSource {
     final failure =
         lastFailure ??
         const NetworkFailure<Map<String, dynamic>>(message: 'Request failed');
-    throw Exception(failure.message);
+    throw MatchRemoteException(
+      message: failure.message,
+      statusCode: failure.statusCode,
+      code: failure.code,
+    );
   }
 
   bool _isCacheValid(_ExplanationCacheEntry entry) {
@@ -102,22 +132,36 @@ class MatchRemoteDataSource {
 
   Future<MatchCountdownDto> getCountdown() async {
     if (useMock) return MatchCountdownDto.fromJson(MatchMock.countdown);
-    // Backend has no dedicated countdown endpoint; if current match exists, treat as ready.
-    final current = await _currentMatchRaw();
-    return MatchCountdownDto.fromJson({
-      'status': 'ready',
-      'reveal_at': DateTime.now().toIso8601String(),
-      'hint': (current['highlights'] as String?) ?? '匹配已揭晓',
-    });
+    try {
+      final current = await _currentMatchRaw();
+      final released = (current['drop_released'] as bool?) ?? true;
+      final revealAt = DateTime.now().toLocal();
+      return MatchCountdownDto.fromJson({
+        'status': released ? 'drop_open' : 'waiting_drop',
+        'reveal_at': revealAt.toIso8601String(),
+        'hint': released
+            ? (current['highlights'] as String?) ?? '本周匹配已揭晓，点击查看悬念版结果。'
+            : '本周匹配正在准备中，请稍后回来查看。',
+      });
+    } on MatchRemoteException catch (e) {
+      if (e.statusCode == 404) {
+        final revealAt = _nextDropAtLocal();
+        return MatchCountdownDto.fromJson({
+          'status': 'waiting_drop',
+          'reveal_at': revealAt.toIso8601String(),
+          'hint': _formatDropHint(revealAt),
+        });
+      }
+      rethrow;
+    }
   }
 
   Future<MatchResultDto> getResult() async {
     if (useMock) return MatchResultDto.fromJson(MatchMock.resultHappy);
     final raw = await _currentMatchRaw();
-    final tags = _asList(raw['explanation_tags'])
-        .map((e) => _formatTag(e.toString()))
-        .where((e) => e.isNotEmpty)
-        .toList();
+    final tags = _asList(
+      raw['explanation_tags'],
+    ).map((e) => _formatTag(e.toString())).where((e) => e.isNotEmpty).toList();
     final core = _asMap(raw['core_scores']);
     final astro = _asMap(raw['astro_scores']);
     final reasons = _asMap(raw['match_reasons']);
@@ -140,9 +184,9 @@ class MatchRemoteDataSource {
               'desc': '问卷人格维度匹配',
             },
             {
-              'title': '性格',
+              'title': '性格（已关闭）',
               'value': (core['mbti'] as num?)?.toInt() ?? 0,
-              'desc': '性格特征互补度',
+              'desc': '历史性格结果已关闭，不再参与排序',
             },
             {
               'title': '玄学综合',
@@ -174,14 +218,12 @@ class MatchRemoteDataSource {
     final reasonGlossary = _asMap(
       reasons['reason_glossary'],
     ).map((k, v) => MapEntry(k.toString(), v.toString()));
-    final evidenceStrengthSummary = _asMap(reasons['evidence_strength_summary']);
-    final serverCompatibilitySections = _asMap(reasons['compatibility_sections'])
-        .map(
-          (k, v) => MapEntry(
-            k.toString(),
-            _toListOfMap(v),
-          ),
-        );
+    final evidenceStrengthSummary = _asMap(
+      reasons['evidence_strength_summary'],
+    );
+    final serverCompatibilitySections = _asMap(
+      reasons['compatibility_sections'],
+    ).map((k, v) => MapEntry(k.toString(), _toListOfMap(v)));
     final astroScoresRaw = _asMap(raw['astro_scores']);
     final match = _toListOfMap(reasons['match'])
         .map((e) {
@@ -205,153 +247,141 @@ class MatchRemoteDataSource {
         .toList();
     final detailReasons = <String>[...match, ...mismatch];
     final modules = _toListOfMap(reasons['modules']);
-    final serverModuleExplanations = _toListOfMap(reasons['module_explanations'])
-            .map((row) {
-              final tags = _asList(row['tags'])
-                  .map((e) => e.toString().trim())
-                  .where((e) => e.isNotEmpty)
-                  .toList();
-              final coreTags = _asList(row['core_tags'])
-                  .map((e) => e.toString().trim())
-                  .where((e) => e.isNotEmpty)
-                  .toList();
-              final auxTags = _asList(row['aux_tags'])
-                  .map((e) => e.toString().trim())
-                  .where((e) => e.isNotEmpty)
-                  .toList();
-              final coreTagExplains = _asMap(
-                row['core_tag_explains'],
-              ).map((k, v) => MapEntry(k.toString(), v.toString()));
-              final auxTagExplains = _asMap(
-                row['aux_tag_explains'],
-              ).map((k, v) => MapEntry(k.toString(), v.toString()));
-              final coreTagRefs = _asMap(
-                row['core_tag_refs'],
-              ).map((k, v) => MapEntry(k.toString(), v.toString()));
-              final auxTagRefs = _asMap(
-                row['aux_tag_refs'],
-              ).map((k, v) => MapEntry(k.toString(), v.toString()));
-              final confidence = (row['confidence'] as num?)?.toDouble() ?? 0.5;
-              final degraded = (row['degraded'] as bool?) ?? false;
-              final tierRaw = (row['confidence_tier'] ?? '')
-                  .toString()
-                  .trim()
-                  .toLowerCase();
-              final confidenceTier = tierRaw.isNotEmpty
-                  ? tierRaw
-                  : (degraded
-                        ? 'low'
-                        : (confidence >= 0.8
-                              ? 'high'
-                              : (confidence >= 0.6 ? 'medium' : 'low')));
-              final degradeReason = (row['degrade_reason'] ?? '')
-                  .toString()
-                  .trim();
-              final priority = (row['priority'] as num?)?.toInt() ?? 0;
-              final priorityLevel = (row['priority_level'] ?? '')
-                  .toString()
-                  .trim();
-              final priorityReason = (row['priority_reason'] ?? '')
-                  .toString()
-                  .trim();
-              final evidenceStrength = (row['evidence_strength'] ?? '')
-                  .toString()
-                  .trim();
-              final evidenceStrengthReason =
-                  (row['evidence_strength_reason'] ?? '').toString().trim();
-              if (coreTags.isEmpty && auxTags.isEmpty && tags.isNotEmpty) {
-                final guessedCore = tags
-                    .where(
-                      (e) =>
-                          e.contains('六合') ||
-                          e.contains('三合') ||
-                          e.contains('相冲') ||
-                          e.contains('相刑') ||
-                          e.contains('相害') ||
-                          e.contains('五行') ||
-                          e.contains('八字') ||
-                          e.contains('合盘') ||
-                          e.contains('星盘') ||
-                          e.contains('MBTI'),
-                    )
-                    .toList();
-                final guessedAux = tags
-                    .where((e) => !guessedCore.contains(e))
-                    .toList();
-                return {
-                  ...row,
-                  'core_tags': guessedCore,
-                  'aux_tags': guessedAux,
-                  'core_tag_explains': coreTagExplains,
-                  'aux_tag_explains': auxTagExplains,
-                  'core_tag_refs': coreTagRefs,
-                  'aux_tag_refs': auxTagRefs,
-                  'confidence': confidence,
-                  'confidence_tier': confidenceTier,
-                  'degraded': degraded,
-                  'degrade_reason': degradeReason,
-                  'priority': priority,
-                  'priority_level': priorityLevel,
-                  'priority_reason': priorityReason,
-                  'evidence_strength': evidenceStrength,
-                  'evidence_strength_reason': evidenceStrengthReason,
-                };
-              }
-              return {
-                ...row,
-                'core_tags': coreTags,
-                'aux_tags': auxTags,
-                'core_tag_explains': coreTagExplains,
-                'aux_tag_explains': auxTagExplains,
-                'core_tag_refs': coreTagRefs,
-                'aux_tag_refs': auxTagRefs,
-                'confidence': confidence,
-                'confidence_tier': confidenceTier,
-                'degraded': degraded,
-                'degrade_reason': degradeReason,
-                'priority': priority,
-                'priority_level': priorityLevel,
-                'priority_reason': priorityReason,
-                'evidence_strength': evidenceStrength,
-                'evidence_strength_reason': evidenceStrengthReason,
-              };
-            })
-            .toList();
-    final serverExplanationBlocks = _toListOfMap(
-      reasons['explanation_blocks'],
-    ).map((row) {
-      final process = _asList(row['process'])
-          .map((e) => e.toString().trim())
-          .where((e) => e.isNotEmpty)
-          .toList();
-      final risks = _asList(row['risks'])
-          .map((e) => e.toString().trim())
-          .where((e) => e.isNotEmpty)
-          .toList();
-      final advice = _asList(row['advice'])
-          .map((e) => e.toString().trim())
-          .where((e) => e.isNotEmpty)
-          .toList();
-      final coreEvidence = _asList(row['core_evidence'])
-          .map((e) => e.toString().trim())
-          .where((e) => e.isNotEmpty)
-          .toList();
-      final supportingEvidence = _asList(row['supporting_evidence'])
-          .map((e) => e.toString().trim())
-          .where((e) => e.isNotEmpty)
-          .toList();
-      return {
-        ...row,
-        'summary': (row['summary'] ?? '').toString().trim(),
-        'process': process,
-        'risks': risks,
-        'advice': advice,
-        'core_evidence': coreEvidence,
-        'supporting_evidence': supportingEvidence,
-        'confidence': (row['confidence'] ?? '').toString().trim(),
-        'priority': (row['priority'] ?? '').toString().trim(),
-      };
-    }).toList();
+    final serverModuleExplanations =
+        _toListOfMap(reasons['module_explanations']).map((row) {
+          final tags = _asList(
+            row['tags'],
+          ).map((e) => e.toString().trim()).where((e) => e.isNotEmpty).toList();
+          final coreTags = _asList(
+            row['core_tags'],
+          ).map((e) => e.toString().trim()).where((e) => e.isNotEmpty).toList();
+          final auxTags = _asList(
+            row['aux_tags'],
+          ).map((e) => e.toString().trim()).where((e) => e.isNotEmpty).toList();
+          final coreTagExplains = _asMap(
+            row['core_tag_explains'],
+          ).map((k, v) => MapEntry(k.toString(), v.toString()));
+          final auxTagExplains = _asMap(
+            row['aux_tag_explains'],
+          ).map((k, v) => MapEntry(k.toString(), v.toString()));
+          final coreTagRefs = _asMap(
+            row['core_tag_refs'],
+          ).map((k, v) => MapEntry(k.toString(), v.toString()));
+          final auxTagRefs = _asMap(
+            row['aux_tag_refs'],
+          ).map((k, v) => MapEntry(k.toString(), v.toString()));
+          final confidence = (row['confidence'] as num?)?.toDouble() ?? 0.5;
+          final degraded = (row['degraded'] as bool?) ?? false;
+          final tierRaw = (row['confidence_tier'] ?? '')
+              .toString()
+              .trim()
+              .toLowerCase();
+          final confidenceTier = tierRaw.isNotEmpty
+              ? tierRaw
+              : (degraded
+                    ? 'low'
+                    : (confidence >= 0.8
+                          ? 'high'
+                          : (confidence >= 0.6 ? 'medium' : 'low')));
+          final degradeReason = (row['degrade_reason'] ?? '').toString().trim();
+          final priority = (row['priority'] as num?)?.toInt() ?? 0;
+          final priorityLevel = (row['priority_level'] ?? '').toString().trim();
+          final priorityReason = (row['priority_reason'] ?? '')
+              .toString()
+              .trim();
+          final evidenceStrength = (row['evidence_strength'] ?? '')
+              .toString()
+              .trim();
+          final evidenceStrengthReason = (row['evidence_strength_reason'] ?? '')
+              .toString()
+              .trim();
+          if (coreTags.isEmpty && auxTags.isEmpty && tags.isNotEmpty) {
+            final guessedCore = tags
+                .where(
+                  (e) =>
+                      e.contains('六合') ||
+                      e.contains('三合') ||
+                      e.contains('相冲') ||
+                      e.contains('相刑') ||
+                      e.contains('相害') ||
+                      e.contains('五行') ||
+                      e.contains('八字') ||
+                      e.contains('合盘') ||
+                      e.contains('星盘') ||
+                      e.contains('MBTI'),
+                )
+                .toList();
+            final guessedAux = tags
+                .where((e) => !guessedCore.contains(e))
+                .toList();
+            return {
+              ...row,
+              'core_tags': guessedCore,
+              'aux_tags': guessedAux,
+              'core_tag_explains': coreTagExplains,
+              'aux_tag_explains': auxTagExplains,
+              'core_tag_refs': coreTagRefs,
+              'aux_tag_refs': auxTagRefs,
+              'confidence': confidence,
+              'confidence_tier': confidenceTier,
+              'degraded': degraded,
+              'degrade_reason': degradeReason,
+              'priority': priority,
+              'priority_level': priorityLevel,
+              'priority_reason': priorityReason,
+              'evidence_strength': evidenceStrength,
+              'evidence_strength_reason': evidenceStrengthReason,
+            };
+          }
+          return {
+            ...row,
+            'core_tags': coreTags,
+            'aux_tags': auxTags,
+            'core_tag_explains': coreTagExplains,
+            'aux_tag_explains': auxTagExplains,
+            'core_tag_refs': coreTagRefs,
+            'aux_tag_refs': auxTagRefs,
+            'confidence': confidence,
+            'confidence_tier': confidenceTier,
+            'degraded': degraded,
+            'degrade_reason': degradeReason,
+            'priority': priority,
+            'priority_level': priorityLevel,
+            'priority_reason': priorityReason,
+            'evidence_strength': evidenceStrength,
+            'evidence_strength_reason': evidenceStrengthReason,
+          };
+        }).toList();
+    final serverExplanationBlocks = _toListOfMap(reasons['explanation_blocks'])
+        .map((row) {
+          final process = _asList(
+            row['process'],
+          ).map((e) => e.toString().trim()).where((e) => e.isNotEmpty).toList();
+          final risks = _asList(
+            row['risks'],
+          ).map((e) => e.toString().trim()).where((e) => e.isNotEmpty).toList();
+          final advice = _asList(
+            row['advice'],
+          ).map((e) => e.toString().trim()).where((e) => e.isNotEmpty).toList();
+          final coreEvidence = _asList(
+            row['core_evidence'],
+          ).map((e) => e.toString().trim()).where((e) => e.isNotEmpty).toList();
+          final supportingEvidence = _asList(
+            row['supporting_evidence'],
+          ).map((e) => e.toString().trim()).where((e) => e.isNotEmpty).toList();
+          return {
+            ...row,
+            'summary': (row['summary'] ?? '').toString().trim(),
+            'process': process,
+            'risks': risks,
+            'advice': advice,
+            'core_evidence': coreEvidence,
+            'supporting_evidence': supportingEvidence,
+            'confidence': (row['confidence'] ?? '').toString().trim(),
+            'priority': (row['priority'] ?? '').toString().trim(),
+          };
+        })
+        .toList();
     final moduleScores = <String, int>{};
     final moduleInsights = <String>[];
     final moduleExplanations = <Map<String, dynamic>>[
@@ -385,10 +415,9 @@ class MatchRemoteDataSource {
           .toString()
           .trim()
           .toLowerCase();
-      final labelTags = _asList(m['evidence_tag_labels'])
-          .map((e) => e.toString().trim())
-          .where((e) => e.isNotEmpty)
-          .toList();
+      final labelTags = _asList(
+        m['evidence_tag_labels'],
+      ).map((e) => e.toString().trim()).where((e) => e.isNotEmpty).toList();
       final tags = labelTags.isNotEmpty
           ? labelTags
           : _asList(m['evidence_tags'])
@@ -596,10 +625,18 @@ class MatchRemoteDataSource {
       case 'astrology':
         return '星盘';
       case 'mbti':
-        return '性格';
+        return '性格（已关闭）';
       case 'personality':
       case 'questionnaire':
-        return '性格问卷';
+        return '性格';
+      case 'ziwei':
+        return '紫微斗数';
+      case 'life_palace':
+        return '命宫';
+      case 'body_palace':
+        return '身宫';
+      case 'major_themes':
+        return '主题倾向';
       case 'city':
       case 'same_city':
         return '同城';
@@ -668,6 +705,13 @@ class MatchRemoteDataSource {
         'bidirectional_acceptance_high': '双向接受度高',
         'key_dimension_gap_high': '关键维度差距高',
         'missing_personality_vector': '缺少人格向量',
+        'ziwei_canonical': '紫微 canonical',
+        'ziwei_long_term_profile': '紫微持久画像',
+        'ziwei_degraded_estimation': '紫微降级估算',
+        'missing_ziwei': '缺少紫微画像',
+        'life_palace_aligned': '命宫一致',
+        'body_palace_aligned': '身宫一致',
+        'major_themes_overlap': '主题倾向重叠',
       };
       return tagMap[v.toLowerCase()] ?? _moduleName(v);
     }
@@ -685,6 +729,8 @@ class MatchRemoteDataSource {
         return '性格协同 $value';
       case 'communication_mismatch':
         return '沟通磨合系数 $value';
+      case 'ziwei_alignment':
+        return '紫微协同性 $value';
       case 'relation_type':
         {
           const relationMap = <String, String>{
@@ -720,6 +766,22 @@ class MatchRemoteDataSource {
 
   List<Map<String, dynamic>> _toListOfMap(dynamic value) {
     return _asList(value).map(_asMap).where((e) => e.isNotEmpty).toList();
+  }
+}
+
+class MatchRemoteException implements Exception {
+  MatchRemoteException({required this.message, this.statusCode, this.code});
+
+  final String message;
+  final int? statusCode;
+  final String? code;
+
+  @override
+  String toString() {
+    final parts = <String>[message];
+    if (statusCode != null) parts.add('statusCode=$statusCode');
+    if (code != null && code!.isNotEmpty) parts.add('code=$code');
+    return parts.join(' ');
   }
 }
 

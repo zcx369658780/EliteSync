@@ -346,7 +346,7 @@ class _HomePageState extends ConsumerState<HomePage>
         context.push(AppRouteNames.questionnaire);
         break;
       case 'mbti':
-        context.push(AppRouteNames.mbtiCenter);
+        AppFeedback.showInfo(context, '性格测试已关闭，入口暂不可用');
         break;
       case 'astro':
         context.push(AppRouteNames.astroProfile);

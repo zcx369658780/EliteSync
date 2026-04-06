@@ -4,6 +4,7 @@ Param(
     [string]$KeyPath = "$env:USERPROFILE\.ssh\CodexKey.pem",
     [string]$RemoteRoot = "/opt/elitesync",
     [switch]$ValidateLocal,
+    [switch]$SkipBackup,
     [switch]$SkipComposer,
     [switch]$SkipMigrate,
     [switch]$RunSeeder,
@@ -39,6 +40,7 @@ $backendDir = Join-Path $repoRoot "services\backend-laravel"
 $questionBankDir = Join-Path $repoRoot "question_bank"
 $infraNginx = Join-Path $repoRoot "infra\elitesync-nginx.conf"
 $infraWsSvc = Join-Path $repoRoot "infra\elitesync-ws.service"
+$backupScript = Join-Path $repoRoot "scripts\db_backup_aliyun_mysql.ps1"
 
 if ($ValidateLocal) {
     Run-Step "Local backend quick check (artisan about)" {
@@ -49,6 +51,19 @@ if ($ValidateLocal) {
         finally {
             Pop-Location
         }
+    }
+}
+
+if (-not $SkipBackup) {
+    if (-not (Test-Path $backupScript)) {
+        throw "Backup script not found: $backupScript"
+    }
+    Run-Step "Pre-deploy database backup" {
+        powershell -ExecutionPolicy Bypass -File $backupScript `
+            -ServerHost $ServerHost `
+            -User $User `
+            -KeyPath $KeyPath `
+            -RemoteRoot $RemoteRoot
     }
 }
 

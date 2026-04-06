@@ -23,6 +23,8 @@ class AppTextField extends StatelessWidget {
     this.onClear,
     this.inputFormatters,
     this.obscureText = false,
+    this.minLines,
+    this.maxLines,
   });
 
   final TextEditingController? controller;
@@ -43,6 +45,8 @@ class AppTextField extends StatelessWidget {
   final VoidCallback? onClear;
   final List<TextInputFormatter>? inputFormatters;
   final bool obscureText;
+  final int? minLines;
+  final int? maxLines;
 
   @override
   Widget build(BuildContext context) {
@@ -80,6 +84,8 @@ class AppTextField extends StatelessWidget {
           controller: controller,
           focusNode: focusNode,
           obscureText: obscureText,
+          minLines: minLines,
+          maxLines: maxLines,
           readOnly: readOnly,
           enabled: enabled,
           maxLength: maxLength,

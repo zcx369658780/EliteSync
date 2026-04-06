@@ -184,7 +184,7 @@ class MatchController extends Controller
                 continue;
             }
             $label = (string) ($m['label'] ?? '');
-            if ($label === '八字' || $label === '属相') {
+            if ($label === '八字' || $label === '属相' || $label === '紫微斗数') {
                 $out['natal_compatibility'][] = $m;
                 continue;
             }
@@ -217,6 +217,10 @@ class MatchController extends Controller
             '星座元素' => '火土风水四元素倾向，主要用于过程层互动顺滑度判断。',
             '星盘' => '结合太阳/月亮/上升等要素的过程层分析，偏向“如何相处”。',
             '合盘' => '将双方盘面组合后的过程层分析，关注互动路径与磨合成本。',
+            '紫微斗数' => '以命宫、身宫和主要主题为核心的长期画像模块，适合看稳定倾向。',
+            '命宫' => '紫微斗数中的核心主轴，常用于判断个人气质与长期行为风格。',
+            '身宫' => '紫微斗数中更偏现实行为的落点，常用于观察日常节律与执行方式。',
+            '十二宫' => '紫微斗数的基本结构单元，用于划分人生不同主题的表现位置。',
             '证据标签' => '用于说明每个结论来自哪些信号，便于复盘与解释。',
         ];
 
@@ -289,6 +293,11 @@ class MatchController extends Controller
         }
         if (str_contains($tag, 'natal') || str_contains($tag, 'moon') || str_contains($tag, 'asc')) {
             $terms[] = '星盘';
+        }
+        if (str_contains($tag, 'ziwei') || str_contains($tag, 'life_palace') || str_contains($tag, 'body_palace') || str_contains($tag, 'major_themes')) {
+            $terms[] = '紫微斗数';
+            $terms[] = '命宫';
+            $terms[] = '身宫';
         }
         if (str_contains($tag, 'pair_chart') || str_contains($tag, 'sun_moon')) {
             $terms[] = '合盘';

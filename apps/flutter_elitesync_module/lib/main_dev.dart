@@ -4,17 +4,21 @@ import 'package:flutter_elitesync_module/app/config/app_flavor.dart';
 
 void main() {
   runEliteSyncApp(
-    const AppEnv(
+    AppEnv(
       flavor: AppFlavor.dev,
       appName: 'EliteSync Dev',
       apiBaseUrl: 'http://101.133.161.203',
-      useMockData: true,
-      useMockAuth: true,
+      useMockData: false,
+      useMockAuth: false,
       useMockQuestionnaire: true,
-      useMockHome: true,
+      useMockHome: false,
       useMockMatch: true,
-      useMockChat: true,
-      useMockProfile: true,
+      useMockChat: const bool.fromEnvironment('ELITESYNC_CHAT_MOCK'),
+      useMockProfile: false,
+      useMockAdmin: const bool.fromEnvironment('ELITESYNC_ADMIN_MOCK'),
+      initialRoute: String.fromEnvironment('ELITESYNC_INITIAL_ROUTE').trim().isEmpty
+          ? null
+          : String.fromEnvironment('ELITESYNC_INITIAL_ROUTE').trim(),
     ),
   );
 }

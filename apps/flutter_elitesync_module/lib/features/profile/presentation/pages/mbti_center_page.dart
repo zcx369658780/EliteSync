@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_elitesync_module/app/router/app_route_names.dart';
 import 'package:flutter_elitesync_module/design_system/components/bars/app_top_bar.dart';
-import 'package:flutter_elitesync_module/design_system/components/buttons/app_primary_button.dart';
 import 'package:flutter_elitesync_module/design_system/components/buttons/app_secondary_button.dart';
 import 'package:flutter_elitesync_module/design_system/components/cards/app_info_section_card.dart';
 import 'package:flutter_elitesync_module/design_system/components/layout/app_scaffold.dart';
@@ -23,18 +21,18 @@ class MbtiCenterPage extends ConsumerWidget {
     final personality = _extractPersonality(tags);
     final hasPersonality = personality.isNotEmpty;
     final personalityHint = hasPersonality
-        ? '当前性格特征：$personality'
-        : '当前还没有性格特征结果，建议先完成测试';
+        ? '当前历史性格特征：$personality'
+        : '性格测试已关闭，当前仅保留历史兼容展示。';
 
     return AppScaffold(
-      appBar: const AppTopBar(title: '性格测试', mode: AppTopBarMode.backTitle),
+      appBar: const AppTopBar(title: '性格测试已关闭', mode: AppTopBarMode.backTitle),
       body: ListView(
         padding: EdgeInsets.only(top: t.spacing.sm, bottom: t.spacing.xl),
         children: [
           const SectionReveal(
             child: PageTitleRail(
-              title: '性格快速测评',
-              subtitle: '3题简版，用于匹配解释与画像补充',
+              title: '性格模块已关闭',
+              subtitle: '历史数据仍可查看，但不再参与匹配排序',
             ),
           ),
           SizedBox(height: t.spacing.md),
@@ -42,10 +40,10 @@ class MbtiCenterPage extends ConsumerWidget {
             delay: const Duration(milliseconds: 70),
             child: AppInfoSectionCard(
               title: '测评说明',
-              subtitle: '当前为轻量入口，后续可替换正式性格算法',
+              subtitle: '当前已关闭测试入口',
               leadingIcon: Icons.info_outline_rounded,
               child: Text(
-                '当前测试题已并入性格问卷流程。结果会用于匹配解释中的性格分项。',
+                '性格测试在 2.5 中已关闭。历史结果仍会保留在资料标签中，但不再作为匹配排序和解释的输入。',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: t.textSecondary,
                   height: 1.5,
@@ -58,7 +56,7 @@ class MbtiCenterPage extends ConsumerWidget {
             delay: const Duration(milliseconds: 110),
             child: AppInfoSectionCard(
               title: '当前状态',
-              subtitle: '从资料标签中读取性格特征结果',
+              subtitle: '从资料标签中读取历史性格结果',
               leadingIcon: hasPersonality ? Icons.psychology_alt_rounded : Icons.help_outline_rounded,
               child: Row(
                 children: [
@@ -83,27 +81,19 @@ class MbtiCenterPage extends ConsumerWidget {
           SizedBox(height: t.spacing.md),
           SectionReveal(
             delay: const Duration(milliseconds: 140),
-            child: AppPrimaryButton(
-              label: '开始性格测试',
-              onPressed: () => context.push(AppRouteNames.questionnaire),
-            ),
-          ),
-          SizedBox(height: t.spacing.sm),
-          SectionReveal(
-            delay: const Duration(milliseconds: 180),
             child: AppSecondaryButton(
-              label: '刷新性格结果',
+              label: '刷新历史结果',
               fullWidth: true,
               onPressed: () => ref.invalidate(profileProvider),
             ),
           ),
           SizedBox(height: t.spacing.sm),
           SectionReveal(
-            delay: const Duration(milliseconds: 210),
+            delay: const Duration(milliseconds: 180),
             child: AppSecondaryButton(
               label: '查看匹配解释',
               fullWidth: true,
-              onPressed: () => context.push(AppRouteNames.matchDetail),
+              onPressed: () => context.push('/match/detail'),
             ),
           ),
         ],

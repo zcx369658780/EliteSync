@@ -160,6 +160,10 @@ class MatchModuleInsightCard extends StatelessWidget {
       '相害',
       '五行',
       '八字',
+      '紫微',
+      '命宫',
+      '身宫',
+      '十二宫',
       '合盘',
       '星盘',
       '日月',
@@ -170,8 +174,8 @@ class MatchModuleInsightCard extends StatelessWidget {
   }
 
   String _resolveTagExplain(String tag) {
-    if (tag == 'MBTI' || tag == '性格') {
-      return '性格测试结果，用于补充关系中的沟通风格、决策节奏与互动偏好。';
+    if (tag == 'MBTI' || tag == '性格' || tag == '性格（已关闭）') {
+      return '历史性格结果（已关闭），仅用于兼容展示，不再参与当前匹配排序。';
     }
     final fromCore = coreTagExplains[tag];
     if (fromCore != null && fromCore.trim().isNotEmpty) return fromCore.trim();

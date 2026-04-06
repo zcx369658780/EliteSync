@@ -30,11 +30,6 @@ return [
             'precision' => 'partial_bazi',
         ],
     ],
-    'mbti' => [
-        // Lite MBTI should not be presented as high-confidence psychometric result.
-        'lite_quiz_confidence_cap' => 0.62,
-    ],
-
     // Explanation tone/strength normalization policy.
     'narrative' => [
         'low_confidence_threshold' => 0.55,

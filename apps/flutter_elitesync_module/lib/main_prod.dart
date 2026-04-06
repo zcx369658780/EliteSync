@@ -7,6 +7,9 @@ void main() {
     const AppEnv(
       flavor: AppFlavor.prod,
       appName: 'EliteSync',
+      // The Android host app embeds the Flutter release AAR, which always
+      // boots through main.dart -> main_prod.dart. Keep prod pointed at the
+      // verified direct backend entry until the public domain chain is stable.
       apiBaseUrl: 'http://101.133.161.203',
       useMockData: false,
       useMockAuth: false,

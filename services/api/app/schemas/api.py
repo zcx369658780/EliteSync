@@ -48,3 +48,23 @@ class MessageReq(BaseModel):
 class BasicProfileReq(BaseModel):
     birthday: str | None = None
     name: str | None = None
+
+
+class AstroProfileReq(BaseModel):
+    birthday: str
+    birth_time: str
+    birth_place: str | None = None
+    birth_lat: float | None = None
+    birth_lng: float | None = None
+    tz_str: str | None = "Asia/Shanghai"
+
+
+
+class AstroRenderReq(BaseModel):
+    name: str | None = None
+    birthday: str
+    birth_time: str
+    birth_place: str | None = None
+    birth_lat: float | None = None
+    birth_lng: float | None = None
+    tz_str: str | None = "Asia/Shanghai"

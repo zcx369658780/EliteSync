@@ -21,6 +21,11 @@ class MatchingEngineService
         3 => 1.0,
     ];
 
+    private function personalityTestEnabled(): bool
+    {
+        return (bool) config('features.personality_test_enabled', false);
+    }
+
     /**
      * @param array<int,array{vector:array<string,int>}> $profiles
      * @param array<int,array{created_at:\DateTimeInterface|string|null,updated_at:\DateTimeInterface|string|null}> $usersMeta
@@ -42,6 +47,7 @@ class MatchingEngineService
         $astro = app(AstroCompatibilityService::class);
         $personality = app(PersonalityCompatibilityService::class);
         $mbti = app(MbtiCompatibilityService::class);
+        $personalityEnabled = $this->personalityTestEnabled();
         $contractVersion = (string) config('matching.contract.version', 'v1');
 
         foreach ($userIds as $uid) {
@@ -68,7 +74,8 @@ class MatchingEngineService
                     $exposureCounts,
                     $astro,
                     $personality,
-                    $mbti
+                    $mbti,
+                    $personalityEnabled
                 );
                 if ($bestDetail === null || $detail['final'] > $bestDetail['final']) {
                     $bestPeer = $peer;
@@ -100,6 +107,7 @@ class MatchingEngineService
                 'score_zodiac' => (int) ($bestDetail['astro']['zodiac'] ?? 0),
                 'score_constellation' => (int) ($bestDetail['astro']['constellation'] ?? 0),
                 'score_natal_chart' => (int) ($bestDetail['astro']['natal_chart'] ?? 0),
+                'score_ziwei' => (int) ($bestDetail['astro']['ziwei'] ?? 0),
                 'match_verdict' => (string) ($bestDetail['astro']['verdict'] ?? 'low'),
                 'match_reasons' => [
                     'contract_version' => $contractVersion,
@@ -138,7 +146,8 @@ class MatchingEngineService
         array $exposureCounts,
         AstroCompatibilityService $astro,
         PersonalityCompatibilityService $personality,
-        MbtiCompatibilityService $mbti
+        MbtiCompatibilityService $mbti,
+        bool $personalityEnabled
     ): array {
         $profileSimilarity = $this->profileSimilarity(
             (array) ($profiles[$a]['vector'] ?? []),
@@ -182,6 +191,7 @@ class MatchingEngineService
             'public_zodiac_sign' => (string) ($userSignals[$a]['public_zodiac_sign'] ?? ''),
             'private_bazi' => (string) ($userSignals[$a]['private_bazi'] ?? ''),
             'private_natal_chart' => $userSignals[$a]['private_natal_chart'] ?? null,
+            'private_ziwei' => $userSignals[$a]['private_ziwei'] ?? null,
             'birthday' => (string) ($userSignals[$a]['birthday'] ?? ''),
             'gender' => (string) ($userSignals[$a]['gender'] ?? ''),
         ], [
@@ -189,25 +199,55 @@ class MatchingEngineService
             'public_zodiac_sign' => (string) ($userSignals[$b]['public_zodiac_sign'] ?? ''),
             'private_bazi' => (string) ($userSignals[$b]['private_bazi'] ?? ''),
             'private_natal_chart' => $userSignals[$b]['private_natal_chart'] ?? null,
+            'private_ziwei' => $userSignals[$b]['private_ziwei'] ?? null,
             'birthday' => (string) ($userSignals[$b]['birthday'] ?? ''),
             'gender' => (string) ($userSignals[$b]['gender'] ?? ''),
         ]);
-        $personalityScore = $personality->score(
-            (array) ($profiles[$a]['vector'] ?? []),
-            (array) ($profiles[$b]['vector'] ?? []),
-            $profileSimilarity,
-            $biQuestion,
-            $interestSimilarity,
-            $this->categoryCompatibility($a, $b, $answerIndex)
-        );
-        $mbtiScore = $mbti->score(
-            (string) ($userSignals[$a]['mbti'] ?? ''),
-            (string) ($userSignals[$b]['mbti'] ?? '')
-        );
+        $personalityScore = $personalityEnabled
+            ? $personality->score(
+                (array) ($profiles[$a]['vector'] ?? []),
+                (array) ($profiles[$b]['vector'] ?? []),
+                $profileSimilarity,
+                $biQuestion,
+                $interestSimilarity,
+                $this->categoryCompatibility($a, $b, $answerIndex)
+            )
+            : [
+                'score' => 0,
+                'confidence' => 0.0,
+                'verdict' => 'disabled',
+                'reason_short' => '性格测试已关闭，不再作为排序依据。',
+                'reason_detail' => '性格测试模块在 2.5 中已关闭，仅保留历史兼容数据。',
+                'risk' => '当前不再使用性格测试进行排序。',
+                'risk_detail' => '历史结果仍可读取，但不会参与匹配计算。',
+                'evidence_tags' => ['personality_disabled'],
+                'evidence' => [],
+                'degraded' => true,
+                'degrade_reason' => 'personality_disabled',
+            ];
+        $mbtiScore = [
+            'score' => 0,
+            'confidence' => 0.0,
+            'verdict' => 'disabled',
+            'reason_short' => '性格测试已关闭，不再作为排序依据。',
+            'reason_detail' => 'MBTI 模块在 2.5 中已关闭，仅保留历史兼容数据。',
+            'risk' => '当前不再使用 MBTI 进行排序。',
+            'risk_detail' => '历史结果仍可读取，但不会参与匹配计算。',
+            'evidence_tags' => ['mbti_disabled'],
+            'evidence' => [],
+            'degraded' => true,
+            'degrade_reason' => 'mbti_disabled',
+        ];
+        if ($personalityEnabled) {
+            $mbtiScore = $mbti->score(
+                (string) ($userSignals[$a]['mbti'] ?? ''),
+                (string) ($userSignals[$b]['mbti'] ?? '')
+            );
+        }
 
         $weights = (array) config('matching.core_weights', []);
-        $wPersonality = (float) ($weights['personality'] ?? 0.50);
-        $wMbti = (float) ($weights['mbti'] ?? 0.15);
+        $wPersonality = $personalityEnabled ? (float) ($weights['personality'] ?? 0.50) : 0.0;
+        $wMbti = $personalityEnabled ? (float) ($weights['mbti'] ?? 0.15) : 0.0;
         $wAstro = (float) ($weights['astro'] ?? 0.35);
         $coreTotal = (int) round(
             ((int) ($personalityScore['score'] ?? 0)) * $wPersonality
@@ -226,19 +266,23 @@ class MatchingEngineService
         $lowCap = (int) ($guards['personality_low_cap'] ?? 72);
         $highThreshold = (int) ($guards['personality_high_threshold'] ?? 75);
         $highFloor = (int) ($guards['personality_high_floor'] ?? 40);
-        if ($pScore < $lowThreshold) {
-            $final = min($final, $lowCap / 100.0);
-        }
-        if ($pScore >= $highThreshold) {
-            $final = max($final, $highFloor / 100.0);
+        if ($personalityEnabled) {
+            if ($pScore < $lowThreshold) {
+                $final = min($final, $lowCap / 100.0);
+            }
+            if ($pScore >= $highThreshold) {
+                $final = max($final, $highFloor / 100.0);
+            }
         }
 
         $fairAdjusted = $final * $this->fairnessMultiplier($b, $exposureCounts);
-        if ($pScore < $lowThreshold) {
-            $fairAdjusted = min($fairAdjusted, $lowCap / 100.0);
-        }
-        if ($pScore >= $highThreshold) {
-            $fairAdjusted = max($fairAdjusted, $highFloor / 100.0);
+        if ($personalityEnabled) {
+            if ($pScore < $lowThreshold) {
+                $fairAdjusted = min($fairAdjusted, $lowCap / 100.0);
+            }
+            if ($pScore >= $highThreshold) {
+                $fairAdjusted = max($fairAdjusted, $highFloor / 100.0);
+            }
         }
 
         $reasonModules = $this->buildReasonModules(
@@ -247,7 +291,8 @@ class MatchingEngineService
             $astroScore,
             $wPersonality,
             $wMbti,
-            $wAstro
+            $wAstro,
+            $personalityEnabled
         );
         $overallConfidence = $this->overallConfidence($reasonModules);
 
@@ -369,9 +414,9 @@ class MatchingEngineService
             }
         }
 
-        // MBTI letter-level compatibility slight boost/penalty.
+        // MBTI legacy compatibility remains disabled when personality test is closed.
         $mbtiCfg = (array) ($signalCfg['mbti'] ?? []);
-        if ((bool) ($mbtiCfg['enabled'] ?? true)) {
+        if ($this->personalityTestEnabled() && (bool) ($mbtiCfg['enabled'] ?? true)) {
             $mbtiA = strtoupper((string) ($userSignals[$a]['mbti'] ?? ''));
             $mbtiB = strtoupper((string) ($userSignals[$b]['mbti'] ?? ''));
             if (strlen($mbtiA) === 4 && strlen($mbtiB) === 4) {
@@ -691,11 +736,14 @@ class MatchingEngineService
         array $astro,
         float $wPersonality,
         float $wMbti,
-        float $wAstro
+        float $wAstro,
+        bool $personalityEnabled
     ): array {
         $algo = (array) config('matching.algo_versions', []);
-        $modules = [
-            [
+        $modules = [];
+
+        if ($personalityEnabled && $wPersonality > 0.0) {
+            $modules[] = [
                 'key' => 'personality',
                 'label' => '人格匹配',
                 'layer' => 'process',
@@ -730,8 +778,11 @@ class MatchingEngineService
                 ]],
                 'degraded' => (bool) ($personality['degraded'] ?? false),
                 'degrade_reason' => (string) ($personality['degrade_reason'] ?? ''),
-            ],
-            [
+            ];
+        }
+
+        if ($personalityEnabled && $wMbti > 0.0) {
+            $modules[] = [
                 'key' => 'mbti',
                 'label' => 'MBTI 匹配',
                 'layer' => 'process',
@@ -766,11 +817,11 @@ class MatchingEngineService
                 ]],
                 'degraded' => (bool) ($mbti['degraded'] ?? false),
                 'degrade_reason' => (string) ($mbti['degrade_reason'] ?? ''),
-            ],
-        ];
+            ];
+        }
 
         $astroWeightMap = (array) config('match_rules.weights', []);
-        $astroKeys = ['bazi', 'zodiac', 'constellation', 'natal_chart', 'pair_chart'];
+        $astroKeys = ['bazi', 'zodiac', 'constellation', 'natal_chart', 'ziwei', 'pair_chart'];
         $sumAstroWeight = 0.0;
         foreach ($astroKeys as $k) {
             $sumAstroWeight += (float) ($astroWeightMap[$k] ?? 0.0);
@@ -782,6 +833,7 @@ class MatchingEngineService
             'zodiac' => '属相匹配',
             'constellation' => '星座匹配',
             'natal_chart' => '星盘匹配',
+            'ziwei' => '紫微斗数',
             'pair_chart' => '男女合盘',
         ];
         foreach ($astroLabels as $key => $label) {
@@ -793,7 +845,7 @@ class MatchingEngineService
             $modules[] = [
                 'key' => $key,
                 'label' => $label,
-                'layer' => $key === 'bazi' ? 'result' : (($key === 'zodiac' || $key === 'pair_chart') ? 'bridge' : 'process'),
+                'layer' => $key === 'bazi' ? 'result' : (($key === 'zodiac' || $key === 'pair_chart' || $key === 'ziwei') ? 'bridge' : 'process'),
                 'algo_version' => (string) ($algo[$key] ?? 'p1'),
                 'score' => (int) ($row['score'] ?? 0),
                 'weight' => $localAstroWeight,
@@ -1056,7 +1108,7 @@ class MatchingEngineService
 
     /**
      * @param array<int> $userIds
-     * @return array<int,array{city:string,birthday:?string,mbti:string,gender:string,zodiac_animal:string,public_zodiac_sign:string,private_bazi:string,private_natal_chart:mixed}>
+     * @return array<int,array{city:string,birthday:?string,mbti:string,gender:string,zodiac_animal:string,public_zodiac_sign:string,private_bazi:string,private_natal_chart:mixed,private_ziwei:mixed}>
      */
     private function loadUserSignals(array $userIds): array
     {
@@ -1069,7 +1121,7 @@ class MatchingEngineService
 
         $rows = User::query()
             ->whereIn('id', $userIds)
-            ->get(['id', 'city', 'birthday', 'public_mbti', 'gender', 'zodiac_animal', 'public_zodiac_sign', 'private_bazi', 'private_natal_chart']);
+            ->get(['id', 'city', 'birthday', 'public_mbti', 'gender', 'zodiac_animal', 'public_zodiac_sign', 'private_bazi', 'private_natal_chart', 'private_ziwei']);
         $astroRows = UserAstroProfile::query()
             ->whereIn('user_id', $userIds)
             ->get([
@@ -1119,6 +1171,7 @@ class MatchingEngineService
                 'public_zodiac_sign' => $canonicalSun !== '' ? $canonicalSun : trim((string) ($row->public_zodiac_sign ?? '')),
                 'private_bazi' => $canonicalBazi !== '' ? $canonicalBazi : trim((string) ($row->private_bazi ?? '')),
                 'private_natal_chart' => $canonicalChart ?? $row->private_natal_chart,
+                'private_ziwei' => $astro?->ziwei ?? $row->private_ziwei,
             ];
         }
 

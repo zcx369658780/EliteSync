@@ -15,6 +15,8 @@ import 'package:flutter_elitesync_module/features/chat/presentation/widgets/conn
 import 'package:flutter_elitesync_module/features/chat/presentation/widgets/icebreaker_card.dart';
 import 'package:flutter_elitesync_module/features/chat/presentation/widgets/message_bubble.dart';
 import 'package:flutter_elitesync_module/features/chat/presentation/widgets/message_input_bar.dart';
+import 'package:flutter_elitesync_module/features/moderation/presentation/providers/moderation_provider.dart';
+import 'package:flutter_elitesync_module/features/moderation/presentation/widgets/report_block_sheet.dart';
 import 'package:flutter_elitesync_module/shared/providers/app_providers.dart';
 import 'package:flutter_elitesync_module/shared/providers/performance_mode_provider.dart';
 
@@ -37,6 +39,7 @@ class _ChatRoomPageState extends ConsumerState<ChatRoomPage> {
   int _lastMergedCount = 0;
 
   String get _draftKey => '${CacheKeys.chatDraftPrefix}${widget.conversationId}';
+  int? get _peerId => int.tryParse(widget.conversationId);
 
   @override
   void initState() {
@@ -123,6 +126,37 @@ class _ChatRoomPageState extends ConsumerState<ChatRoomPage> {
     }
   }
 
+  Future<void> _openModerationSheet() async {
+    final peerId = _peerId;
+    if (peerId == null || peerId <= 0) {
+      AppFeedback.showError(context, '当前会话对象无效');
+      return;
+    }
+    final remote = ref.read(moderationRemoteDataSourceProvider);
+    await ReportBlockSheet.show(
+      context,
+      targetName: widget.title,
+      onReport: ({
+        required String reasonCode,
+        String? detail,
+      }) async {
+        await remote.reportUser(
+          targetUserId: peerId,
+          category: 'user',
+          reasonCode: reasonCode,
+          detail: detail,
+        );
+      },
+      onBlock: () async {
+        await remote.blockUser(
+          blockedUserId: peerId,
+          reasonCode: 'chat_menu',
+          detail: 'from_chat_room',
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final async = ref.watch(chatRoomMessagesProvider(widget.conversationId));
@@ -139,6 +173,24 @@ class _ChatRoomPageState extends ConsumerState<ChatRoomPage> {
             tooltip: '刷新消息',
             onPressed: () => ref.invalidate(chatRoomMessagesProvider(widget.conversationId)),
             icon: const Icon(Icons.refresh_rounded),
+          ),
+          PopupMenuButton<String>(
+            tooltip: '安全',
+            onSelected: (value) async {
+              if (value == 'moderation') {
+                await _openModerationSheet();
+              }
+            },
+            itemBuilder: (context) => const [
+              PopupMenuItem<String>(
+                value: 'moderation',
+                child: ListTile(
+                  dense: true,
+                  leading: Icon(Icons.shield_outlined),
+                  title: Text('举报 / 拉黑'),
+                ),
+              ),
+            ],
           ),
         ],
       ),

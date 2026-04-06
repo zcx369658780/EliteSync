@@ -25,4 +25,4 @@
 - `reports/drills/gray_rollback_drill_2026-03-30.md`：灰度 / 回滚 / 门禁演练
 - `reports/explanation_snapshot_diff/`：解释快照差异
 - `docs/devlogs/RELEASE_GATE_LOG.md`：发布门禁日志
-- `docs/devlogs/RELEASE_LOG.md`：发布记录
+- `docs/devlogs/REGRESSION_BASELINE_LOG.md`：回归基线日志

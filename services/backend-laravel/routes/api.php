@@ -3,7 +3,9 @@
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\AdminController;
 use App\Http\Controllers\Api\V1\AppVersionController;
+use App\Http\Controllers\Api\V1\GeoController;
 use App\Http\Controllers\Api\V1\AstroProfileController;
+use App\Http\Controllers\Api\V1\ModerationController;
 use App\Http\Controllers\Api\V1\HomeController;
 use App\Http\Controllers\Api\V1\MatchController;
 use App\Http\Controllers\Api\V1\MbtiProfileController;
@@ -22,6 +24,7 @@ Route::prefix('v1')->group(function () {
         Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:auth');
         Route::post('/refresh', [AuthController::class, 'refresh'])->middleware('auth:sanctum');
         Route::post('/password', [AuthController::class, 'changePassword'])->middleware('auth:sanctum');
+        Route::delete('/account', [AuthController::class, 'deleteSelf'])->middleware('auth:sanctum');
     });
 
     Route::prefix('questionnaire')->middleware('auth:sanctum')->group(function () {
@@ -47,6 +50,8 @@ Route::prefix('v1')->group(function () {
             Route::get('/basic', [ProfileController::class, 'basic']);
             Route::post('/basic', [ProfileController::class, 'saveBasic']);
             Route::post('/city', [ProfileController::class, 'saveCity']);
+            Route::get('/astro/summary', [AstroProfileController::class, 'showSummary']);
+            Route::get('/astro/chart', [AstroProfileController::class, 'showChart']);
             Route::get('/astro', [AstroProfileController::class, 'show']);
             Route::post('/astro', [AstroProfileController::class, 'save']);
             Route::get('/mbti/quiz', [MbtiProfileController::class, 'quiz']);
@@ -78,6 +83,15 @@ Route::prefix('v1')->group(function () {
             Route::get('/ws/{userId}', [MessageController::class, 'websocketStub']);
         });
 
+        Route::prefix('moderation')->group(function () {
+            Route::post('/reports', [ModerationController::class, 'report']);
+            Route::post('/reports/{reportId}/appeal', [ModerationController::class, 'appeal']);
+            Route::get('/blocks', [ModerationController::class, 'blocks']);
+            Route::post('/blocks', [ModerationController::class, 'block']);
+            Route::delete('/blocks/{blockedUserId}', [ModerationController::class, 'unblock'])
+                ->whereNumber('blockedUserId');
+        });
+
         Route::prefix('home')->group(function () {
             Route::get('/banner', [HomeController::class, 'banner']);
             Route::get('/shortcuts', [HomeController::class, 'shortcuts']);
@@ -90,8 +104,17 @@ Route::prefix('v1')->group(function () {
 
         Route::get('/content/{contentId}', [HomeController::class, 'content']);
 
+        Route::prefix('geo')->group(function () {
+            Route::get('/places', [GeoController::class, 'places']);
+        });
+
         Route::prefix('admin')->middleware('admin.phone')->group(function () {
             Route::get('/users', [AdminController::class, 'users']);
+            Route::get('/reports', [AdminController::class, 'reports']);
+            Route::get('/reports/{reportId}', [AdminController::class, 'reportDetail'])
+                ->whereNumber('reportId');
+            Route::post('/reports/{reportId}/action', [AdminController::class, 'reportAction'])
+                ->whereNumber('reportId');
             Route::get('/questionnaire/quality-stats', [AdminController::class, 'questionQualityStats']);
             Route::post('/questionnaire/prune-low-drop', [AdminController::class, 'pruneLowDropQuestions']);
             Route::post('/users/{uid}/disable', [AdminController::class, 'disable']);

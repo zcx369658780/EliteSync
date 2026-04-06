@@ -31,8 +31,7 @@ class ZodiacDerivationTest extends TestCase
     {
         $svc = app(ChineseZodiacService::class);
 
-        $repoRoot = dirname(dirname(base_path()));
-        $vectorsFile = $repoRoot.DIRECTORY_SEPARATOR.'bazi_example'.DIRECTORY_SEPARATOR.'test_vectors'.DIRECTORY_SEPARATOR.'zodiac_boundary_vectors.json';
+        $vectorsFile = base_path('tests/Fixtures/zodiac_boundary_vectors.json');
         $this->assertFileExists($vectorsFile);
 
         $json = file_get_contents($vectorsFile);

@@ -85,6 +85,40 @@ class SessionNotifier extends AsyncNotifier<SessionState> {
     );
   }
 
+  Future<void> updateProfile(UserSummary user) async {
+    final local = ref.read(localStorageProvider);
+    final current = state.maybeWhen(
+      data: (s) => s,
+      orElse: () => null,
+    );
+    final merged = UserSummary(
+      id: user.id != 0 ? user.id : (current?.user?.id ?? 0),
+      phone: user.phone.isNotEmpty ? user.phone : (current?.user?.phone ?? ''),
+      nickname: user.nickname ?? current?.user?.nickname,
+      birthday: user.birthday ?? current?.user?.birthday,
+      birthTime: user.birthTime ?? current?.user?.birthTime,
+      gender: user.gender ?? current?.user?.gender,
+      city: user.city ?? current?.user?.city,
+      relationshipGoal: user.relationshipGoal ?? current?.user?.relationshipGoal,
+      birthPlace: user.birthPlace ?? current?.user?.birthPlace,
+      birthLat: user.birthLat ?? current?.user?.birthLat,
+      birthLng: user.birthLng ?? current?.user?.birthLng,
+      avatarUrl: user.avatarUrl ?? current?.user?.avatarUrl,
+      verified: user.verified || (current?.user?.verified ?? false),
+      moderationStatus: user.moderationStatus.isNotEmpty
+          ? user.moderationStatus
+          : (current?.user?.moderationStatus ?? 'normal'),
+      moderationNote: user.moderationNote ?? current?.user?.moderationNote,
+    );
+
+    await local.setJson(CacheKeys.lastKnownProfile, merged.toJson());
+    state = AsyncData(
+      (current ?? const SessionState(status: AuthStatus.authenticated)).copyWith(
+        user: merged,
+      ),
+    );
+  }
+
   Future<void> setUnauthenticated() async {
     final secure = ref.read(secureStorageProvider);
     await secure.delete(CacheKeys.accessToken);

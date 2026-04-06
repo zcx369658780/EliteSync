@@ -10,6 +10,20 @@ use Illuminate\Support\Facades\DB;
 
 class MbtiProfileController extends Controller
 {
+    private function isEnabled(): bool
+    {
+        return (bool) config('features.mbti_enabled', false);
+    }
+
+    private function disabledResponse(): JsonResponse
+    {
+        return response()->json([
+            'message' => 'feature_disabled',
+            'feature' => 'mbti',
+            'available' => false,
+        ], 410);
+    }
+
     /**
      * @return array<int,array<string,mixed>>
      */
@@ -27,6 +41,10 @@ class MbtiProfileController extends Controller
 
     public function quiz(Request $request): JsonResponse
     {
+        if (!$this->isEnabled()) {
+            return $this->disabledResponse();
+        }
+
         $version = (string) $request->query('version', $this->defaultVersion());
         $itemsRaw = $this->quizItems($version);
         if (empty($itemsRaw)) {
@@ -52,6 +70,10 @@ class MbtiProfileController extends Controller
 
     public function result(Request $request): JsonResponse
     {
+        if (!$this->isEnabled()) {
+            return $this->disabledResponse();
+        }
+
         $user = $request->user();
         $latest = MbtiAttempt::query()
             ->where('user_id', (int) $user->id)
@@ -96,6 +118,10 @@ class MbtiProfileController extends Controller
 
     public function submit(Request $request): JsonResponse
     {
+        if (!$this->isEnabled()) {
+            return $this->disabledResponse();
+        }
+
         $user = $request->user();
         $data = $request->validate([
             'version_code' => ['required', 'string', 'max:32'],

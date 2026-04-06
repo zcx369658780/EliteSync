@@ -17,6 +17,12 @@ abstract final class CacheKeys {
   static const contentRankerMode = 'content_ranker_mode';
   static const contentPreferredTag = 'content_preferred_tag';
   static const contentPreferredTagsMap = 'content_preferred_tags_map_v1';
+  static const profileSummarySnapshot = 'profile_summary_snapshot_v1';
+  static const profileDetailSnapshot = 'profile_detail_snapshot_v1';
+  static const matchResultSnapshot = 'match_result_snapshot_v1';
+  static const matchDetailSnapshot = 'match_detail_snapshot_v1';
+  static const matchFeedbackHistory = 'match_feedback_history_v1';
+  static const astroChartPreferences = 'astro_chart_preferences_v1';
   static const homeSearchQuery = 'home_search_query';
   static const discoverSearchQuery = 'discover_search_query';
   static const messagesSearchQuery = 'messages_search_query';

@@ -1,5 +1,5 @@
 from datetime import datetime
-from sqlalchemy import String, Integer, ForeignKey, DateTime, Text, Boolean
+from sqlalchemy import String, Integer, ForeignKey, DateTime, Text, Boolean, Float
 from sqlalchemy.orm import Mapped, mapped_column
 from app.models.base import Base
 
@@ -64,3 +64,18 @@ class UserBasicProfile(Base):
     birthday: Mapped[str | None] = mapped_column(String(10), nullable=True)
     name: Mapped[str | None] = mapped_column(String(80), nullable=True)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
+class UserAstroProfile(Base):
+    __tablename__ = "user_astro_profiles"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), unique=True, index=True)
+    birthday: Mapped[str | None] = mapped_column(String(10), nullable=True)
+    birth_time: Mapped[str | None] = mapped_column(String(5), nullable=True)
+    birth_place: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    birth_lat: Mapped[float | None] = mapped_column(Float, nullable=True)
+    birth_lng: Mapped[float | None] = mapped_column(Float, nullable=True)
+    tz_str: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    natal_chart_svg: Mapped[str | None] = mapped_column(Text, nullable=True)
+    natal_chart_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+    computed_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

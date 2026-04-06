@@ -10,6 +10,7 @@ class MatchMapper {
   const MatchMapper();
 
   MatchCountdownEntity countdown(MatchCountdownDto dto) => MatchCountdownEntity(
+    status: dto.status,
     revealAt: DateTime.tryParse(dto.revealAt),
     hint: dto.hint,
   );

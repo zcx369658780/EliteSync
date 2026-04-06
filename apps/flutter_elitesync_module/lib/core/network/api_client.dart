@@ -116,7 +116,9 @@ class ApiClient {
       if (c is String && c.trim().isNotEmpty) {
         code = c;
       }
-    } else {
+    }
+
+    if (message == 'Request failed') {
       message = switch (e.type) {
         DioExceptionType.connectionTimeout => 'Connection timeout',
         DioExceptionType.sendTimeout => 'Send timeout',
@@ -124,7 +126,14 @@ class ApiClient {
         DioExceptionType.connectionError => 'Connection error',
         DioExceptionType.badCertificate => 'Bad certificate',
         DioExceptionType.cancel => 'Request cancelled',
-        DioExceptionType.badResponse => 'Bad response',
+          DioExceptionType.badResponse => switch (statusCode ?? 0) {
+            401 => 'Unauthorized',
+            403 => 'Forbidden',
+            404 => 'Not found',
+            429 => 'Too many requests',
+            int code when code >= 500 => 'Server error',
+            _ => 'Request failed',
+          },
         DioExceptionType.unknown => 'Unknown network error',
       };
     }

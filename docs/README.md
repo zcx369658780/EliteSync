@@ -1,8 +1,17 @@
 # Docs Index
 
 ## Start Here
-- `HANDOFF_CURRENT_20260319.md`: 当前交接入口（最新状态、命令、下一步）
+- `HANDOFF_MASTER_20260406.md`: 当前交接入口（最新状态、算法、接口、页面拓扑）
 - `PROJECT_INTRO.md`: 新成员项目介绍
+
+## Version Plans
+- `version_plans/README.md`: 版本开发计划总索引（2.3 及以后）
+
+## Release Gates
+- `ROLLBACK_PLAN.md`: 回滚计划
+- `RELEASE_SMOKE_CHECKLIST.md`: 发布烟测清单
+- `REGRESSION_CHECKLIST.md`: 修改后回归验收清单
+- `PROTECTED_SURFACES.md`: 高风险模块保护清单
 
 ## Planning (Active)
 - `planning/Current_Development_Plan_2026-03-27.md`: 当前主计划

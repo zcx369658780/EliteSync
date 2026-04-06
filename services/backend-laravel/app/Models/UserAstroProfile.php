@@ -21,6 +21,7 @@ class UserAstroProfile extends Model
         'da_yun',
         'liu_nian',
         'wu_xing',
+        'ziwei',
         'notes',
         'computed_at',
     ];
@@ -33,6 +34,7 @@ class UserAstroProfile extends Model
             'da_yun' => 'array',
             'liu_nian' => 'array',
             'wu_xing' => 'array',
+            'ziwei' => 'array',
             'notes' => 'array',
             'computed_at' => 'datetime',
         ];

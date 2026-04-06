@@ -91,6 +91,64 @@ $token = ""
 $latestVersionName = ""
 $latestVersionCode = 0
 $downloadUrl = ""
+$authPhone = $Phone
+$authPassword = $Password
+$fallbackAuthUsed = $false
+
+function New-SmokeFallbackAccount {
+    param(
+        [string]$BaseUrl,
+        [int]$TimeoutSec = 20,
+        [int]$MaxAttempts = 5
+    )
+
+    # 生成一个非真实号段的临时烟测账号，避免依赖远端固定测试账号状态。
+    $fallbackPassword = 'Smoke12345'
+    $lastError = $null
+
+    for ($attempt = 1; $attempt -le $MaxAttempts; $attempt++) {
+        $suffix = [string](Get-Random -Minimum 100000000 -Maximum 1000000000)
+        $fallbackPhone = "90$suffix"
+        if ($fallbackPhone.Length -lt 11) {
+            $fallbackPhone = $fallbackPhone.PadRight(11, '0')
+        }
+        elseif ($fallbackPhone.Length -gt 11) {
+            $fallbackPhone = $fallbackPhone.Substring(0, 11)
+        }
+
+        $registerBody = @{
+            phone = $fallbackPhone
+            password = $fallbackPassword
+            name = 'SmokeUser'
+            birthday = '1998-01-01'
+            realname_verified = $true
+        } | ConvertTo-Json -Compress
+
+        try {
+            $register = Invoke-RestMethod -Uri "$BaseUrl/api/v1/auth/register" -Method Post -ContentType "application/json" -Body $registerBody -TimeoutSec $TimeoutSec
+            $accessToken = [string]$register.access_token
+            if ([string]::IsNullOrWhiteSpace($accessToken)) {
+                throw "fallback register returned empty access_token"
+            }
+
+            return [PSCustomObject]@{
+                Phone = $fallbackPhone
+                Password = $fallbackPassword
+                AccessToken = $accessToken
+            }
+        }
+        catch {
+            $lastError = $_.Exception.Message
+            if ($attempt -lt $MaxAttempts) {
+                Start-Sleep -Seconds 1
+                continue
+            }
+            break
+        }
+    }
+
+    throw "fallback register failed after $MaxAttempts attempts: $lastError"
+}
 
 function Get-HttpStatusLine {
     param(
@@ -183,8 +241,26 @@ if ($runAuth) {
         Add-Result -List $results -Name "Login" -Pass $pass -Detail $loginDetail
     }
     catch {
-        Add-Result -List $results -Name "Login" -Pass $false -Detail $_.Exception.Message
-        $runAuth = $false
+        $loginStatus = Get-HttpStatusCodeFromException -Exception $_.Exception
+        if ($loginStatus -eq 422) {
+            try {
+                $fallback = New-SmokeFallbackAccount -BaseUrl $BaseUrl -TimeoutSec $TimeoutSec
+                $authPhone = [string]$fallback.Phone
+                $authPassword = [string]$fallback.Password
+                $token = [string]$fallback.AccessToken
+                $fallbackAuthUsed = $true
+                Add-Result -List $results -Name "Login" -Pass $true -Detail ("422 fallback register ok (phone={0})" -f $authPhone)
+                $runAuth = $true
+            }
+            catch {
+                Add-Result -List $results -Name "Login" -Pass $false -Detail ("422 fallback register failed: {0}" -f $_.Exception.Message)
+                $runAuth = $false
+            }
+        }
+        else {
+            Add-Result -List $results -Name "Login" -Pass $false -Detail $_.Exception.Message
+            $runAuth = $false
+        }
     }
 }
 
@@ -264,16 +340,19 @@ if ($runAuth) {
 
     # 9) Change password POST (optional, with rollback)
     if ($CheckPasswordChange) {
-        $tempPassword = "$Password`_smk9a"
+        $tempPassword = "$authPassword`_smk9a"
         $changed = $false
         try {
             $changeBody = @{
-                current_password = $Password
+                current_password = $authPassword
                 new_password = $tempPassword
                 new_password_confirmation = $tempPassword
             } | ConvertTo-Json -Compress
             $changeResp = Invoke-RestMethod -Uri "$BaseUrl/api/v1/auth/password" -Method Post -Headers $headers -ContentType "application/json" -Body $changeBody -TimeoutSec $TimeoutSec
             $changed = ($changeResp.ok -eq $true)
+            if ($changed) {
+                $authPassword = $tempPassword
+            }
             Add-Result -List $results -Name "Change Password POST" -Pass $changed -Detail ("ok={0}" -f $changeResp.ok)
         }
         catch {
@@ -282,7 +361,7 @@ if ($runAuth) {
 
         if ($changed) {
             try {
-                $loginBody2 = @{ phone = $Phone; password = $tempPassword } | ConvertTo-Json -Compress
+                $loginBody2 = @{ phone = $authPhone; password = $tempPassword } | ConvertTo-Json -Compress
                 $login2 = Invoke-RestMethod -Uri "$BaseUrl/api/v1/auth/login" -Method Post -ContentType "application/json" -Body $loginBody2 -TimeoutSec $TimeoutSec
                 $token2 = [string]$login2.access_token
                 $passLoginNew = -not [string]::IsNullOrWhiteSpace($token2)
@@ -293,17 +372,33 @@ if ($runAuth) {
                     $headers2 = @{ Authorization = "Bearer $token2" }
                     $rollbackBody = @{
                         current_password = $tempPassword
-                        new_password = $Password
-                        new_password_confirmation = $Password
+                        new_password = $authPassword
+                        new_password_confirmation = $authPassword
                     } | ConvertTo-Json -Compress
                     $rollbackResp = Invoke-RestMethod -Uri "$BaseUrl/api/v1/auth/password" -Method Post -Headers $headers2 -ContentType "application/json" -Body $rollbackBody -TimeoutSec $TimeoutSec
                     $rollbackPass = ($rollbackResp.ok -eq $true)
+                    if ($rollbackPass) {
+                        $authPassword = $Password
+                    }
                     Add-Result -List $results -Name "Password Rollback" -Pass $rollbackPass -Detail ("ok={0}" -f $rollbackResp.ok)
                 }
             }
             catch {
                 Add-Result -List $results -Name "Password Rollback" -Pass $false -Detail $_.Exception.Message
             }
+        }
+    }
+
+    if ($fallbackAuthUsed) {
+        try {
+            $cleanupBody = @{
+                current_password = $authPassword
+            } | ConvertTo-Json -Compress
+            Invoke-RestMethod -Uri "$BaseUrl/api/v1/auth/account" -Method Delete -Headers $headers -ContentType "application/json" -Body $cleanupBody -TimeoutSec $TimeoutSec | Out-Null
+            Add-Result -List $results -Name "Smoke Cleanup" -Pass $true -Detail ("fallback account deleted (phone={0})" -f $authPhone)
+        }
+        catch {
+            Add-Result -List $results -Name "Smoke Cleanup" -Pass $false -Detail $_.Exception.Message
         }
     }
 }

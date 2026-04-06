@@ -2,10 +2,11 @@
 
 return [
     'weights' => [
-        'bazi' => (float) env('MATCH_ASTRO_WEIGHT_BAZI', 0.45),
-        'zodiac' => (float) env('MATCH_ASTRO_WEIGHT_ZODIAC', 0.25),
+        'bazi' => (float) env('MATCH_ASTRO_WEIGHT_BAZI', 0.40),
+        'zodiac' => (float) env('MATCH_ASTRO_WEIGHT_ZODIAC', 0.20),
         'constellation' => (float) env('MATCH_ASTRO_WEIGHT_CONSTELLATION', 0.08),
         'natal_chart' => (float) env('MATCH_ASTRO_WEIGHT_NATAL_CHART', 0.07),
+        'ziwei' => (float) env('MATCH_ASTRO_WEIGHT_ZIWEI', 0.10),
         'pair_chart' => (float) env('MATCH_ASTRO_WEIGHT_PAIR_CHART', 0.15),
     ],
 
@@ -216,6 +217,23 @@ return [
             'degraded' => [
                 'detail' => '当前基于有限出生信息进行合盘估算，建议补全出生时间与地点后再复核。',
                 'risk' => '当前为简化估算（出生信息不完整），准确度受限。',
+            ],
+        ],
+    ],
+
+    'ziwei' => [
+        'templates' => [
+            'high' => [
+                'match' => '紫微命盘主轴较协调，长期画像一致性较高',
+                'short' => '命宫/身宫与主要主题较协调，长期画像层更容易同频。',
+                'detail' => '紫微斗数更适合长期画像判断，命宫与身宫的一致性通常意味着整体气质与现实节律更容易贴近。',
+                'risk' => '仍建议结合现实互动验证长期相处效果，不要只看单项分数。',
+            ],
+            'degraded' => [
+                'match' => '紫微信息不完整，采用保守估计',
+                'short' => '紫微斗数数据不完整，当前仅作保守参考。',
+                'detail' => '缺少完整紫微命盘，系统只能按已知宫位与主题做简化估算。',
+                'risk' => '建议补全出生时刻与地点后再判断紫微画像稳定性。',
             ],
         ],
     ],

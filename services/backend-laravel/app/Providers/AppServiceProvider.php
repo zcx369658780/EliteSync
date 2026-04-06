@@ -3,9 +3,11 @@
 namespace App\Providers;
 
 use App\Services\BaziEngine;
+use App\Services\BirthLocationSolarTimeService;
 use App\Services\LegacyInputWesternNatalEngine;
 use App\Services\LunarPhpBaziEngine;
 use App\Services\LegacyClientBaziEngine;
+use App\Services\ZiweiCanonicalService;
 use App\Services\WesternNatalEngine;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
@@ -53,6 +55,9 @@ class AppServiceProvider extends ServiceProvider
             // keep fallback stable and switch implementation later without changing interface.
             return new LegacyInputWesternNatalEngine();
         });
+
+        $this->app->singleton(ZiweiCanonicalService::class, fn () => new ZiweiCanonicalService(app(\App\Services\AstroCanonicalRolloutService::class)));
+        $this->app->singleton(BirthLocationSolarTimeService::class, fn () => new BirthLocationSolarTimeService());
     }
 
     /**

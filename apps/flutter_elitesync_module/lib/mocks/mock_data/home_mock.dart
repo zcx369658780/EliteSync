@@ -7,7 +7,6 @@ class HomeMock {
 
   static const shortcuts = [
     {'key': 'questionnaire', 'title': '继续问卷', 'action': 'route', 'target': '/questionnaire'},
-    {'key': 'mbti', 'title': 'MBTI 测试', 'action': 'route', 'target': '/profile/mbti'},
     {'key': 'astro', 'title': '星盘画像', 'action': 'route', 'target': '/profile/astro'},
     {'key': 'profile', 'title': '完善资料', 'action': 'route', 'target': '/profile/edit'},
   ];

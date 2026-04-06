@@ -43,6 +43,7 @@ class UserAstroMirrorService
             'private_birth_place' => $profile->birth_place,
             'private_birth_lat' => $profile->birth_lat,
             'private_birth_lng' => $profile->birth_lng,
+            'private_ziwei' => $profile->ziwei ?? [],
             'private_natal_chart' => [
                 'moon_sign' => $profile->moon_sign,
                 'asc_sign' => $profile->asc_sign,

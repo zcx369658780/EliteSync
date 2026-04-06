@@ -6,7 +6,7 @@ import 'package:flutter_elitesync/design_system/components/bars/app_bottom_nav_b
 import 'package:flutter_elitesync/design_system/components/brand/floating_dock_bottom_bar.dart';
 import 'package:flutter_elitesync/features/discover/presentation/pages/discover_page.dart';
 import 'package:flutter_elitesync/features/home/presentation/pages/home_page.dart';
-import 'package:flutter_elitesync/features/match/presentation/pages/match_result_page.dart';
+import 'package:flutter_elitesync/features/match/presentation/pages/match_portal_page.dart';
 import 'package:flutter_elitesync/features/chat/presentation/pages/conversation_list_page.dart';
 import 'package:flutter_elitesync/features/profile/presentation/pages/profile_page.dart';
 import 'package:flutter_elitesync/shared/enums/questionnaire_status.dart';
@@ -37,11 +37,31 @@ class AppShell extends StatelessWidget {
         centerActionLabel: '速配',
         onCenterActionTap: () => _onTap(2),
         items: const [
-          AppBottomNavItem(icon: Icons.home_outlined, activeIcon: Icons.home_rounded, label: '首页'),
-          AppBottomNavItem(icon: Icons.explore_outlined, activeIcon: Icons.explore_rounded, label: '发现'),
-          AppBottomNavItem(icon: Icons.auto_awesome_outlined, activeIcon: Icons.auto_awesome, label: '匹配'),
-          AppBottomNavItem(icon: Icons.chat_bubble_outline, activeIcon: Icons.chat_bubble, label: '消息'),
-          AppBottomNavItem(icon: Icons.person_outline, activeIcon: Icons.person, label: '我的'),
+          AppBottomNavItem(
+            icon: Icons.home_outlined,
+            activeIcon: Icons.home_rounded,
+            label: '首页',
+          ),
+          AppBottomNavItem(
+            icon: Icons.explore_outlined,
+            activeIcon: Icons.explore_rounded,
+            label: '发现',
+          ),
+          AppBottomNavItem(
+            icon: Icons.auto_awesome_outlined,
+            activeIcon: Icons.auto_awesome,
+            label: '匹配',
+          ),
+          AppBottomNavItem(
+            icon: Icons.chat_bubble_outline,
+            activeIcon: Icons.chat_bubble,
+            label: '消息',
+          ),
+          AppBottomNavItem(
+            icon: Icons.person_outline,
+            activeIcon: Icons.person,
+            label: '我的',
+          ),
         ],
       ),
     );
@@ -64,8 +84,7 @@ class SplashPage extends ConsumerWidget {
         return;
       }
 
-      if (nav.verificationStatus !=
-          VerificationStatus.approved) {
+      if (nav.verificationStatus != VerificationStatus.approved) {
         context.go(AppRouteNames.verificationStatus);
         return;
       }
@@ -93,7 +112,7 @@ class MatchShellPage extends StatelessWidget {
   const MatchShellPage({super.key});
 
   @override
-  Widget build(BuildContext context) => const MatchResultPage();
+  Widget build(BuildContext context) => const MatchPortalPage();
 }
 
 class DiscoverShellPage extends StatelessWidget {

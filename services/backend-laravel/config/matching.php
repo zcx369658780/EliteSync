@@ -19,15 +19,16 @@ return [
         'zodiac' => 'p2',
         'constellation' => 'p1',
         'natal_chart' => 'p2',
+        'ziwei' => 'p1',
         'pair_chart' => 'p2',
     ],
 
     'core_weights' => [
-        // Algo 2.2 transition:
-        // MBTI is downgraded from core sorter to lightweight factor.
-        'personality' => (float) env('MATCH_WEIGHT_PERSONALITY', 0.58),
-        'mbti' => (float) env('MATCH_WEIGHT_MBTI', 0.07),
-        'astro' => (float) env('MATCH_WEIGHT_ASTRO', 0.35),
+        // 2.5 transition:
+        // Personality/MBTI are closed as active ranking factors.
+        'personality' => (float) env('MATCH_WEIGHT_PERSONALITY', 0.0),
+        'mbti' => (float) env('MATCH_WEIGHT_MBTI', 0.0),
+        'astro' => (float) env('MATCH_WEIGHT_ASTRO', 1.0),
     ],
 
     'score_guards' => [
@@ -98,9 +99,9 @@ return [
     ],
 
     // Additional user-signal based adjustments for Beta tuning.
-    'signal_adjustments' => [
-        // Same city gets a small boost.
-        'same_city_multiplier' => 1.12,
+        'signal_adjustments' => [
+            // Same city gets a small boost.
+            'same_city_multiplier' => 1.12,
         // Age gap (years) bucket multipliers.
         // Applied as first bucket where age_gap <= max.
         'age_gap' => [
@@ -109,9 +110,8 @@ return [
             ['max' => 9, 'multiplier' => 0.93],
             ['max' => 99, 'multiplier' => 0.85],
         ],
-        // MBTI letter match gives a tiny boost.
+        // MBTI legacy compatibility remains disabled in 2.5.
         'mbti' => [
-            // MBTI is now a core module; disable legacy per-letter multiplier to avoid double counting.
             'enabled' => false,
             'per_letter_bonus' => 0.015,
             'max_multiplier' => 1.06,

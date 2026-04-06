@@ -24,7 +24,6 @@ return [
     'shortcuts' => [
         ['key' => 'questionnaire', 'title' => '继续问卷', 'action' => 'route', 'target' => '/questionnaire'],
         ['key' => 'match', 'title' => '本周匹配', 'action' => 'route', 'target' => '/match'],
-        ['key' => 'mbti', 'title' => 'MBTI', 'action' => 'route', 'target' => '/profile/mbti'],
         ['key' => 'astro', 'title' => '星盘画像', 'action' => 'route', 'target' => '/profile/astro'],
         ['key' => 'discover', 'title' => '同城活动', 'action' => 'route', 'target' => '/discover'],
     ],

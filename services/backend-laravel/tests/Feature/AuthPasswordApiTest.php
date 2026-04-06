@@ -65,5 +65,34 @@ class AuthPasswordApiTest extends TestCase
         ])->assertStatus(422)
             ->assertJsonPath('error.code', 'validation_error');
     }
-}
 
+    public function test_delete_self_only_allows_smoke_accounts(): void
+    {
+        $smokeUser = User::create([
+            'phone' => '90123456789',
+            'name' => 'SmokeUser',
+            'password' => 'secret123',
+        ]);
+
+        Sanctum::actingAs($smokeUser);
+
+        $this->deleteJson('/api/v1/auth/account', [
+            'current_password' => 'secret123',
+        ])->assertOk()->assertJsonPath('ok', true);
+
+        $this->assertDatabaseMissing('users', [
+            'phone' => '90123456789',
+        ]);
+
+        $realUser = User::create([
+            'phone' => '13800000914',
+            'password' => 'secret123',
+        ]);
+
+        Sanctum::actingAs($realUser);
+
+        $this->deleteJson('/api/v1/auth/account', [
+            'current_password' => 'secret123',
+        ])->assertStatus(403);
+    }
+}

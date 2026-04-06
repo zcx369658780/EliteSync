@@ -12,7 +12,8 @@ class LunarPhpBaziEngine implements BaziEngine
     public function canonicalize(array $payload): array
     {
         $birthday = trim((string) ($payload['birthday'] ?? ''));
-        $birthTime = trim((string) ($payload['birth_time'] ?? ''));
+        $trueSolarTime = trim((string) ($payload['true_solar_time'] ?? ''));
+        $birthTime = $trueSolarTime !== '' ? $trueSolarTime : trim((string) ($payload['birth_time'] ?? ''));
         $gender = trim((string) ($payload['gender'] ?? ''));
 
         if ($birthday === '' || $birthTime === '') {
@@ -43,7 +44,7 @@ class LunarPhpBaziEngine implements BaziEngine
         $liuNian = $this->buildLiuNian($daYunRaw);
         $notes = array_values(array_filter(array_merge(
             (array) ($payload['notes'] ?? []),
-            ['canonical_source:lunar_php', 'precision:calendar_canonical']
+            ['canonical_source:lunar_php', 'precision:calendar_canonical', 'time_source:'.($trueSolarTime !== '' ? 'true_solar_time' : 'birth_time')]
         )));
 
         $hasLat = array_key_exists('birth_lat', $payload) && $payload['birth_lat'] !== null;
@@ -59,7 +60,7 @@ class LunarPhpBaziEngine implements BaziEngine
             'moon_sign' => $this->nullable($payload['moon_sign'] ?? null),
             'asc_sign' => $this->nullable($payload['asc_sign'] ?? null),
             'bazi' => $bazi !== '' ? $bazi : $this->nullable($payload['bazi'] ?? null),
-            'true_solar_time' => $this->nullable($payload['true_solar_time'] ?? null),
+            'true_solar_time' => $birthTime,
             'da_yun' => $daYun,
             'liu_nian' => $liuNian,
             'wu_xing' => $wuXing,

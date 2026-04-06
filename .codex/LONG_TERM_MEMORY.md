@@ -23,3 +23,24 @@
   2) require additional authorization/commercial license,
   3) are open-source but still pending verification.
 - Any dependency addition or version upgrade must update this tracker in the same task.
+
+## 2026-04-01 Multi-subagent safe development workflow (from user)
+- For any non-trivial task, use a plan-first workflow before touching code.
+- Plan-first must run these read-only agents in parallel:
+  1) `dependency-mapper`
+  2) `risk-reviewer`
+  3) `test-planner`
+  4) `architecture-guardian`
+- After implementation, run these acceptance agents in parallel:
+  1) `acceptance-auditor`
+  2) `regression-sentinel`
+  3) `test-planner` as coverage recheck
+  4) `architecture-guardian` as boundary recheck
+- High-risk surfaces must be protected by plan, rollback, and minimal regression checks:
+  - databases / migrations / initialization
+  - maps / location / permissions / geocoding
+  - routing / navigation / lifecycle
+  - state management / cache / session
+  - config / environment / third-party SDKs
+  - backup / restore / version scripts
+- If a task needs PR, run Code Review first and only create the PR after explicit user approval.
