@@ -5,7 +5,7 @@
 ## 根目录
 - `README.md`：项目总览
 - `DEVELOPMENT_PLAN.md`：当前开发计划主文件
-- `CHANGELOG_0.xx.xx.md`：版本变更记录
+- `CHANGELOG_0.02.08.md`：0.02.08 版本变更记录（当前发布）
 - `LICENSE_DEPENDENCY_STATUS.md`：依赖许可证状态总表（长期维护）
 - `docs/HANDOFF_MASTER_20260406.md`：当前交接总览（总计划 + 2.0 后计划整合）
 - `docs/HANDOFF_2_8_FINAL_20260406.md`：2.8 最终交接稿（信任安全与运营后台结项）

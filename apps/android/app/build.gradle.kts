@@ -63,8 +63,8 @@ android {
         // major: product major stage (0 before launch, 1+ after launch)
         // minor: 01=Alpha, 02-99=Beta
         // patch: current stage incremental version
-        versionCode = 206
-        versionName = "0.02.06"
+        versionCode = 208
+        versionName = "0.02.08"
         ndk {
             // Google Play 16KB page-size compliance: avoid x86_64 native libs from third-party SDKs.
             // Keep ARM ABIs for real-device testing and release publishing.
