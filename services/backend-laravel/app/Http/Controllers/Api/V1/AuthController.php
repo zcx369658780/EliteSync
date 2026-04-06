@@ -145,4 +145,38 @@ class AuthController extends Controller
             'message' => '密码已更新',
         ]);
     }
+
+    public function deleteSelf(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'current_password' => ['required', 'string'],
+        ]);
+
+        $user = $request->user();
+        if (!$user || !Hash::check($data['current_password'], $user->password)) {
+            throw ValidationException::withMessages([
+                'current_password' => ['当前密码不正确。'],
+            ]);
+        }
+
+        $phone = (string) $user->phone;
+        $name = (string) ($user->name ?? '');
+        $allowSyntheticCleanup = str_starts_with($phone, '90')
+            || (bool) $user->is_synthetic
+            || str_starts_with($name, 'Smoke');
+
+        if (!$allowSyntheticCleanup) {
+            return response()->json([
+                'message' => 'only smoke/synthetic accounts can be deleted by this endpoint',
+            ], 403);
+        }
+
+        $user->tokens()->delete();
+        $user->delete();
+
+        return response()->json([
+            'ok' => true,
+            'message' => '账号已删除',
+        ]);
+    }
 }

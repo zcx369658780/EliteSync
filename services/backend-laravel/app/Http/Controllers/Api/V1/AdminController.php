@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\DatingMatch;
+use App\Models\ModerationReport;
 use App\Models\QuestionnaireAnswer;
 use App\Models\QuestionnaireQuestion;
 use App\Models\User;
+use App\Models\UserBlock;
 use App\Services\MatchingDebugModeService;
 use App\Services\MatchingEngineService;
 use App\Services\PersonalityProfileService;
@@ -25,7 +27,7 @@ class AdminController extends Controller
     {
         $items = User::query()
             ->orderBy('id')
-            ->get(['id', 'phone', 'name', 'disabled', 'verify_status', 'is_synthetic', 'synthetic_batch']);
+            ->get(['id', 'phone', 'name', 'disabled', 'moderation_status', 'verify_status', 'is_synthetic', 'synthetic_batch']);
 
         return response()->json([
             'items' => $items,
@@ -38,7 +40,7 @@ class AdminController extends Controller
         $items = User::query()
             ->where('verify_status', '!=', 'approved')
             ->orderBy('id')
-            ->get(['id', 'phone', 'name', 'verify_status']);
+            ->get(['id', 'phone', 'name', 'verify_status', 'moderation_status']);
 
         return response()->json([
             'items' => $items,
@@ -71,9 +73,170 @@ class AdminController extends Controller
         }
 
         $user->disabled = true;
+        $user->moderation_status = 'banned';
         $user->save();
 
         return response()->json(['ok' => true]);
+    }
+
+    public function reports(): JsonResponse
+    {
+        $items = ModerationReport::query()
+            ->with([
+                'reporter:id,name,phone',
+                'targetUser:id,name,phone,disabled,moderation_status',
+                'resolver:id,name,phone',
+            ])
+            ->orderByDesc('id')
+            ->get()
+            ->map(fn (ModerationReport $report) => [
+                'id' => $report->id,
+                'status' => $report->status,
+                'appeal_status' => $report->appeal_status,
+                'category' => $report->category,
+                'reason_code' => $report->reason_code,
+                'detail' => $report->detail,
+                'appeal_note' => $report->appeal_note,
+                'appealed_at' => optional($report->appealed_at)?->toIso8601String(),
+                'resolved_at' => optional($report->resolved_at)?->toIso8601String(),
+                'reporter' => [
+                    'id' => $report->reporter?->id,
+                    'name' => $report->reporter?->name,
+                    'phone' => $report->reporter?->phone,
+                ],
+                'target_user' => [
+                    'id' => $report->targetUser?->id,
+                    'name' => $report->targetUser?->name,
+                    'phone' => $report->targetUser?->phone,
+                    'disabled' => (bool) ($report->targetUser?->disabled ?? false),
+                    'moderation_status' => (string) ($report->targetUser?->moderation_status ?? 'normal'),
+                ],
+                'resolver' => [
+                    'id' => $report->resolver?->id,
+                    'name' => $report->resolver?->name,
+                ],
+            ])
+            ->values();
+
+        return response()->json([
+            'items' => $items,
+            'total' => $items->count(),
+        ]);
+    }
+
+    public function reportDetail(int $reportId): JsonResponse
+    {
+        $report = ModerationReport::query()
+            ->with([
+                'reporter:id,name,phone',
+                'targetUser:id,name,phone,disabled,moderation_status',
+                'resolver:id,name,phone',
+            ])
+            ->find($reportId);
+
+        if (!$report) {
+            return response()->json(['message' => 'report not found'], 404);
+        }
+
+        return response()->json([
+            'id' => $report->id,
+            'status' => $report->status,
+            'appeal_status' => $report->appeal_status,
+            'category' => $report->category,
+            'reason_code' => $report->reason_code,
+            'detail' => $report->detail,
+            'appeal_note' => $report->appeal_note,
+            'admin_note' => $report->admin_note,
+            'appealed_at' => optional($report->appealed_at)?->toIso8601String(),
+            'resolved_at' => optional($report->resolved_at)?->toIso8601String(),
+            'reporter' => [
+                'id' => $report->reporter?->id,
+                'name' => $report->reporter?->name,
+                'phone' => $report->reporter?->phone,
+            ],
+            'target_user' => [
+                'id' => $report->targetUser?->id,
+                'name' => $report->targetUser?->name,
+                'phone' => $report->targetUser?->phone,
+                'disabled' => (bool) ($report->targetUser?->disabled ?? false),
+                'moderation_status' => (string) ($report->targetUser?->moderation_status ?? 'normal'),
+            ],
+            'resolver' => [
+                'id' => $report->resolver?->id,
+                'name' => $report->resolver?->name,
+            ],
+        ]);
+    }
+
+    public function reportAction(Request $request, int $reportId): JsonResponse
+    {
+        $data = $request->validate([
+            'action' => ['required', 'string', 'in:triage,investigate,dismiss,restrict,banned,restore,close'],
+            'note' => ['nullable', 'string', 'max:2000'],
+        ]);
+
+        $report = ModerationReport::query()->find($reportId);
+        if (!$report) {
+            return response()->json(['message' => 'report not found'], 404);
+        }
+
+        $actor = $request->user();
+        $targetUser = User::find($report->target_user_id);
+
+        $report->admin_note = $data['note'] ?? $report->admin_note;
+        $report->resolved_by_user_id = (int) $actor->id;
+
+        switch ($data['action']) {
+            case 'triage':
+                $report->status = 'triaged';
+                break;
+            case 'investigate':
+                $report->status = 'investigating';
+                break;
+            case 'dismiss':
+                $report->status = 'dismissed';
+                $report->appeal_status = 'resolved';
+                break;
+            case 'restrict':
+                $report->status = 'action_taken';
+                if ($targetUser) {
+                    $targetUser->moderation_status = 'restricted';
+                    $targetUser->disabled = false;
+                    $targetUser->save();
+                }
+                break;
+            case 'banned':
+                $report->status = 'action_taken';
+                if ($targetUser) {
+                    $targetUser->moderation_status = 'banned';
+                    $targetUser->disabled = true;
+                    $targetUser->save();
+                }
+                break;
+            case 'restore':
+                $report->status = 'closed';
+                if ($targetUser) {
+                    $targetUser->moderation_status = 'restored';
+                    $targetUser->disabled = false;
+                    $targetUser->save();
+                }
+                break;
+            case 'close':
+                $report->status = 'closed';
+                break;
+        }
+
+        $report->resolved_at = now();
+        $report->save();
+
+        return response()->json([
+            'ok' => true,
+            'report' => [
+                'id' => $report->id,
+                'status' => $report->status,
+                'appeal_status' => $report->appeal_status,
+            ],
+        ]);
     }
 
     public function devRunMatching(

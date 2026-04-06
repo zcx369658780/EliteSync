@@ -12,6 +12,7 @@ import 'package:flutter_elitesync/features/match/presentation/pages/match_countd
 import 'package:flutter_elitesync/features/match/presentation/pages/match_detail_page.dart';
 import 'package:flutter_elitesync/features/match/presentation/pages/match_intention_page.dart';
 import 'package:flutter_elitesync/features/match/presentation/pages/match_result_page.dart';
+import 'package:flutter_elitesync/features/match/presentation/pages/match_unlock_page.dart';
 import 'package:flutter_elitesync/features/profile/presentation/pages/edit_profile_page.dart';
 import 'package:flutter_elitesync/features/profile/presentation/pages/astro_profile_page.dart';
 import 'package:flutter_elitesync/features/profile/presentation/pages/mbti_center_page.dart';
@@ -31,7 +32,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     redirect: (context, state) {
       final nav = ref.read(navigationGuardProvider);
       final path = state.uri.path;
-      final isAuthPage = path == AppRouteNames.login || path == AppRouteNames.register;
+      final isAuthPage =
+          path == AppRouteNames.login || path == AppRouteNames.register;
       final isPublic = path == AppRouteNames.splash || isAuthPage;
 
       if (nav.isBootstrapLoading) return AppRouteNames.splash;
@@ -49,54 +51,73 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     routes: [
       GoRoute(
         path: AppRouteNames.splash,
-        pageBuilder: (context, state) => _fadeSlidePage(state, const SplashPage()),
+        pageBuilder: (context, state) =>
+            _fadeSlidePage(state, const SplashPage()),
       ),
       GoRoute(
         path: AppRouteNames.login,
-        pageBuilder: (context, state) => _fadeSlidePage(state, const LoginPage()),
+        pageBuilder: (context, state) =>
+            _fadeSlidePage(state, const LoginPage()),
       ),
       GoRoute(
         path: AppRouteNames.register,
-        pageBuilder: (context, state) => _fadeSlidePage(state, const RegisterPage()),
+        pageBuilder: (context, state) =>
+            _fadeSlidePage(state, const RegisterPage()),
       ),
       GoRoute(
         path: AppRouteNames.verificationStatus,
-        pageBuilder: (context, state) => _fadeSlidePage(state, const VerificationStatusPage()),
+        pageBuilder: (context, state) =>
+            _fadeSlidePage(state, const VerificationStatusPage()),
       ),
       GoRoute(
         path: AppRouteNames.verificationSubmit,
-        pageBuilder: (context, state) => _fadeSlidePage(state, const VerificationSubmitPage()),
+        pageBuilder: (context, state) =>
+            _fadeSlidePage(state, const VerificationSubmitPage()),
       ),
       GoRoute(
         path: AppRouteNames.questionnaire,
-        pageBuilder: (context, state) => _fadeSlidePage(state, const QuestionnairePage()),
+        pageBuilder: (context, state) =>
+            _fadeSlidePage(state, const QuestionnairePage()),
       ),
       GoRoute(
         path: AppRouteNames.questionnaireResult,
-        pageBuilder: (context, state) => _fadeSlidePage(state, const QuestionnaireResultPage()),
+        pageBuilder: (context, state) =>
+            _fadeSlidePage(state, const QuestionnaireResultPage()),
       ),
       GoRoute(
         path: AppRouteNames.matchCountdown,
-        pageBuilder: (context, state) => _fadeSlidePage(state, const MatchCountdownPage()),
+        pageBuilder: (context, state) =>
+            _fadeSlidePage(state, const MatchCountdownPage()),
       ),
       GoRoute(
         path: AppRouteNames.matchResult,
-        pageBuilder: (context, state) => _fadeSlidePage(state, const MatchResultPage()),
+        pageBuilder: (context, state) =>
+            _fadeSlidePage(state, const MatchResultPage()),
+      ),
+      GoRoute(
+        path: AppRouteNames.matchUnlock,
+        pageBuilder: (context, state) =>
+            _fadeSlidePage(state, const MatchUnlockPage()),
       ),
       GoRoute(
         path: AppRouteNames.matchDetail,
-        pageBuilder: (context, state) => _fadeSlidePage(state, const MatchDetailPage()),
+        pageBuilder: (context, state) =>
+            _fadeSlidePage(state, const MatchDetailPage()),
       ),
       GoRoute(
         path: AppRouteNames.matchIntention,
-        pageBuilder: (context, state) => _fadeSlidePage(state, const MatchIntentionPage()),
+        pageBuilder: (context, state) =>
+            _fadeSlidePage(state, const MatchIntentionPage()),
       ),
       GoRoute(
         path: '${AppRouteNames.chatRoom}/:conversationId',
         pageBuilder: (context, state) {
           final id = state.pathParameters['conversationId'] ?? '';
           final title = (state.extra as String?) ?? '聊天';
-          return _fadeSlidePage(state, ChatRoomPage(conversationId: id, title: title));
+          return _fadeSlidePage(
+            state,
+            ChatRoomPage(conversationId: id, title: title),
+          );
         },
       ),
       GoRoute(
@@ -113,32 +134,73 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: AppRouteNames.editProfile,
-        pageBuilder: (context, state) => _fadeSlidePage(state, const EditProfilePage()),
+        pageBuilder: (context, state) =>
+            _fadeSlidePage(state, const EditProfilePage()),
       ),
       GoRoute(
         path: AppRouteNames.settings,
-        pageBuilder: (context, state) => _fadeSlidePage(state, const SettingsPage()),
+        pageBuilder: (context, state) =>
+            _fadeSlidePage(state, const SettingsPage()),
       ),
       GoRoute(
         path: AppRouteNames.privacySettings,
-        pageBuilder: (context, state) => _fadeSlidePage(state, const PrivacySettingsPage()),
+        pageBuilder: (context, state) =>
+            _fadeSlidePage(state, const PrivacySettingsPage()),
       ),
       GoRoute(
         path: AppRouteNames.mbtiCenter,
-        pageBuilder: (context, state) => _fadeSlidePage(state, const MbtiCenterPage()),
+        pageBuilder: (context, state) =>
+            _fadeSlidePage(state, const MbtiCenterPage()),
       ),
       GoRoute(
         path: AppRouteNames.astroProfile,
-        pageBuilder: (context, state) => _fadeSlidePage(state, const AstroProfilePage()),
+        pageBuilder: (context, state) =>
+            _fadeSlidePage(state, const AstroProfilePage()),
       ),
       StatefulShellRoute.indexedStack(
-        builder: (context, state, navigationShell) => AppShell(navigationShell: navigationShell),
+        builder: (context, state, navigationShell) =>
+            AppShell(navigationShell: navigationShell),
         branches: [
-          StatefulShellBranch(routes: [GoRoute(path: AppRouteNames.home, builder: (context, state) => const HomeShellPage())]),
-          StatefulShellBranch(routes: [GoRoute(path: AppRouteNames.discover, builder: (context, state) => const DiscoverShellPage())]),
-          StatefulShellBranch(routes: [GoRoute(path: AppRouteNames.match, builder: (context, state) => const MatchShellPage())]),
-          StatefulShellBranch(routes: [GoRoute(path: AppRouteNames.messages, builder: (context, state) => const MessagesShellPage())]),
-          StatefulShellBranch(routes: [GoRoute(path: AppRouteNames.profile, builder: (context, state) => const ProfileShellPage())]),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRouteNames.home,
+                builder: (context, state) => const HomeShellPage(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRouteNames.discover,
+                builder: (context, state) => const DiscoverShellPage(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRouteNames.match,
+                builder: (context, state) => const MatchShellPage(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRouteNames.messages,
+                builder: (context, state) => const MessagesShellPage(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRouteNames.profile,
+                builder: (context, state) => const ProfileShellPage(),
+              ),
+            ],
+          ),
         ],
       ),
     ],
@@ -152,11 +214,17 @@ CustomTransitionPage<void> _fadeSlidePage(GoRouterState state, Widget child) {
     transitionDuration: const Duration(milliseconds: 360),
     reverseTransitionDuration: const Duration(milliseconds: 260),
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
-      final curved = CurvedAnimation(parent: animation, curve: Curves.easeOutCubic);
+      final curved = CurvedAnimation(
+        parent: animation,
+        curve: Curves.easeOutCubic,
+      );
       return FadeTransition(
         opacity: Tween<double>(begin: 0.0, end: 1.0).animate(curved),
         child: SlideTransition(
-          position: Tween<Offset>(begin: const Offset(0, 0.05), end: Offset.zero).animate(curved),
+          position: Tween<Offset>(
+            begin: const Offset(0, 0.05),
+            end: Offset.zero,
+          ).animate(curved),
           child: child,
         ),
       );

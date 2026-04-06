@@ -105,6 +105,10 @@ class SessionNotifier extends AsyncNotifier<SessionState> {
       birthLng: user.birthLng ?? current?.user?.birthLng,
       avatarUrl: user.avatarUrl ?? current?.user?.avatarUrl,
       verified: user.verified || (current?.user?.verified ?? false),
+      moderationStatus: user.moderationStatus.isNotEmpty
+          ? user.moderationStatus
+          : (current?.user?.moderationStatus ?? 'normal'),
+      moderationNote: user.moderationNote ?? current?.user?.moderationNote,
     );
 
     await local.setJson(CacheKeys.lastKnownProfile, merged.toJson());

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_elitesync/app/router/app_route_names.dart';
 import 'package:flutter_elitesync/design_system/components/bars/app_top_bar.dart';
@@ -6,31 +7,48 @@ import 'package:flutter_elitesync/design_system/components/layout/app_scaffold.d
 import 'package:flutter_elitesync/design_system/components/layout/page_title_rail.dart';
 import 'package:flutter_elitesync/design_system/components/layout/section_reveal.dart';
 import 'package:flutter_elitesync/design_system/theme/app_theme_extensions.dart';
+import 'package:flutter_elitesync/design_system/theme/app_theme_mode.dart';
 import 'package:flutter_elitesync/features/profile/presentation/widgets/settings_group.dart';
+import 'package:flutter_elitesync/shared/providers/theme_provider.dart';
 
-class SettingsPage extends StatelessWidget {
+class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final t = context.appTokens;
+    final themeMode = ref.watch(themeModeProvider);
+    final isDark =
+        themeMode == AppThemeMode.dark ||
+        (themeMode == AppThemeMode.system &&
+            Theme.of(context).brightness == Brightness.dark);
+    Future<void> setDark(bool value) => ref
+        .read(themeModeProvider.notifier)
+        .setThemeMode(value ? AppThemeMode.dark : AppThemeMode.light);
     return AppScaffold(
       appBar: const AppTopBar(title: '设置', mode: AppTopBarMode.backTitle),
       body: ListView(
-        padding: EdgeInsets.fromLTRB(
-          0,
-          t.spacing.sm,
-          0,
-          t.spacing.xl,
-        ),
+        padding: EdgeInsets.fromLTRB(0, t.spacing.sm, 0, t.spacing.xl),
         children: [
           const SectionReveal(
-            child: PageTitleRail(
-              title: '设置中心',
-              subtitle: '管理账号、隐私与通知偏好',
-            ),
+            child: PageTitleRail(title: '设置中心', subtitle: '管理账号、隐私与通知偏好'),
           ),
           SizedBox(height: t.spacing.md),
+          SectionReveal(
+            delay: const Duration(milliseconds: 40),
+            child: SettingsGroup(
+              title: '外观',
+              children: [
+                SettingsItemTile(
+                  title: '夜间模式',
+                  subtitle: '切换白天 / 黑夜配色',
+                  icon: Icons.dark_mode_outlined,
+                  trailing: Switch.adaptive(value: isDark, onChanged: setDark),
+                  onTap: () => setDark(!isDark),
+                ),
+              ],
+            ),
+          ),
           SectionReveal(
             delay: const Duration(milliseconds: 60),
             child: SettingsGroup(

@@ -7,6 +7,7 @@ import 'package:flutter_elitesync_module/design_system/components/states/app_err
 import 'package:flutter_elitesync_module/design_system/components/states/app_loading_skeleton.dart';
 import 'package:flutter_elitesync_module/design_system/components/buttons/app_primary_button.dart';
 import 'package:flutter_elitesync_module/design_system/components/buttons/app_secondary_button.dart';
+import 'package:flutter_elitesync_module/design_system/components/cards/app_card.dart';
 import 'package:flutter_elitesync_module/design_system/components/tags/app_choice_chip.dart';
 import 'package:flutter_elitesync_module/design_system/theme/app_theme_extensions.dart';
 import 'package:flutter_elitesync_module/features/match/presentation/providers/match_providers.dart';
@@ -156,6 +157,37 @@ class MatchResultPage extends ConsumerWidget {
                       ),
                     ),
                   ),
+                  SizedBox(height: t.spacing.md),
+                  AppCard(
+                    padding: EdgeInsets.all(t.spacing.cardPaddingLarge),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '匹配后反馈',
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            color: t.textPrimary,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          '反馈只会保存在本机，用来回看这次慢约会体验。',
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: t.textSecondary,
+                            height: 1.45,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        AppSecondaryButton(
+                          label: '写下反馈',
+                          fullWidth: true,
+                          onPressed: () => context.push(AppRouteNames.matchFeedback),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: t.spacing.md),
                   Align(
                     alignment: Alignment.centerLeft,
                     child: AppChoiceChip(

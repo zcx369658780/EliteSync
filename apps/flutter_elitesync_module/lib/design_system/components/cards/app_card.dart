@@ -22,17 +22,20 @@ class AppCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = context.appTokens;
-    return Container(
-      margin: margin,
-      decoration: BoxDecoration(
-        color: backgroundColor ?? t.card,
-        borderRadius: BorderRadius.circular(t.radius.lg),
-        border: border,
-        boxShadow: shadow,
-      ),
-      child: Padding(
-        padding: padding ?? EdgeInsets.all(t.spacing.cardPadding),
-        child: child,
+    return Material(
+      color: Colors.transparent,
+      child: Container(
+        margin: margin,
+        decoration: BoxDecoration(
+          color: backgroundColor ?? t.card,
+          borderRadius: BorderRadius.circular(t.radius.lg),
+          border: border,
+          boxShadow: shadow,
+        ),
+        child: Padding(
+          padding: padding ?? EdgeInsets.all(t.spacing.cardPadding),
+          child: child,
+        ),
       ),
     );
   }

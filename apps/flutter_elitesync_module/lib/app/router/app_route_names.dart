@@ -21,6 +21,7 @@ abstract class AppRouteNames {
   static const matchResult = '/match/result';
   static const matchDetail = '/match/detail';
   static const matchIntention = '/match/intention';
+  static const matchFeedback = '/match/feedback';
 
   static const chatRoom = '/messages/chat';
 
@@ -29,6 +30,11 @@ abstract class AppRouteNames {
   static const changePassword = '/profile/settings/password';
   static const privacySettings = '/profile/settings/privacy';
   static const aboutUpdate = '/profile/settings/about';
+  static const adminModeration = '/admin/moderation';
+  static const adminDashboard = '/admin/dashboard';
+  static const adminVerification = '/admin/verification';
+  static const adminUsers = '/admin/users';
+  static const adminModerationReportDetail = '/admin/moderation/reports';
   static const mbtiCenter = '/profile/mbti';
   static const astroOverview = '/profile/astro/overview';
   static const astroBazi = '/profile/astro/bazi';

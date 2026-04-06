@@ -12,6 +12,8 @@ class AppEnv {
     this.useMockMatch = false,
     this.useMockChat = false,
     this.useMockProfile = false,
+    this.useMockAdmin = false,
+    this.initialRoute,
   });
 
   final AppFlavor flavor;
@@ -24,6 +26,8 @@ class AppEnv {
   final bool useMockMatch;
   final bool useMockChat;
   final bool useMockProfile;
+  final bool useMockAdmin;
+  final String? initialRoute;
 
   bool get isDev => flavor == AppFlavor.dev;
   bool get isProd => flavor == AppFlavor.prod;

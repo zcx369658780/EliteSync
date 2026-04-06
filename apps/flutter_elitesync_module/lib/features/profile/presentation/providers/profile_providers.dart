@@ -38,6 +38,8 @@ Map<String, dynamic> _summaryToJson(ProfileSummaryEntity summary) => {
   'relationship_goal': summary.target,
   'verified': summary.verified,
   'realname_verified': summary.verified,
+  'moderation_status': summary.moderationStatus,
+  'moderation_note': summary.moderationNote,
   'completion': summary.completion,
   'tags': summary.tags,
 };
@@ -74,6 +76,8 @@ ProfileSummaryEntity _summaryFromDetail(ProfileDetailEntity detail, ProfileSumma
     city: detail.city.isNotEmpty ? detail.city : (currentSummary?.city ?? ''),
     target: detail.target.isNotEmpty ? detail.target : (currentSummary?.target ?? ''),
     verified: currentSummary?.verified ?? false,
+    moderationStatus: currentSummary?.moderationStatus ?? 'normal',
+    moderationNote: currentSummary?.moderationNote,
     completion: 0.8,
     tags: tags,
   );
@@ -91,6 +95,10 @@ ProfileSummaryEntity? _summaryFromJson(Map<String, dynamic>? json) {
     city: (json['city'] ?? '').toString(),
     target: (json['target'] ?? json['relationship_goal'] ?? '').toString(),
     verified: (json['verified'] as bool?) ?? (json['realname_verified'] as bool?) ?? false,
+    moderationStatus: (json['moderation_status'] ?? 'normal').toString(),
+    moderationNote: (json['moderation_note'] ?? '').toString().isEmpty
+        ? null
+        : (json['moderation_note'] ?? '').toString(),
     completion: (json['completion'] as num?)?.toDouble() ?? 0,
     tags: (json['tags'] as List<dynamic>? ?? const []).map((e) => e.toString()).toList(),
   );
@@ -125,6 +133,10 @@ ProfileSummaryEntity? _summaryFromSessionJson(Map<String, dynamic>? json) {
     city: (json['city'] ?? '').toString(),
     target: (json['relationship_goal'] ?? json['target'] ?? '').toString(),
     verified: (json['verified'] as bool?) ?? (json['realname_verified'] as bool?) ?? false,
+    moderationStatus: (json['moderation_status'] ?? 'normal').toString(),
+    moderationNote: (json['moderation_note'] ?? '').toString().isEmpty
+        ? null
+        : (json['moderation_note'] ?? '').toString(),
     completion: 0.5,
     tags: [
       if ((json['birthday'] ?? '').toString().isNotEmpty) '生日已保存',

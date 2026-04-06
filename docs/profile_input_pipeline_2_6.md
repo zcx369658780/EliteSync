@@ -468,9 +468,9 @@ deploy_aliyun_backend.ps1
 ## 6. 参考图对齐说明
 
 顾问给出的参考图文件位于：
-- `bazi_example/八字示意图.jpg`
-- `bazi_example/星盘示意图.jpg`
-- `bazi_example/紫薇示意图.jpg`
+- `docs/version_plans/assets/八字示意图.jpg`
+- `docs/version_plans/assets/星盘示意图.jpg`
+- `docs/version_plans/assets/紫薇示意图.jpg`
 
 当前实现的判断：
 - 字段已经对上

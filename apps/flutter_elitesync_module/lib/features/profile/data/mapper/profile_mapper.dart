@@ -14,6 +14,8 @@ class ProfileMapper {
         city: dto.city,
         target: dto.target,
         verified: dto.verified,
+        moderationStatus: dto.moderationStatus,
+        moderationNote: dto.moderationNote,
         completion: dto.completion,
         tags: dto.tags,
       );

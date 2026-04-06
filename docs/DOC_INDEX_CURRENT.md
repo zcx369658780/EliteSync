@@ -1,34 +1,48 @@
 # 文档索引（当前有效）
 
-更新日期：2026-04-03
+更新日期：2026-04-06
 
 ## 根目录
 - `README.md`：项目总览
 - `DEVELOPMENT_PLAN.md`：当前开发计划主文件
 - `CHANGELOG_0.xx.xx.md`：版本变更记录
 - `LICENSE_DEPENDENCY_STATUS.md`：依赖许可证状态总表（长期维护）
-- `docs/HANDOFF_CURRENT_20260331.md`：当前交接总览
-- `docs/HANDOFF_MASTER_20260403.md`：总开发计划 + 2.0 后开发计划整合交接
-- `docs/GEMINI_UI_HANDOFF_20260402.md`：发给 Gemini 的玄学可视化与接口交接
+- `docs/HANDOFF_MASTER_20260406.md`：当前交接总览（总计划 + 2.0 后计划整合）
+- `docs/HANDOFF_2_8_FINAL_20260406.md`：2.8 最终交接稿（信任安全与运营后台结项）
+- `docs/version_plans/README.md`：版本开发计划索引（主入口）
+- `docs/ROLLBACK_PLAN.md`：回滚计划
+- `docs/RELEASE_SMOKE_CHECKLIST.md`：发布烟测清单
 - `AGENTS.md`：仓库级多 subagent 安全开发工作流
 
-## 算法（bazi_example）
-- `算法2.3版本开发规划_2026-03-29.md`
-- `算法2.4版本开发规划_2026-03-30.md`
-- `算法2.5版本开发规划.md`
-- `算法2.6版本开发规划_2026-03-31.md`
-- `算法2.6执行拆解清单_2026-03-31.md`
-- `算法2.6后端执行清单_2026-03-31.md`
-- `算法2.6前端UI执行清单_2026-03-31.md`
-- `算法2.6.1修改方案草案_2026-04-01.md`
-- `算法2.6.1执行清单_2026-04-01.md`
-- `算法2.6.2版本修改指令_2026-04-01.md`
-- `算法2.6.2开源库建议_2026-04-01.md`
-- `算法2.6今晚玄学可视化执行方案_2026-04-01.md`
-- `算法2.6.3开发规划与gemini监督方案.md`
-- `算法2.6.3执行清单_2026-04-03.md`
-- `顾问Agent玄学算法修改规划_2026-03-28.md`
-- `app算法资源与任务规划_修订版——2026-03-29.md`
+## 版本计划（docs/version_plans）
+- `docs/version_plans/README.md`：版本计划总索引
+- `docs/version_plans/顾问Agent玄学算法修改规划_2026-03-28.md`
+- `docs/version_plans/算法2.3版本开发规划_2026-03-29.md`
+- `docs/version_plans/算法2.4版本开发规划_2026-03-30.md`
+- `docs/version_plans/算法2.5版本开发规划_2026-03-30.md`
+- `docs/version_plans/算法2.6版本开发规划_2026-03-31.md`
+- `docs/version_plans/算法2.6执行拆解清单_2026-03-31.md`
+- `docs/version_plans/算法2.6后端执行清单_2026-03-31.md`
+- `docs/version_plans/算法2.6前端UI执行清单_2026-03-31.md`
+- `docs/version_plans/算法2.6今晚玄学可视化执行方案_2026-04-01.md`
+- `docs/version_plans/算法2.6.1修改方案草案_2026-04-01.md`
+- `docs/version_plans/算法2.6.1执行清单_2026-04-01.md`
+- `docs/version_plans/算法2.6.2版本修改指令_2026-04-01.md`
+- `docs/version_plans/算法2.6.2开源库建议_2026-04-01.md`
+- `docs/version_plans/算法2.6.3开发规划与gemini监督方案.md`
+- `docs/version_plans/算法2.6.3执行清单_2026-04-03.md`
+- `docs/version_plans/算法2.6.3a开发规划与gemini监督方案.md`
+- `docs/version_plans/elite_sync_后续整体开发方案_2026_04_06.md`
+- `docs/version_plans/elite_sync_2_6_4_版本执行清单_与_codex_gemini分工prompt_2026_04_06.md`
+- `docs/version_plans/elite_sync_2_7_版本prd_执行清单_与多agent_prompt_2026_04_06.md`
+- `docs/version_plans/elite_sync_2_8_版本开发计划_信任安全与运营后台版_2026_04_06.md`
+- `docs/version_plans/2.6.4_EXEC_PLAN.md`
+- `docs/version_plans/2.6.4_RISK_REVIEW.md`
+- `docs/version_plans/2.6.4_ACCEPTANCE_REPORT.md`
+- `docs/version_plans/2.8_EXEC_PLAN.md`
+- `docs/version_plans/2.8_RISK_REVIEW.md`
+- `docs/version_plans/2.8_ACCEPTANCE_REPORT.md`
+- `docs/version_plans/app算法资源与任务规划_修订版——2026-03-29.md`
 
 ## docs
 - `docs/EXEC_PLAN_TEMPLATE.md`：需求执行计划模板
@@ -36,6 +50,7 @@
 - `docs/PROTECTED_SURFACES.md`：高风险模块保护清单
 - `docs/REQUIREMENT_RISK_REVIEW.md`：需求评审与风险拆解规范
 - `docs/POST_CHANGE_ACCEPTANCE.md`：修改后验收评估规范
+- `reports/elite_sync_2_7_handoff_20260406.md`：2.7 结项交接说明
 - `docs/dependency_audit_astrology.md`：玄学依赖审计
 - `docs/dependency_audit_ziwei_2_5.md`：紫微依赖审计
 - `docs/licenses/astrology/kerykeion__LICENSE.txt`：Kerykeion AGPL-3.0 许可证快照
@@ -45,7 +60,6 @@
 - `docs/profile_input_pipeline_2_6.md`：2.6 资料输入与玄学可视化整合验收材料
 - `reports/db_backup_run_log_2_6.md`：2.6 数据库备份运行日志
 - `reports/db_restore_drill_2_6.md`：2.6 数据库恢复演练记录
-- `reports/astro_ui_handoff_2_6_3_20260403.md`：2.6.3 玄学 UI 重构交接报告
 - `docs/ziwei_release_checklist_2_5.md`：2.5 紫微发布清单
 - `docs/ziwei_rollback_playbook_2_5.md`：2.5 紫微回滚手册
 - `reports/personality_mbti_shutdown_evidence_2_5.md`：MBTI 关闭证据包
@@ -76,6 +90,7 @@
 - `docs/devlogs/PAIR_OUTCOME_METRICS.md`：行为漏斗汇总
 - `docs/runbooks/MATCHING_ALGO_P1_RUNBOOK_20260324.md`：运行手册
 - 其余 `runbooks/`、`reference/` 保留为长期工程文档
+- `reports/elite_sync_2_7_handoff_20260406.md`：2.7 结项交接说明
 
 ## 清理说明
 - 已删除：过期日更/周更简报、被最终报告覆盖的阶段报告、重复 UI 改造日报、旧交接文档。

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Models\ChatMessage;
 use App\Models\DatingMatch;
+use App\Models\UserBlock;
 use App\Models\User;
 use App\Services\EventLogger;
 use App\Services\MatchingDebugModeService;
@@ -23,6 +24,10 @@ class MessageController extends Controller
 
     private function canChat(int $userId, int $peerId): bool
     {
+        if ($this->blockedByModeration($userId, $peerId)) {
+            return false;
+        }
+
         $includeSyntheticUsers = app(MatchingDebugModeService::class)->includeSyntheticUsers();
         if (!$includeSyntheticUsers) {
             $peerSynthetic = (bool) User::query()->where('id', $peerId)->value('is_synthetic');
@@ -43,6 +48,18 @@ class MessageController extends Controller
             ->exists();
     }
 
+    private function blockedByModeration(int $userId, int $peerId): bool
+    {
+        return UserBlock::query()
+            ->where(function ($q) use ($userId, $peerId) {
+                $q->where('blocker_id', $userId)->where('blocked_user_id', $peerId);
+            })
+            ->orWhere(function ($q) use ($userId, $peerId) {
+                $q->where('blocker_id', $peerId)->where('blocked_user_id', $userId);
+            })
+            ->exists();
+    }
+
     public function send(Request $request, EventLogger $events): JsonResponse
     {
         $data = $request->validate([
@@ -55,6 +72,10 @@ class MessageController extends Controller
 
         if ($receiverId === (int) $user->id) {
             return response()->json(['message' => 'cannot message self'], 422);
+        }
+
+        if ($this->blockedByModeration((int) $user->id, $receiverId)) {
+            return response()->json(['message' => 'chat blocked by moderation'], 403);
         }
 
         if (!$this->canChat((int) $user->id, $receiverId)) {
@@ -91,6 +112,10 @@ class MessageController extends Controller
 
         $user = $request->user();
         $peerId = (int) $data['peer_id'];
+
+        if ($this->blockedByModeration((int) $user->id, $peerId)) {
+            return response()->json(['message' => 'chat blocked by moderation'], 403);
+        }
 
         if (!$this->canChat((int) $user->id, $peerId)) {
             return response()->json(['message' => 'chat not allowed before matching'], 403);

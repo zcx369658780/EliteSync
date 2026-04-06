@@ -6,7 +6,7 @@ import 'package:flutter_elitesync_module/design_system/components/bars/app_botto
 import 'package:flutter_elitesync_module/design_system/components/brand/floating_dock_bottom_bar.dart';
 import 'package:flutter_elitesync_module/features/discover/presentation/pages/discover_page.dart';
 import 'package:flutter_elitesync_module/features/home/presentation/pages/home_page.dart';
-import 'package:flutter_elitesync_module/features/match/presentation/pages/match_result_page.dart';
+import 'package:flutter_elitesync_module/features/match/presentation/pages/match_portal_page.dart';
 import 'package:flutter_elitesync_module/features/chat/presentation/pages/conversation_list_page.dart';
 import 'package:flutter_elitesync_module/features/profile/presentation/pages/profile_page.dart';
 import 'package:flutter_elitesync_module/features/chat/presentation/providers/chat_providers.dart';
@@ -42,10 +42,15 @@ class _AppShellState extends ConsumerState<AppShell> {
   Future<void> _warmupProviders() async {
     if (_warmed) return;
     _warmed = true;
-    final lite = await ref.read(localStorageProvider).getBool(CacheKeys.performanceLiteMode) ?? false;
+    final lite =
+        await ref
+            .read(localStorageProvider)
+            .getBool(CacheKeys.performanceLiteMode) ??
+        false;
     if (lite) return;
     // Warm critical tabs once to reduce first-enter loading latency.
     ref.read(homeProvider.future);
+    ref.read(matchCountdownProvider.future);
     ref.read(matchResultProvider.future);
     ref.read(conversationListProvider.future);
     ref.read(profileProvider.future);
@@ -68,11 +73,31 @@ class _AppShellState extends ConsumerState<AppShell> {
         onTap: _onTap,
         browseMode: widget.navigationShell.currentIndex != 2,
         items: const [
-          AppBottomNavItem(icon: Icons.home_outlined, activeIcon: Icons.home_rounded, label: '首页'),
-          AppBottomNavItem(icon: Icons.explore_outlined, activeIcon: Icons.explore_rounded, label: '发现'),
-          AppBottomNavItem(icon: Icons.auto_awesome_outlined, activeIcon: Icons.auto_awesome, label: '匹配'),
-          AppBottomNavItem(icon: Icons.chat_bubble_outline, activeIcon: Icons.chat_bubble, label: '消息'),
-          AppBottomNavItem(icon: Icons.person_outline, activeIcon: Icons.person, label: '我的'),
+          AppBottomNavItem(
+            icon: Icons.home_outlined,
+            activeIcon: Icons.home_rounded,
+            label: '首页',
+          ),
+          AppBottomNavItem(
+            icon: Icons.explore_outlined,
+            activeIcon: Icons.explore_rounded,
+            label: '发现',
+          ),
+          AppBottomNavItem(
+            icon: Icons.auto_awesome_outlined,
+            activeIcon: Icons.auto_awesome,
+            label: '匹配',
+          ),
+          AppBottomNavItem(
+            icon: Icons.chat_bubble_outline,
+            activeIcon: Icons.chat_bubble,
+            label: '消息',
+          ),
+          AppBottomNavItem(
+            icon: Icons.person_outline,
+            activeIcon: Icons.person,
+            label: '我的',
+          ),
         ],
       ),
     );
@@ -85,6 +110,7 @@ class SplashPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final nav = ref.watch(navigationGuardProvider);
+    final env = ref.watch(appEnvProvider);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!context.mounted) return;
@@ -95,8 +121,7 @@ class SplashPage extends ConsumerWidget {
         return;
       }
 
-      if (nav.verificationStatus !=
-          VerificationStatus.approved) {
+      if (nav.verificationStatus != VerificationStatus.approved) {
         context.go(AppRouteNames.verificationStatus);
         return;
       }
@@ -106,7 +131,7 @@ class SplashPage extends ConsumerWidget {
         return;
       }
 
-      context.go(AppRouteNames.home);
+      context.go(env.initialRoute ?? AppRouteNames.home);
     });
 
     return Scaffold(
@@ -115,11 +140,7 @@ class SplashPage extends ConsumerWidget {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFF081221),
-              Color(0xFF0C1B31),
-              Color(0xFF122643),
-            ],
+            colors: [Color(0xFF081221), Color(0xFF0C1B31), Color(0xFF122643)],
           ),
         ),
         child: const Center(
@@ -148,7 +169,7 @@ class MatchShellPage extends StatelessWidget {
   const MatchShellPage({super.key});
 
   @override
-  Widget build(BuildContext context) => const MatchResultPage();
+  Widget build(BuildContext context) => const MatchPortalPage();
 }
 
 class DiscoverShellPage extends StatelessWidget {

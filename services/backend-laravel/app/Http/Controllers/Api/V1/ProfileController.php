@@ -146,6 +146,8 @@ class ProfileController extends Controller
             'birth_place' => $user->private_birth_place,
             'birth_lat' => $user->private_birth_lat,
             'birth_lng' => $user->private_birth_lng,
+            'moderation_status' => $user->moderation_status ?? 'normal',
+            'moderation_note' => $user->moderation_note,
             'realname_verified' => (bool) $user->realname_verified,
         ]);
     }
@@ -215,6 +217,8 @@ class ProfileController extends Controller
                 'birth_place' => $user->private_birth_place,
                 'birth_lat' => $user->private_birth_lat,
                 'birth_lng' => $user->private_birth_lng,
+                'moderation_status' => $user->moderation_status ?? 'normal',
+                'moderation_note' => $user->moderation_note,
                 'realname_verified' => (bool) $user->realname_verified,
             ],
         ]);

@@ -19,6 +19,7 @@ abstract class AppRouteNames {
 
   static const matchCountdown = '/match/countdown';
   static const matchResult = '/match/result';
+  static const matchUnlock = '/match/unlock';
   static const matchDetail = '/match/detail';
   static const matchIntention = '/match/intention';
 

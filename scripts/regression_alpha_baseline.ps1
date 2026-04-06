@@ -44,6 +44,16 @@ if ([string]::IsNullOrWhiteSpace($BaseUrl)) {
 }
 $BaseUrl = $BaseUrl.TrimEnd("/")
 
+# When callers do not provide explicit auth credentials, use a harmless smoke pair.
+# The smoke script will try login first and self-provision a temporary synthetic
+# account if the pair does not exist.
+if ([string]::IsNullOrWhiteSpace($Phone)) {
+    $Phone = "13999999997"
+}
+if ([string]::IsNullOrWhiteSpace($Password)) {
+    $Password = "Smoke12345"
+}
+
 $repoRoot = (Resolve-Path "$PSScriptRoot\..").Path
 $results = New-Object 'System.Collections.Generic.List[object]'
 

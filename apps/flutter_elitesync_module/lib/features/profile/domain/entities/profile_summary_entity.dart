@@ -7,6 +7,8 @@ class ProfileSummaryEntity {
     required this.city,
     required this.target,
     required this.verified,
+    required this.moderationStatus,
+    required this.moderationNote,
     required this.completion,
     required this.tags,
   });
@@ -18,6 +20,8 @@ class ProfileSummaryEntity {
   final String city;
   final String target;
   final bool verified;
+  final String moderationStatus;
+  final String? moderationNote;
   final double completion;
   final List<String> tags;
 }

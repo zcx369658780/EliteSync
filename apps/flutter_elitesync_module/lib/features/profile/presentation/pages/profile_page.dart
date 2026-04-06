@@ -129,6 +129,36 @@ class ProfilePage extends ConsumerWidget {
                   ),
                   SizedBox(height: t.spacing.sm),
                   AppInfoSectionCard(
+                    title: '账号状态',
+                    subtitle: '实名、治理与账号可用性',
+                    leadingIcon: Icons.shield_outlined,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _ProfileInfoLine(
+                          label: '实名状态',
+                          value: summary.verified ? '已认证' : '未认证',
+                        ),
+                        SizedBox(height: t.spacing.xs),
+                        _ProfileInfoLine(
+                          label: '治理状态',
+                          value: _moderationLabel(summary.moderationStatus),
+                        ),
+                        if ((summary.moderationNote ?? '').isNotEmpty) ...[
+                          SizedBox(height: t.spacing.xs),
+                          Text(
+                            summary.moderationNote!,
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: t.textSecondary,
+                                  height: 1.45,
+                                ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: t.spacing.sm),
+                  AppInfoSectionCard(
                     title: '基础资料',
                     subtitle: '生日 / 出生时间 / 出生地 / 婚恋目标',
                     leadingIcon: Icons.badge_outlined,
@@ -266,5 +296,19 @@ String _targetLabel(String raw) {
       return '交友';
     default:
       return raw;
+  }
+}
+
+String _moderationLabel(String raw) {
+  switch (raw) {
+    case 'restricted':
+      return '受限';
+    case 'banned':
+      return '已封禁';
+    case 'restored':
+      return '已恢复';
+    case 'normal':
+    default:
+      return '正常';
   }
 }

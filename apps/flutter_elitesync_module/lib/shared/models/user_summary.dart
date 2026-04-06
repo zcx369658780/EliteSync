@@ -13,6 +13,8 @@ class UserSummary {
     this.birthLng,
     this.avatarUrl,
     this.verified = false,
+    this.moderationStatus = 'normal',
+    this.moderationNote,
   });
 
   final int id;
@@ -28,6 +30,8 @@ class UserSummary {
   final double? birthLng;
   final String? avatarUrl;
   final bool verified;
+  final String moderationStatus;
+  final String? moderationNote;
 
   factory UserSummary.fromJson(Map<String, dynamic> json) {
     return UserSummary(
@@ -46,6 +50,10 @@ class UserSummary {
       birthLng: (json['birth_lng'] as num?)?.toDouble() ?? (json['private_birth_lng'] as num?)?.toDouble(),
       avatarUrl: json['avatar_url'] as String?,
       verified: (json['verified'] as bool?) ?? (json['realname_verified'] as bool?) ?? false,
+      moderationStatus: (json['moderation_status'] ?? 'normal').toString(),
+      moderationNote: (json['moderation_note'] ?? '').toString().isEmpty
+          ? null
+          : (json['moderation_note'] ?? '').toString(),
     );
   }
 
@@ -64,6 +72,8 @@ class UserSummary {
       'birth_lng': birthLng,
       'avatar_url': avatarUrl,
       'verified': verified,
+      'moderation_status': moderationStatus,
+      'moderation_note': moderationNote,
     };
   }
 }

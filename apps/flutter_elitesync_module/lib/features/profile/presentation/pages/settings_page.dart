@@ -12,11 +12,13 @@ import 'package:flutter_elitesync_module/design_system/components/layout/app_sca
 import 'package:flutter_elitesync_module/design_system/components/layout/page_title_rail.dart';
 import 'package:flutter_elitesync_module/design_system/components/layout/section_reveal.dart';
 import 'package:flutter_elitesync_module/design_system/theme/app_theme_extensions.dart';
+import 'package:flutter_elitesync_module/design_system/theme/app_theme_mode.dart';
 import 'package:flutter_elitesync_module/features/auth/presentation/providers/auth_guard_provider.dart';
 import 'package:flutter_elitesync_module/features/profile/presentation/widgets/settings_group.dart';
 import 'package:flutter_elitesync_module/shared/providers/app_providers.dart';
 import 'package:flutter_elitesync_module/shared/providers/performance_mode_provider.dart';
 import 'package:flutter_elitesync_module/shared/providers/session_provider.dart';
+import 'package:flutter_elitesync_module/shared/providers/theme_provider.dart';
 
 class SettingsPage extends ConsumerStatefulWidget {
   const SettingsPage({super.key});
@@ -41,12 +43,19 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     final local = ref.read(localStorageProvider);
     final value = await local.getBool(CacheKeys.pushNotificationEnabled);
     final perfLite = await local.getBool(CacheKeys.performanceLiteMode);
-    final rankerMode = (await local.getString(CacheKeys.contentRankerMode))?.trim().toLowerCase() ?? 'auto';
+    final rankerMode =
+        (await local.getString(
+          CacheKeys.contentRankerMode,
+        ))?.trim().toLowerCase() ??
+        'auto';
     if (!mounted) return;
     setState(() {
       _pushEnabled = value ?? true;
       _performanceLiteMode = perfLite ?? false;
-      _contentRankerMode = (rankerMode == 'weighted' || rankerMode == 'legacy' || rankerMode == 'auto')
+      _contentRankerMode =
+          (rankerMode == 'weighted' ||
+              rankerMode == 'legacy' ||
+              rankerMode == 'auto')
           ? rankerMode
           : 'auto';
       _pushLoaded = true;
@@ -135,21 +144,21 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     final t = context.appTokens;
+    final themeMode = ref.watch(themeModeProvider);
+    final isDark =
+        themeMode == AppThemeMode.dark ||
+        (themeMode == AppThemeMode.system &&
+            Theme.of(context).brightness == Brightness.dark);
+    Future<void> setDark(bool value) => ref
+        .read(themeModeProvider.notifier)
+        .setThemeMode(value ? AppThemeMode.dark : AppThemeMode.light);
     return AppScaffold(
       appBar: const AppTopBar(title: '设置', mode: AppTopBarMode.backTitle),
       body: ListView(
-        padding: EdgeInsets.fromLTRB(
-          0,
-          t.spacing.sm,
-          0,
-          t.spacing.xl,
-        ),
+        padding: EdgeInsets.fromLTRB(0, t.spacing.sm, 0, t.spacing.xl),
         children: [
           const SectionReveal(
-            child: PageTitleRail(
-              title: '设置中心',
-              subtitle: '管理账号、隐私与通知偏好',
-            ),
+            child: PageTitleRail(title: '设置中心', subtitle: '管理账号、隐私与通知偏好'),
           ),
           SizedBox(height: t.spacing.sm),
           SectionReveal(
@@ -161,10 +170,26 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               child: Text(
                 '建议先完成账号与安全设置，再调整通知、性能与内容策略。后续算法升级不影响本页配置结构。',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: t.textSecondary,
-                      height: 1.45,
-                    ),
+                  color: t.textSecondary,
+                  height: 1.45,
+                ),
               ),
+            ),
+          ),
+          SizedBox(height: t.spacing.md),
+          SectionReveal(
+            delay: const Duration(milliseconds: 50),
+            child: SettingsGroup(
+              title: '外观',
+              children: [
+                SettingsItemTile(
+                  title: '夜间模式',
+                  subtitle: '切换白天 / 黑夜配色',
+                  icon: Icons.dark_mode_outlined,
+                  trailing: Switch.adaptive(value: isDark, onChanged: setDark),
+                  onTap: () => setDark(!isDark),
+                ),
+              ],
             ),
           ),
           SizedBox(height: t.spacing.md),
@@ -202,31 +227,35 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             delay: const Duration(milliseconds: 110),
             child: _pushLoaded
                 ? SettingsGroup(
-              title: '消息与提醒',
-              children: [
-                SettingsItemTile(
-                  title: '推送提醒',
-                  subtitle: '匹配揭晓、消息提醒与活动通知',
-                  icon: Icons.notifications_outlined,
-                  trailing: AppSwitch(
-                    value: _pushEnabled,
-                    onChanged: _togglePush,
-                  ),
-                  onTap: () => _togglePush(!_pushEnabled),
-                ),
-                Divider(height: 1, color: t.overlay.withValues(alpha: 0.35)),
-                SettingsItemTile(
-                  title: '性能模式',
-                  subtitle: '降低动画与背景渲染，改善卡顿',
-                  icon: Icons.bolt_outlined,
-                  trailing: AppSwitch(
-                    value: _performanceLiteMode,
-                    onChanged: _togglePerformanceLiteMode,
-                  ),
-                  onTap: () => _togglePerformanceLiteMode(!_performanceLiteMode),
-                ),
-              ],
-            )
+                    title: '消息与提醒',
+                    children: [
+                      SettingsItemTile(
+                        title: '推送提醒',
+                        subtitle: '匹配揭晓、消息提醒与活动通知',
+                        icon: Icons.notifications_outlined,
+                        trailing: AppSwitch(
+                          value: _pushEnabled,
+                          onChanged: _togglePush,
+                        ),
+                        onTap: () => _togglePush(!_pushEnabled),
+                      ),
+                      Divider(
+                        height: 1,
+                        color: t.overlay.withValues(alpha: 0.35),
+                      ),
+                      SettingsItemTile(
+                        title: '性能模式',
+                        subtitle: '降低动画与背景渲染，改善卡顿',
+                        icon: Icons.bolt_outlined,
+                        trailing: AppSwitch(
+                          value: _performanceLiteMode,
+                          onChanged: _togglePerformanceLiteMode,
+                        ),
+                        onTap: () =>
+                            _togglePerformanceLiteMode(!_performanceLiteMode),
+                      ),
+                    ],
+                  )
                 : SettingsGroup(
                     title: '消息与提醒',
                     children: const [
@@ -238,6 +267,44 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     ],
                   ),
           ),
+          if (ref.watch(appEnvProvider).isDev) ...[
+            SizedBox(height: t.spacing.md),
+            SectionReveal(
+              delay: const Duration(milliseconds: 150),
+              child: SettingsGroup(
+                title: '开发者',
+                children: [
+                  SettingsItemTile(
+                    title: '运营看板',
+                    subtitle: '最小指标概览与治理入口',
+                    icon: Icons.dashboard_outlined,
+                    onTap: () => context.push(AppRouteNames.adminDashboard),
+                  ),
+                  Divider(height: 1, color: t.overlay.withValues(alpha: 0.35)),
+                  SettingsItemTile(
+                    title: '运营后台',
+                    subtitle: '举报处理与用户治理',
+                    icon: Icons.admin_panel_settings_outlined,
+                    onTap: () => context.push(AppRouteNames.adminModeration),
+                  ),
+                  Divider(height: 1, color: t.overlay.withValues(alpha: 0.35)),
+                  SettingsItemTile(
+                    title: '认证审核',
+                    subtitle: '人工审核队列与状态处理',
+                    icon: Icons.verified_user_outlined,
+                    onTap: () => context.push(AppRouteNames.adminVerification),
+                  ),
+                  Divider(height: 1, color: t.overlay.withValues(alpha: 0.35)),
+                  SettingsItemTile(
+                    title: '用户列表',
+                    subtitle: '查看用户状态与治理记录',
+                    icon: Icons.people_outline,
+                    onTap: () => context.push(AppRouteNames.adminUsers),
+                  ),
+                ],
+              ),
+            ),
+          ],
           SectionReveal(
             delay: const Duration(milliseconds: 140),
             child: SettingsGroup(
