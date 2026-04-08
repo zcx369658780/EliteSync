@@ -48,12 +48,31 @@ class _AppShellState extends ConsumerState<AppShell> {
             .getBool(CacheKeys.performanceLiteMode) ??
         false;
     if (lite) return;
-    // Warm critical tabs once to reduce first-enter loading latency.
-    ref.read(homeProvider.future);
-    ref.read(matchCountdownProvider.future);
-    ref.read(matchResultProvider.future);
-    ref.read(conversationListProvider.future);
-    ref.read(profileProvider.future);
+
+    final initialRoute = (ref.read(appEnvProvider).initialRoute ?? '').trim();
+    final targets = <Future<void>>[];
+
+    void warm(Future<dynamic> future) {
+      targets.add(future.then((_) {}));
+    }
+
+    // 只预热当前首进页相关 provider，避免一次性 warm 过多链路拉高启动负担。
+    if (initialRoute.startsWith(AppRouteNames.messages)) {
+      warm(ref.read(conversationListProvider.future));
+    } else if (initialRoute.startsWith(AppRouteNames.match)) {
+      warm(ref.read(matchCountdownProvider.future));
+      warm(ref.read(matchResultProvider.future));
+    } else if (initialRoute.startsWith(AppRouteNames.profile)) {
+      warm(ref.read(profileProvider.future));
+    } else {
+      warm(ref.read(homeProvider.future));
+    }
+
+    try {
+      await Future.wait(targets);
+    } catch (_) {
+      // warmup 失败不应阻塞主链路；页面本身仍会按各自 provider 兜底。
+    }
   }
 
   void _onTap(int index) {

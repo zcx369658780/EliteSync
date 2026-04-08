@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
     Route::prefix('app')->group(function () {
+        Route::get('/health', [AppVersionController::class, 'health']);
         Route::get('/version/check', [AppVersionController::class, 'check']);
     });
 

@@ -14,6 +14,10 @@ class AppEnv {
     this.useMockProfile = false,
     this.useMockAdmin = false,
     this.initialRoute,
+    this.debugAccessToken = '',
+    this.debugRefreshToken = '',
+    this.debugAutoLoginPhone = '',
+    this.debugAutoLoginPassword = '',
   });
 
   final AppFlavor flavor;
@@ -28,6 +32,10 @@ class AppEnv {
   final bool useMockProfile;
   final bool useMockAdmin;
   final String? initialRoute;
+  final String debugAccessToken;
+  final String debugRefreshToken;
+  final String debugAutoLoginPhone;
+  final String debugAutoLoginPassword;
 
   bool get isDev => flavor == AppFlavor.dev;
   bool get isProd => flavor == AppFlavor.prod;

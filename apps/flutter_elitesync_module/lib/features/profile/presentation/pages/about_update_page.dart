@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_elitesync_module/core/network/network_result.dart';
 import 'package:flutter_elitesync_module/design_system/components/bars/app_top_bar.dart';
 import 'package:flutter_elitesync_module/design_system/components/buttons/app_primary_button.dart';
+import 'package:flutter_elitesync_module/design_system/components/buttons/app_secondary_button.dart';
 import 'package:flutter_elitesync_module/design_system/components/cards/legal_document_card.dart';
 import 'package:flutter_elitesync_module/design_system/components/feedback/app_confirm_dialog.dart';
 import 'package:flutter_elitesync_module/design_system/components/layout/app_scaffold.dart';
@@ -25,7 +26,9 @@ class AboutUpdatePage extends ConsumerStatefulWidget {
 class _AboutUpdatePageState extends ConsumerState<AboutUpdatePage> {
   String _currentVersion = '-';
   String _status = '';
+  String _healthSummary = '服务状态加载中...';
   bool _checking = false;
+  bool _healthChecking = false;
   String _historyTitle = '更新历史';
   List<String> _historyItems = const ['更新记录加载中...'];
   String _qualificationTitle = '资质';
@@ -36,6 +39,7 @@ class _AboutUpdatePageState extends ConsumerState<AboutUpdatePage> {
     super.initState();
     _loadVersion();
     _loadLocalAboutConfig();
+    _checkBackendHealth();
   }
 
   Future<void> _loadVersion() async {
@@ -105,6 +109,40 @@ class _AboutUpdatePageState extends ConsumerState<AboutUpdatePage> {
     await launchUrl(Uri.parse(downloadUrl), mode: LaunchMode.externalApplication);
   }
 
+  Future<void> _checkBackendHealth() async {
+    setState(() {
+      _healthChecking = true;
+      _healthSummary = '服务状态检查中...';
+    });
+    final api = ref.read(apiClientProvider);
+    final result = await api.get('/api/v1/app/health');
+    if (!mounted) return;
+
+    if (result is NetworkFailure<Map<String, dynamic>>) {
+      setState(() {
+        _healthChecking = false;
+        _healthSummary = '服务状态检查失败';
+      });
+      return;
+    }
+
+    final data = (result as NetworkSuccess<Map<String, dynamic>>).data;
+    final status = (data['status'] ?? 'unknown').toString();
+    final env = (data['environment'] ?? '-').toString();
+    final version = (data['app_version'] ?? '-').toString();
+    final checks = data['checks'] is Map
+        ? Map<String, dynamic>.from(data['checks'] as Map)
+        : <String, dynamic>{};
+    final database = checks['database'] is Map
+        ? Map<String, dynamic>.from(checks['database'] as Map)
+        : <String, dynamic>{};
+
+    setState(() {
+      _healthChecking = false;
+      _healthSummary = '环境: $env · 服务: ${status == 'ok' ? '正常' : '降级'} · 版本: $version · DB: ${(database['ok'] == true) ? '正常' : '异常'}';
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final t = context.appTokens;
@@ -116,8 +154,16 @@ class _AboutUpdatePageState extends ConsumerState<AboutUpdatePage> {
           SectionReveal(
             child: PageTitleRail(
               title: '当前版本 $_currentVersion',
-              subtitle: '资质: 还未申请',
+              subtitle: _healthSummary,
             ),
+          ),
+          SizedBox(height: t.spacing.md),
+          AppSecondaryButton(
+            label: _healthChecking ? '检查中...' : '刷新服务状态',
+            isLoading: _healthChecking,
+            fullWidth: true,
+            style: AppSecondaryButtonStyle.outline,
+            onPressed: _healthChecking ? null : _checkBackendHealth,
           ),
           SizedBox(height: t.spacing.md),
           SectionReveal(

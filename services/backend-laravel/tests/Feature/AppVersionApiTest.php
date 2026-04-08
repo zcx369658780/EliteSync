@@ -10,6 +10,16 @@ class AppVersionApiTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_app_health_returns_database_status(): void
+    {
+        $this->getJson('/api/v1/app/health')
+            ->assertOk()
+            ->assertJsonPath('status', 'ok')
+            ->assertJsonPath('checks.database.ok', true)
+            ->assertJsonPath('checks.config.ok', true)
+            ->assertJsonPath('app_version', '0.02.09');
+    }
+
     public function test_version_check_returns_soft_update(): void
     {
         AppReleaseVersion::query()->create([
@@ -49,4 +59,3 @@ class AppVersionApiTest extends TestCase
             ->assertJsonPath('force_update', true);
     }
 }
-

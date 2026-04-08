@@ -33,6 +33,10 @@ final localStorageProvider = Provider<LocalStorageService>((ref) {
 
 final accessTokenProvider = Provider<AccessTokenProvider>((ref) {
   return () async {
+    final env = ref.read(appEnvProvider);
+    if (env.debugAccessToken.isNotEmpty) {
+      return env.debugAccessToken;
+    }
     return ref.read(secureStorageProvider).read(CacheKeys.accessToken);
   };
 });

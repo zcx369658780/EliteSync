@@ -1,6 +1,6 @@
 # Pair Outcome Metrics
 
-- generated_at: 2026-03-29T12:38:31+00:00
+- generated_at: 2026-04-08T01:27:36+00:00
 - window_days: 60
 - week_tag: 
 - include_calibration_injected: false

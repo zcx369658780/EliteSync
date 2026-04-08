@@ -1,11 +1,12 @@
 # 文档索引（当前有效）
 
-更新日期：2026-04-06
+更新时间：2026-04-08
 
 ## 根目录
 - `README.md`：项目总览
+- `PROJECT_HANDOFF_20260407.md`：当前总交接文档（Claude / Gemini 协作版）
 - `DEVELOPMENT_PLAN.md`：当前开发计划主文件
-- `CHANGELOG_0.02.08.md`：0.02.08 版本变更记录（当前发布）
+- `CHANGELOG_0.02.09.md`：0.02.09 版本变更记录（当前发布）
 - `LICENSE_DEPENDENCY_STATUS.md`：依赖许可证状态总表（长期维护）
 - `docs/HANDOFF_MASTER_20260406.md`：当前交接总览（总计划 + 2.0 后计划整合）
 - `docs/HANDOFF_2_8_FINAL_20260406.md`：2.8 最终交接稿（信任安全与运营后台结项）
@@ -36,12 +37,30 @@
 - `docs/version_plans/elite_sync_2_6_4_版本执行清单_与_codex_gemini分工prompt_2026_04_06.md`
 - `docs/version_plans/elite_sync_2_7_版本prd_执行清单_与多agent_prompt_2026_04_06.md`
 - `docs/version_plans/elite_sync_2_8_版本开发计划_信任安全与运营后台版_2026_04_06.md`
+- `docs/version_plans/elite_sync_2_9_正式开发计划书.md`
 - `docs/version_plans/2.6.4_EXEC_PLAN.md`
 - `docs/version_plans/2.6.4_RISK_REVIEW.md`
 - `docs/version_plans/2.6.4_ACCEPTANCE_REPORT.md`
 - `docs/version_plans/2.8_EXEC_PLAN.md`
 - `docs/version_plans/2.8_RISK_REVIEW.md`
 - `docs/version_plans/2.8_ACCEPTANCE_REPORT.md`
+- `docs/version_plans/2.9_EXEC_PLAN.md`
+- `docs/version_plans/2.9_RISK_REVIEW.md`
+- `docs/version_plans/2.9_PROTECTED_SURFACES.md`
+- `docs/version_plans/2.9_BETA_REGRESSION_CHECKLIST.md`
+- `docs/version_plans/2.9_ACCEPTANCE_REPORT.md`
+- `docs/version_plans/2.9_STAGE2_REAL_CHAIN_LOG.md`
+- `docs/version_plans/2.9_SCOPE_BOUNDARY.md`：2.9 范围边界
+- `docs/version_plans/2.9_BETA_SMOKE_CHECKLIST.md`：2.9 Beta 烟测清单
+- `docs/version_plans/2.9_BETA_RELEASE_CHECKLIST.md`：2.9 Beta 发布清单
+- `docs/version_plans/2.9_BETA_RELEASE_REHEARSAL.md`：2.9 Beta 发布演练
+- `docs/version_plans/2.9_MONITORING_AND_ALERTS.md`：2.9 观测与告警
+- `docs/version_plans/2.9_ENVIRONMENT_MATRIX.md`：2.9 环境矩阵
+- `docs/version_plans/2.9_OPERATIONS_SOP.md`：2.9 运营 SOP
+- `docs/version_plans/2.9_INCIDENT_RUNBOOK.md`：2.9 应急手册
+- `docs/version_plans/2.9_ROLLBACK_REHEARSAL.md`：2.9 回滚演练
+- `docs/version_plans/2.9_BETA_DAILY_REPORT_TEMPLATE.md`：2.9 Beta 日报模板
+- `docs/version_plans/2.9_POST_CHANGE_ACCEPTANCE.md`：2.9 修改后验收
 - `docs/version_plans/app算法资源与任务规划_修订版——2026-03-29.md`
 
 ## docs
@@ -91,7 +110,8 @@
 - `docs/runbooks/MATCHING_ALGO_P1_RUNBOOK_20260324.md`：运行手册
 - 其余 `runbooks/`、`reference/` 保留为长期工程文档
 - `reports/elite_sync_2_7_handoff_20260406.md`：2.7 结项交接说明
-
+- `docs/version_plans/2.9_BETA_FINAL_SUMMARY.md`：2.9 Beta 最终摘要
+- `docs/version_plans/2.9_GEMINI_FINAL_ACCEPTANCE.md`：2.9 Gemini 最终验收报告
 ## 清理说明
 - 已删除：过期日更/周更简报、被最终报告覆盖的阶段报告、重复 UI 改造日报、旧交接文档。
 - 未删除：回归日志、发布日志、运行手册、合规与许可证文档。

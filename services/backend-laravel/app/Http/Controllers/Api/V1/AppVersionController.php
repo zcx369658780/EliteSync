@@ -6,10 +6,49 @@ use App\Http\Controllers\Controller;
 use App\Models\AppReleaseVersion;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Throwable;
 
 class AppVersionController extends Controller
 {
+    public function health(): JsonResponse
+    {
+        $checkedAt = now()->toIso8601String();
+        $default = config('app_update.android', []);
+        $checks = [
+            'database' => [
+                'ok' => true,
+                'driver' => (string) config('database.default'),
+                'message' => 'ok',
+            ],
+            'config' => [
+                'ok' => true,
+                'message' => 'app_update loaded',
+            ],
+        ];
+        $status = 'ok';
+
+        try {
+            DB::connection()->select('select 1 as health_check');
+        } catch (Throwable $e) {
+            $status = 'degraded';
+            $checks['database'] = [
+                'ok' => false,
+                'driver' => (string) config('database.default'),
+                'message' => $e->getMessage(),
+            ];
+        }
+
+        return response()->json([
+            'status' => $status,
+            'checked_at' => $checkedAt,
+            'environment' => (string) config('app.env'),
+            'app_version' => (string) ($default['latest_version_name'] ?? 'unknown'),
+            'app_version_code' => (int) ($default['latest_version_code'] ?? 0),
+            'checks' => $checks,
+        ]);
+    }
+
     public function check(Request $request): JsonResponse
     {
         $data = $request->validate([
