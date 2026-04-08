@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_elitesync_module/core/network/api_client.dart';
 import 'package:flutter_elitesync_module/core/network/network_result.dart';
 import 'package:flutter_elitesync_module/features/profile/domain/entities/birth_place_suggestion_entity.dart';
@@ -7,6 +9,8 @@ import 'package:flutter_elitesync_module/features/profile/data/dto/update_profil
 import 'package:flutter_elitesync_module/mocks/mock_data/profile_mock.dart';
 
 class ProfileRemoteDataSource {
+  static const Duration _requestTimeout = Duration(seconds: 4);
+
   const ProfileRemoteDataSource({required this.apiClient, required this.useMock});
 
   final ApiClient apiClient;
@@ -14,7 +18,7 @@ class ProfileRemoteDataSource {
 
   Future<ProfileSummaryDto> getSummary() async {
     if (useMock) return ProfileSummaryDto.fromJson(ProfileMock.summary);
-    final result = await apiClient.get('/api/v1/profile/basic');
+    final result = await apiClient.get('/api/v1/profile/basic').timeout(_requestTimeout);
     if (result is NetworkSuccess<Map<String, dynamic>>) {
       return ProfileSummaryDto.fromJson(result.data);
     }
@@ -24,7 +28,7 @@ class ProfileRemoteDataSource {
 
   Future<ProfileDetailDto> getDetail() async {
     if (useMock) return ProfileDetailDto.fromJson(ProfileMock.detail);
-    final result = await apiClient.get('/api/v1/profile/basic');
+    final result = await apiClient.get('/api/v1/profile/basic').timeout(_requestTimeout);
     if (result is NetworkSuccess<Map<String, dynamic>>) {
       return ProfileDetailDto.fromJson(result.data);
     }
@@ -34,7 +38,7 @@ class ProfileRemoteDataSource {
 
   Future<void> update(UpdateProfileRequestDto dto) async {
     if (useMock) return;
-    final result = await apiClient.post('/api/v1/profile/basic', body: dto.toJson());
+    final result = await apiClient.post('/api/v1/profile/basic', body: dto.toJson()).timeout(_requestTimeout);
     if (result is NetworkFailure<Map<String, dynamic>>) {
       throw Exception(result.message);
     }
@@ -66,7 +70,7 @@ class ProfileRemoteDataSource {
         'query': query,
         'region': region,
       },
-    );
+    ).timeout(_requestTimeout);
     if (result is NetworkSuccess<Map<String, dynamic>>) {
       final places = result.data['places'];
       if (places is List) {

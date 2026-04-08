@@ -5,9 +5,10 @@ EliteSync 项目根入口。
 ## 快速入口
 
 - `docs/README.md`：文档总入口
-- `docs/HANDOFF_MASTER_20260406.md`：当前总交接
+- `PROJECT_HANDOFF_20260407.md`：当前总交接文档（Claude / Gemini 协作版）
+- `docs/HANDOFF_MASTER_20260406.md`：当前总交接（总计划 + 2.0 后计划整合）
 - `docs/version_plans/README.md`：版本计划索引
-- `CHANGELOG_0.02.08.md`：当前发布版本更新说明
+- `CHANGELOG_0.02.09.md`：当前发布版本更新说明
 - `DEVELOPMENT_PLAN.md`：当前开发计划
 
 ## 当前约定

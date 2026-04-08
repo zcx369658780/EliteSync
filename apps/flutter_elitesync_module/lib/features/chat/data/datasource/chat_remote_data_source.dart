@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_elitesync_module/core/network/api_client.dart';
 import 'package:flutter_elitesync_module/core/network/network_result.dart';
 import 'package:flutter_elitesync_module/core/storage/cache_keys.dart';
@@ -8,6 +10,8 @@ import 'package:flutter_elitesync_module/features/chat/data/dto/send_message_req
 import 'package:flutter_elitesync_module/mocks/mock_data/chat_mock.dart';
 
 class ChatRemoteDataSource {
+  static const Duration _requestTimeout = Duration(seconds: 6);
+
   ChatRemoteDataSource({
     required this.apiClient,
     required this.localStorage,
@@ -28,7 +32,7 @@ class ChatRemoteDataSource {
         _cachedSelfId = localId;
         return localId;
       }
-      final profile = await apiClient.get('/api/v1/profile/basic');
+      final profile = await apiClient.get('/api/v1/profile/basic').timeout(_requestTimeout);
       if (profile is NetworkSuccess<Map<String, dynamic>>) {
         final id = (profile.data['id'] as num?)?.toInt() ?? 0;
         if (id > 0) {
@@ -45,14 +49,14 @@ class ChatRemoteDataSource {
       return ChatMock.conversationsHappy.map(ConversationDto.fromJson).toList();
     }
     // 1) Prefer current match.
-    final current = await apiClient.get('/api/v1/match/current');
+    final current = await apiClient.get('/api/v1/match/current').timeout(_requestTimeout);
     if (current is NetworkSuccess<Map<String, dynamic>>) {
       final built = _conversationFromMatchPayload(current.data);
       if (built != null) return [built];
     }
 
     // 2) Fallback to latest history match.
-    final history = await apiClient.get('/api/v1/match/history');
+    final history = await apiClient.get('/api/v1/match/history').timeout(_requestTimeout);
     if (history is NetworkSuccess<Map<String, dynamic>>) {
       final items = (history.data['items'] as List<dynamic>? ?? const []);
       for (final row in items) {
@@ -76,7 +80,7 @@ class ChatRemoteDataSource {
       throw Exception('invalid conversation id');
     }
     final selfId = await _selfId();
-    final result = await apiClient.get('/api/v1/messages', query: {'peer_id': peerId, 'limit': 100});
+    final result = await apiClient.get('/api/v1/messages', query: {'peer_id': peerId, 'limit': 100}).timeout(_requestTimeout);
     if (result is NetworkSuccess<Map<String, dynamic>>) {
       final list = (result.data['items'] as List<dynamic>? ?? const []);
       return list.whereType<Map<String, dynamic>>().map((raw) {
@@ -107,7 +111,7 @@ class ChatRemoteDataSource {
         receiverId: peerId,
         content: text,
       ).toJson(),
-    );
+    ).timeout(_requestTimeout);
     if (result is NetworkFailure<Map<String, dynamic>>) {
       throw Exception(result.message);
     }

@@ -24,6 +24,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   late final TextEditingController _phoneController;
   late final TextEditingController _passwordController;
   bool _performanceLiteMode = false;
+  bool _debugAutoLoginQueued = false;
 
   @override
   void initState() {
@@ -31,6 +32,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     _phoneController = TextEditingController();
     _passwordController = TextEditingController();
     _loadPerformanceMode();
+    _scheduleDebugAutoLogin();
   }
 
   Future<void> _loadPerformanceMode() async {
@@ -38,6 +40,27 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     final value = await local.getBool(CacheKeys.performanceLiteMode);
     if (!mounted) return;
     setState(() => _performanceLiteMode = value ?? false);
+  }
+
+  void _scheduleDebugAutoLogin() {
+    final env = ref.read(appEnvProvider);
+    final phone = env.debugAutoLoginPhone.trim();
+    final password = env.debugAutoLoginPassword.trim();
+    if (phone.isEmpty || password.isEmpty || _debugAutoLoginQueued) return;
+    // ignore: avoid_print
+    print('LOGIN_DEBUG_AUTOSUBMIT queued phone=${phone.isNotEmpty} pwd=${password.isNotEmpty}');
+    _debugAutoLoginQueued = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      _phoneController.text = phone;
+      _passwordController.text = password;
+      ref.read(loginFormProvider.notifier).onPhoneChanged(phone);
+      ref.read(loginFormProvider.notifier).onPasswordChanged(password);
+      ref.read(loginFormProvider.notifier).onAgreementChanged(true);
+      await Future<void>.delayed(const Duration(milliseconds: 150));
+      if (!mounted) return;
+      await _submit();
+    });
   }
 
   @override
@@ -50,6 +73,12 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   Future<void> _submit() async {
     final ok = await ref.read(loginFormProvider.notifier).submit();
     if (!mounted || !ok) return;
+    final env = ref.read(appEnvProvider);
+    final target = env.initialRoute?.trim();
+    if (target != null && target.isNotEmpty) {
+      context.go(target);
+      return;
+    }
     context.go(AppRouteNames.home);
   }
 
@@ -80,15 +109,17 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 Text(
                   '慢约会',
                   style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                        color: t.textPrimary,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 0.5,
-                      ),
+                    color: t.textPrimary,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 0.5,
+                  ),
                 ),
                 SizedBox(height: t.spacing.xs),
                 Text(
                   '在同一片星空下，认真认识一个人',
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: t.textSecondary),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyLarge?.copyWith(color: t.textSecondary),
                 ),
                 SizedBox(height: t.spacing.xl),
                 Container(
@@ -110,7 +141,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     children: [
                       Text(
                         '账号登录',
-                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                        style: Theme.of(context).textTheme.headlineMedium
+                            ?.copyWith(
                               color: t.textPrimary,
                               fontWeight: FontWeight.w700,
                             ),
@@ -118,7 +150,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       SizedBox(height: t.spacing.xs),
                       Text(
                         '登录后继续匹配与聊天',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: t.textSecondary),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: t.textSecondary,
+                        ),
                       ),
                       SizedBox(height: t.spacing.lg),
                       AppTextField(
@@ -126,7 +160,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         label: '手机号',
                         hint: '请输入 11 位手机号',
                         keyboardType: TextInputType.phone,
-                        onChanged: ref.read(loginFormProvider.notifier).onPhoneChanged,
+                        onChanged: ref
+                            .read(loginFormProvider.notifier)
+                            .onPhoneChanged,
                       ),
                       SizedBox(height: t.spacing.md),
                       AppPasswordField(
@@ -134,18 +170,24 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         label: '密码',
                         hint: '请输入密码',
                         helperText: '密码规则：至少 8 位，建议字母+数字',
-                        onChanged: ref.read(loginFormProvider.notifier).onPasswordChanged,
+                        onChanged: ref
+                            .read(loginFormProvider.notifier)
+                            .onPasswordChanged,
                       ),
                       SizedBox(height: t.spacing.sm),
                       AuthAgreementRow(
                         value: state.isAgreementAccepted,
-                        onChanged: ref.read(loginFormProvider.notifier).onAgreementChanged,
+                        onChanged: ref
+                            .read(loginFormProvider.notifier)
+                            .onAgreementChanged,
                       ),
                       if ((state.submitError ?? '').isNotEmpty) ...[
                         SizedBox(height: t.spacing.sm),
                         Text(
                           state.submitError!,
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(color: t.error),
+                          style: Theme.of(
+                            context,
+                          ).textTheme.bodySmall?.copyWith(color: t.error),
                         ),
                       ],
                       SizedBox(height: t.spacing.lg),

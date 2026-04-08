@@ -39,6 +39,22 @@ class SessionState {
 class SessionNotifier extends AsyncNotifier<SessionState> {
   @override
   Future<SessionState> build() async {
+    final env = ref.read(appEnvProvider);
+    if (env.debugAccessToken.isNotEmpty) {
+      final local = ref.read(localStorageProvider);
+      final profileJson = await local.getJson(CacheKeys.lastKnownProfile);
+      final user = profileJson == null
+          ? null
+          : UserSummary.fromJson(profileJson);
+      return SessionState(
+        status: AuthStatus.authenticated,
+        user: user,
+        accessToken: env.debugAccessToken,
+        refreshToken: env.debugRefreshToken.isNotEmpty
+            ? env.debugRefreshToken
+            : null,
+      );
+    }
     final secure = ref.read(secureStorageProvider);
     final local = ref.read(localStorageProvider);
 
@@ -64,6 +80,10 @@ class SessionNotifier extends AsyncNotifier<SessionState> {
     String? refreshToken,
     UserSummary? user,
   }) async {
+    // ignore: avoid_print
+    print(
+      'SESSION_SET_AUTH token=${accessToken.isNotEmpty} user=${user?.phone ?? ''}',
+    );
     final secure = ref.read(secureStorageProvider);
     final local = ref.read(localStorageProvider);
 
@@ -87,10 +107,7 @@ class SessionNotifier extends AsyncNotifier<SessionState> {
 
   Future<void> updateProfile(UserSummary user) async {
     final local = ref.read(localStorageProvider);
-    final current = state.maybeWhen(
-      data: (s) => s,
-      orElse: () => null,
-    );
+    final current = state.maybeWhen(data: (s) => s, orElse: () => null);
     final merged = UserSummary(
       id: user.id != 0 ? user.id : (current?.user?.id ?? 0),
       phone: user.phone.isNotEmpty ? user.phone : (current?.user?.phone ?? ''),
@@ -99,7 +116,8 @@ class SessionNotifier extends AsyncNotifier<SessionState> {
       birthTime: user.birthTime ?? current?.user?.birthTime,
       gender: user.gender ?? current?.user?.gender,
       city: user.city ?? current?.user?.city,
-      relationshipGoal: user.relationshipGoal ?? current?.user?.relationshipGoal,
+      relationshipGoal:
+          user.relationshipGoal ?? current?.user?.relationshipGoal,
       birthPlace: user.birthPlace ?? current?.user?.birthPlace,
       birthLat: user.birthLat ?? current?.user?.birthLat,
       birthLng: user.birthLng ?? current?.user?.birthLng,
@@ -113,9 +131,8 @@ class SessionNotifier extends AsyncNotifier<SessionState> {
 
     await local.setJson(CacheKeys.lastKnownProfile, merged.toJson());
     state = AsyncData(
-      (current ?? const SessionState(status: AuthStatus.authenticated)).copyWith(
-        user: merged,
-      ),
+      (current ?? const SessionState(status: AuthStatus.authenticated))
+          .copyWith(user: merged),
     );
   }
 

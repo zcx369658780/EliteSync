@@ -29,16 +29,22 @@ class LoginFormNotifier extends Notifier<LoginFormState> {
     state = state.copyWith(isSubmitting: true, clearError: true);
 
     try {
+      // ignore: avoid_print
+      print('LOGIN_SUBMIT phone=${state.phone}');
       final session = await ref
           .read(loginUseCaseProvider)
           .call(phone: state.phone, password: state.password);
+      // ignore: avoid_print
+      print(
+        'LOGIN_OK token=${session.accessToken.isNotEmpty} user=${session.user.phone}',
+      );
 
       await ref
           .read(sessionProvider.notifier)
           .setAuthenticated(
             accessToken: session.accessToken,
             refreshToken: session.refreshToken,
-              user: UserSummary(
+            user: UserSummary(
               id: session.user.id,
               phone: session.user.phone,
               nickname: session.user.nickname,
@@ -58,6 +64,8 @@ class LoginFormNotifier extends Notifier<LoginFormState> {
       state = state.copyWith(isSubmitting: false, clearError: true);
       return true;
     } catch (e) {
+      // ignore: avoid_print
+      print('LOGIN_FAIL $e');
       final msg = ref.read(authErrorMapperProvider).mapToUserMessage(e);
       state = state.copyWith(isSubmitting: false, submitError: msg);
       return false;

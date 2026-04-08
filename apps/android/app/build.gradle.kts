@@ -37,13 +37,35 @@ val flutterExecutable = when {
     else -> "flutter"
 }
 
+val flutterDartDefines = (
+    providers.gradleProperty("flutterDartDefines").orNull
+        ?: rootProject.findProperty("flutterDartDefines") as String?
+        ?: project.findProperty("flutterDartDefines") as String?
+    )
+    ?.trim()
+    .orEmpty()
+val flutterDartDefineArgs = flutterDartDefines
+    .split(Regex("[;,]"))
+    .map { it.trim() }
+    .filter { it.isNotEmpty() }
+    .flatMap { listOf("--dart-define=$it") }
+
 val syncFlutterAar by tasks.registering(Exec::class) {
     group = "build"
     description = "Build latest Flutter module AAR before Android preBuild"
     workingDir = flutterModuleDir
-    commandLine(flutterExecutable, "build", "aar", "--no-debug", "--no-profile")
+    commandLine(
+        listOf(
+            flutterExecutable,
+            "build",
+            "aar",
+            "--no-debug",
+            "--no-profile",
+        ) + flutterDartDefineArgs
+    )
     inputs.dir(File(flutterModuleDir, "lib"))
     inputs.file(File(flutterModuleDir, "pubspec.yaml"))
+    inputs.property("flutterDartDefines", flutterDartDefines)
     outputs.dir(File(flutterModuleDir, "build/host/outputs/repo/com/elitesync/flutter_elitesync_module/flutter_release/1.0"))
 }
 
@@ -63,8 +85,8 @@ android {
         // major: product major stage (0 before launch, 1+ after launch)
         // minor: 01=Alpha, 02-99=Beta
         // patch: current stage incremental version
-        versionCode = 208
-        versionName = "0.02.08"
+        versionCode = 209
+        versionName = "0.02.09"
         ndk {
             // Google Play 16KB page-size compliance: avoid x86_64 native libs from third-party SDKs.
             // Keep ARM ABIs for real-device testing and release publishing.

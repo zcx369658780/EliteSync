@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_elitesync_module/core/network/api_client.dart';
 import 'package:flutter_elitesync_module/core/network/network_result.dart';
 import 'package:flutter_elitesync_module/mocks/mock_data/match_mock.dart';
@@ -6,6 +8,8 @@ import 'package:flutter_elitesync_module/features/match/data/dto/match_detail_dt
 import 'package:flutter_elitesync_module/features/match/data/dto/match_result_dto.dart';
 
 class MatchRemoteDataSource {
+  static const Duration _requestTimeout = Duration(seconds: 6);
+
   MatchRemoteDataSource({required this.apiClient, required this.useMock});
 
   final ApiClient apiClient;
@@ -47,7 +51,7 @@ class MatchRemoteDataSource {
     final paths = <String>['/api/v1/matches/current', '/api/v1/match/current'];
     NetworkFailure<Map<String, dynamic>>? lastFailure;
     for (final path in paths) {
-      final result = await apiClient.get(path);
+      final result = await apiClient.get(path).timeout(_requestTimeout);
       if (result is NetworkSuccess<Map<String, dynamic>>) {
         final matchId = (result.data['match_id'] as num?)?.toInt();
         final partnerId = (result.data['partner_id'] as num?)?.toInt();
@@ -90,7 +94,7 @@ class MatchRemoteDataSource {
     ];
 
     for (final path in paths) {
-      final result = await apiClient.get(path);
+      final result = await apiClient.get(path).timeout(_requestTimeout);
       if (result is NetworkSuccess<Map<String, dynamic>>) {
         final data = result.data;
         _explanationCache[targetUserId] = _ExplanationCacheEntry(

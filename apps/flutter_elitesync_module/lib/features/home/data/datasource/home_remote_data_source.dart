@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_elitesync_module/core/network/api_client.dart';
 import 'package:flutter_elitesync_module/core/network/network_result.dart';
 import 'package:flutter_elitesync_module/core/storage/cache_keys.dart';
@@ -20,6 +22,8 @@ class FeedPageResult {
 }
 
 class HomeRemoteDataSource {
+  static const Duration _requestTimeout = Duration(seconds: 4);
+
   HomeRemoteDataSource({
     required this.apiClient,
     required this.useMock,
@@ -68,7 +72,7 @@ class HomeRemoteDataSource {
       return HomeBannerDto.fromJson(HomeMock.hero);
     }
     try {
-      final result = await apiClient.get('/api/v1/home/banner');
+      final result = await apiClient.get('/api/v1/home/banner').timeout(_requestTimeout);
       if (result is NetworkSuccess<Map<String, dynamic>>) {
         return HomeBannerDto.fromJson(result.data['data'] as Map<String, dynamic>? ?? {});
       }
@@ -84,7 +88,7 @@ class HomeRemoteDataSource {
       return HomeMock.shortcuts.map(ShortcutEntryDto.fromJson).toList();
     }
     try {
-      final result = await apiClient.get('/api/v1/home/shortcuts');
+      final result = await apiClient.get('/api/v1/home/shortcuts').timeout(_requestTimeout);
       if (result is NetworkSuccess<Map<String, dynamic>>) {
         final list = (result.data['data'] as List<dynamic>? ?? const []);
         return list.whereType<Map<String, dynamic>>().map(ShortcutEntryDto.fromJson).toList();
@@ -132,7 +136,7 @@ class HomeRemoteDataSource {
       query['ranker'] = ranker;
       if ((preferredTag ?? '').isNotEmpty) query['boost_tag'] = preferredTag;
       if ((preferredTag2 ?? '').isNotEmpty) query['boost_tag_secondary'] = preferredTag2;
-      final result = await apiClient.get('/api/v1/home/feed', query: query);
+      final result = await apiClient.get('/api/v1/home/feed', query: query).timeout(_requestTimeout);
       if (result is NetworkSuccess<Map<String, dynamic>>) {
         final list = (result.data['data'] as List<dynamic>? ?? const []);
         final items = list.whereType<Map<String, dynamic>>().map(HomeFeedDto.fromJson).toList();
@@ -209,7 +213,7 @@ class HomeRemoteDataSource {
       fallbackQuery['ranker'] = ranker;
       if ((preferredTag ?? '').isNotEmpty) fallbackQuery['boost_tag'] = preferredTag;
       if ((preferredTag2 ?? '').isNotEmpty) fallbackQuery['boost_tag_secondary'] = preferredTag2;
-      final fallback = await apiClient.get('/api/v1/home/feed', query: fallbackQuery);
+      final fallback = await apiClient.get('/api/v1/home/feed', query: fallbackQuery).timeout(_requestTimeout);
       if (fallback is NetworkSuccess<Map<String, dynamic>>) {
         final list = (fallback.data['data'] as List<dynamic>? ?? const []);
         if (list.isNotEmpty) {
@@ -265,7 +269,7 @@ class HomeRemoteDataSource {
       return fallback();
     }
     try {
-      final result = await apiClient.get('/api/v1/content/$contentId');
+      final result = await apiClient.get('/api/v1/content/$contentId').timeout(_requestTimeout);
       if (result is NetworkSuccess<Map<String, dynamic>>) {
         final data = result.data['data'] as Map<String, dynamic>?;
         if (data != null && data.isNotEmpty) {
