@@ -27,6 +27,8 @@ class User extends Authenticatable
         'city',
         'relationship_goal',
         'password',
+        'role',
+        'account_type',
         'verify_status',
         'realname_verified',
         'disabled',
@@ -34,6 +36,10 @@ class User extends Authenticatable
         'moderation_note',
         'is_synthetic',
         'synthetic_batch',
+        'is_match_eligible',
+        'is_square_visible',
+        'exclude_from_metrics',
+        'banned_reason',
         'public_zodiac_sign',
         'public_mbti',
         'public_personality',
@@ -62,13 +68,28 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'birthday' => 'date',
             'password' => 'hashed',
+            'role' => 'string',
+            'account_type' => 'string',
             'disabled' => 'boolean',
             'is_synthetic' => 'boolean',
+            'is_match_eligible' => 'boolean',
+            'is_square_visible' => 'boolean',
+            'exclude_from_metrics' => 'boolean',
             'realname_verified' => 'boolean',
             'public_personality' => 'array',
             'private_natal_chart' => 'array',
             'private_ziwei' => 'array',
         ];
+    }
+
+    public function isAdminRole(): bool
+    {
+        return ($this->role ?? 'user') === 'admin';
+    }
+
+    public function isTestAccount(): bool
+    {
+        return ($this->account_type ?? 'normal') === 'test' || (bool) $this->is_synthetic;
     }
 
     public function astroProfile(): HasOne
@@ -94,5 +115,10 @@ class User extends Authenticatable
     public function blockedBy()
     {
         return $this->hasMany(UserBlock::class, 'blocked_user_id');
+    }
+
+    public function statusPosts(): HasMany
+    {
+        return $this->hasMany(StatusPost::class, 'author_user_id');
     }
 }

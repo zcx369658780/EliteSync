@@ -5,12 +5,14 @@ use App\Http\Controllers\Api\V1\AdminController;
 use App\Http\Controllers\Api\V1\AppVersionController;
 use App\Http\Controllers\Api\V1\GeoController;
 use App\Http\Controllers\Api\V1\AstroProfileController;
+use App\Http\Controllers\Api\V1\FrontendTelemetryController;
 use App\Http\Controllers\Api\V1\ModerationController;
 use App\Http\Controllers\Api\V1\HomeController;
 use App\Http\Controllers\Api\V1\MatchController;
 use App\Http\Controllers\Api\V1\MbtiProfileController;
 use App\Http\Controllers\Api\V1\MessageController;
 use App\Http\Controllers\Api\V1\ProfileController;
+use App\Http\Controllers\Api\V1\StatusPostController;
 use App\Http\Controllers\Api\V1\QuestionnaireController;
 use Illuminate\Support\Facades\Route;
 
@@ -47,6 +49,13 @@ Route::prefix('v1')->group(function () {
     });
 
     Route::middleware('auth:sanctum')->group(function () {
+        Route::prefix('telemetry')->group(function () {
+            Route::post('/events', [FrontendTelemetryController::class, 'store']);
+            Route::post('/match-explanation-preview-opened', [FrontendTelemetryController::class, 'store']);
+            Route::post('/first-chat-entry', [FrontendTelemetryController::class, 'store']);
+            Route::post('/match-feedback-submitted', [FrontendTelemetryController::class, 'store']);
+        });
+
         Route::prefix('profile')->group(function () {
             Route::get('/basic', [ProfileController::class, 'basic']);
             Route::post('/basic', [ProfileController::class, 'saveBasic']);
@@ -97,6 +106,13 @@ Route::prefix('v1')->group(function () {
             Route::get('/banner', [HomeController::class, 'banner']);
             Route::get('/shortcuts', [HomeController::class, 'shortcuts']);
             Route::get('/feed', [HomeController::class, 'feed']);
+        });
+
+        Route::prefix('status')->group(function () {
+            Route::get('/posts', [StatusPostController::class, 'index']);
+            Route::post('/posts', [StatusPostController::class, 'store']);
+            Route::delete('/posts/{postId}', [StatusPostController::class, 'destroy'])
+                ->whereNumber('postId');
         });
 
         Route::prefix('discover')->group(function () {

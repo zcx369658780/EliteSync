@@ -58,6 +58,10 @@ Future<void> main() async {
     String.fromEnvironment('ELITESYNC_DEBUG_AUTO_LOGIN_PASSWORD'),
     hostBootstrap['debugAutoLoginPassword'] ?? '',
   ]);
+  final chatMockFromHost = (hostBootstrap['chatMock'] ?? '').toLowerCase() == 'true';
+  final chatMockFromDefine = const bool.fromEnvironment('ELITESYNC_CHAT_MOCK');
+  final adminMockFromHost = (hostBootstrap['adminMock'] ?? '').toLowerCase() == 'true';
+  final adminMockFromDefine = const bool.fromEnvironment('ELITESYNC_ADMIN_MOCK');
   final initialRoute = _firstNonEmpty([
     String.fromEnvironment('ELITESYNC_INITIAL_ROUTE'),
     hostBootstrap['initialRoute'] ?? '',
@@ -97,9 +101,9 @@ Future<void> main() async {
       useMockQuestionnaire: hasDebugBootstrap,
       useMockHome: false,
       useMockMatch: hasDebugBootstrap,
-      useMockChat: const bool.fromEnvironment('ELITESYNC_CHAT_MOCK'),
+      useMockChat: chatMockFromHost || chatMockFromDefine,
       useMockProfile: false,
-      useMockAdmin: const bool.fromEnvironment('ELITESYNC_ADMIN_MOCK'),
+      useMockAdmin: adminMockFromHost || adminMockFromDefine,
       initialRoute: initialRoute.isEmpty ? null : initialRoute,
       debugAccessToken: debugAccessToken,
       debugRefreshToken: debugRefreshToken,

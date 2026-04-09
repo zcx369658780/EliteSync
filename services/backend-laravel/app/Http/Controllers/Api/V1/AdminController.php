@@ -15,6 +15,7 @@ use App\Services\PersonalityProfileService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class AdminController extends Controller
 {
@@ -23,11 +24,63 @@ class AdminController extends Controller
         return now()->utc()->format('Y-\\WW');
     }
 
+    /**
+     * Build a safe user projection that tolerates older schemas where some
+     * 3.1 columns may not exist yet.
+     *
+     * @param  array<string, mixed>  $fallbacks
+     * @return array<int, string|\Illuminate\Database\Query\Expression>
+     */
+    private function safeUserSelect(array $fallbacks = []): array
+    {
+        $columns = ['id', 'phone', 'name'];
+
+        foreach ($fallbacks as $column => $fallback) {
+            if (Schema::hasColumn('users', $column)) {
+                $columns[] = $column;
+                continue;
+            }
+
+            $columns[] = DB::raw($this->sqlLiteral($fallback).' as '.$column);
+        }
+
+        return $columns;
+    }
+
+    private function sqlLiteral(mixed $value): string
+    {
+        if ($value === null) {
+            return 'NULL';
+        }
+
+        if (is_bool($value)) {
+            return $value ? '1' : '0';
+        }
+
+        if (is_int($value) || is_float($value)) {
+            return (string) $value;
+        }
+
+        return DB::connection()->getPdo()->quote((string) $value);
+    }
+
     public function users(): JsonResponse
     {
         $items = User::query()
             ->orderBy('id')
-            ->get(['id', 'phone', 'name', 'disabled', 'moderation_status', 'verify_status', 'is_synthetic', 'synthetic_batch']);
+            ->get($this->safeUserSelect([
+                'role' => 'user',
+                'account_type' => 'normal',
+                'disabled' => false,
+                'moderation_status' => 'normal',
+                'verify_status' => 'pending',
+                'is_synthetic' => false,
+                'synthetic_batch' => null,
+                'is_match_eligible' => true,
+                'is_square_visible' => true,
+                'exclude_from_metrics' => false,
+                'banned_reason' => null,
+            ]));
 
         return response()->json([
             'items' => $items,
@@ -40,7 +93,12 @@ class AdminController extends Controller
         $items = User::query()
             ->where('verify_status', '!=', 'approved')
             ->orderBy('id')
-            ->get(['id', 'phone', 'name', 'verify_status', 'moderation_status']);
+            ->get($this->safeUserSelect([
+                'role' => 'user',
+                'account_type' => 'normal',
+                'verify_status' => 'pending',
+                'moderation_status' => 'normal',
+            ]));
 
         return response()->json([
             'items' => $items,
@@ -83,9 +141,18 @@ class AdminController extends Controller
     {
         $items = ModerationReport::query()
             ->with([
-                'reporter:id,name,phone',
-                'targetUser:id,name,phone,disabled,moderation_status',
-                'resolver:id,name,phone',
+                'reporter' => function ($query) {
+                    $query->select($this->safeUserSelect());
+                },
+                'targetUser' => function ($query) {
+                    $query->select($this->safeUserSelect([
+                        'disabled' => false,
+                        'moderation_status' => 'normal',
+                    ]));
+                },
+                'resolver' => function ($query) {
+                    $query->select($this->safeUserSelect());
+                },
             ])
             ->orderByDesc('id')
             ->get()
@@ -128,9 +195,18 @@ class AdminController extends Controller
     {
         $report = ModerationReport::query()
             ->with([
-                'reporter:id,name,phone',
-                'targetUser:id,name,phone,disabled,moderation_status',
-                'resolver:id,name,phone',
+                'reporter' => function ($query) {
+                    $query->select($this->safeUserSelect());
+                },
+                'targetUser' => function ($query) {
+                    $query->select($this->safeUserSelect([
+                        'disabled' => false,
+                        'moderation_status' => 'normal',
+                    ]));
+                },
+                'resolver' => function ($query) {
+                    $query->select($this->safeUserSelect());
+                },
             ])
             ->find($reportId);
 

@@ -1,12 +1,12 @@
 # 文档索引（当前有效）
 
-更新时间：2026-04-08
+更新时间：2026-04-09
 
 ## 根目录
 - `README.md`：项目总览
 - `PROJECT_HANDOFF_20260407.md`：当前总交接文档（Claude / Gemini 协作版）
-- `DEVELOPMENT_PLAN.md`：当前开发计划主文件
-- `CHANGELOG_0.02.09.md`：0.02.09 版本变更记录（当前发布）
+- `docs/archive/legacy_2026-04/DEVELOPMENT_PLAN_2_0_AND_EARLIER_ARCHIVE.md`：2.0 及更早版本开发计划归档
+- `CHANGELOG_0.03.01.md`：0.03.01 版本变更记录（当前发布）
 - `LICENSE_DEPENDENCY_STATUS.md`：依赖许可证状态总表（长期维护）
 - `docs/HANDOFF_MASTER_20260406.md`：当前交接总览（总计划 + 2.0 后计划整合）
 - `docs/HANDOFF_2_8_FINAL_20260406.md`：2.8 最终交接稿（信任安全与运营后台结项）

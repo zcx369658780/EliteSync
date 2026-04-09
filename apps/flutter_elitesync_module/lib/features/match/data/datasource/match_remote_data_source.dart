@@ -205,6 +205,8 @@ class MatchRemoteDataSource {
       'tags': tags,
       'highlights': generatedHighlights,
       'astro_scores': astro,
+      'match_id': (raw['match_id'] as num?)?.toInt(),
+      'partner_id': (raw['partner_id'] as num?)?.toInt(),
     });
   }
 

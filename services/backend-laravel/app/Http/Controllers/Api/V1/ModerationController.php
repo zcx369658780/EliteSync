@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ModerationReport;
 use App\Models\User;
 use App\Models\UserBlock;
+use App\Services\EventLogger;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -16,7 +17,7 @@ class ModerationController extends Controller
         return (int) $request->user()->id;
     }
 
-    public function report(Request $request): JsonResponse
+    public function report(Request $request, EventLogger $events): JsonResponse
     {
         $data = $request->validate([
             'target_user_id' => ['required', 'integer', 'exists:users,id'],
@@ -42,6 +43,18 @@ class ModerationController extends Controller
             'status' => 'new',
             'appeal_status' => 'none',
         ]);
+
+        $events->log(
+            eventName: 'report_submit',
+            actorUserId: $reporterId,
+            targetUserId: $targetUserId,
+            payload: [
+                'category' => (string) $data['category'],
+                'reason_code' => (string) $data['reason_code'],
+                'app_version' => (string) $request->header('X-App-Version', 'unknown'),
+                'source_page' => (string) $request->header('X-Source-Page', 'unknown'),
+            ]
+        );
 
         return response()->json([
             'ok' => true,
@@ -106,7 +119,7 @@ class ModerationController extends Controller
         ]);
     }
 
-    public function block(Request $request): JsonResponse
+    public function block(Request $request, EventLogger $events): JsonResponse
     {
         $data = $request->validate([
             'blocked_user_id' => ['required', 'integer', 'exists:users,id'],
@@ -128,6 +141,17 @@ class ModerationController extends Controller
             [
                 'reason_code' => $data['reason_code'] ?? null,
                 'detail' => $data['detail'] ?? null,
+            ]
+        );
+
+        $events->log(
+            eventName: 'block_submit',
+            actorUserId: $blockerId,
+            targetUserId: $blockedUserId,
+            payload: [
+                'reason_code' => (string) ($data['reason_code'] ?? ''),
+                'app_version' => (string) $request->header('X-App-Version', 'unknown'),
+                'source_page' => (string) $request->header('X-Source-Page', 'unknown'),
             ]
         );
 

@@ -93,7 +93,11 @@ class MessageController extends Controller
             eventName: 'message_sent',
             actorUserId: (int) $user->id,
             targetUserId: $receiverId,
-            payload: ['message_id' => (int) $message->id]
+            payload: [
+                'message_id' => (int) $message->id,
+                'app_version' => (string) $request->header('X-App-Version', 'unknown'),
+                'source_page' => (string) $request->header('X-Source-Page', 'unknown'),
+            ]
         );
 
         return response()->json([

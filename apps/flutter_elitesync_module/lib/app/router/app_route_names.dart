@@ -24,6 +24,7 @@ abstract class AppRouteNames {
   static const matchFeedback = '/match/feedback';
 
   static const chatRoom = '/messages/chat';
+  static const statusSquare = '/status/square';
 
   static const editProfile = '/profile/edit';
   static const settings = '/profile/settings';

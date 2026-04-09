@@ -12,6 +12,9 @@ class ConnectionStatusBanner extends StatelessWidget {
     final isReconnecting = status == 'connecting' || status == 'reconnecting';
     final bg = isReconnecting ? t.warning.withValues(alpha: 0.14) : t.error.withValues(alpha: 0.14);
     final fg = isReconnecting ? t.warning : t.error;
+    final text = isReconnecting
+        ? '网络波动中，正在尝试恢复连接…恢复后建议下拉刷新会话。'
+        : '当前离线，建议稍后重试或下拉刷新会话。';
     return Container(
       width: double.infinity,
       color: bg,
@@ -26,7 +29,7 @@ class ConnectionStatusBanner extends StatelessWidget {
           const SizedBox(width: 8),
           Expanded(
             child: Text(
-              '连接状态：$status',
+              text,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: fg,
                     fontWeight: FontWeight.w600,

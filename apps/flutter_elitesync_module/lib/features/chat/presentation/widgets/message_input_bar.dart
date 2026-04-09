@@ -16,7 +16,9 @@ class MessageInputBar extends StatelessWidget {
           Expanded(
             child: TextField(
               controller: controller,
-              decoration: const InputDecoration(hintText: '输入消息...'),
+              decoration: const InputDecoration(
+                hintText: '输入首句问候或你想继续聊的话题…',
+              ),
             ),
           ),
           IconButton(onPressed: sending ? null : onSend, icon: const Icon(Icons.send_rounded)),
