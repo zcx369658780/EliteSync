@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_elitesync_module/core/telemetry/frontend_telemetry.dart';
 import 'package:flutter_elitesync_module/design_system/components/buttons/app_primary_button.dart';
 import 'package:flutter_elitesync_module/design_system/components/cards/app_card.dart';
 import 'package:flutter_elitesync_module/design_system/components/fields/app_text_field.dart';
@@ -105,6 +106,16 @@ class _MatchFeedbackPageState extends ConsumerState<MatchFeedbackPage> {
         note: _noteController.text.trim(),
       );
       await saveMatchFeedbackEntry(ref, entry);
+      final partnerId = result?.partnerId;
+      if (partnerId != null && partnerId > 0) {
+        ref
+            .read(frontendTelemetryProvider)
+            .matchFeedbackSubmitted(
+              targetUserId: partnerId,
+              matchId: result?.matchId,
+              sourcePage: 'match_feedback',
+            );
+      }
       if (!mounted) return;
       AppFeedback.showSuccess(context, '反馈已保存到本机');
       setState(() {
@@ -152,55 +163,60 @@ class _MatchFeedbackPageState extends ConsumerState<MatchFeedbackPage> {
           if (items.isEmpty)
             Text(
               '暂无提交记录。',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: t.textSecondary,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: t.textSecondary),
             )
           else
-            ...items.take(3).map(
-              (item) => Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: t.browseSurface,
-                    borderRadius: BorderRadius.circular(t.radius.md),
-                    border: Border.all(color: t.browseBorder),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '${_formatTime(item.createdAt)} · ${item.matchHeadline}',
-                        style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                          color: t.textPrimary,
-                          fontWeight: FontWeight.w700,
-                        ),
+            ...items
+                .take(3)
+                .map(
+                  (item) => Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: t.browseSurface,
+                        borderRadius: BorderRadius.circular(t.radius.md),
+                        border: Border.all(color: t.browseBorder),
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        '整体：${item.overallFeedback} · 解释：${item.explanationFeedback} · 破冰：${item.icebreakerFeedback} · 下周：${item.nextWeekIntention}',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: t.textSecondary,
-                          height: 1.45,
-                        ),
-                      ),
-                      if (item.note.trim().isNotEmpty) ...[
-                        const SizedBox(height: 4),
-                        Text(
-                          '备注：${item.note}',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: t.textSecondary,
-                            height: 1.45,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${_formatTime(item.createdAt)} · ${item.matchHeadline}',
+                            style: Theme.of(context).textTheme.labelLarge
+                                ?.copyWith(
+                                  color: t.textPrimary,
+                                  fontWeight: FontWeight.w700,
+                                ),
                           ),
-                        ),
-                      ],
-                    ],
+                          const SizedBox(height: 4),
+                          Text(
+                            '整体：${item.overallFeedback} · 解释：${item.explanationFeedback} · 破冰：${item.icebreakerFeedback} · 下周：${item.nextWeekIntention}',
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(
+                                  color: t.textSecondary,
+                                  height: 1.45,
+                                ),
+                          ),
+                          if (item.note.trim().isNotEmpty) ...[
+                            const SizedBox(height: 4),
+                            Text(
+                              '备注：${item.note}',
+                              style: Theme.of(context).textTheme.bodySmall
+                                  ?.copyWith(
+                                    color: t.textSecondary,
+                                    height: 1.45,
+                                  ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ),
         ],
       ),
     );
@@ -272,18 +288,17 @@ class _MatchFeedbackPageState extends ConsumerState<MatchFeedbackPage> {
                       children: [
                         Text(
                           '暂无当前匹配结果',
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            color: t.textPrimary,
-                            fontWeight: FontWeight.w800,
-                          ),
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(
+                                color: t.textPrimary,
+                                fontWeight: FontWeight.w800,
+                              ),
                         ),
                         const SizedBox(height: 6),
                         Text(
                           '你依然可以先填写反馈，记录这次慢约会流程的感受。',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: t.textSecondary,
-                            height: 1.45,
-                          ),
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(color: t.textSecondary, height: 1.45),
                         ),
                       ],
                     ),
@@ -412,5 +427,3 @@ class _MatchFeedbackPageState extends ConsumerState<MatchFeedbackPage> {
     );
   }
 }
-
-

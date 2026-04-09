@@ -39,3 +39,4 @@
 ## Archive
 - `archive/legacy_2026-03/`: 历史版本文档归档（保留，不作为当前执行入口）
 - `archive/legacy_2026-03/docs_pruned_2026-03-28/`: 本轮精简归档（早期/重复计划与架构快照）
+- `archive/legacy_2026-04/DEVELOPMENT_PLAN_2_0_AND_EARLIER_ARCHIVE.md`: 2.0 及更早版本开发计划统一归档

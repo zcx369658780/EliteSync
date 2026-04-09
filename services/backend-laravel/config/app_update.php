@@ -2,11 +2,11 @@
 
 return [
     'android' => [
-        'latest_version_name' => env('ANDROID_LATEST_VERSION_NAME', '0.02.09'),
-        'latest_version_code' => (int) env('ANDROID_LATEST_VERSION_CODE', 209),
+        'latest_version_name' => env('ANDROID_LATEST_VERSION_NAME', '0.03.01'),
+        'latest_version_code' => (int) env('ANDROID_LATEST_VERSION_CODE', 301),
         'min_supported_version_name' => env('ANDROID_MIN_SUPPORTED_VERSION_NAME', '0.01.01'),
-        'download_url' => env('ANDROID_DOWNLOAD_URL', 'http://101.133.161.203/downloads/elitesync-0.02.09.apk'),
-        'changelog' => env('ANDROID_CHANGELOG', '完成 2.9 Beta 上线准备版：补齐健康检查、版本检查、回归门禁、弱网兜底、灰度/回滚演练、压力抽检与连续切页稳定性；发布配置与服务端版本检查同步到 0.02.09.'),
+        'download_url' => env('ANDROID_DOWNLOAD_URL', 'http://101.133.161.203/downloads/elitesync-0.03.01.apk'),
+        'changelog' => env('ANDROID_CHANGELOG', '完成 3.0 -> 3.1 阶段收口：优化首页关键路径、匹配解释与首聊入口，补齐消息页真实空态 / mock 非空态验收证据；完成账号分层、状态发布 / 广场、管理员控制面与匹配调试回查，并同步版本检查与更新配置到 0.03.01.'),
         'sha256' => env('ANDROID_APK_SHA256', ''),
         'force_update' => (bool) env('ANDROID_FORCE_UPDATE', false),
     ],

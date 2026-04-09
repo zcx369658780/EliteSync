@@ -2,12 +2,14 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_elitesync_module/core/storage/local_storage_service.dart';
 import 'package:flutter_elitesync_module/core/storage/cache_keys.dart';
 import 'package:flutter_elitesync_module/design_system/components/bars/app_top_bar.dart';
 import 'package:flutter_elitesync_module/design_system/components/buttons/app_secondary_button.dart';
 import 'package:flutter_elitesync_module/design_system/components/feedback/app_feedback.dart';
 import 'package:flutter_elitesync_module/design_system/components/layout/page_title_rail.dart';
 import 'package:flutter_elitesync_module/design_system/components/layout/section_reveal.dart';
+import 'package:flutter_elitesync_module/design_system/components/states/app_empty_state.dart';
 import 'package:flutter_elitesync_module/design_system/theme/app_theme_extensions.dart';
 import 'package:flutter_elitesync_module/features/chat/domain/entities/message_entity.dart';
 import 'package:flutter_elitesync_module/features/chat/presentation/providers/chat_providers.dart';
@@ -21,7 +23,11 @@ import 'package:flutter_elitesync_module/shared/providers/app_providers.dart';
 import 'package:flutter_elitesync_module/shared/providers/performance_mode_provider.dart';
 
 class ChatRoomPage extends ConsumerStatefulWidget {
-  const ChatRoomPage({super.key, required this.conversationId, required this.title});
+  const ChatRoomPage({
+    super.key,
+    required this.conversationId,
+    required this.title,
+  });
 
   final String conversationId;
   final String title;
@@ -34,16 +40,19 @@ class _ChatRoomPageState extends ConsumerState<ChatRoomPage> {
   final _controller = TextEditingController();
   final _listController = ScrollController();
   final List<MessageEntity> _localMessages = <MessageEntity>[];
+  late final LocalStorageService _localStorage;
   Timer? _draftSaveDebounce;
   bool _sending = false;
   int _lastMergedCount = 0;
 
-  String get _draftKey => '${CacheKeys.chatDraftPrefix}${widget.conversationId}';
+  String get _draftKey =>
+      '${CacheKeys.chatDraftPrefix}${widget.conversationId}';
   int? get _peerId => int.tryParse(widget.conversationId);
 
   @override
   void initState() {
     super.initState();
+    _localStorage = ref.read(localStorageProvider);
     _controller.addListener(_onDraftChanged);
     _loadDraft();
   }
@@ -59,7 +68,7 @@ class _ChatRoomPageState extends ConsumerState<ChatRoomPage> {
   }
 
   Future<void> _loadDraft() async {
-    final draft = await ref.read(localStorageProvider).getString(_draftKey);
+    final draft = await _localStorage.getString(_draftKey);
     if (!mounted || draft == null || draft.isEmpty) return;
     _controller.text = draft;
     _controller.selection = TextSelection.collapsed(offset: draft.length);
@@ -67,23 +76,26 @@ class _ChatRoomPageState extends ConsumerState<ChatRoomPage> {
 
   void _onDraftChanged() {
     _draftSaveDebounce?.cancel();
-    _draftSaveDebounce = Timer(const Duration(milliseconds: 220), _persistDraftNow);
+    _draftSaveDebounce = Timer(
+      const Duration(milliseconds: 220),
+      _persistDraftNow,
+    );
   }
 
   Future<void> _persistDraftNow() async {
     final text = _controller.text.trim();
-    final local = ref.read(localStorageProvider);
     if (text.isEmpty) {
-      await local.remove(_draftKey);
+      await _localStorage.remove(_draftKey);
       return;
     }
-    await local.setString(_draftKey, text);
+    await _localStorage.setString(_draftKey, text);
   }
 
   void _scheduleScrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!_listController.hasClients) return;
-      final liteMode = ref.read(performanceLiteModeProvider).asData?.value ?? false;
+      final liteMode =
+          ref.read(performanceLiteModeProvider).asData?.value ?? false;
       final max = _listController.position.maxScrollExtent;
       if (liteMode) {
         _listController.jumpTo(max);
@@ -101,7 +113,7 @@ class _ChatRoomPageState extends ConsumerState<ChatRoomPage> {
     final text = _controller.text.trim();
     if (text.isEmpty || _sending) return;
     _controller.clear();
-    await ref.read(localStorageProvider).remove(_draftKey);
+    await _localStorage.remove(_draftKey);
     final optimistic = MessageEntity(
       id: 'local-${DateTime.now().millisecondsSinceEpoch}',
       mine: true,
@@ -114,11 +126,18 @@ class _ChatRoomPageState extends ConsumerState<ChatRoomPage> {
     });
     _scheduleScrollToBottom();
     try {
-      await ref.read(sendMessageUseCaseProvider).call(widget.conversationId, text);
+      await ref
+          .read(sendMessageUseCaseProvider)
+          .call(widget.conversationId, text);
       ref.invalidate(chatRoomMessagesProvider(widget.conversationId));
     } catch (_) {
       if (!mounted) return;
-      AppFeedback.showError(context, '发送失败，请稍后重试');
+      setState(() {
+        _localMessages.removeWhere((m) => m.id == optimistic.id);
+      });
+      _controller.text = text;
+      _controller.selection = TextSelection.collapsed(offset: text.length);
+      AppFeedback.showError(context, '发送失败，已恢复输入框，请检查网络后重试');
     } finally {
       if (mounted) {
         setState(() => _sending = false);
@@ -136,20 +155,19 @@ class _ChatRoomPageState extends ConsumerState<ChatRoomPage> {
     await ReportBlockSheet.show(
       context,
       targetName: widget.title,
-      onReport: ({
-        required String reasonCode,
-        String? detail,
-      }) async {
+      onReport: ({required String reasonCode, String? detail}) async {
         await remote.reportUser(
           targetUserId: peerId,
           category: 'user',
           reasonCode: reasonCode,
+          sourcePage: 'chat_room',
           detail: detail,
         );
       },
       onBlock: () async {
         await remote.blockUser(
           blockedUserId: peerId,
+          sourcePage: 'chat_room',
           reasonCode: 'chat_menu',
           detail: 'from_chat_room',
         );
@@ -161,7 +179,6 @@ class _ChatRoomPageState extends ConsumerState<ChatRoomPage> {
   Widget build(BuildContext context) {
     final async = ref.watch(chatRoomMessagesProvider(widget.conversationId));
     final connection = ref.watch(chatConnectionProvider);
-    final liteMode = ref.watch(performanceLiteModeProvider).asData?.value ?? false;
     final t = context.appTokens;
 
     return Scaffold(
@@ -171,7 +188,8 @@ class _ChatRoomPageState extends ConsumerState<ChatRoomPage> {
         actions: [
           IconButton(
             tooltip: '刷新消息',
-            onPressed: () => ref.invalidate(chatRoomMessagesProvider(widget.conversationId)),
+            onPressed: () =>
+                ref.invalidate(chatRoomMessagesProvider(widget.conversationId)),
             icon: const Icon(Icons.refresh_rounded),
           ),
           PopupMenuButton<String>(
@@ -207,7 +225,7 @@ class _ChatRoomPageState extends ConsumerState<ChatRoomPage> {
             child: const SectionReveal(
               child: PageTitleRail(
                 title: '慢慢聊',
-                subtitle: '认真表达，关系会更稳定',
+                subtitle: '先发一条轻问候，再围绕对方回应继续展开',
               ),
             ),
           ),
@@ -226,24 +244,41 @@ class _ChatRoomPageState extends ConsumerState<ChatRoomPage> {
                     children: [
                       Text(
                         '消息加载失败',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(
                               color: t.textPrimary,
                               fontWeight: FontWeight.w700,
                             ),
                       ),
                       SizedBox(height: t.spacing.xs),
                       Text(
-                        '$e',
+                        '当前网络或服务暂不可用。你可以先重试，或返回会话列表后再进入。',
                         textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: t.textSecondary,
-                            ),
+                        style: Theme.of(
+                          context,
+                        ).textTheme.bodySmall?.copyWith(color: t.textSecondary),
                       ),
                       SizedBox(height: t.spacing.md),
-                      AppSecondaryButton(
-                        label: '重试',
-                        fullWidth: true,
-                        onPressed: () => ref.invalidate(chatRoomMessagesProvider(widget.conversationId)),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: AppSecondaryButton(
+                              label: '返回会话列表',
+                              fullWidth: true,
+                              onPressed: () => Navigator.of(context).maybePop(),
+                            ),
+                          ),
+                          SizedBox(width: t.spacing.sm),
+                          Expanded(
+                            child: AppSecondaryButton(
+                              label: '重试',
+                              fullWidth: true,
+                              onPressed: () => ref.invalidate(
+                                chatRoomMessagesProvider(widget.conversationId),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -251,21 +286,42 @@ class _ChatRoomPageState extends ConsumerState<ChatRoomPage> {
               ),
               data: (initialMessages) {
                 final localPending = _localMessages.where((m) {
-                  return !initialMessages.any((r) => r.mine == m.mine && r.text == m.text);
+                  return !initialMessages.any(
+                    (r) => r.mine == m.mine && r.text == m.text,
+                  );
                 }).toList();
                 final merged = [...initialMessages, ...localPending];
+                if (merged.isEmpty) {
+                  return ListView(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: t.spacing.pageHorizontal,
+                      vertical: t.spacing.lg,
+                    ),
+                    children: [
+                      AppEmptyState(
+                        title: '还没有消息',
+                        description: '先发一条轻问候，聊聊今天的状态或最近一次放松时刻。',
+                        actionLabel: '返回会话列表',
+                        onAction: () => Navigator.of(context).maybePop(),
+                      ),
+                    ],
+                  );
+                }
                 if (merged.length != _lastMergedCount) {
                   _lastMergedCount = merged.length;
                   _scheduleScrollToBottom();
                 }
                 return RefreshIndicator(
                   onRefresh: () async {
-                    ref.invalidate(chatRoomMessagesProvider(widget.conversationId));
-                    await ref.read(chatRoomMessagesProvider(widget.conversationId).future);
+                    ref.invalidate(
+                      chatRoomMessagesProvider(widget.conversationId),
+                    );
+                    await ref.read(
+                      chatRoomMessagesProvider(widget.conversationId).future,
+                    );
                   },
                   child: ListView.builder(
                     controller: _listController,
-                    cacheExtent: liteMode ? 400 : 1200,
                     padding: EdgeInsets.symmetric(
                       horizontal: t.spacing.pageHorizontal,
                       vertical: t.spacing.sm,

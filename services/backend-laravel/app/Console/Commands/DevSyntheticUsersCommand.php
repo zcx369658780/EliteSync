@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\QuestionnaireAnswer;
 use App\Models\QuestionnaireQuestion;
+use App\Models\StatusPost;
 use App\Models\User;
 use App\Services\ChineseZodiacService;
 use Illuminate\Console\Command;
@@ -120,11 +121,17 @@ class DevSyntheticUsersCommand extends Command
                     'phone' => $phone,
                     'name' => "SYN_{$batch}_".str_pad((string) ($i + 1), 4, '0', STR_PAD_LEFT),
                     'password' => $passwordHash,
+                    'role' => 'user',
+                    'account_type' => 'test',
                     'verify_status' => 'approved',
                     'realname_verified' => true,
                     'disabled' => false,
                     'is_synthetic' => true,
                     'synthetic_batch' => $batch,
+                    'is_match_eligible' => true,
+                    'is_square_visible' => true,
+                    'exclude_from_metrics' => true,
+                    'banned_reason' => null,
                     'birthday' => $birthday,
                     'zodiac_animal' => $zodiacService->fromBirthdayString($birthday),
                     'gender' => $gender,
@@ -138,6 +145,17 @@ class DevSyntheticUsersCommand extends Command
                     'private_birth_lng' => $coord['lng'],
                 ]);
                 $created++;
+
+                StatusPost::create([
+                    'author_user_id' => (int) $user->id,
+                    'title' => $this->syntheticStatusTitle($city, $i + 1),
+                    'body' => $this->syntheticStatusBody($city, $goal, $gender, $zodiac),
+                    'location_name' => $city,
+                    'visibility' => 'public',
+                    'is_deleted' => false,
+                    'deleted_by_user_id' => null,
+                    'deleted_at' => null,
+                ]);
 
                 if ($withAnswers) {
                     foreach ($questions as $q) {
@@ -254,6 +272,35 @@ class DevSyntheticUsersCommand extends Command
             $out .= $alphabet[random_int(0, $max)];
         }
         return $out;
+    }
+
+    private function syntheticStatusTitle(string $city, int $index): string
+    {
+        $city = trim($city);
+        if ($city === '') {
+            $city = '同城';
+        }
+        $templates = [
+            "今天在{$city}想找个人聊聊天",
+            "{$city}的晚风很适合认识新朋友",
+            "刚下班，想在{$city}找个轻松话题",
+            "{$city}周末有没有适合散步的地方",
+        ];
+
+        return $templates[($index - 1) % count($templates)];
+    }
+
+    private function syntheticStatusBody(string $city, string $goal, string $gender, string $zodiac): string
+    {
+        $goalText = match ($goal) {
+            'marriage' => '认真看待关系',
+            'dating' => '想认真了解彼此',
+            default => '先从轻松聊天开始',
+        };
+        $genderText = $gender === 'female' ? '女生' : '男生';
+        $city = trim($city) === '' ? '同城' : trim($city);
+
+        return "{$genderText}，{$goalText}，在{$city}等一个自然的开场。{$zodiac}，今天想先聊轻松一点的话题。";
     }
 
     /**

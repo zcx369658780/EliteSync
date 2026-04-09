@@ -10,6 +10,7 @@ import 'package:flutter_elitesync_module/design_system/components/brand/browse_t
 import 'package:flutter_elitesync_module/design_system/components/brand/category_tab_strip.dart';
 import 'package:flutter_elitesync_module/design_system/components/layout/browse_scaffold.dart';
 import 'package:flutter_elitesync_module/design_system/components/feedback/app_feedback.dart';
+import 'package:flutter_elitesync_module/design_system/components/cards/app_info_section_card.dart';
 import 'package:flutter_elitesync_module/design_system/components/states/app_empty_state.dart';
 import 'package:flutter_elitesync_module/design_system/components/states/app_error_state.dart';
 import 'package:flutter_elitesync_module/design_system/components/states/app_loading_skeleton.dart';
@@ -19,6 +20,8 @@ import 'package:flutter_elitesync_module/features/home/domain/entities/home_feed
 import 'package:flutter_elitesync_module/features/home/domain/entities/home_shortcut_entity.dart';
 import 'package:flutter_elitesync_module/features/home/presentation/providers/home_provider.dart';
 import 'package:flutter_elitesync_module/features/home/presentation/widgets/media_feed_card.dart';
+import 'package:flutter_elitesync_module/features/status/domain/entities/status_post_entity.dart';
+import 'package:flutter_elitesync_module/features/status/presentation/providers/status_posts_provider.dart';
 import 'package:flutter_elitesync_module/shared/providers/app_providers.dart';
 import 'package:flutter_elitesync_module/shared/providers/performance_mode_provider.dart';
 
@@ -28,6 +31,8 @@ class HomePage extends ConsumerStatefulWidget {
   @override
   ConsumerState<HomePage> createState() => _HomePageState();
 }
+
+enum _HomeCtaState { questionnaire, profile, match, discover }
 
 class _HomePageState extends ConsumerState<HomePage>
     with AutomaticKeepAliveClientMixin<HomePage> {
@@ -70,7 +75,9 @@ class _HomePageState extends ConsumerState<HomePage>
   }
 
   Future<void> _saveUiPrefs() async {
-    await ref.read(localStorageProvider).setInt(CacheKeys.homeSelectedTab, _selectedTabIndex);
+    await ref
+        .read(localStorageProvider)
+        .setInt(CacheKeys.homeSelectedTab, _selectedTabIndex);
   }
 
   Future<void> _loadSearchHistory() async {
@@ -81,7 +88,11 @@ class _HomePageState extends ConsumerState<HomePage>
       final decoded = jsonDecode(raw);
       if (decoded is List) {
         setState(() {
-          _recentSearches = decoded.map((e) => e.toString()).where((e) => e.isNotEmpty).take(8).toList();
+          _recentSearches = decoded
+              .map((e) => e.toString())
+              .where((e) => e.isNotEmpty)
+              .take(8)
+              .toList();
         });
       }
     } catch (_) {}
@@ -90,9 +101,14 @@ class _HomePageState extends ConsumerState<HomePage>
   Future<void> _addSearchHistory(String term) async {
     final t = term.trim();
     if (t.isEmpty) return;
-    final next = [t, ..._recentSearches.where((e) => e.toLowerCase() != t.toLowerCase())].take(8).toList();
+    final next = [
+      t,
+      ..._recentSearches.where((e) => e.toLowerCase() != t.toLowerCase()),
+    ].take(8).toList();
     setState(() => _recentSearches = next);
-    await ref.read(localStorageProvider).setString(CacheKeys.homeSearchHistory, jsonEncode(next));
+    await ref
+        .read(localStorageProvider)
+        .setString(CacheKeys.homeSearchHistory, jsonEncode(next));
   }
 
   void _onSearchChanged(String value) {
@@ -140,6 +156,7 @@ class _HomePageState extends ConsumerState<HomePage>
   Widget build(BuildContext context) {
     super.build(context);
     final asyncState = ref.watch(homeProvider);
+    final statusAsync = ref.watch(statusPostsProvider);
 
     return asyncState.when(
       loading: () => const AppLoadingSkeleton(lines: 8),
@@ -150,13 +167,15 @@ class _HomePageState extends ConsumerState<HomePage>
         onRetry: () => ref.read(homeProvider.notifier).refresh(),
       ),
       data: (state) {
-        final liteMode = ref.watch(performanceLiteModeProvider).asData?.value ?? false;
+        final liteMode =
+            ref.watch(performanceLiteModeProvider).asData?.value ?? false;
         return ValueListenableBuilder<String>(
           valueListenable: _searchQueryNotifier,
           builder: (context, searchQuery, _) {
             final t = context.appTokens;
             final showRecentChips = _searchFocused && searchQuery.isEmpty;
             final filteredFeed = _filterFeed(state.feed);
+            final ctaState = _resolveCtaState(state.shortcuts);
             return BrowseScaffold(
               header: Column(
                 children: [
@@ -168,7 +187,8 @@ class _HomePageState extends ConsumerState<HomePage>
                     onChanged: _onSearchChanged,
                     onSubmitted: (v) => _onSearchSubmitted(v),
                     onClear: _clearSearch,
-                    onRightActionTap: () => context.push(AppRouteNames.discover),
+                    onRightActionTap: () =>
+                        context.push(AppRouteNames.discover),
                   ),
                   AnimatedSize(
                     duration: liteMode ? t.motionFast : t.motionNormal,
@@ -182,7 +202,10 @@ class _HomePageState extends ConsumerState<HomePage>
                                   Expanded(
                                     child: Text(
                                       '已筛选关键词: $searchQuery（找到 ${filteredFeed.length} 条）',
-                                      style: Theme.of(context).textTheme.bodySmall?.copyWith(color: t.textSecondary),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall
+                                          ?.copyWith(color: t.textSecondary),
                                     ),
                                   ),
                                   AppChoiceChip(
@@ -195,32 +218,36 @@ class _HomePageState extends ConsumerState<HomePage>
                             ],
                           )
                         : (showRecentChips && _recentSearches.isNotEmpty)
-                            ? Column(
-                                children: [
-                                  SizedBox(height: t.spacing.xs),
-                                  SizedBox(
-                                    height: 32,
-                                    child: ListView.separated(
-                                      scrollDirection: Axis.horizontal,
-                                      itemCount: _recentSearches.length,
-                                      separatorBuilder: (_, index) => SizedBox(width: t.spacing.xs),
-                                      itemBuilder: (context, index) {
-                                        final term = _recentSearches[index];
-                                        return AppChoiceChip(
-                                          label: term,
-                                          onTap: () {
-                                            _searchController.text = term;
-                                            _searchController.selection = TextSelection.collapsed(offset: term.length);
-                                            _onSearchChanged(term);
-                                            _searchFocusNode.unfocus();
-                                          },
-                                        );
+                        ? Column(
+                            children: [
+                              SizedBox(height: t.spacing.xs),
+                              SizedBox(
+                                height: 32,
+                                child: ListView.separated(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: _recentSearches.length,
+                                  separatorBuilder: (_, index) =>
+                                      SizedBox(width: t.spacing.xs),
+                                  itemBuilder: (context, index) {
+                                    final term = _recentSearches[index];
+                                    return AppChoiceChip(
+                                      label: term,
+                                      onTap: () {
+                                        _searchController.text = term;
+                                        _searchController.selection =
+                                            TextSelection.collapsed(
+                                              offset: term.length,
+                                            );
+                                        _onSearchChanged(term);
+                                        _searchFocusNode.unfocus();
                                       },
-                                    ),
-                                  ),
-                                ],
-                              )
-                            : const SizedBox.shrink(),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          )
+                        : const SizedBox.shrink(),
                   ),
                   SizedBox(height: t.spacing.sm),
                   CategoryTabStrip(
@@ -230,7 +257,13 @@ class _HomePageState extends ConsumerState<HomePage>
                       _searchFocusNode.unfocus();
                       setState(() => _selectedTabIndex = index);
                       _saveUiPrefs();
-                      const tabKeys = ['recommend', 'nearby', 'topic', 'event', 'inspire'];
+                      const tabKeys = [
+                        'recommend',
+                        'nearby',
+                        'topic',
+                        'event',
+                        'inspire',
+                      ];
                       ref.read(homeProvider.notifier).switchTab(tabKeys[index]);
                       if (_scrollController.hasClients) {
                         _scrollController.animateTo(
@@ -248,20 +281,37 @@ class _HomePageState extends ConsumerState<HomePage>
                 child: ListView(
                   controller: _scrollController,
                   cacheExtent: liteMode ? 480 : 1200,
-                  padding: EdgeInsets.fromLTRB(0, t.spacing.xs, 0, t.spacing.huge),
-                children: [
-                  _ShortcutRow(
-                    shortcuts: state.shortcuts,
-                    onShortcutTap: (item) => _handleShortcutTap(context, item),
+                  padding: EdgeInsets.fromLTRB(
+                    0,
+                    t.spacing.xs,
+                    0,
+                    t.spacing.huge,
                   ),
-                  SizedBox(height: t.spacing.sm),
-                  _HomeHeroCard(
-                    onTapPrimary: () => context.go(AppRouteNames.match),
-                    onTapSecondary: () => context.push(AppRouteNames.questionnaire),
-                  ),
-                  SizedBox(height: t.spacing.md),
-                  Text(
-                    '${_tabs[_selectedTabIndex]}精选',
+                  children: [
+                    _ShortcutRow(
+                      shortcuts: state.shortcuts,
+                      onShortcutTap: (item) =>
+                          _handleShortcutTap(context, item),
+                    ),
+                    SizedBox(height: t.spacing.sm),
+                    _StatusPreviewSection(
+                      statusAsync: statusAsync,
+                      onTapMore: () => context.push(AppRouteNames.statusSquare),
+                      onRefresh: () => ref.invalidate(statusPostsProvider),
+                    ),
+                    SizedBox(height: t.spacing.sm),
+                    _HomeHeroCard(
+                      title: _heroTitle(ctaState),
+                      subtitle: _heroSubtitle(ctaState),
+                      primaryLabel: _primaryCtaLabel(ctaState),
+                      secondaryLabel: _secondaryCtaLabel(ctaState),
+                      onTapPrimary: () => _openPrimaryPath(context, ctaState),
+                      onTapSecondary: () =>
+                          _openSecondaryPath(context, ctaState),
+                    ),
+                    SizedBox(height: t.spacing.md),
+                    Text(
+                      '${_tabs[_selectedTabIndex]}精选',
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         color: t.textPrimary,
                         fontWeight: FontWeight.w800,
@@ -269,7 +319,12 @@ class _HomePageState extends ConsumerState<HomePage>
                     ),
                     SizedBox(height: t.spacing.sm),
                     if (filteredFeed.isEmpty)
-                      const AppEmptyState(title: '暂无推荐', description: '完成问卷后将为你推荐更多内容')
+                      AppEmptyState(
+                        title: _emptyTitle(ctaState),
+                        description: _emptyDescription(ctaState),
+                        actionLabel: _primaryCtaLabel(ctaState),
+                        onAction: () => _openPrimaryPath(context, ctaState),
+                      )
                     else
                       _MasonryFeed(
                         feed: filteredFeed,
@@ -284,7 +339,9 @@ class _HomePageState extends ConsumerState<HomePage>
                       ),
                     if (state.isLoadingMore) ...[
                       SizedBox(height: t.spacing.sm),
-                      const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                      const Center(
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
                     ],
                   ],
                 ),
@@ -311,12 +368,13 @@ class _HomePageState extends ConsumerState<HomePage>
     final ids = items.map((e) => e.id).toSet();
     _searchIndex.removeWhere((key, _) => !ids.contains(key));
     for (final item in items) {
-      _searchIndex.putIfAbsent(
-        item.id,
-        () => '${item.title} ${item.summary} ${item.author} ${item.tags.join(' ')}'.toLowerCase(),
-      );
+      _searchIndex[item.id] =
+          '${item.title} ${item.summary} ${item.author} ${item.tags.join(' ')}'
+              .toLowerCase();
     }
-    final filtered = items.where((e) => (_searchIndex[e.id] ?? '').contains(q)).toList();
+    final filtered = items
+        .where((e) => (_searchIndex[e.id] ?? '').contains(q))
+        .toList();
     _cachedFilteredItems = filtered;
     return filtered;
   }
@@ -325,6 +383,11 @@ class _HomePageState extends ConsumerState<HomePage>
     final action = (item.action ?? '').trim().toLowerCase();
     final target = (item.target ?? '').trim();
     if (action == 'route' && target.isNotEmpty) {
+      if (!_isSafeRouteTarget(target)) {
+        AppFeedback.showInfo(context, '入口暂不可用，已为你打开发现页');
+        context.go(AppRouteNames.discover);
+        return;
+      }
       const tabRootRoutes = <String>{
         AppRouteNames.home,
         AppRouteNames.discover,
@@ -350,6 +413,9 @@ class _HomePageState extends ConsumerState<HomePage>
         break;
       case 'astro':
         context.push(AppRouteNames.astroProfile);
+        break;
+      case 'status':
+        context.push(AppRouteNames.statusSquare);
         break;
       case 'profile':
         context.push(AppRouteNames.editProfile);
@@ -379,10 +445,36 @@ class _HomePageState extends ConsumerState<HomePage>
     }
   }
 
+  bool _isSafeRouteTarget(String target) {
+    if (!target.startsWith('/')) return false;
+    const allowedPrefixes = <String>{
+      AppRouteNames.home,
+      AppRouteNames.discover,
+      AppRouteNames.match,
+      AppRouteNames.messages,
+      AppRouteNames.profile,
+      AppRouteNames.statusSquare,
+      AppRouteNames.questionnaire,
+      AppRouteNames.editProfile,
+      AppRouteNames.astroProfile,
+      AppRouteNames.settings,
+      AppRouteNames.aboutUpdate,
+      AppRouteNames.contentDetail,
+    };
+    for (final prefix in allowedPrefixes) {
+      if (target == prefix || target.startsWith('$prefix/')) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   Future<void> _rememberPreferredTag(HomeFeedEntity item) async {
     if (item.tags.isEmpty) return;
     final local = ref.read(localStorageProvider);
-    final map = await local.getJson(CacheKeys.contentPreferredTagsMap) ?? <String, dynamic>{};
+    final map =
+        await local.getJson(CacheKeys.contentPreferredTagsMap) ??
+        <String, dynamic>{};
     final next = <String, int>{};
     for (final e in map.entries) {
       final k = e.key.trim();
@@ -397,12 +489,146 @@ class _HomePageState extends ConsumerState<HomePage>
       if (tag.isEmpty) continue;
       next[tag] = (next[tag] ?? 0) + 5;
     }
-    final ranked = next.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
+    final ranked = next.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
     final top = ranked.take(8).toList();
-    await local.setJson(CacheKeys.contentPreferredTagsMap, {for (final e in top) e.key: e.value});
+    await local.setJson(CacheKeys.contentPreferredTagsMap, {
+      for (final e in top) e.key: e.value,
+    });
     if (top.isNotEmpty) {
       await local.setString(CacheKeys.contentPreferredTag, top.first.key);
     }
+  }
+
+  _HomeCtaState _resolveCtaState(List<HomeShortcutEntity> shortcuts) {
+    if (_hasShortcut(shortcuts, {'questionnaire'})) {
+      return _HomeCtaState.questionnaire;
+    }
+    if (_hasShortcut(shortcuts, {'profile'})) {
+      return _HomeCtaState.profile;
+    }
+    if (_hasShortcut(shortcuts, {'match', 'matching'})) {
+      return _HomeCtaState.match;
+    }
+    return _HomeCtaState.discover;
+  }
+
+  void _openPrimaryPath(BuildContext context, _HomeCtaState state) {
+    switch (state) {
+      case _HomeCtaState.questionnaire:
+        context.push(AppRouteNames.questionnaire);
+        return;
+      case _HomeCtaState.profile:
+        context.push(AppRouteNames.editProfile);
+        return;
+      case _HomeCtaState.match:
+        context.go(AppRouteNames.match);
+        return;
+      case _HomeCtaState.discover:
+        context.go(AppRouteNames.discover);
+        return;
+    }
+  }
+
+  String _primaryCtaLabel(_HomeCtaState state) {
+    switch (state) {
+      case _HomeCtaState.questionnaire:
+        return '继续完善问卷';
+      case _HomeCtaState.profile:
+        return '先完善资料';
+      case _HomeCtaState.match:
+        return '查看本周匹配';
+      case _HomeCtaState.discover:
+        return '查看推荐内容';
+    }
+  }
+
+  String _secondaryCtaLabel(_HomeCtaState state) {
+    switch (state) {
+      case _HomeCtaState.questionnaire:
+        return '先完善资料';
+      case _HomeCtaState.profile:
+        return '继续问卷';
+      case _HomeCtaState.match:
+        return '继续完善问卷';
+      case _HomeCtaState.discover:
+        return '完善资料';
+    }
+  }
+
+  void _openSecondaryPath(BuildContext context, _HomeCtaState state) {
+    switch (state) {
+      case _HomeCtaState.questionnaire:
+        context.push(AppRouteNames.editProfile);
+        return;
+      case _HomeCtaState.profile:
+        context.push(AppRouteNames.questionnaire);
+        return;
+      case _HomeCtaState.match:
+        context.push(AppRouteNames.questionnaire);
+        return;
+      case _HomeCtaState.discover:
+        context.push(AppRouteNames.editProfile);
+        return;
+    }
+  }
+
+  String _heroTitle(_HomeCtaState state) {
+    switch (state) {
+      case _HomeCtaState.questionnaire:
+        return '先完成问卷，更快看到合适的人';
+      case _HomeCtaState.profile:
+        return '补全资料，匹配会更精准';
+      case _HomeCtaState.match:
+        return '你有新的匹配结果可查看';
+      case _HomeCtaState.discover:
+        return '今天有新的推荐内容';
+    }
+  }
+
+  String _heroSubtitle(_HomeCtaState state) {
+    switch (state) {
+      case _HomeCtaState.questionnaire:
+        return '先补齐关键问卷，再看匹配解释和行动建议';
+      case _HomeCtaState.profile:
+        return '补全生日、出生地等信息，可提升推荐可信度';
+      case _HomeCtaState.match:
+        return '建议先查看匹配亮点，再决定是否进入进一步交流';
+      case _HomeCtaState.discover:
+        return '可以先浏览精选，再返回完善问卷和资料';
+    }
+  }
+
+  String _emptyTitle(_HomeCtaState state) {
+    switch (state) {
+      case _HomeCtaState.questionnaire:
+        return '先完成问卷，系统再为你推荐';
+      case _HomeCtaState.profile:
+        return '先补全资料，推荐会更贴近你';
+      case _HomeCtaState.match:
+      case _HomeCtaState.discover:
+        return '当前暂无推荐内容';
+    }
+  }
+
+  String _emptyDescription(_HomeCtaState state) {
+    switch (state) {
+      case _HomeCtaState.questionnaire:
+        return '完成问卷后，将自动生成更准确的推荐与匹配解释';
+      case _HomeCtaState.profile:
+        return '完善资料后，首页内容会按你的状态优先更新';
+      case _HomeCtaState.match:
+      case _HomeCtaState.discover:
+        return '可能是弱网或冷启动，请下拉刷新，或先去完成问卷与资料';
+    }
+  }
+
+  bool _hasShortcut(List<HomeShortcutEntity> shortcuts, Set<String> keys) {
+    for (final item in shortcuts) {
+      final key = item.key.trim().toLowerCase();
+      if (keys.contains(key)) return true;
+    }
+    return false;
   }
 
   @override
@@ -410,10 +636,7 @@ class _HomePageState extends ConsumerState<HomePage>
 }
 
 class _ShortcutRow extends StatelessWidget {
-  const _ShortcutRow({
-    required this.shortcuts,
-    this.onShortcutTap,
-  });
+  const _ShortcutRow({required this.shortcuts, this.onShortcutTap});
 
   final List<HomeShortcutEntity> shortcuts;
   final ValueChanged<HomeShortcutEntity>? onShortcutTap;
@@ -465,7 +688,11 @@ class _ShortcutRow extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.auto_awesome_rounded, size: 14, color: t.brandPrimary),
+                    Icon(
+                      Icons.auto_awesome_rounded,
+                      size: 14,
+                      color: t.brandPrimary,
+                    ),
                     SizedBox(width: t.spacing.xxs),
                     Text(
                       item.title,
@@ -539,12 +766,160 @@ class _MasonryFeed extends StatelessWidget {
   }
 }
 
+class _StatusPreviewSection extends StatelessWidget {
+  const _StatusPreviewSection({
+    required this.statusAsync,
+    required this.onTapMore,
+    required this.onRefresh,
+  });
+
+  final AsyncValue<List<StatusPostEntity>> statusAsync;
+  final VoidCallback onTapMore;
+  final VoidCallback onRefresh;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.appTokens;
+    return statusAsync.when(
+      loading: () => const AppLoadingSkeleton(lines: 2),
+      error: (e, _) => AppInfoSectionCard(
+        title: '状态广场',
+        subtitle: '服务端状态流',
+        leadingIcon: Icons.dynamic_feed_rounded,
+        child: AppErrorState(
+          title: '状态广场加载失败',
+          description: e.toString(),
+          retryLabel: '重新加载',
+          onRetry: onRefresh,
+        ),
+      ),
+      data: (items) {
+        final posts = items.take(3).toList();
+        if (posts.isEmpty) {
+          return AppInfoSectionCard(
+            title: '状态广场',
+            subtitle: '服务端状态流',
+            leadingIcon: Icons.dynamic_feed_rounded,
+            child: AppEmptyState(
+              title: '还没有公开状态',
+              description: '先去发布一条状态，再回来看广场流。',
+              actionLabel: '发布状态',
+              onAction: onTapMore,
+            ),
+          );
+        }
+
+        return AppInfoSectionCard(
+          title: '状态广场',
+          subtitle: '服务端最新状态',
+          leadingIcon: Icons.dynamic_feed_rounded,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: onTapMore,
+                  child: const Text('查看更多'),
+                ),
+              ),
+              for (var i = 0; i < posts.length; i++) ...[
+                _HomeStatusPreviewCard(post: posts[i], onTap: onTapMore),
+                if (i < posts.length - 1) SizedBox(height: t.spacing.xs),
+              ],
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _HomeStatusPreviewCard extends StatelessWidget {
+  const _HomeStatusPreviewCard({required this.post, required this.onTap});
+
+  final StatusPostEntity post;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.appTokens;
+    final time = MaterialLocalizations.of(
+      context,
+    ).formatShortDate(post.createdAt);
+    return InkWell(
+      borderRadius: BorderRadius.circular(t.radius.lg),
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.all(t.spacing.sm),
+        decoration: BoxDecoration(
+          color: t.surface.withValues(alpha: 0.72),
+          borderRadius: BorderRadius.circular(t.radius.lg),
+          border: Border.all(color: t.overlay.withValues(alpha: 0.22)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    post.title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      color: t.textPrimary,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                Text(
+                  post.visibilityLabel,
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: t.textSecondary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: t.spacing.xs / 2),
+            Text(
+              '${post.authorName} · ${post.locationName.isEmpty ? '同城' : post.locationName} · $time',
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: t.textSecondary),
+            ),
+            SizedBox(height: t.spacing.xs),
+            Text(
+              post.body,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: t.textPrimary,
+                height: 1.4,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _HomeHeroCard extends StatelessWidget {
   const _HomeHeroCard({
+    required this.title,
+    required this.subtitle,
+    required this.primaryLabel,
+    required this.secondaryLabel,
     required this.onTapPrimary,
     required this.onTapSecondary,
   });
 
+  final String title;
+  final String subtitle;
+  final String primaryLabel;
+  final String secondaryLabel;
   final VoidCallback onTapPrimary;
   final VoidCallback onTapSecondary;
 
@@ -571,38 +946,38 @@ class _HomeHeroCard extends StatelessWidget {
           Text(
             '本周关系进展',
             style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  color: t.textSecondary,
-                  fontWeight: FontWeight.w700,
-                ),
+              color: t.textSecondary,
+              fontWeight: FontWeight.w700,
+            ),
           ),
           SizedBox(height: t.spacing.xs),
           Text(
-            '你有新的匹配结果可查看',
+            title,
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: t.textPrimary,
-                  fontWeight: FontWeight.w800,
-                ),
+              color: t.textPrimary,
+              fontWeight: FontWeight.w800,
+            ),
           ),
           SizedBox(height: t.spacing.xxs),
           Text(
-            '建议先查看匹配亮点，再决定是否进入进一步交流',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: t.textSecondary,
-                ),
+            subtitle,
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: t.textSecondary),
           ),
           SizedBox(height: t.spacing.sm),
           Row(
             children: [
               AppChoiceChip(
-                label: '查看本周匹配',
-                leading: const Icon(Icons.favorite_rounded),
+                label: primaryLabel,
+                leading: const Icon(Icons.flag_rounded),
                 selected: true,
                 onTap: onTapPrimary,
               ),
               SizedBox(width: t.spacing.xs),
               AppChoiceChip(
-                label: '继续完善问卷',
-                leading: const Icon(Icons.quiz_rounded),
+                label: secondaryLabel,
+                leading: const Icon(Icons.navigate_next_rounded),
                 onTap: onTapSecondary,
               ),
             ],
@@ -643,9 +1018,9 @@ class _HeroHintChip extends StatelessWidget {
       child: Text(
         label,
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              color: t.textSecondary,
-              fontWeight: FontWeight.w600,
-            ),
+          color: t.textSecondary,
+          fontWeight: FontWeight.w600,
+        ),
       ),
     );
   }

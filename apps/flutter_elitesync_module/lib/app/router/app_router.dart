@@ -36,6 +36,7 @@ import 'package:flutter_elitesync_module/features/questionnaire/presentation/pag
 import 'package:flutter_elitesync_module/features/questionnaire/presentation/pages/questionnaire_result_page.dart';
 import 'package:flutter_elitesync_module/features/verification/presentation/pages/verification_status_page.dart';
 import 'package:flutter_elitesync_module/features/verification/presentation/pages/verification_submit_page.dart';
+import 'package:flutter_elitesync_module/features/status/presentation/pages/status_square_page.dart';
 import 'package:flutter_elitesync_module/shared/providers/navigation_guard_provider.dart';
 import 'package:flutter_elitesync_module/shared/providers/app_providers.dart';
 
@@ -137,6 +138,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             ChatRoomPage(conversationId: id, title: title),
           );
         },
+      ),
+      GoRoute(
+        path: AppRouteNames.statusSquare,
+        pageBuilder: (context, state) =>
+            _fadeSlidePage(state, const StatusSquarePage()),
       ),
       GoRoute(
         path: '${AppRouteNames.contentDetail}/:contentId',

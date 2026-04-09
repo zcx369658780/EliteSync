@@ -56,6 +56,8 @@ class AdminApiTest extends TestCase
             ->assertOk()
             ->assertJsonFragment([
                 'id' => $pendingUser->id,
+                'role' => 'user',
+                'account_type' => 'normal',
                 'verify_status' => 'approved',
                 'disabled' => true,
             ]);

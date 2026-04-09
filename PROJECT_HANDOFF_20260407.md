@@ -9,8 +9,8 @@
 ## 1. 当前项目状态
 
 ### 当前发布版本
-- App 当前对外版本：`0.02.09`
-- Android `versionCode`：`209`
+- App 当前对外版本：`0.03.01`
+- Android `versionCode`：`301`
 - 版本口径与算法版本 `2.8` 已对齐
 
 ### 当前阶段结论
@@ -65,7 +65,7 @@
 - `docs/HANDOFF_2_8_FINAL_20260406.md`
 - `reports/elite_sync_2_7_handoff_20260406.md`（2.7 结项交接）
 - `docs/HANDOFF_2_8_FINAL_20260406.md`（2.8 结项交接）
-- `CHANGELOG_0.02.09.md`（当前发布版本更新说明）
+- `CHANGELOG_0.03.01.md`（当前发布版本更新说明）
 
 ### 当前应优先阅读的顺序
 1. `PROJECT_HANDOFF_20260407.md`
@@ -121,10 +121,10 @@
 ## 4. 发布、回归与版本配置
 
 ### 当前版本号与更新配置
-- App 版本：`0.02.09`
-- VersionCode：`209`
+- App 版本：`0.03.01`
+- VersionCode：`301`
 - 后端版本检查配置：`services/backend-laravel/config/app_update.php`
-- 更新说明文件：`CHANGELOG_0.02.09.md`
+- 更新说明文件：`CHANGELOG_0.03.01.md`
 - Flutter about 更新历史：`apps/flutter_elitesync_module/assets/config/about_update_0_xx.json`
 
 ### Android 版本文件
@@ -211,9 +211,9 @@
 - `ANDROID_FORCE_UPDATE`
 
 #### 当前线上发布版本
-- `0.02.09`
-- `209`
-- 下载地址：`http://101.133.161.203/downloads/elitesync-0.02.09.apk`
+- `0.03.01`
+- `301`
+- 下载地址：`http://101.133.161.203/downloads/elitesync-0.03.01.apk`
 
 ---
 
@@ -234,7 +234,7 @@
 - 2.6.4 稳定性与发布门禁收口
 - 2.7 慢约会核心体验补完
 - 2.8 信任安全与运营后台补完
-- 发布版本已对齐到 `0.02.09`
+- 发布版本已对齐到 `0.03.01`
 
 下一阶段建议直接围绕：
 - `2.9` Beta 上线准备
@@ -250,3 +250,6 @@
 2. `docs/version_plans/README.md`
 3. `docs/DOC_INDEX_CURRENT.md`
 4. `docs/project_memory.md`
+### 2.0 及更早版本总计划归档
+- `docs/archive/legacy_2026-04/DEVELOPMENT_PLAN_2_0_AND_EARLIER_ARCHIVE.md`：2.0 及更早版本开发计划统一归档入口
+- `DEVELOPMENT_PLAN.md`：兼容入口，仅指向归档，不再作为活跃计划

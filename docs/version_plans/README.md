@@ -1,6 +1,6 @@
 # 版本开发计划索引
 
-更新时间：2026-04-08
+更新时间：2026-04-09
 
 本目录用于存放 EliteSync 各版本的开发计划、执行清单与验收材料。`bazi_example/` 已归档清理，后续版本计划统一放在这里。
 
@@ -71,3 +71,5 @@
 - `app算法资源与任务规划_修订版——2026-03-29.md`
 
 - `docs/version_plans/2.9_GEMINI_FINAL_ACCEPTANCE.md`：2.9 Gemini 最终验收报告
+### 2.0 及更早（历史归档）
+- `../archive/legacy_2026-04/DEVELOPMENT_PLAN_2_0_AND_EARLIER_ARCHIVE.md`

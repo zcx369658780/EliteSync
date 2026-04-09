@@ -48,7 +48,7 @@
 - `2.9` 阶段的匹配链路也要短超时兜底：`/api/v1/matches/current`、`/api/v1/match/current`、`/api/v1/matches/{id}/explanation`、`/api/v1/match/{id}/explanation` 这类首进/解释请求不应在慢网下长期阻塞门户页；必要时要快速退回到本地可见状态。
 - `2.9` 阶段的资料页与地点搜索同样要短超时兜底：`/api/v1/profile/basic`、`/api/v1/geo/places` 不应在慢网下长期挂起；编辑资料与出生地搜索要尽快给出可见反馈或本地兜底结果，避免用户误以为页面死掉。
 - `2.9` 阶段的消息链路也要短超时兜底：`/api/v1/match/current`、`/api/v1/match/history`、`/api/v1/messages` 在慢网下不应长期挂起；会话页优先给出快照或明确错误态，不要让消息入口长时间空等。
-- 当前对外发布版本已对齐到 `0.02.09`，版本号、版本检查默认值、更新说明与 APK 文件名必须同步按 `0.02.09 / 209` 维护。
+- 当前对外发布版本已对齐到 `0.03.01`，版本号、版本检查默认值、更新说明与 APK 文件名必须同步按 `0.03.01 / 301` 维护。
 - 当前项目总交接文档已另存为根目录 `PROJECT_HANDOFF_20260407.md`，后续 Claude / Gemini / GPT 顾问交接优先引用该文件。
 - `2.9` Beta 准备新增最小健康检查入口 `/api/v1/app/health` 与关于页服务状态卡，仅用于 Beta 可观测性，不得替代 smoke / regression / release gate，也不得成为第二真源。
 
@@ -89,3 +89,6 @@
 - `2.9` 阶段已完成 health / version/check 的大样本压力抽检（100 轮），两项接口均 0 失败、无明显慢请求；后续 Beta 回归默认把这类大样本压力抽检列为固定量化门槛。
 - `2.9` 阶段已完成最终 Beta 收口摘要落盘到 `docs/version_plans/2.9_BETA_FINAL_SUMMARY.md`；当前剩余事项已收敛为真实 Beta 流量观测与运营实战，不再是代码或门禁缺口。
 - `2.9` 阶段已完成最终验收报告落盘到 `docs/version_plans/2.9_GEMINI_FINAL_ACCEPTANCE.md`；当前可直接交给 Gemini 做最终验收归档。
+- 2.0 及更早版本的早期开发计划已统一归档到 `docs/archive/legacy_2026-04/DEVELOPMENT_PLAN_2_0_AND_EARLIER_ARCHIVE.md`，根目录 `DEVELOPMENT_PLAN.md` 仅保留为兼容入口，不再作为活跃执行计划。
+
+- 3.1 的最终交接截图已从根目录移至 docs/archive/legacy_2026-04/3.1_evidence/，后续仅通过主交接文件与归档目录引用。

@@ -23,6 +23,7 @@ return [
 
     'shortcuts' => [
         ['key' => 'questionnaire', 'title' => '继续问卷', 'action' => 'route', 'target' => '/questionnaire'],
+        ['key' => 'status', 'title' => '发布状态', 'action' => 'route', 'target' => '/status/square'],
         ['key' => 'match', 'title' => '本周匹配', 'action' => 'route', 'target' => '/match'],
         ['key' => 'astro', 'title' => '星盘画像', 'action' => 'route', 'target' => '/profile/astro'],
         ['key' => 'discover', 'title' => '同城活动', 'action' => 'route', 'target' => '/discover'],

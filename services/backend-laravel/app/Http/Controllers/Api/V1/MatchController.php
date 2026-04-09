@@ -660,7 +660,11 @@ class MatchController extends Controller
             actorUserId: (int) $user->id,
             targetUserId: (int) $partnerId,
             matchId: (int) $match->id,
-            payload: ['week_tag' => $match->week_tag]
+            payload: [
+                'week_tag' => $match->week_tag,
+                'app_version' => (string) $request->header('X-App-Version', 'unknown'),
+                'source_page' => (string) $request->header('X-Source-Page', 'unknown'),
+            ]
         );
 
         return response()->json([
@@ -718,7 +722,11 @@ class MatchController extends Controller
             actorUserId: (int) $user->id,
             targetUserId: $partnerId,
             matchId: (int) $match->id,
-            payload: ['like' => (bool) $data['like']]
+            payload: [
+                'like' => (bool) $data['like'],
+                'app_version' => (string) $request->header('X-App-Version', 'unknown'),
+                'source_page' => (string) $request->header('X-Source-Page', 'unknown'),
+            ]
         );
 
         return response()->json([
@@ -849,7 +857,11 @@ class MatchController extends Controller
             actorUserId: (int) $user->id,
             targetUserId: (int) $targetUserId,
             matchId: (int) $match->id,
-            payload: ['week_tag' => (string) $match->week_tag]
+            payload: [
+                'week_tag' => (string) $match->week_tag,
+                'app_version' => (string) $request->header('X-App-Version', 'unknown'),
+                'source_page' => (string) $request->header('X-Source-Page', 'unknown'),
+            ]
         );
 
         return response()->json([

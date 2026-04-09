@@ -18,6 +18,8 @@ class MainActivity : FlutterActivity() {
                                 "debugRefreshToken" to (extras?.getString("elitesync_debug_refresh_token") ?: ""),
                                 "debugAutoLoginPhone" to (extras?.getString("elitesync_debug_auto_login_phone") ?: ""),
                                 "debugAutoLoginPassword" to (extras?.getString("elitesync_debug_auto_login_password") ?: ""),
+                                "chatMock" to (extras?.get("elitesync_chat_mock")?.toString() ?: "false"),
+                                "adminMock" to (extras?.get("elitesync_admin_mock")?.toString() ?: "false"),
                                 "initialRoute" to (extras?.getString("elitesync_initial_route") ?: ""),
                                 "debugBuild" to BuildConfig.DEBUG.toString(),
                             ),

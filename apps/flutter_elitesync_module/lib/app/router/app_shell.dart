@@ -9,6 +9,7 @@ import 'package:flutter_elitesync_module/features/home/presentation/pages/home_p
 import 'package:flutter_elitesync_module/features/match/presentation/pages/match_portal_page.dart';
 import 'package:flutter_elitesync_module/features/chat/presentation/pages/conversation_list_page.dart';
 import 'package:flutter_elitesync_module/features/profile/presentation/pages/profile_page.dart';
+import 'package:flutter_elitesync_module/features/status/presentation/providers/status_posts_provider.dart';
 import 'package:flutter_elitesync_module/features/chat/presentation/providers/chat_providers.dart';
 import 'package:flutter_elitesync_module/features/home/presentation/providers/home_provider.dart';
 import 'package:flutter_elitesync_module/features/match/presentation/providers/match_providers.dart';
@@ -62,6 +63,8 @@ class _AppShellState extends ConsumerState<AppShell> {
     } else if (initialRoute.startsWith(AppRouteNames.match)) {
       warm(ref.read(matchCountdownProvider.future));
       warm(ref.read(matchResultProvider.future));
+    } else if (initialRoute.startsWith(AppRouteNames.statusSquare)) {
+      warm(ref.read(statusPostsProvider.future));
     } else if (initialRoute.startsWith(AppRouteNames.profile)) {
       warm(ref.read(profileProvider.future));
     } else {
@@ -91,6 +94,8 @@ class _AppShellState extends ConsumerState<AppShell> {
         currentIndex: widget.navigationShell.currentIndex,
         onTap: _onTap,
         browseMode: widget.navigationShell.currentIndex != 2,
+        centerActionLabel: '发布状态',
+        onCenterActionTap: () => context.push(AppRouteNames.statusSquare),
         items: const [
           AppBottomNavItem(
             icon: Icons.home_outlined,

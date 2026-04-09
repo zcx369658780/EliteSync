@@ -168,10 +168,7 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage>
     final ids = input.map((e) => e.id).toSet();
     _searchIndex.removeWhere((key, _) => !ids.contains(key));
     for (final item in input) {
-      _searchIndex.putIfAbsent(
-        item.id,
-        () => '${item.name} ${item.lastMessage}'.toLowerCase(),
-      );
+      _searchIndex[item.id] = '${item.name} ${item.lastMessage}'.toLowerCase();
     }
 
     if (_quickUnreadOnly) {
@@ -213,7 +210,7 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage>
       loading: () => const AppLoadingSkeleton(lines: 7),
       error: (e, _) => AppErrorState(
         title: '会话加载失败',
-        description: e.toString(),
+        description: '当前网络或服务暂不可用，请稍后重试。',
         retryLabel: '重新加载',
         onRetry: () => ref.invalidate(conversationListProvider),
       ),
@@ -231,14 +228,14 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage>
               children: [
                 AppErrorState(
                   title: '会话加载失败',
-                  description: state.error!,
+                  description: '当前网络或服务暂不可用，可稍后重试。',
                   retryLabel: '重新加载',
                   onRetry: () => ref.invalidate(conversationListProvider),
                 ),
                 const SizedBox(height: 8),
                 AppEmptyState(
                   title: '当前没有可展示会话',
-                  description: '你可以先去匹配页建立新关系，稍后会自动出现会话入口。',
+                  description: '完成匹配并互相确认后，可在这里看到会话入口。',
                   actionLabel: '去匹配',
                   onAction: () => context.go(AppRouteNames.match),
                 ),
@@ -414,7 +411,6 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage>
                       : ListView.separated(
                           key: ValueKey('messages-list-$_tabIndex-${_quickUnreadOnly ? 1 : 0}-${searchQuery.isEmpty ? "none" : "query"}'),
                           controller: _listController,
-                          cacheExtent: liteMode ? 480 : 1200,
                           padding: EdgeInsets.only(top: t.spacing.xs, bottom: t.spacing.huge),
                           itemCount: filtered.length,
                           separatorBuilder: (context, index) => SizedBox(height: t.spacing.xs),
