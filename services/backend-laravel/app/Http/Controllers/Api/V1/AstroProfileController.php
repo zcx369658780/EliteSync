@@ -237,6 +237,11 @@ class AstroProfileController extends Controller
         $user = $profile->user;
         if ($user && is_array($user->private_natal_chart ?? null)) {
             $cached = (array) $user->private_natal_chart;
+            unset($cached['natal_chart_svg']);
+        }
+
+        if (! empty($cached['chart_data'])) {
+            return array_merge($profileData, $cached);
         }
 
         $payload = [

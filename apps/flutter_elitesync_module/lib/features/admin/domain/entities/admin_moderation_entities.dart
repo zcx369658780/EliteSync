@@ -89,8 +89,19 @@ class AdminModerationUserEntity {
     required this.disabled,
     required this.moderationStatus,
     required this.verifyStatus,
+    required this.accountType,
     required this.isSynthetic,
+    required this.isMatchEligible,
+    required this.isSquareVisible,
+    required this.excludeFromMetrics,
     required this.syntheticBatch,
+    required this.syntheticBatchId,
+    required this.syntheticSeed,
+    required this.generationVersion,
+    required this.accountStatus,
+    required this.visibilityScope,
+    required this.cleanupToken,
+    required this.bannedReason,
   });
 
   final int id;
@@ -99,8 +110,19 @@ class AdminModerationUserEntity {
   final bool disabled;
   final String moderationStatus;
   final String verifyStatus;
+  final String accountType;
   final bool isSynthetic;
+  final bool isMatchEligible;
+  final bool isSquareVisible;
+  final bool excludeFromMetrics;
   final String syntheticBatch;
+  final String syntheticBatchId;
+  final int? syntheticSeed;
+  final String generationVersion;
+  final String accountStatus;
+  final String visibilityScope;
+  final String cleanupToken;
+  final String bannedReason;
 
   factory AdminModerationUserEntity.fromJson(Map<String, dynamic> json) {
     return AdminModerationUserEntity(
@@ -110,8 +132,19 @@ class AdminModerationUserEntity {
       disabled: (json['disabled'] as bool?) ?? false,
       moderationStatus: (json['moderation_status'] ?? 'normal').toString(),
       verifyStatus: (json['verify_status'] ?? '').toString(),
+      accountType: (json['account_type'] ?? 'normal').toString(),
       isSynthetic: (json['is_synthetic'] as bool?) ?? false,
+      isMatchEligible: (json['is_match_eligible'] as bool?) ?? true,
+      isSquareVisible: (json['is_square_visible'] as bool?) ?? true,
+      excludeFromMetrics: (json['exclude_from_metrics'] as bool?) ?? false,
       syntheticBatch: (json['synthetic_batch'] ?? '').toString(),
+      syntheticBatchId: (json['synthetic_batch_id'] ?? '').toString(),
+      syntheticSeed: (json['synthetic_seed'] as num?)?.toInt(),
+      generationVersion: (json['generation_version'] ?? 'v1').toString(),
+      accountStatus: (json['account_status'] ?? 'active').toString(),
+      visibilityScope: (json['visibility_scope'] ?? 'square').toString(),
+      cleanupToken: (json['cleanup_token'] ?? '').toString(),
+      bannedReason: (json['banned_reason'] ?? '').toString(),
     );
   }
 }

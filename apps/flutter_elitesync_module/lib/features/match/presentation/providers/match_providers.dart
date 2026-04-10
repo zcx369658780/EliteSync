@@ -17,26 +17,49 @@ import 'package:flutter_elitesync_module/shared/providers/app_providers.dart';
 
 final matchRemoteDataSourceProvider = Provider<MatchRemoteDataSource>((ref) {
   final env = ref.watch(appEnvProvider);
-  return MatchRemoteDataSource(apiClient: ref.watch(apiClientProvider), useMock: env.useMockMatch);
+  return MatchRemoteDataSource(
+    apiClient: ref.watch(apiClientProvider),
+    useMock: env.useMockMatch,
+  );
 });
 
 final matchRepositoryProvider = Provider<MatchRepository>((ref) {
-  return MatchRepositoryImpl(remote: ref.watch(matchRemoteDataSourceProvider), mapper: const MatchMapper());
+  return MatchRepositoryImpl(
+    remote: ref.watch(matchRemoteDataSourceProvider),
+    mapper: const MatchMapper(),
+  );
 });
 
-final getCountdownUseCaseProvider = Provider<GetCountdownUseCase>((ref) => GetCountdownUseCase(ref.watch(matchRepositoryProvider)));
-final getMatchResultUseCaseProvider = Provider<GetMatchResultUseCase>((ref) => GetMatchResultUseCase(ref.watch(matchRepositoryProvider)));
-final getMatchDetailUseCaseProvider = Provider<GetMatchDetailUseCase>((ref) => GetMatchDetailUseCase(ref.watch(matchRepositoryProvider)));
-final submitIntentionUseCaseProvider = Provider<SubmitIntentionUseCase>((ref) => SubmitIntentionUseCase(ref.watch(matchRepositoryProvider)));
+final getCountdownUseCaseProvider = Provider<GetCountdownUseCase>(
+  (ref) => GetCountdownUseCase(ref.watch(matchRepositoryProvider)),
+);
+final getMatchResultUseCaseProvider = Provider<GetMatchResultUseCase>(
+  (ref) => GetMatchResultUseCase(ref.watch(matchRepositoryProvider)),
+);
+final getMatchDetailUseCaseProvider = Provider<GetMatchDetailUseCase>(
+  (ref) => GetMatchDetailUseCase(ref.watch(matchRepositoryProvider)),
+);
+final submitIntentionUseCaseProvider = Provider<SubmitIntentionUseCase>(
+  (ref) => SubmitIntentionUseCase(ref.watch(matchRepositoryProvider)),
+);
 
 Map<String, dynamic> _matchResultToJson(MatchResultEntity entity) => {
   'headline': entity.headline,
   'score': entity.score,
   'tags': entity.tags,
+  'match_id': entity.matchId,
+  'partner_id': entity.partnerId,
+  'partner_nickname': entity.partnerNickname,
   'highlights': entity.highlights
       .map((e) => {'title': e.title, 'value': e.value, 'desc': e.desc})
       .toList(),
 };
+
+int? _toInt(dynamic value) {
+  if (value is num) return value.toInt();
+  if (value is String) return int.tryParse(value);
+  return null;
+}
 
 MatchResultEntity? _matchResultFromJson(Map<String, dynamic>? json) {
   if (json == null || json.isEmpty) return null;
@@ -45,7 +68,7 @@ MatchResultEntity? _matchResultFromJson(Map<String, dynamic>? json) {
         if (e is Map) {
           return MatchHighlightEntity(
             title: (e['title'] ?? '').toString(),
-            value: (e['value'] as num?)?.toInt() ?? 0,
+            value: _toInt(e['value']) ?? 0,
             desc: (e['desc'] ?? '').toString(),
           );
         }
@@ -55,9 +78,16 @@ MatchResultEntity? _matchResultFromJson(Map<String, dynamic>? json) {
       .toList();
   return MatchResultEntity(
     headline: (json['headline'] ?? '').toString(),
-    score: (json['score'] as num?)?.toInt() ?? 0,
-    tags: (json['tags'] as List<dynamic>? ?? const []).map((e) => e.toString()).toList(),
+    score: _toInt(json['score']) ?? 0,
+    tags: (json['tags'] as List<dynamic>? ?? const [])
+        .map((e) => e.toString())
+        .toList(),
     highlights: highlights,
+    matchId: _toInt(json['match_id']),
+    partnerId: _toInt(json['partner_id']),
+    partnerNickname: (json['partner_nickname'] ?? '').toString().trim().isEmpty
+        ? null
+        : (json['partner_nickname'] ?? '').toString().trim(),
   );
 }
 
@@ -99,25 +129,31 @@ MatchDetailEntity? _matchDetailFromJson(Map<String, dynamic>? json) {
         .map((e) => e.map((k, v) => MapEntry(k.toString(), v)))
         .toList();
   }
+
   Map<String, int> toIntMap(dynamic raw) {
     if (raw is! Map) return const {};
-    return raw.map(
-      (k, v) => MapEntry(k.toString(), (v as num?)?.toInt() ?? 0),
-    );
+    return raw.map((k, v) => MapEntry(k.toString(), (v as num?)?.toInt() ?? 0));
   }
+
   Map<String, String> toStringMap(dynamic raw) {
     if (raw is! Map) return const {};
     return raw.map((k, v) => MapEntry(k.toString(), v.toString()));
   }
+
   Map<String, dynamic> toDynamicMap(dynamic raw) {
     if (raw is! Map) return const {};
     return raw.map((k, v) => MapEntry(k.toString(), v));
   }
+
   return MatchDetailEntity(
-    reasons: (json['reasons'] as List<dynamic>? ?? const []).map((e) => e.toString()).toList(),
+    reasons: (json['reasons'] as List<dynamic>? ?? const [])
+        .map((e) => e.toString())
+        .toList(),
     weights: toIntMap(json['weights']),
     moduleScores: toIntMap(json['moduleScores']),
-    moduleInsights: (json['moduleInsights'] as List<dynamic>? ?? const []).map((e) => e.toString()).toList(),
+    moduleInsights: (json['moduleInsights'] as List<dynamic>? ?? const [])
+        .map((e) => e.toString())
+        .toList(),
     moduleExplanations: toMapList(json['moduleExplanations']),
     explanationBlocks: toMapList(json['explanationBlocks']),
     compatibilitySections: compat,
@@ -126,7 +162,9 @@ MatchDetailEntity? _matchDetailFromJson(Map<String, dynamic>? json) {
   );
 }
 
-final matchCountdownProvider = FutureProvider<MatchCountdownUiState>((ref) async {
+final matchCountdownProvider = FutureProvider<MatchCountdownUiState>((
+  ref,
+) async {
   try {
     final data = await ref.read(getCountdownUseCaseProvider).call();
     return MatchCountdownUiState(data: data);
@@ -139,11 +177,17 @@ final matchResultProvider = FutureProvider<MatchResultUiState>((ref) async {
   final local = ref.read(localStorageProvider);
   try {
     final data = await ref.read(getMatchResultUseCaseProvider).call();
-    await local.setJson(CacheKeys.matchResultSnapshot, _matchResultToJson(data));
+    await local.setJson(
+      CacheKeys.matchResultSnapshot,
+      _matchResultToJson(data),
+    );
     return MatchResultUiState(data: data);
   } catch (e) {
     final cached = await local.getJson(CacheKeys.matchResultSnapshot);
-    return MatchResultUiState(data: _matchResultFromJson(cached), error: e.toString());
+    return MatchResultUiState(
+      data: _matchResultFromJson(cached),
+      error: e.toString(),
+    );
   }
 });
 
@@ -151,7 +195,10 @@ final matchDetailProvider = FutureProvider<MatchDetailEntity>((ref) async {
   final local = ref.read(localStorageProvider);
   try {
     final data = await ref.read(getMatchDetailUseCaseProvider).call();
-    await local.setJson(CacheKeys.matchDetailSnapshot, _matchDetailToJson(data));
+    await local.setJson(
+      CacheKeys.matchDetailSnapshot,
+      _matchDetailToJson(data),
+    );
     return data;
   } catch (_) {
     final cached = await local.getJson(CacheKeys.matchDetailSnapshot);

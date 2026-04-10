@@ -38,7 +38,11 @@ class StatusPostApiTest extends TestCase
 
     public function test_store_list_and_delete_status_post(): void
     {
-        $user = $this->makeUser(['phone' => '17000000001']);
+        $user = $this->makeUser([
+            'phone' => '17000000001',
+            'account_type' => 'test',
+            'is_synthetic' => true,
+        ]);
 
         $this->actingAs($user, 'sanctum')
             ->postJson('/api/v1/status/posts', [
@@ -52,7 +56,9 @@ class StatusPostApiTest extends TestCase
         $this->actingAs($user, 'sanctum')
             ->getJson('/api/v1/status/posts')
             ->assertOk()
-            ->assertJsonPath('items.0.title', '今晚想散步');
+            ->assertJsonPath('items.0.title', '今晚想散步')
+            ->assertJsonPath('items.0.author.is_synthetic', true)
+            ->assertJsonPath('items.0.author.account_type', 'test');
 
         $postId = (int) StatusPost::query()->firstOrFail()->id;
 

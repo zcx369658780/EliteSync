@@ -67,6 +67,33 @@
 - `2.9_BETA_FINAL_SUMMARY.md`
 - `2.9_STAGE2_REAL_CHAIN_LOG.md`
 
+### 3.0 / 3.1 / 3.2
+- `elite_sync_3_0_开发计划书.md`
+- `elite_sync_3_0_返修说明.md`
+- `3.0_EXEC_PLAN.md`
+- `3.0_SCOPE_BOUNDARY.md`
+- `3.0_PROTECTED_SURFACES.md`
+- `3.0_METRICS_BASELINE.md`
+- `3.0_ACCEPTANCE_REPORT.md`
+- `3.0_CODEX_HANDOFF_20260408.md`
+- `elite_sync_3_1_版本任务书.md`
+- `3.1_EXEC_PLAN.md`
+- `3.1_RISK_REVIEW.md`
+- `3.1_PROTECTED_SURFACES.md`
+- `3.1_BETA_REGRESSION_CHECKLIST.md`
+- `3.1_FINAL_SUBMISSION_EVIDENCE.md`
+- `3.1_ACCEPTANCE_REPORT.md`
+- `3.1_SUBMISSION_PACKAGE_20260409.md`
+- `3.1_HANDOFF_FINAL_20260409.md`
+- `elite_sync_3_2_版本开发计划书_2026_04_10.md`
+- `3.2_EXEC_PLAN.md`
+- `3.2_RISK_REVIEW.md`
+- `3.2_PROTECTED_SURFACES.md`
+- `3.2_BETA_REGRESSION_CHECKLIST.md`
+- `3.2_ACCEPTANCE_REPORT.md`
+- `3.2_HANDOFF_STAGE_20260410.md`
+- `3.2_HANDOFF_FINAL_20260410.md`
+
 ### 其他参考
 - `app算法资源与任务规划_修订版——2026-03-29.md`
 

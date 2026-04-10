@@ -847,59 +847,70 @@ class _HomeStatusPreviewCard extends StatelessWidget {
     final time = MaterialLocalizations.of(
       context,
     ).formatShortDate(post.createdAt);
-    return InkWell(
-      borderRadius: BorderRadius.circular(t.radius.lg),
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.all(t.spacing.sm),
-        decoration: BoxDecoration(
-          color: t.surface.withValues(alpha: 0.72),
-          borderRadius: BorderRadius.circular(t.radius.lg),
-          border: Border.all(color: t.overlay.withValues(alpha: 0.22)),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    post.title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      color: t.textPrimary,
-                      fontWeight: FontWeight.w700,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(t.radius.lg),
+        onTap: onTap,
+        child: Container(
+          padding: EdgeInsets.all(t.spacing.sm),
+          decoration: BoxDecoration(
+            color: t.surface.withValues(alpha: 0.72),
+            borderRadius: BorderRadius.circular(t.radius.lg),
+            border: Border.all(color: t.overlay.withValues(alpha: 0.22)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      post.title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        color: t.textPrimary,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
-                ),
-                Text(
-                  post.visibilityLabel,
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: t.textSecondary,
-                    fontWeight: FontWeight.w600,
+                  Text(
+                    post.visibilityLabel,
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: t.textSecondary,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
-                ),
-              ],
-            ),
-            SizedBox(height: t.spacing.xs / 2),
-            Text(
-              '${post.authorName} · ${post.locationName.isEmpty ? '同城' : post.locationName} · $time',
-              style: Theme.of(
-                context,
-              ).textTheme.bodySmall?.copyWith(color: t.textSecondary),
-            ),
-            SizedBox(height: t.spacing.xs),
-            Text(
-              post.body,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: t.textPrimary,
-                height: 1.4,
+                ],
               ),
-            ),
-          ],
+              SizedBox(height: t.spacing.xs / 2),
+              Text(
+                '${post.authorName} · ${post.locationName.isEmpty ? '同城' : post.locationName} · $time',
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: t.textSecondary),
+              ),
+              SizedBox(height: t.spacing.xxs),
+              Text(
+                '${post.authorLayerLabel} · ${post.visibilityTierLabel}',
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: t.textSecondary,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(height: t.spacing.xs),
+              Text(
+                post.body,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: t.textPrimary,
+                  height: 1.4,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

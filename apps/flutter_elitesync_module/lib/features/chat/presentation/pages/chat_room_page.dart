@@ -175,6 +175,27 @@ class _ChatRoomPageState extends ConsumerState<ChatRoomPage> {
     );
   }
 
+  void _applyIcebreakerSuggestion(String prompt) {
+    final text = prompt.trim();
+    if (text.isEmpty) return;
+    setState(() {
+      _controller.text = text;
+      _controller.selection = TextSelection.collapsed(offset: text.length);
+    });
+    FocusScope.of(context).unfocus();
+  }
+
+  List<IcebreakerSuggestion> _icebreakerSuggestions() {
+    return const [
+      IcebreakerSuggestion(
+        label: '从周末聊起',
+        prompt: '先从最近一次让你放松的周末安排聊起，你通常会怎么度过？',
+      ),
+      IcebreakerSuggestion(label: '问最近状态', prompt: '你最近最想投入的一件事是什么？'),
+      IcebreakerSuggestion(label: '接住话题', prompt: '你刚刚提到的那个点挺有意思，能多说一点吗？'),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     final async = ref.watch(chatRoomMessagesProvider(widget.conversationId));
@@ -231,7 +252,10 @@ class _ChatRoomPageState extends ConsumerState<ChatRoomPage> {
           ),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: t.spacing.pageHorizontal),
-            child: const IcebreakerCard(),
+            child: IcebreakerCard(
+              suggestions: _icebreakerSuggestions(),
+              onSuggestionTap: _applyIcebreakerSuggestion,
+            ),
           ),
           Expanded(
             child: async.when(

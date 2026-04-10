@@ -29,10 +29,29 @@ String _firstNonEmpty(List<String> values) {
   return '';
 }
 
+String _resolveApiBaseUrl({
+  required bool hasDebugBootstrap,
+  required Map<String, String> hostBootstrap,
+}) {
+  final hostOverride = _firstNonEmpty([hostBootstrap['apiBaseUrl'] ?? '']);
+  if (hostOverride.isNotEmpty) {
+    return hostOverride.endsWith('/') ? hostOverride : '$hostOverride/';
+  }
+  final override = String.fromEnvironment('ELITESYNC_API_BASE_URL').trim();
+  if (override.isNotEmpty) {
+    return override.endsWith('/') ? override : '$override/';
+  }
+  return hasDebugBootstrap
+      ? 'http://101.133.161.203/'
+      : 'https://slowdate.top/';
+}
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   final hostBootstrap = await _readHostBootstrap();
+  final debugAccessTokenB64FromHost =
+      hostBootstrap['debugAccessTokenB64'] ?? '';
   final debugAccessTokenB64 = String.fromEnvironment(
     'ELITESYNC_DEBUG_ACCESS_TOKEN_B64',
   ).trim();
@@ -44,6 +63,9 @@ Future<void> main() async {
       : debugAccessTokenRaw;
   final debugAccessToken = _firstNonEmpty([
     debugAccessTokenFromDefine,
+    debugAccessTokenB64FromHost.isNotEmpty
+        ? utf8.decode(base64Decode(debugAccessTokenB64FromHost))
+        : '',
     hostBootstrap['debugAccessToken'] ?? '',
   ]);
   final debugRefreshToken = _firstNonEmpty([
@@ -93,9 +115,10 @@ Future<void> main() async {
       // The Android host app embeds the Flutter release AAR, which always
       // boots through main.dart -> main_prod.dart. Keep prod pointed at the
       // verified direct backend entry until the public domain chain is stable.
-      apiBaseUrl: hasDebugBootstrap
-          ? 'http://101.133.161.203/'
-          : 'https://slowdate.top/',
+      apiBaseUrl: _resolveApiBaseUrl(
+        hasDebugBootstrap: hasDebugBootstrap,
+        hostBootstrap: hostBootstrap,
+      ),
       useMockData: false,
       useMockAuth: false,
       useMockQuestionnaire: hasDebugBootstrap,

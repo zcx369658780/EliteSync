@@ -2,11 +2,11 @@
 
 return [
     'android' => [
-        'latest_version_name' => env('ANDROID_LATEST_VERSION_NAME', '0.03.01'),
-        'latest_version_code' => (int) env('ANDROID_LATEST_VERSION_CODE', 301),
+        'latest_version_name' => env('ANDROID_LATEST_VERSION_NAME', '0.03.02a'),
+        'latest_version_code' => (int) env('ANDROID_LATEST_VERSION_CODE', 30201),
         'min_supported_version_name' => env('ANDROID_MIN_SUPPORTED_VERSION_NAME', '0.01.01'),
-        'download_url' => env('ANDROID_DOWNLOAD_URL', 'http://101.133.161.203/downloads/elitesync-0.03.01.apk'),
-        'changelog' => env('ANDROID_CHANGELOG', '完成 3.0 -> 3.1 阶段收口：优化首页关键路径、匹配解释与首聊入口，补齐消息页真实空态 / mock 非空态验收证据；完成账号分层、状态发布 / 广场、管理员控制面与匹配调试回查，并同步版本检查与更新配置到 0.03.01.'),
+        'download_url' => env('ANDROID_DOWNLOAD_URL', 'http://101.133.161.203/downloads/elitesync-0.03.02a.apk'),
+        'changelog' => env('ANDROID_CHANGELOG', '完成 3.2a 版本收口：星盘主视觉切换为 APP 端本地绘制，盘面元素开关细分到星体 / 虚点 / 相位 / 盘心，Android 宿主 bootstrap 已补齐 API / WS 基线注入，并同步版本检查、下载地址与发布元数据到 0.03.02a / 30201。'),
         'sha256' => env('ANDROID_APK_SHA256', ''),
         'force_update' => (bool) env('ANDROID_FORCE_UPDATE', false),
     ],

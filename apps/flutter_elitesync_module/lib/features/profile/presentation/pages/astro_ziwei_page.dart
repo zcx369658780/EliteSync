@@ -171,7 +171,7 @@ class AstroZiweiPage extends ConsumerWidget {
                           SizedBox(height: t.spacing.xxs),
                           AstroKeyValueRow(label: '引擎', value: engine),
                           SizedBox(height: t.spacing.xxs),
-                          AstroKeyValueRow(label: '精度', value: precision),
+                          AstroKeyValueRow(label: '版本', value: precision),
                           SizedBox(height: t.spacing.xxs),
                           AstroKeyValueRow(label: '置信', value: confidence),
                         ],

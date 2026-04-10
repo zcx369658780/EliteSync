@@ -8,6 +8,7 @@ class MatchResultEntity {
     required this.highlights,
     this.matchId,
     this.partnerId,
+    this.partnerNickname,
   });
   final String headline;
   final int score;
@@ -15,4 +16,5 @@ class MatchResultEntity {
   final List<MatchHighlightEntity> highlights;
   final int? matchId;
   final int? partnerId;
+  final String? partnerNickname;
 }

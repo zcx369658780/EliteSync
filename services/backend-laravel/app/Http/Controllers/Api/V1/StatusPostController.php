@@ -73,6 +73,7 @@ class StatusPostController extends Controller
                 'phone' => (string) ($author?->phone ?? ''),
                 'role' => (string) ($author?->role ?? 'user'),
                 'account_type' => (string) ($author?->account_type ?? 'normal'),
+                'is_synthetic' => (bool) ($author?->is_synthetic ?? false),
                 'is_square_visible' => (bool) ($author?->is_square_visible ?? true),
             ],
         ];
@@ -90,13 +91,14 @@ class StatusPostController extends Controller
         $query = StatusPost::query()
             ->with([
                 'author' => function ($query) {
-                    $query->select($this->safeAuthorSelect([
-                        'role' => 'user',
-                        'account_type' => 'normal',
-                        'is_square_visible' => true,
-                    ]));
-                },
-            ])
+                $query->select($this->safeAuthorSelect([
+                    'role' => 'user',
+                    'account_type' => 'normal',
+                    'is_synthetic' => false,
+                    'is_square_visible' => true,
+                ]));
+            },
+        ])
             ->orderByDesc('id');
 
         if (!$includeHidden) {
@@ -173,6 +175,7 @@ class StatusPostController extends Controller
                 $query->select($this->safeAuthorSelect([
                     'role' => 'user',
                     'account_type' => 'normal',
+                    'is_synthetic' => false,
                     'is_square_visible' => true,
                 ]));
             },
@@ -193,6 +196,7 @@ class StatusPostController extends Controller
                     $query->select($this->safeAuthorSelect([
                         'role' => 'user',
                         'account_type' => 'normal',
+                        'is_synthetic' => false,
                         'is_square_visible' => true,
                     ]));
                 },
@@ -222,6 +226,7 @@ class StatusPostController extends Controller
                         $query->select($this->safeAuthorSelect([
                             'role' => 'user',
                             'account_type' => 'normal',
+                            'is_synthetic' => false,
                             'is_square_visible' => true,
                         ]));
                     },

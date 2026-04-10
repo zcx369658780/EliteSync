@@ -1,12 +1,13 @@
 # 文档索引（当前有效）
 
-更新时间：2026-04-09
+更新时间：2026-04-10
 
 ## 根目录
 - `README.md`：项目总览
 - `PROJECT_HANDOFF_20260407.md`：当前总交接文档（Claude / Gemini 协作版）
 - `docs/archive/legacy_2026-04/DEVELOPMENT_PLAN_2_0_AND_EARLIER_ARCHIVE.md`：2.0 及更早版本开发计划归档
-- `CHANGELOG_0.03.01.md`：0.03.01 版本变更记录（当前发布）
+- `CHANGELOG_0.03.02a.md`：0.03.02a 版本变更记录（当前发布）
+- `docs/version_plans/0.03.02a_UPDATE_BRIEF.md`：0.03.02a 更新简报
 - `LICENSE_DEPENDENCY_STATUS.md`：依赖许可证状态总表（长期维护）
 - `docs/HANDOFF_MASTER_20260406.md`：当前交接总览（总计划 + 2.0 后计划整合）
 - `docs/HANDOFF_2_8_FINAL_20260406.md`：2.8 最终交接稿（信任安全与运营后台结项）
@@ -17,6 +18,15 @@
 
 ## 版本计划（docs/version_plans）
 - `docs/version_plans/README.md`：版本计划总索引
+- `docs/version_plans/elite_sync_3_2_版本开发计划书_2026_04_10.md`
+- `docs/version_plans/3.2_EXEC_PLAN.md`
+- `docs/version_plans/3.2_RISK_REVIEW.md`
+- `docs/version_plans/3.2_PROTECTED_SURFACES.md`
+- `docs/version_plans/3.2_BETA_REGRESSION_CHECKLIST.md`
+- `docs/version_plans/3.2_ACCEPTANCE_REPORT.md`
+- `docs/version_plans/3.2_HANDOFF_STAGE_20260410.md`
+- `docs/version_plans/3.2_HANDOFF_FINAL_20260410.md`
+- `docs/version_plans/3.2a_HANDOFF_FINAL_20260410.md`
 - `docs/version_plans/顾问Agent玄学算法修改规划_2026-03-28.md`
 - `docs/version_plans/算法2.3版本开发规划_2026-03-29.md`
 - `docs/version_plans/算法2.4版本开发规划_2026-03-30.md`

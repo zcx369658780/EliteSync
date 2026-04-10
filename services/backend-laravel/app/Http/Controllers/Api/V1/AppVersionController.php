@@ -110,7 +110,7 @@ class AppVersionController extends Controller
     {
         $l = $this->parseVersion($left);
         $r = $this->parseVersion($right);
-        for ($i = 0; $i < 3; $i++) {
+        for ($i = 0; $i < 4; $i++) {
             if ($l[$i] > $r[$i]) {
                 return 1;
             }
@@ -122,16 +122,40 @@ class AppVersionController extends Controller
     }
 
     /**
-     * Version format: major.minor.patch, e.g. 0.01.01
+     * Version format: major.minor.patch or major.minor.patch[suffix], e.g. 0.03.02a
      *
-     * @return array{0:int,1:int,2:int}
+     * @return array{0:int,1:int,2:int,3:int}
      */
     private function parseVersion(string $value): array
     {
-        if (preg_match('/^\s*(\d+)\.(\d+)\.(\d+)\s*$/', $value, $m) === 1) {
-            return [(int) $m[1], (int) $m[2], (int) $m[3]];
+        if (preg_match('/^\s*(\d+)\.(\d+)\.(\d+)([a-z]*)\s*$/i', $value, $m) === 1) {
+            return [
+                (int) $m[1],
+                (int) $m[2],
+                (int) $m[3],
+                $this->parseVersionSuffixRank(strtolower((string) $m[4])),
+            ];
         }
 
-        return [0, 0, 0];
+        return [0, 0, 0, 0];
+    }
+
+    private function parseVersionSuffixRank(string $suffix): int
+    {
+        $suffix = strtolower(trim($suffix));
+        if ($suffix === '') {
+            return 0;
+        }
+
+        $rank = 0;
+        $chars = str_split($suffix);
+        foreach ($chars as $char) {
+            if ($char < 'a' || $char > 'z') {
+                return 0;
+            }
+            $rank = ($rank * 26) + (ord($char) - 96);
+        }
+
+        return $rank;
     }
 }

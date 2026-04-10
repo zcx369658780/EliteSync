@@ -41,7 +41,6 @@ def get_astro_profile(user: User = Depends(current_user), db: Session = Depends(
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
     row.birthday = birthday
-    row.natal_chart_svg = payload["natal_chart_svg"]
     row.natal_chart_json = serialize_chart_json(payload["chart_data"])
     row.computed_at = datetime.utcnow()
     db.commit()
@@ -54,11 +53,10 @@ def get_astro_profile(user: User = Depends(current_user), db: Session = Depends(
             "birth_lat": row.birth_lat,
             "birth_lng": row.birth_lng,
             "tz_str": row.tz_str or "Asia/Shanghai",
-            "natal_chart_svg": row.natal_chart_svg,
+            "chart_data": payload["chart_data"],
             "planets_data": payload["planets_data"],
             "aspects_data": payload["aspects_data"],
             "houses_data": payload["houses_data"],
-            "chart_data": payload["chart_data"],
             "generated_at": payload["generated_at"],
             "computed_at": row.computed_at.isoformat() + "Z",
         },
@@ -104,7 +102,6 @@ def save_astro_profile(req: AstroProfileReq, user: User = Depends(current_user),
         )
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
-    row.natal_chart_svg = payload["natal_chart_svg"]
     row.natal_chart_json = serialize_chart_json(payload["chart_data"])
     row.computed_at = datetime.utcnow()
     db.commit()
@@ -118,11 +115,10 @@ def save_astro_profile(req: AstroProfileReq, user: User = Depends(current_user),
             "birth_lat": row.birth_lat,
             "birth_lng": row.birth_lng,
             "tz_str": row.tz_str,
-            "natal_chart_svg": row.natal_chart_svg,
+            "chart_data": payload["chart_data"],
             "planets_data": payload["planets_data"],
             "aspects_data": payload["aspects_data"],
             "houses_data": payload["houses_data"],
-            "chart_data": payload["chart_data"],
             "generated_at": payload["generated_at"],
             "computed_at": row.computed_at.isoformat() + "Z",
         },
@@ -153,11 +149,10 @@ def render_astro(req: AstroRenderReq):
             "birth_lat": req.birth_lat,
             "birth_lng": req.birth_lng,
             "tz_str": req.tz_str or "Asia/Shanghai",
-            "natal_chart_svg": payload["natal_chart_svg"],
+            "chart_data": payload["chart_data"],
             "planets_data": payload["planets_data"],
             "aspects_data": payload["aspects_data"],
             "houses_data": payload["houses_data"],
-            "chart_data": payload["chart_data"],
             "generated_at": payload["generated_at"],
         },
     }

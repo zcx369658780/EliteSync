@@ -90,8 +90,19 @@ class AdminModerationRemoteDataSource {
       disabled: false,
       moderationStatus: 'normal',
       verifyStatus: 'approved',
+      accountType: 'normal',
       isSynthetic: false,
+      isMatchEligible: true,
+      isSquareVisible: true,
+      excludeFromMetrics: false,
       syntheticBatch: '',
+      syntheticBatchId: '',
+      syntheticSeed: null,
+      generationVersion: 'v1',
+      accountStatus: 'active',
+      visibilityScope: 'hidden',
+      cleanupToken: '',
+      bannedReason: '',
     ),
     const AdminModerationUserEntity(
       id: 28,
@@ -100,8 +111,19 @@ class AdminModerationRemoteDataSource {
       disabled: false,
       moderationStatus: 'normal',
       verifyStatus: 'pending',
+      accountType: 'test',
       isSynthetic: false,
+      isMatchEligible: true,
+      isSquareVisible: true,
+      excludeFromMetrics: true,
       syntheticBatch: '',
+      syntheticBatchId: '',
+      syntheticSeed: null,
+      generationVersion: 'v1',
+      accountStatus: 'active',
+      visibilityScope: 'hidden',
+      cleanupToken: '',
+      bannedReason: '',
     ),
     const AdminModerationUserEntity(
       id: 33,
@@ -110,8 +132,19 @@ class AdminModerationRemoteDataSource {
       disabled: true,
       moderationStatus: 'banned',
       verifyStatus: 'rejected',
+      accountType: 'test',
       isSynthetic: true,
+      isMatchEligible: true,
+      isSquareVisible: true,
+      excludeFromMetrics: true,
       syntheticBatch: 'batch-20260406',
+      syntheticBatchId: 'batch-20260406',
+      syntheticSeed: 20260406,
+      generationVersion: 'v32',
+      accountStatus: 'disabled',
+      visibilityScope: 'hidden',
+      cleanupToken: 'cleanup-kai-20260406',
+      bannedReason: '违规内容',
     ),
     const AdminModerationUserEntity(
       id: 44,
@@ -120,8 +153,19 @@ class AdminModerationRemoteDataSource {
       disabled: false,
       moderationStatus: 'normal',
       verifyStatus: 'pending',
+      accountType: 'test',
       isSynthetic: true,
+      isMatchEligible: true,
+      isSquareVisible: true,
+      excludeFromMetrics: true,
       syntheticBatch: 'batch-20260406',
+      syntheticBatchId: 'batch-20260406',
+      syntheticSeed: 20260407,
+      generationVersion: 'v32',
+      accountStatus: 'active',
+      visibilityScope: 'square',
+      cleanupToken: 'cleanup-ada-20260406',
+      bannedReason: '',
     ),
   ];
 
@@ -141,7 +185,10 @@ class AdminModerationRemoteDataSource {
 
   Future<AdminModerationReportEntity> fetchReportDetail(int reportId) async {
     if (useMock || useMockAdmin) {
-      return _mockReports().firstWhere((item) => item.id == reportId, orElse: () => _mockReports().first);
+      return _mockReports().firstWhere(
+        (item) => item.id == reportId,
+        orElse: () => _mockReports().first,
+      );
     }
     final result = await apiClient.get('/api/v1/admin/reports/$reportId');
     if (result is NetworkSuccess<Map<String, dynamic>>) {
@@ -167,7 +214,9 @@ class AdminModerationRemoteDataSource {
 
   Future<List<AdminModerationUserEntity>> fetchVerifyQueue() async {
     if (useMock || useMockAdmin) {
-      return _mockUsers().where((item) => item.verifyStatus == 'pending').toList();
+      return _mockUsers()
+          .where((item) => item.verifyStatus == 'pending')
+          .toList();
     }
     final result = await apiClient.get('/api/v1/admin/verify-queue');
     if (result is NetworkSuccess<Map<String, dynamic>>) {

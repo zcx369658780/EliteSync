@@ -16,7 +16,7 @@ def _auth_headers() -> dict[str, str]:
     return {'Authorization': f'Bearer {token}'}
 
 
-def test_profile_astro_returns_svg_and_structured_data():
+def test_profile_astro_returns_structured_chart_data():
     hdr = _auth_headers()
 
     saved = client.post(
@@ -39,14 +39,14 @@ def test_profile_astro_returns_svg_and_structured_data():
     payload = res.json()
     assert payload['exists'] is True
     profile = payload['profile']
-    assert isinstance(profile['natal_chart_svg'], str)
-    assert '<svg' in profile['natal_chart_svg']
+    assert 'natal_chart_svg' not in profile
+    assert isinstance(profile['chart_data'], dict)
     assert isinstance(profile['planets_data'], list) and profile['planets_data']
     assert isinstance(profile['aspects_data'], list)
     assert isinstance(profile['houses_data'], list) and len(profile['houses_data']) == 12
 
 
-def test_profile_astro_render_returns_svg():
+def test_profile_astro_render_returns_chart_data():
     res = client.post(
         '/api/v1/profile/astro/render',
         json={
@@ -63,8 +63,8 @@ def test_profile_astro_render_returns_svg():
     data = res.json()
     assert data['ok'] is True
     profile = data['profile']
-    assert isinstance(profile['natal_chart_svg'], str)
-    assert '<svg' in profile['natal_chart_svg']
+    assert 'natal_chart_svg' not in profile
+    assert isinstance(profile['chart_data'], dict)
     assert isinstance(profile['planets_data'], list)
     assert isinstance(profile['houses_data'], list)
     assert isinstance(profile['aspects_data'], list)

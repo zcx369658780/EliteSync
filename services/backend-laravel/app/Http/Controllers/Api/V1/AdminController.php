@@ -64,14 +64,52 @@ class AdminController extends Controller
         return DB::connection()->getPdo()->quote((string) $value);
     }
 
-    public function users(): JsonResponse
+    public function users(Request $request): JsonResponse
     {
-        $items = User::query()
+        $query = User::query()
             ->orderBy('id')
+            ;
+
+        $accountType = trim((string) $request->query('account_type', ''));
+        if ($accountType !== '') {
+            $query->where('account_type', $accountType);
+        }
+
+        $syntheticBatch = trim((string) $request->query('synthetic_batch', ''));
+        if ($syntheticBatch !== '') {
+            $query->where(function ($inner) use ($syntheticBatch) {
+                $inner->where('synthetic_batch', $syntheticBatch);
+                if (Schema::hasColumn('users', 'synthetic_batch_id')) {
+                    $inner->orWhere('synthetic_batch_id', $syntheticBatch);
+                }
+            });
+        }
+
+        if ($request->filled('is_synthetic')) {
+            $query->where('is_synthetic', filter_var((string) $request->query('is_synthetic'), FILTER_VALIDATE_BOOL));
+        }
+
+        $accountStatus = trim((string) $request->query('account_status', ''));
+        if ($accountStatus !== '' && Schema::hasColumn('users', 'account_status')) {
+            $query->where('account_status', $accountStatus);
+        }
+
+        $visibilityScope = trim((string) $request->query('visibility_scope', ''));
+        if ($visibilityScope !== '' && Schema::hasColumn('users', 'visibility_scope')) {
+            $query->where('visibility_scope', $visibilityScope);
+        }
+
+        $items = $query
             ->get($this->safeUserSelect([
                 'role' => 'user',
                 'account_type' => 'normal',
                 'disabled' => false,
+                'synthetic_batch_id' => null,
+                'synthetic_seed' => null,
+                'generation_version' => 'v1',
+                'account_status' => 'active',
+                'visibility_scope' => 'square',
+                'cleanup_token' => null,
                 'moderation_status' => 'normal',
                 'verify_status' => 'pending',
                 'is_synthetic' => false,
@@ -132,6 +170,21 @@ class AdminController extends Controller
 
         $user->disabled = true;
         $user->moderation_status = 'banned';
+        if (Schema::hasColumn('users', 'account_status')) {
+            $user->account_status = 'disabled';
+        }
+        if (Schema::hasColumn('users', 'visibility_scope')) {
+            $user->visibility_scope = 'hidden';
+        }
+        if (Schema::hasColumn('users', 'is_match_eligible')) {
+            $user->is_match_eligible = false;
+        }
+        if (Schema::hasColumn('users', 'is_square_visible')) {
+            $user->is_square_visible = false;
+        }
+        if (Schema::hasColumn('users', 'exclude_from_metrics')) {
+            $user->exclude_from_metrics = true;
+        }
         $user->save();
 
         return response()->json(['ok' => true]);

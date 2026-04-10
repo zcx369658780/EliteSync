@@ -2,7 +2,7 @@ import json
 from datetime import datetime
 from typing import Any
 
-from kerykeion import AstrologicalSubjectFactory, ChartDataFactory, ChartDrawer
+from kerykeion import AstrologicalSubjectFactory, ChartDataFactory
 
 
 def build_natal_chart_payload(
@@ -33,19 +33,9 @@ def build_natal_chart_payload(
         online=False,
     )
     chart_data = ChartDataFactory.create_natal_chart_data(subject)
-    # Use the wheel-only renderer so the client receives the circular chart as
-    # the primary visual. This keeps Flutter from shrinking the wheel to fit
-    # the aspect table and is still compatible with downstream SVG cleanup.
-    svg = ChartDrawer(
-        chart_data,
-        external_view=True,
-        show_aspect_icons=False,
-        padding=8,
-    ).generate_wheel_only_svg_string(remove_css_variables=True)
     chart_dump = chart_data.model_dump()
     subject_dump = chart_dump.get("subject", {}) if isinstance(chart_dump, dict) else {}
     return {
-        "natal_chart_svg": svg,
         "chart_data": chart_dump,
         "planets_data": _build_planets_data(subject_dump),
         "houses_data": _build_houses_data(subject_dump),

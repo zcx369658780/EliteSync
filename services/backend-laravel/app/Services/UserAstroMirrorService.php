@@ -13,6 +13,11 @@ class UserAstroMirrorService
 
     public function syncFromAstroProfile(User $user, UserAstroProfile $profile): void
     {
+        $existingChart = is_array($user->private_natal_chart ?? null)
+            ? (array) $user->private_natal_chart
+            : [];
+        unset($existingChart['natal_chart_svg']);
+
         // Zodiac must prefer year-pillar derivation from bazi.
         $zodiac = $this->zodiacService->fromPreferredSources(
             (string) ($profile->bazi ?? ''),
@@ -44,7 +49,7 @@ class UserAstroMirrorService
             'private_birth_lat' => $profile->birth_lat,
             'private_birth_lng' => $profile->birth_lng,
             'private_ziwei' => $profile->ziwei ?? [],
-            'private_natal_chart' => [
+            'private_natal_chart' => array_merge($existingChart, [
                 'moon_sign' => $profile->moon_sign,
                 'asc_sign' => $profile->asc_sign,
                 'true_solar_time' => $profile->true_solar_time,
@@ -56,7 +61,7 @@ class UserAstroMirrorService
                 'precision' => $westernPrecision,
                 'confidence' => $westernConfidence,
                 'computed_at' => optional($profile->computed_at)->toIso8601String(),
-            ],
+            ]),
         ])->save();
     }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_elitesync_module/core/network/network_result.dart';
 import 'package:flutter_elitesync_module/features/profile/presentation/providers/astro_profile_errors.dart';
+import 'package:flutter_elitesync_module/features/profile/presentation/widgets/natal_chart_svg_builder.dart';
 import 'package:flutter_elitesync_module/shared/providers/app_providers.dart';
 import 'package:flutter_elitesync_module/shared/providers/session_provider.dart';
 
@@ -18,7 +19,10 @@ Future<Map<String, dynamic>?> _fetchAstroProfile(
     print('[ASTRO] request => $requestPath query=${requestQuery ?? const {}}');
     ref
         .read(appLoggerProvider)
-        .info('[ASTRO] request => $requestPath query=${requestQuery ?? const {}}', tag: 'ASTRO');
+        .info(
+          '[ASTRO] request => $requestPath query=${requestQuery ?? const {}}',
+          tag: 'ASTRO',
+        );
     return ref
         .read(apiClientProvider)
         .get(requestPath, query: requestQuery)
@@ -37,7 +41,10 @@ Future<Map<String, dynamic>?> _fetchAstroProfile(
     print('[ASTRO] success <= $path keys=${result.data.keys.join(",")}');
     ref
         .read(appLoggerProvider)
-        .info('[ASTRO] success <= $path keys=${result.data.keys.join(",")}', tag: 'ASTRO');
+        .info(
+          '[ASTRO] success <= $path keys=${result.data.keys.join(",")}',
+          tag: 'ASTRO',
+        );
     final exists = result.data['exists'] == true;
     if (!exists) return null;
     final profile = result.data['profile'];
@@ -58,10 +65,15 @@ Future<Map<String, dynamic>?> _fetchAstroProfile(
   if (failure.statusCode == 404 && fallbackPath != null) {
     result = await request(fallbackPath, fallbackQuery);
     if (result is NetworkSuccess<Map<String, dynamic>>) {
-      print('[ASTRO] fallback success <= $fallbackPath keys=${result.data.keys.join(",")}');
+      print(
+        '[ASTRO] fallback success <= $fallbackPath keys=${result.data.keys.join(",")}',
+      );
       ref
           .read(appLoggerProvider)
-          .info('[ASTRO] fallback success <= $fallbackPath keys=${result.data.keys.join(",")}', tag: 'ASTRO');
+          .info(
+            '[ASTRO] fallback success <= $fallbackPath keys=${result.data.keys.join(",")}',
+            tag: 'ASTRO',
+          );
       final exists = result.data['exists'] == true;
       if (!exists) return null;
       final profile = result.data['profile'];
@@ -100,7 +112,9 @@ final astroSummaryProvider = FutureProvider<Map<String, dynamic>?>((ref) async {
   );
 });
 
-final astroNatalChartProvider = FutureProvider<Map<String, dynamic>?>((ref) async {
+final astroNatalChartProvider = FutureProvider<Map<String, dynamic>?>((
+  ref,
+) async {
   return _fetchAstroProfile(
     ref,
     path: '/api/v1/profile/astro/chart',
@@ -111,7 +125,7 @@ final astroNatalChartProvider = FutureProvider<Map<String, dynamic>?>((ref) asyn
 final astroChartPreviewProvider = FutureProvider<String?>((ref) async {
   final profile = await ref.watch(astroNatalChartProvider.future);
   if (profile == null) return null;
-  final svg = (profile['natal_chart_svg'] ?? '').toString().trim();
+  final svg = buildNatalChartSvgFromProfile(profile).trim();
   return svg.isEmpty ? null : svg;
 });
 

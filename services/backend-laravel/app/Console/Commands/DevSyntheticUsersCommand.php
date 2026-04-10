@@ -16,6 +16,14 @@ class DevSyntheticUsersCommand extends Command
     protected $signature = 'app:dev:synthetic-users
         {--count=1000 : Number of synthetic users to create}
         {--batch= : Optional batch tag (default auto timestamp)}
+        {--batch-id= : Optional stable batch identifier (default batch tag)}
+        {--generation-version=v1 : Synthetic generation version tag}
+        {--visibility-scope=square : Synthetic visibility scope marker}
+        {--seed= : Optional reproducible seed}
+        {--summary : Print batch summary and exit}
+        {--disable-batch= : Disable all synthetic users in the given batch and exit}
+        {--cleanup-batch= : Delete all synthetic users in the given batch and exit}
+        {--rebuild-batch= : Clear the named batch first, then recreate it}
         {--with-answers=1 : Whether to auto fill required questionnaire answers (0|1)}
         {--password= : Optional password for synthetic users (if empty, auto-generate random strong password)}
         {--phone-prefix=90 : Synthetic phone prefix (default 90, avoid real mobile ranges)}
@@ -51,6 +59,23 @@ class DevSyntheticUsersCommand extends Command
         if ($batch === '') {
             $batch = 'syn_'.now()->format('Ymd_His');
         }
+        $batchId = trim((string) $this->option('batch-id'));
+        if ($batchId === '') {
+            $batchId = $batch;
+        }
+        $generationVersion = trim((string) $this->option('generation-version'));
+        if ($generationVersion === '') {
+            $generationVersion = 'v1';
+        }
+        $visibilityScope = $this->normalizeVisibilityScope((string) $this->option('visibility-scope'));
+        $seedOption = trim((string) $this->option('seed'));
+        $seedBase = $seedOption !== ''
+            ? (int) $seedOption
+            : abs((int) crc32($batch.'|'.$batchId.'|'.$generationVersion.'|'.$count));
+        $summaryOnly = in_array((string) $this->option('summary'), ['1', 'true', 'yes', 'on'], true);
+        $disableBatch = trim((string) $this->option('disable-batch'));
+        $cleanupBatch = trim((string) $this->option('cleanup-batch'));
+        $rebuildBatch = trim((string) $this->option('rebuild-batch'));
         $withAnswers = in_array((string) $this->option('with-answers'), ['1', 'true', 'yes', 'on'], true);
         $password = trim((string) $this->option('password'));
         if ($password === '') {
@@ -66,10 +91,36 @@ class DevSyntheticUsersCommand extends Command
         $clearBatch = trim((string) $this->option('clear-batch'));
         $onlyClear = (bool) $this->option('only-clear');
 
+        if ($cleanupBatch !== '' && $clearBatch === '') {
+            $clearBatch = $cleanupBatch;
+        }
+        if ($rebuildBatch !== '') {
+            $batch = $rebuildBatch;
+            $batchId = $rebuildBatch;
+            if ($cleanupBatch === '') {
+                $cleanupBatch = $rebuildBatch;
+            }
+            if ($clearBatch === '') {
+                $clearBatch = $rebuildBatch;
+            }
+        }
+
+        if ($summaryOnly) {
+            $this->printBatchSummary($batchId !== '' ? $batchId : $batch);
+            return self::SUCCESS;
+        }
+
+        if ($disableBatch !== '') {
+            $updated = $this->disableBatch($disableBatch);
+            $this->info("Disabled synthetic batch {$disableBatch}: {$updated} users");
+            $this->printBatchSummary($disableBatch);
+            return self::SUCCESS;
+        }
+
         if ($clearBatch !== '') {
             $deleted = $this->clearBatch($clearBatch);
             $this->info("Cleared synthetic batch {$clearBatch}: {$deleted} users");
-            if ($onlyClear) {
+            if ($onlyClear || ($cleanupBatch !== '' && $rebuildBatch === '')) {
                 return self::SUCCESS;
             }
         }
@@ -80,15 +131,18 @@ class DevSyntheticUsersCommand extends Command
         }
 
         $requiredAnswers = max(1, (int) config('questionnaire.required_answer_count', 20));
-        $questions = QuestionnaireQuestion::query()
-            ->where('enabled', true)
-            ->orderBy('sort_order')
-            ->limit($requiredAnswers)
-            ->get(['id', 'options']);
+        $questions = collect();
+        if ($withAnswers) {
+            $questions = QuestionnaireQuestion::query()
+                ->where('enabled', true)
+                ->orderBy('sort_order')
+                ->limit($requiredAnswers)
+                ->get(['id', 'options']);
 
-        if ($withAnswers && $questions->count() < $requiredAnswers) {
-            $this->error("Insufficient enabled questions: need {$requiredAnswers}, got {$questions->count()}");
-            return self::FAILURE;
+            if ($questions->count() < $requiredAnswers) {
+                $this->error("Insufficient enabled questions: need {$requiredAnswers}, got {$questions->count()}");
+                return self::FAILURE;
+            }
         }
 
         $created = 0;
@@ -96,28 +150,26 @@ class DevSyntheticUsersCommand extends Command
         $passwordHash = Hash::make($password);
         $zodiacPool = ['白羊座', '金牛座', '双子座', '巨蟹座', '狮子座', '处女座', '天秤座', '天蝎座', '射手座', '摩羯座', '水瓶座', '双鱼座'];
         $mbtiPool = ['INTJ', 'INTP', 'ENTJ', 'ENTP', 'INFJ', 'INFP', 'ENFJ', 'ENFP', 'ISTJ', 'ISFJ', 'ESTJ', 'ESFJ', 'ISTP', 'ISFP', 'ESTP', 'ESFP'];
-        $cityCursor = 0;
-        $cityShuffle = $cities;
-        shuffle($cityShuffle);
-
+        $seedBase = abs($seedBase) > 0 ? abs($seedBase) : 1;
         DB::beginTransaction();
         try {
             for ($i = 0; $i < $count; $i++) {
-                $phone = $this->nextPhone($phonePrefix);
-                if ($cityCursor > 0 && $cityCursor % count($cityShuffle) === 0) {
-                    shuffle($cityShuffle);
-                }
-                $city = $cityShuffle[$cityCursor % count($cityShuffle)];
-                $cityCursor++;
-                $birthday = $this->randomBirthday($minAge, $maxAge);
-                $gender = random_int(0, 1) === 0 ? 'male' : 'female';
-                $goal = ['marriage', 'dating', 'friendship'][random_int(0, 2)];
-                $mbti = $mbtiPool[array_rand($mbtiPool)];
-                $zodiac = $zodiacPool[array_rand($zodiacPool)];
-                $personality = $this->randomPersonalityVector();
+                $userSeed = $seedBase + ($i * 97);
+                $phone = $this->nextPhone($phonePrefix, $userSeed, $i);
+                $city = $this->pickBySeed($cities, $userSeed + 11);
+                $birthday = $this->randomBirthday($minAge, $maxAge, $userSeed + 17);
+                $gender = $this->pickBySeed(['male', 'female'], $userSeed + 23);
+                $goal = $this->pickBySeed(['marriage', 'dating', 'friendship'], $userSeed + 31);
+                $mbti = $this->pickBySeed($mbtiPool, $userSeed + 43);
+                $zodiac = $this->pickBySeed($zodiacPool, $userSeed + 59);
+                $personality = $this->randomPersonalityVector($userSeed + 71);
                 $coord = $this->cityCoordinate($city);
+                $cleanupToken = substr(hash('sha256', implode('|', [$batch, $batchId, $seedBase, $i, $phone])), 0, 32);
+                $accountVisibility = $visibilityScope;
+                $isMatchEligible = $visibilityScope !== 'hidden';
+                $isSquareVisible = in_array($visibilityScope, ['square', 'all'], true);
 
-                $user = User::create([
+                $attributes = [
                     'phone' => $phone,
                     'name' => "SYN_{$batch}_".str_pad((string) ($i + 1), 4, '0', STR_PAD_LEFT),
                     'password' => $passwordHash,
@@ -128,8 +180,8 @@ class DevSyntheticUsersCommand extends Command
                     'disabled' => false,
                     'is_synthetic' => true,
                     'synthetic_batch' => $batch,
-                    'is_match_eligible' => true,
-                    'is_square_visible' => true,
+                    'is_match_eligible' => $isMatchEligible,
+                    'is_square_visible' => $isSquareVisible,
                     'exclude_from_metrics' => true,
                     'banned_reason' => null,
                     'birthday' => $birthday,
@@ -143,7 +195,15 @@ class DevSyntheticUsersCommand extends Command
                     'private_birth_place' => $city,
                     'private_birth_lat' => $coord['lat'],
                     'private_birth_lng' => $coord['lng'],
-                ]);
+                ];
+                $attributes['synthetic_batch_id'] = $batchId;
+                $attributes['synthetic_seed'] = $userSeed;
+                $attributes['generation_version'] = $generationVersion;
+                $attributes['account_status'] = 'active';
+                $attributes['visibility_scope'] = $accountVisibility;
+                $attributes['cleanup_token'] = $cleanupToken;
+
+                $user = User::create($attributes);
                 $created++;
 
                 StatusPost::create([
@@ -220,11 +280,17 @@ class DevSyntheticUsersCommand extends Command
 
         $this->info("Synthetic users created: {$created}");
         $this->line("batch={$batch}");
+        $this->line("batch_id={$batchId}");
+        $this->line("generation_version={$generationVersion}");
+        $this->line("visibility_scope={$visibilityScope}");
+        $this->line("seed={$seedBase}");
         $this->line("with_answers=".($withAnswers ? 'true' : 'false'));
         $this->line('cities='.implode(',', $cities));
         $this->line("age_range={$minAge}-{$maxAge}");
         $this->line("phone_prefix={$phonePrefix}");
         $this->line("synthetic_password={$password}");
+
+        $this->printBatchSummary($batchId);
 
         return self::SUCCESS;
     }
@@ -233,11 +299,69 @@ class DevSyntheticUsersCommand extends Command
     {
         return User::query()
             ->where('is_synthetic', true)
-            ->where('synthetic_batch', $batch)
+            ->where(function ($query) use ($batch) {
+                $query->where('synthetic_batch', $batch)
+                    ->orWhere('synthetic_batch_id', $batch);
+            })
             ->delete();
     }
 
-    private function nextPhone(string $prefix): string
+    private function disableBatch(string $batch): int
+    {
+        $payload = [
+            'disabled' => true,
+            'is_match_eligible' => false,
+            'is_square_visible' => false,
+            'exclude_from_metrics' => true,
+        ];
+        $payload['account_status'] = 'disabled';
+        $payload['visibility_scope'] = 'hidden';
+
+        return User::query()
+            ->where('is_synthetic', true)
+            ->where(function ($query) use ($batch) {
+                $query->where('synthetic_batch', $batch)
+                    ->orWhere('synthetic_batch_id', $batch);
+            })
+            ->update($payload);
+    }
+
+    private function printBatchSummary(string $batch): void
+    {
+        $query = User::query()
+            ->where('is_synthetic', true)
+            ->where(function ($inner) use ($batch) {
+                $inner->where('synthetic_batch', $batch)
+                    ->orWhere('synthetic_batch_id', $batch);
+            });
+
+        $total = (clone $query)->count();
+        $active = (clone $query)->where('disabled', false)->count();
+        $disabled = (clone $query)->where('disabled', true)->count();
+        $visible = (clone $query)->where('is_square_visible', true)->count();
+        $eligible = (clone $query)->where('is_match_eligible', true)->count();
+        $metricsExcluded = (clone $query)->where('exclude_from_metrics', true)->count();
+        $sample = (clone $query)->orderBy('id')->limit(3)->get(['id', 'phone', 'name', 'account_status', 'visibility_scope']);
+
+        $this->line('batch_summary='.json_encode([
+            'batch' => $batch,
+            'total' => $total,
+            'active' => $active,
+            'disabled' => $disabled,
+            'visible' => $visible,
+            'eligible' => $eligible,
+            'metrics_excluded' => $metricsExcluded,
+            'sample' => $sample->map(fn ($user) => [
+                'id' => (int) $user->id,
+                'phone' => (string) $user->phone,
+                'name' => (string) $user->name,
+                'account_status' => (string) ($user->account_status ?? 'active'),
+                'visibility_scope' => (string) ($user->visibility_scope ?? 'square'),
+            ])->values()->all(),
+        ], JSON_UNESCAPED_UNICODE));
+    }
+
+    private function nextPhone(string $prefix, int $seed, int $index): string
     {
         // Use a non-mobile synthetic prefix by default (e.g. 90xxxx...), to avoid
         // confusing with real phone accounts.
@@ -253,13 +377,16 @@ class DevSyntheticUsersCommand extends Command
             $suffixLen = 1;
         }
 
+        $attempt = 0;
         while (true) {
             $max = (10 ** $suffixLen) - 1;
-            $phone = $normalized.str_pad((string) random_int(0, $max), $suffixLen, '0', STR_PAD_LEFT);
+            $candidateSeed = $seed + ($index * 131) + $attempt;
+            $phone = $normalized.str_pad((string) $this->pseudoRand($candidateSeed, 0, $max), $suffixLen, '0', STR_PAD_LEFT);
             $exists = User::query()->where('phone', $phone)->exists();
             if (!$exists) {
                 return $phone;
             }
+            $attempt++;
         }
     }
 
@@ -320,26 +447,26 @@ class DevSyntheticUsersCommand extends Command
         return array_values(array_unique($items));
     }
 
-    private function randomBirthday(int $minAge, int $maxAge): string
+    private function randomBirthday(int $minAge, int $maxAge, int $seed): string
     {
-        $age = random_int($minAge, $maxAge);
+        $age = $this->pseudoRand($seed, $minAge, $maxAge);
         $start = now()->subYears($age + 1)->addDay();
         $end = now()->subYears($age);
         $days = max(1, $start->diffInDays($end));
-        return $start->addDays(random_int(0, $days))->format('Y-m-d');
+        return $start->addDays($this->pseudoRand($seed + 7, 0, $days))->format('Y-m-d');
     }
 
     /**
      * @return array<string,mixed>
      */
-    private function randomPersonalityVector(): array
+    private function randomPersonalityVector(int $seed): array
     {
         return [
-            'openness' => random_int(35, 95),
-            'conscientiousness' => random_int(35, 95),
-            'extraversion' => random_int(20, 95),
-            'agreeableness' => random_int(30, 95),
-            'neuroticism' => random_int(10, 90),
+            'openness' => $this->pseudoRand($seed + 3, 35, 95),
+            'conscientiousness' => $this->pseudoRand($seed + 7, 35, 95),
+            'extraversion' => $this->pseudoRand($seed + 11, 20, 95),
+            'agreeableness' => $this->pseudoRand($seed + 13, 30, 95),
+            'neuroticism' => $this->pseudoRand($seed + 17, 10, 90),
         ];
     }
 
@@ -357,5 +484,40 @@ class DevSyntheticUsersCommand extends Command
         ];
 
         return $map[$city] ?? ['lat' => 32.9907, 'lng' => 112.5283];
+    }
+
+    /**
+     * @template T
+     * @param array<int,T> $items
+     * @return T
+     */
+    private function pickBySeed(array $items, int $seed)
+    {
+        if (empty($items)) {
+            throw new \RuntimeException('pickBySeed requires a non-empty item list.');
+        }
+
+        $idx = $this->pseudoRand($seed, 0, max(0, count($items) - 1));
+        return $items[$idx];
+    }
+
+    private function pseudoRand(int $seed, int $min, int $max): int
+    {
+        if ($min >= $max) {
+            return $min;
+        }
+
+        $n = abs((int) (($seed * 1103515245 + 12345) & 0x7fffffff));
+        return $min + ($n % ($max - $min + 1));
+    }
+
+    private function normalizeVisibilityScope(string $scope): string
+    {
+        $scope = trim(strtolower($scope));
+        if ($scope === '') {
+            return 'square';
+        }
+
+        return in_array($scope, ['square', 'hidden', 'all', 'match'], true) ? $scope : 'square';
     }
 }

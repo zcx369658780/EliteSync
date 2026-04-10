@@ -30,6 +30,7 @@ class MatchMapper {
         .toList(),
     matchId: dto.matchId,
     partnerId: dto.partnerId,
+    partnerNickname: dto.partnerNickname,
   );
 
   MatchDetailEntity detail(MatchDetailDto dto) => MatchDetailEntity(
