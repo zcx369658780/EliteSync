@@ -152,6 +152,18 @@ void main() {
     expect(find.text('解释阅读顺序'), findsOneWidget);
     expect(find.text('进入首聊'), findsWidgets);
     expect(find.text('查看完整解释'), findsWidgets);
+    await tester.scrollUntilVisible(
+      find.text('可直接拿去聊天'),
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('可直接拿去聊天'), findsOneWidget);
+    expect(
+      find.text('点一下会把话题草稿写进聊天输入框，然后直接带你去会话页。'),
+      findsOneWidget,
+    );
+    expect(find.text('提交反馈（帮助优化解释）'), findsOneWidget);
   });
 
   testWidgets('conversation list page renders mock conversations', (
@@ -180,5 +192,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('举报 / 拉黑'), findsOneWidget);
+    expect(find.text('首聊 / 恢复建议'), findsOneWidget);
+    expect(find.text('从周末聊起'), findsOneWidget);
   });
 }

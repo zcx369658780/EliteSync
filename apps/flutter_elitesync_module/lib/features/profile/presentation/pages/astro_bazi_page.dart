@@ -192,8 +192,6 @@ class AstroBaziPage extends ConsumerWidget {
                           SizedBox(height: t.spacing.xxs),
                           AstroKeyValueRow(label: '引擎', value: accuracy),
                           SizedBox(height: t.spacing.xxs),
-                          AstroKeyValueRow(label: '精度', value: accuracy),
-                          SizedBox(height: t.spacing.xxs),
                           AstroKeyValueRow(label: '置信', value: confidence),
                         ],
                       ),

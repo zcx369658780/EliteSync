@@ -34,6 +34,9 @@ class AdminApiTest extends TestCase
             'name' => 'pending',
             'password' => 'secret123',
             'verify_status' => 'pending',
+            'is_match_eligible' => true,
+            'is_square_visible' => true,
+            'exclude_from_metrics' => false,
         ]);
 
         Config::set('app.admin_phones', [$admin->phone]);
@@ -52,6 +55,15 @@ class AdminApiTest extends TestCase
             ->assertOk()
             ->assertJsonPath('ok', true);
 
+        $pendingUser->refresh();
+        $this->assertTrue((bool) $pendingUser->disabled);
+        $this->assertSame('banned', $pendingUser->moderation_status);
+        $this->assertSame('disabled', $pendingUser->account_status);
+        $this->assertSame('hidden', $pendingUser->visibility_scope);
+        $this->assertFalse((bool) $pendingUser->is_match_eligible);
+        $this->assertFalse((bool) $pendingUser->is_square_visible);
+        $this->assertTrue((bool) $pendingUser->exclude_from_metrics);
+
         $this->getJson('/api/v1/admin/users')
             ->assertOk()
             ->assertJsonFragment([
@@ -60,6 +72,53 @@ class AdminApiTest extends TestCase
                 'account_type' => 'normal',
                 'verify_status' => 'approved',
                 'disabled' => true,
+            ]);
+    }
+
+    public function test_admin_users_exposes_batch_audit_fields_and_filters_by_batch_id(): void
+    {
+        $admin = User::create([
+            'phone' => '13800000103',
+            'name' => 'admin-batch',
+            'password' => 'secret123',
+            'verify_status' => 'approved',
+        ]);
+
+        $batchUser = User::create([
+            'phone' => '13800000104',
+            'name' => 'syn-batch-user',
+            'password' => 'secret123',
+            'account_type' => 'test',
+            'verify_status' => 'approved',
+            'is_synthetic' => true,
+            'synthetic_batch' => 'batch-a',
+            'synthetic_batch_id' => 'batch-a-id',
+            'synthetic_seed' => 20260410,
+            'generation_version' => 'v32',
+            'account_status' => 'active',
+            'visibility_scope' => 'square',
+            'cleanup_token' => 'token-batch-a',
+        ]);
+
+        Config::set('app.admin_phones', [$admin->phone]);
+        Sanctum::actingAs($admin);
+
+        $this->getJson('/api/v1/admin/users?synthetic_batch=batch-a-id')
+            ->assertOk()
+            ->assertJsonPath('total', 1)
+            ->assertJsonFragment([
+                'id' => $batchUser->id,
+                'account_type' => 'test',
+                'synthetic_batch' => 'batch-a',
+                'synthetic_batch_id' => 'batch-a-id',
+                'synthetic_seed' => 20260410,
+                'generation_version' => 'v32',
+                'account_status' => 'active',
+                'visibility_scope' => 'square',
+                'cleanup_token' => 'token-batch-a',
+                'is_match_eligible' => true,
+                'is_square_visible' => true,
+                'exclude_from_metrics' => false,
             ]);
     }
 

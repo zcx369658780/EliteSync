@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_elitesync_module/app/router/app_route_names.dart';
 import 'package:flutter_elitesync_module/design_system/components/bars/app_top_bar.dart';
+import 'package:flutter_elitesync_module/design_system/components/cards/app_info_section_card.dart';
 import 'package:flutter_elitesync_module/design_system/components/layout/app_scaffold.dart';
 import 'package:flutter_elitesync_module/design_system/components/layout/page_title_rail.dart';
 import 'package:flutter_elitesync_module/design_system/components/layout/section_reveal.dart';
@@ -13,6 +14,7 @@ import 'package:flutter_elitesync_module/features/profile/presentation/widgets/a
 import 'package:flutter_elitesync_module/features/profile/presentation/widgets/astro_profile_sections.dart';
 import 'package:flutter_elitesync_module/features/profile/presentation/widgets/astro_profile_state.dart';
 import 'package:flutter_elitesync_module/features/profile/presentation/widgets/astro_profile_state_view.dart';
+import 'package:flutter_elitesync_module/features/profile/presentation/widgets/natal_chart_svg_builder.dart';
 import 'package:flutter_elitesync_module/features/profile/presentation/widgets/natal_chart_svg_card.dart';
 
 class AstroNatalChartPage extends ConsumerWidget {
@@ -54,7 +56,9 @@ class AstroNatalChartPage extends ConsumerWidget {
             const SectionReveal(
               child: PageTitleRail(title: "西洋星盘", subtitle: "盘面主视觉"),
             ),
-            SizedBox(height: chartPrefs.compactDensity ? t.spacing.xs : t.spacing.md),
+            SizedBox(
+              height: chartPrefs.compactDensity ? t.spacing.xs : t.spacing.md,
+            ),
             async.when(
               loading: () =>
                   AstroProfileStateView(spec: astroProfileLoadingSpec('星盘')),
@@ -112,7 +116,10 @@ class AstroNatalChartPage extends ConsumerWidget {
                   'unknown',
                 );
                 final notes = astroList(profile['notes']);
-                final svg = astroText(profile['natal_chart_svg'], '');
+                final svg = buildNatalChartSvgFromProfile(
+                  profile,
+                  prefs: chartPrefs,
+                );
                 final planets = _mapList(profile['planets_data']);
                 final houses = _mapList(profile['houses_data']);
                 final aspects = _mapList(profile['aspects_data']);
@@ -120,6 +127,35 @@ class AstroNatalChartPage extends ConsumerWidget {
                 return Column(
                   children: [
                     NatalChartSvgCard(svg: svg),
+                    SizedBox(height: sectionGap),
+                    AppInfoSectionCard(
+                      title: '本地绘制',
+                      subtitle: '星盘已改为 APP 端本地生成',
+                      leadingIcon: Icons.edit_location_alt_outlined,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '当前页面直接使用服务端返回的 chart_data 在本机绘制星盘，不再依赖后端输出 SVG。你可以去编辑资料页修改出生时间、出生地点或经纬度，保存后会重新计算并刷新盘面。',
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(
+                                  color: t.textSecondary,
+                                  height: 1.45,
+                                ),
+                          ),
+                          SizedBox(height: t.spacing.sm),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: FilledButton.icon(
+                              onPressed: () =>
+                                  context.push(AppRouteNames.editProfile),
+                              icon: const Icon(Icons.edit_location_alt_rounded),
+                              label: const Text('编辑出生资料'),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                     SizedBox(height: sectionGap),
                     if (chartPrefs.showPlanetSummary) ...[
                       AstroSectionCard(
@@ -291,7 +327,7 @@ class AstroNatalChartPage extends ConsumerWidget {
                             AstroKeyValueRow(label: '引擎', value: westernEngine),
                             SizedBox(height: t.spacing.xs),
                             AstroKeyValueRow(
-                              label: '精度',
+                              label: '版本',
                               value: westernPrecision,
                             ),
                             SizedBox(height: t.spacing.xs),
@@ -305,11 +341,14 @@ class AstroNatalChartPage extends ConsumerWidget {
                               value: rolloutEnabled ? '启用' : '关闭',
                             ),
                             SizedBox(height: t.spacing.xs),
-                            AstroKeyValueRow(label: '滚动原因', value: rolloutReason),
+                            AstroKeyValueRow(
+                              label: '滚动原因',
+                              value: rolloutReason,
+                            ),
                           ],
                         ),
                       ),
-                    SizedBox(height: sectionGap),
+                      SizedBox(height: sectionGap),
                     ],
                     AstroSectionCard(
                       title: '备注',
@@ -364,63 +403,6 @@ List<Map<String, dynamic>> _mapList(dynamic value) {
       .whereType<Map>()
       .map((item) => item.map((key, val) => MapEntry(key.toString(), val)))
       .toList(growable: false);
-}
-
-class _AxisIdentityTile extends StatelessWidget {
-  const _AxisIdentityTile({
-    required this.icon,
-    required this.label,
-    required this.value,
-    required this.accent,
-  });
-
-  final String icon;
-  final String label;
-  final String value;
-  final Color accent;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = context.appTokens;
-    return Container(
-      padding: EdgeInsets.all(t.spacing.sm),
-      decoration: BoxDecoration(
-        color: accent.withValues(alpha: 0.06),
-        borderRadius: BorderRadius.circular(t.radius.lg),
-        border: Border.all(color: t.browseBorder),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            icon,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              color: accent,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-          SizedBox(height: t.spacing.xxs),
-          Text(
-            label,
-            style: Theme.of(context).textTheme.labelMedium?.copyWith(
-              color: t.textSecondary,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          SizedBox(height: t.spacing.xxs),
-          Text(
-            value,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              color: t.textPrimary,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }
 
 class _FactRowItem {

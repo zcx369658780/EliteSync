@@ -137,6 +137,21 @@ class _StatusSquarePageState extends ConsumerState<StatusSquarePage> {
           padding: EdgeInsets.fromLTRB(0, t.spacing.sm, 0, t.spacing.huge),
           children: [
             AppInfoSectionCard(
+              title: '状态分层',
+              subtitle: '公开层 / 广场层 / 私密层，展示与治理分开',
+              leadingIcon: Icons.layers_outlined,
+              child: Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: const [
+                  _TierChip(label: '公开层', description: '全员可见'),
+                  _TierChip(label: '广场层', description: '首页 / 广场可见'),
+                  _TierChip(label: '私密层', description: '仅自己可见'),
+                ],
+              ),
+            ),
+            SizedBox(height: t.spacing.md),
+            AppInfoSectionCard(
               title: '发布状态',
               subtitle: '轻量发布，直接进入服务端广场流',
               leadingIcon: Icons.publish_rounded,
@@ -280,6 +295,14 @@ class _StatusPostCard extends StatelessWidget {
                   fontWeight: FontWeight.w600,
                 ),
               ),
+              const SizedBox(width: 8),
+              Text(
+                post.authorLayerLabel,
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: t.textSecondary,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
               const Spacer(),
               if (onDelete != null)
                 IconButton(
@@ -290,9 +313,50 @@ class _StatusPostCard extends StatelessWidget {
           ),
           Text(
             post.body,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: t.textPrimary,
+              height: 1.45,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TierChip extends StatelessWidget {
+  const _TierChip({required this.label, required this.description});
+
+  final String label;
+  final String description;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.appTokens;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: t.surface.withValues(alpha: 0.7),
+        borderRadius: BorderRadius.circular(t.radius.lg),
+        border: Border.all(color: t.overlay.withValues(alpha: 0.24)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            label,
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+              color: t.textPrimary,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            description,
             style: Theme.of(
               context,
-            ).textTheme.bodyMedium?.copyWith(color: t.textPrimary, height: 1.45),
+            ).textTheme.labelSmall?.copyWith(color: t.textSecondary),
           ),
         ],
       ),

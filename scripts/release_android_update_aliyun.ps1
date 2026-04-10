@@ -39,13 +39,23 @@ function Run-Step([string]$Title, [scriptblock]$Action) {
 }
 
 function Get-VersionCodeFromName([string]$Ver) {
-    if ($Ver -notmatch '^\s*(\d+)\.(\d+)\.(\d+)\s*$') {
-        throw "Invalid version format: $Ver (expected major.minor.patch)"
+    if ($Ver -notmatch '^\s*(\d+)\.(\d+)\.(\d+)([a-z]*)\s*$') {
+        throw "Invalid version format: $Ver (expected major.minor.patch or major.minor.patch[suffix])"
     }
     $major = [int]$Matches[1]
     $minor = [int]$Matches[2]
     $patch = [int]$Matches[3]
-    return ($major * 10000 + $minor * 100 + $patch)
+    $suffix = ([string]$Matches[4]).ToLowerInvariant()
+    $suffixRank = 0
+    if ($suffix.Length -gt 0) {
+        foreach ($char in $suffix.ToCharArray()) {
+            if ($char -lt 'a' -or $char -gt 'z') {
+                throw "Invalid version suffix in $Ver (expected letters only)"
+            }
+            $suffixRank = ($suffixRank * 26) + ([int][char]$char - [int][char]'a' + 1)
+        }
+    }
+    return ($major * 1000000 + $minor * 10000 + $patch * 100 + $suffixRank)
 }
 
 function Add-CheckResult {
@@ -194,6 +204,7 @@ fi
 echo "kept_apks:"
 ls -1 elitesync-*.apk | sort -V
 "@
+    $remoteScript = $remoteScript -replace "`r`n", "`n"
 
     Run-Step "Apply remote release metadata + cleanup old APKs" {
         ssh -o BatchMode=yes -o StrictHostKeyChecking=no -i $KeyPath `
@@ -265,9 +276,9 @@ if ((-not $SkipRemote) -and (-not $SkipPostCheck)) {
         }
 
         $failCount = @($checks | Where-Object { -not $_.Pass }).Count
-        $postCheckExecuted = $true
-        $postCheckResults = $checks
-        $postCheckOverallPass = ($failCount -eq 0)
+        $script:postCheckExecuted = $true
+        $script:postCheckResults = $checks
+        $script:postCheckOverallPass = ($failCount -eq 0)
         if ($failCount -gt 0) {
             throw "Post-release self check failed: $failCount item(s)."
         }

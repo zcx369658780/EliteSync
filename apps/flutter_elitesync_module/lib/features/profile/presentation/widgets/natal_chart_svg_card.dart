@@ -17,22 +17,11 @@ class NatalChartSvgCard extends StatefulWidget {
 
 class _NatalChartSvgCardState extends State<NatalChartSvgCard> {
   final TransformationController _controller = TransformationController();
-  double? _lastExtent;
 
   @override
   void dispose() {
     _controller.dispose();
     super.dispose();
-  }
-
-  void _syncInitialTransform(double extent) {
-    if (_lastExtent != null && (_lastExtent! - extent).abs() < 1) {
-      return;
-    }
-    _lastExtent = extent;
-    _controller.value = Matrix4.identity()
-      ..translateByDouble(-extent * 0.36, -extent * 0.12, 0, 1.0)
-      ..scaleByDouble(1.50, 1.50, 1.0, 1.0);
   }
 
   @override
@@ -44,7 +33,6 @@ class _NatalChartSvgCardState extends State<NatalChartSvgCard> {
         final width = constraints.maxWidth.isFinite
             ? constraints.maxWidth
             : MediaQuery.of(context).size.width;
-        _syncInitialTransform(width);
 
         return SizedBox(
           width: width,
@@ -67,11 +55,11 @@ class _NatalChartSvgCardState extends State<NatalChartSvgCard> {
                       minScale: 1.0,
                       maxScale: 4.0,
                       constrained: true,
-                      alignment: Alignment.centerLeft,
+                      alignment: Alignment.center,
                       child: SvgPicture.string(
                         source,
-                        fit: BoxFit.cover,
-                        alignment: Alignment.centerLeft,
+                        fit: BoxFit.contain,
+                        alignment: Alignment.center,
                         placeholderBuilder: (context) => Center(
                           child: Text(
                             '星盘 SVG 加载中...',

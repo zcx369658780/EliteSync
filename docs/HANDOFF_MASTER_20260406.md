@@ -273,9 +273,9 @@ canonical 画像主表。
 
 ## 6. 当前版本与发布状态
 
-- 当前发布版本：`0.03.01`
+- 当前发布版本：`0.03.02a`
 - 当前分支：`feat/pair-chart-explainability`
-- 近期开的 release / hotfix 仍围绕 `0.03.01`
+- 近期开的 release / hotfix 仍围绕 `0.03.02a`
 - 发布变更记录和 hotfix 主要集中在：
   - regression smoke 稳定化
   - 玄学 UI 收口

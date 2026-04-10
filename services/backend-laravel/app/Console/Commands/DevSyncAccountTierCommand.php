@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\User;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Schema;
 
 class DevSyncAccountTierCommand extends Command
 {
@@ -21,29 +22,43 @@ class DevSyncAccountTierCommand extends Command
         $updated = 0;
 
         if ($onlySmoke) {
+            $payload = [
+                'role' => 'user',
+                'account_type' => 'test',
+                'is_match_eligible' => true,
+                'is_square_visible' => true,
+                'exclude_from_metrics' => true,
+            ];
+            if (Schema::hasColumn('users', 'account_status')) {
+                $payload['account_status'] = 'active';
+            }
+            if (Schema::hasColumn('users', 'visibility_scope')) {
+                $payload['visibility_scope'] = 'square';
+            }
             $updated += User::query()
                 ->where('name', 'like', 'Smoke%')
-                ->update([
-                    'role' => 'user',
-                    'account_type' => 'test',
-                    'is_match_eligible' => true,
-                    'is_square_visible' => true,
-                    'exclude_from_metrics' => true,
-                ]);
+                ->update($payload);
         }
 
         if ($includeAdmins) {
             $adminPhones = config('app.admin_phones', []);
             if (!empty($adminPhones)) {
+                $payload = [
+                    'role' => 'admin',
+                    'account_type' => 'normal',
+                    'is_match_eligible' => false,
+                    'is_square_visible' => false,
+                    'exclude_from_metrics' => true,
+                ];
+                if (Schema::hasColumn('users', 'account_status')) {
+                    $payload['account_status'] = 'active';
+                }
+                if (Schema::hasColumn('users', 'visibility_scope')) {
+                    $payload['visibility_scope'] = 'hidden';
+                }
                 $updated += User::query()
                     ->whereIn('phone', $adminPhones)
-                    ->update([
-                        'role' => 'admin',
-                        'account_type' => 'normal',
-                        'is_match_eligible' => false,
-                        'is_square_visible' => false,
-                        'exclude_from_metrics' => true,
-                    ]);
+                    ->update($payload);
             }
         }
 

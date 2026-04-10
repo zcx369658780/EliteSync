@@ -24,8 +24,8 @@
   - Web 服务 AK / SK：仅用于后端 `.env` 的地点搜索与地理编码签名
 - 百度地图 Android 安全码当前固定为 `BB:BB:BF:79:60:8A:22:F4:E4:DA:86:5E:38:07:CC:EC:03:98:EB:7C;com.elitesync`，仅用于百度控制台与应用包名 / SHA1 绑定记录。
 - 当前 Android 侧百度地图包体使用 `BaiduLBS_Android_4195.zip` 对应的 `8.0.0` SDK 物料；后续如继续升级百度 SDK，必须同步更新 `LICENSE_DEPENDENCY_STATUS.md` 和相关配置说明。
-- `flutter_svg` 已接入 Flutter 运行时，用于渲染 Kerykeion 返回的星盘 SVG 预览；依赖授权状态见 `LICENSE_DEPENDENCY_STATUS.md`。
-- Kerykeion 已进入后端星盘服务集成评估链路，当前状态在 `LICENSE_DEPENDENCY_STATUS.md` 中标记为 `AGPL_PENDING_REVIEW`；若继续扩大到生产默认依赖，必须先完成商用影响复核与依赖链审计。
+- `flutter_svg` 已接入 Flutter 运行时，用于渲染 APP 本地根据服务端 `chart_data` 生成的星盘 SVG；依赖授权状态见 `LICENSE_DEPENDENCY_STATUS.md`。
+- Kerykeion 仍作为后端星盘计算引擎使用，当前状态在 `LICENSE_DEPENDENCY_STATUS.md` 中标记为 `AGPL_PENDING_REVIEW`；若继续扩大到生产默认依赖，必须先完成商用影响复核与依赖链审计。
 - 玄学详情页的展示偏好使用本地持久化 key `astro_chart_preferences_v1`，仅影响 Flutter 渲染，不得回写 canonical 画像数据；如新增显示项开关，优先扩展该本地偏好而不是改服务端真值。
 - 发布烟测脚本允许在固定回归账号失效时自动注册一个非真实号段的临时 synthetic 账号自举 auth chain；fallback 注册应支持重试，成功后必须在 smoke log 中显式记录 fallback 账号，并在完成 auth chain 后尝试自删，且不得将其视为 canonical 用户数据或进入匹配主流程。
 - 当前后续主线版本建议按 `2.6.4 -> 2.7 -> 2.8 -> 2.9` 推进，其中 `2.6.4` 定位为“稳定性与发布门禁收口版”：
@@ -48,7 +48,7 @@
 - `2.9` 阶段的匹配链路也要短超时兜底：`/api/v1/matches/current`、`/api/v1/match/current`、`/api/v1/matches/{id}/explanation`、`/api/v1/match/{id}/explanation` 这类首进/解释请求不应在慢网下长期阻塞门户页；必要时要快速退回到本地可见状态。
 - `2.9` 阶段的资料页与地点搜索同样要短超时兜底：`/api/v1/profile/basic`、`/api/v1/geo/places` 不应在慢网下长期挂起；编辑资料与出生地搜索要尽快给出可见反馈或本地兜底结果，避免用户误以为页面死掉。
 - `2.9` 阶段的消息链路也要短超时兜底：`/api/v1/match/current`、`/api/v1/match/history`、`/api/v1/messages` 在慢网下不应长期挂起；会话页优先给出快照或明确错误态，不要让消息入口长时间空等。
-- 当前对外发布版本已对齐到 `0.03.01`，版本号、版本检查默认值、更新说明与 APK 文件名必须同步按 `0.03.01 / 301` 维护。
+- 当前对外发布版本已对齐到 `0.03.02a`，版本号、版本检查默认值、更新说明与 APK 文件名必须同步按 `0.03.02a / 30201` 维护；`0.03.01` / `0.03.02` 仍保留为历史 compact 编码。
 - 当前项目总交接文档已另存为根目录 `PROJECT_HANDOFF_20260407.md`，后续 Claude / Gemini / GPT 顾问交接优先引用该文件。
 - `2.9` Beta 准备新增最小健康检查入口 `/api/v1/app/health` 与关于页服务状态卡，仅用于 Beta 可观测性，不得替代 smoke / regression / release gate，也不得成为第二真源。
 
@@ -92,3 +92,30 @@
 - 2.0 及更早版本的早期开发计划已统一归档到 `docs/archive/legacy_2026-04/DEVELOPMENT_PLAN_2_0_AND_EARLIER_ARCHIVE.md`，根目录 `DEVELOPMENT_PLAN.md` 仅保留为兼容入口，不再作为活跃执行计划。
 
 - 3.1 的最终交接截图已从根目录移至 docs/archive/legacy_2026-04/3.1_evidence/，后续仅通过主交接文件与归档目录引用。
+- `3.2` 的默认执行顺序固定为：测试账号体系底座 -> 账号可观测与管理 -> 玄学 correctness 修复 -> 匹配与首聊转化 -> 广场轻分层 -> 回归与验收归档。
+- `astro_chart_preferences_v1` 现在同时承载两类本地展示偏好：下方摘要显示与盘面元素显示；盘面元素已经细分到星座分区线 / 星座文字 / 宫位线 / 宫位编号 / 相位连线 / 行星连线 / 行星点位 / 行星文字 / 盘心标题 / 盘心时间 / 盘心地点 等本地 SVG 开关，且不得回写后端 canonical 真值。
+- 星盘设置页已提供“恢复默认”按钮，用于一键恢复推荐展示状态，便于验收与回归时对齐标准构图；该操作仍只影响本地偏好，不得改变后端真值。
+- 星盘设置页已新增本地预设档位：`完整版 / 平衡版 / 极简版`，用于快速切换盘面观感；预设只影响 Flutter 本地 SVG 绘制与摘要显示，不得回写后端 canonical 真值。
+- `3.2` 的核心保护面固定为：注册 / 登录、基础资料保存、出生地搜索、画像重算、匹配解释、每周匹配、首聊 / 会话、状态发布 / 广场、管理员控制面、synthetic batch 创建与清理，以及 3.1 已通过能力。
+- `3.2a` 已作为 `0.03.02a / 30201` 对外发布版本完成收口，正式交接入口为 `docs/version_plans/3.2a_HANDOFF_FINAL_20260410.md`；星盘算法进一步拆分与测测级功能复刻已冻结，等待顾问就 `ASTRO_ALGORITHM_HANDOFF_20260410.md` 给出可行反馈后再推进。
+- `3.2` 的测试账号体系必须严格分层为 `normal / test / synthetic`，其中 `synthetic` 默认 `exclude_from_metrics = true`，且支持 batch create / rebuild / cleanup / disable。
+- `3.2` 阶段 1 已启动账号分层底座实现：`users` 已新增 `synthetic_batch_id / synthetic_seed / generation_version / account_status / visibility_scope / cleanup_token` 等批次审计字段，`app:dev:sync-account-tier` 和 `app:dev:synthetic-users` 已支持按批次生成 / 重建 / 清理，Admin 用户列表开始展示批次与生成元信息。
+- `3.2` 阶段 1 的 Admin 用户列表已升级为客观治理视图：支持按 `account_type / synthetic_batch / account_status / visibility_scope / is_synthetic` 等字段筛选，并在列表卡片上展示 `Batch / Type / Version / Scope / Status / Match / Square / Metrics / Seed` 等审计元信息，用于核对账号分层、广场可见性与指标隔离。
+- `3.2` 阶段的玄学页文字修正以“减少误导”为原则：八字页底部技术参数不再重复展示同一 `accuracy` 值，保留 `位置来源 / 引擎 / 置信` 三段，避免把同值重复标成不同概念。
+- `3.2` 阶段的玄学术语对齐规则：星盘 / 紫微 / 八字 / 盘面设置页统一将 `precision` 类字段对外展示为“版本”或“可信度”，不要再把版本、模式、置信度混写成“精度”。
+- `3.2` 阶段的广场轻分层已启动：首页状态广场预览与广场页统一展示作者层级 / 可见层级标签，区分公开层 / 广场层 / 私密层，后续继续补可见性治理与审核视图。
+- `3.2` 阶段的匹配与首聊转化已补强：匹配结果页的行动建议已改成可点击开场草稿卡，点击后会把话题写进聊天草稿并跳到会话页；聊天页顶部破冰卡也已改成可点建议，用于开场与沉默后的恢复接话。
+- `3.2` 已补出阶段性验收草稿 `docs/version_plans/3.2_ACCEPTANCE_REPORT.md`，当前口径为“核心底座已落地、Flutter acceptance smoke 已通过、仍待补最终截图验收”。
+- `3.2` 当前已确认 `apps/android :app:assembleDebug` 通过、后端定向回归通过（`AdminApiTest` / `DevSyntheticUsersCommandTest` / `DevSyncAccountTierCommandTest`），Flutter acceptance smoke 已通过；`flutter analyze` 目前可运行但仍存在少量 lint/info，正式归档前建议补最终截图验收与必要的 lint 收口。
+- `3.2` 已补充单文件阶段交接 `docs/version_plans/3.2_HANDOFF_STAGE_20260410.md`，后续如果要继续推进或交接，应优先引用这份摘要，而不是继续翻散落的执行文档。
+- `3.2` 最终交接入口已收敛为 `docs/version_plans/3.2_HANDOFF_FINAL_20260410.md`，作为对顾问交付时的主入口；其余执行 / 验收 / 风险文档保留为附录和追溯材料。
+- `3.2` 的关键截图证据已在 `emulator-5554` 重新补齐，根目录当前证据文件包括 `3_2_home.png`、`3_2_match_result.png`、`3_2_admin_users.png`、`3_2_status_square.png`，以及聊天页辅助证据 `_chat_room.png`。
+- `3.2` 最终闭环已补足三处残余风险：匹配结果缓存保留 `matchId / partnerId`、Admin 封禁同步 `is_match_eligible / is_square_visible / exclude_from_metrics`、状态广场作者层级改为优先读 `is_synthetic` 真源；对应后端 / Flutter / acceptance tests 已回归通过。
+- `3.2` 最终交接稿已收敛为 `docs/version_plans/3.2_HANDOFF_FINAL_20260410.md`，后续对 GPT 顾问或其他外部审阅的默认入口应优先引用该文件和 `3.2_ACCEPTANCE_REPORT.md`。
+- `3.2` 终验补证包已落盘到 `docs/version_plans/3.2_TERMINAL_EVIDENCE_PACK_20260410.md`；其中默认 synthetic 池真实落地为 1000 条，独立临时 SQLite 里也验证过 10000 扩展路径能力。
+- `3.2` Admin 统计口径明确为：`测试账号 = account_type == test`，`合成用户 = is_synthetic == true`，两者可以重叠，不要把卡片数量理解成互斥分组。
+- `3.2` 出生地点链路优先以服务端 `GeoController` / `DevFillSyntheticAstroProfilesCommand` 为真源；若 Baidu live 复核临时不可用，以此前已验证的候选返回与代码链路作为补证材料。
+- Android host 启动 Flutter 时必须把 `elitesync_api_base_url` / `elitesync_ws_base_url` 注入到 bootstrap extras，Flutter 端不要只依赖 `slowdate.top` 的隐式回退；以后排查 `Request Timed out`，优先确认 APK 是否为宿主包以及 bootstrap 是否已经注入正确基线地址。
+- Gemini CLI 当前仓库级默认模型固定为 `gemini-2.5-flash`；若继续调用外部验收，优先按该默认值执行，避免在多配置来源之间漂移。
+- Gemini 省 token 的实践：验收时优先传小尺寸截图，UI 识别不需要 4K 原图，控制在 `1024x1024` 以下更合适；只在需要时才扩大输入。
+- Gemini 成本监控可按 response 的 `usage_metadata` 统计 `prompt_token_count` / `candidates_token_count` / `total_token_count`，再按当时价格计算预估费用；价格若变动，要同步更新这条记忆。

@@ -80,7 +80,7 @@ class _AstroProfilePageState extends ConsumerState<AstroProfilePage>
             delay: const Duration(milliseconds: 70),
             child: AppInfoSectionCard(
               title: '当前画像',
-              subtitle: '八字 / 星象 / 五行 / 大运 / 流年',
+              subtitle: '八字 / 星象 / 五行 / 大运 / 流年 / 可信度',
               leadingIcon: Icons.auto_graph_rounded,
               child: astroAsync.when(
                 loading: () =>
@@ -202,7 +202,7 @@ class _AstroProfilePageState extends ConsumerState<AstroProfilePage>
                       SizedBox(height: t.spacing.sm),
                       AstroSectionCard(
                         title: '计算元信息',
-                        subtitle: '真太阳时、修正与精度',
+                        subtitle: '真太阳时、修正与可信度',
                         icon: Icons.tune_rounded,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -240,7 +240,7 @@ class _AstroProfilePageState extends ConsumerState<AstroProfilePage>
                               if (accuracy.isNotEmpty ||
                                   confidence.isNotEmpty) ...[
                                 Text(
-                                  '八字精度',
+                                  '八字可信度',
                                   style: Theme.of(context).textTheme.titleSmall
                                       ?.copyWith(
                                         color: t.textPrimary,
@@ -259,7 +259,7 @@ class _AstroProfilePageState extends ConsumerState<AstroProfilePage>
                                   westernConfidence.isNotEmpty) ...[
                                 SizedBox(height: t.spacing.sm),
                                 Text(
-                                  '西占引擎',
+                                  '西占可信度',
                                   style: Theme.of(context).textTheme.titleSmall
                                       ?.copyWith(
                                         color: t.textPrimary,
@@ -268,7 +268,7 @@ class _AstroProfilePageState extends ConsumerState<AstroProfilePage>
                                 ),
                                 SizedBox(height: t.spacing.xxs),
                                 Text(
-                                  '${westernEngine.isEmpty ? '-' : westernEngine} / ${westernPrecision.isEmpty ? '-' : westernPrecision} / 置信 ${westernConfidence.isEmpty ? '-' : westernConfidence}',
+                                  '引擎 ${westernEngine.isEmpty ? '-' : westernEngine} · 版本 ${westernPrecision.isEmpty ? '-' : westernPrecision} · 置信 ${westernConfidence.isEmpty ? '-' : westernConfidence}',
                                   style: Theme.of(context).textTheme.bodySmall
                                       ?.copyWith(color: t.textSecondary),
                                 ),
@@ -319,7 +319,7 @@ class _AstroProfilePageState extends ConsumerState<AstroProfilePage>
                                   ziweiPrecision.isNotEmpty ||
                                   ziweiConfidence.isNotEmpty)
                                 Text(
-                                  '${ziweiEngine.isEmpty ? '-' : ziweiEngine} / ${ziweiPrecision.isEmpty ? '-' : ziweiPrecision} / 置信 ${ziweiConfidence.isEmpty ? '-' : ziweiConfidence}',
+                                  '引擎 ${ziweiEngine.isEmpty ? '-' : ziweiEngine} · 版本 ${ziweiPrecision.isEmpty ? '-' : ziweiPrecision} · 置信 ${ziweiConfidence.isEmpty ? '-' : ziweiConfidence}',
                                   style: Theme.of(context).textTheme.bodySmall
                                       ?.copyWith(color: t.textSecondary),
                                 ),

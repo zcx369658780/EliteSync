@@ -46,11 +46,15 @@ class DevSyncAccountTierCommandTest extends TestCase
         $this->assertTrue((bool) $smoke->is_match_eligible);
         $this->assertTrue((bool) $smoke->is_square_visible);
         $this->assertTrue((bool) $smoke->exclude_from_metrics);
+        $this->assertSame('active', $smoke->account_status);
+        $this->assertSame('square', $smoke->visibility_scope);
 
         $this->assertSame('admin', $admin->role);
         $this->assertSame('normal', $admin->account_type);
         $this->assertFalse((bool) $admin->is_match_eligible);
         $this->assertFalse((bool) $admin->is_square_visible);
         $this->assertTrue((bool) $admin->exclude_from_metrics);
+        $this->assertSame('active', $admin->account_status);
+        $this->assertSame('hidden', $admin->visibility_scope);
     }
 }

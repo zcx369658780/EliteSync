@@ -17,7 +17,7 @@ class AppVersionApiTest extends TestCase
             ->assertJsonPath('status', 'ok')
             ->assertJsonPath('checks.database.ok', true)
             ->assertJsonPath('checks.config.ok', true)
-            ->assertJsonPath('app_version', '0.03.01');
+            ->assertJsonPath('app_version', '0.03.02a');
     }
 
     public function test_version_check_returns_soft_update(): void
@@ -57,5 +57,24 @@ class AppVersionApiTest extends TestCase
             ->assertOk()
             ->assertJsonPath('has_update', true)
             ->assertJsonPath('force_update', true);
+    }
+
+    public function test_version_check_supports_alpha_suffix_ordering(): void
+    {
+        AppReleaseVersion::query()->create([
+            'platform' => 'android',
+            'channel' => 'stable',
+            'version_name' => '0.03.02a',
+            'version_code' => 30201,
+            'min_supported_version_name' => '0.03.01',
+            'download_url' => 'https://slowdate.top/downloads/elitesync-0.03.02a.apk',
+            'force_update' => false,
+            'is_active' => true,
+        ]);
+
+        $this->getJson('/api/v1/app/version/check?platform=android&version_name=0.03.02&version_code=302')
+            ->assertOk()
+            ->assertJsonPath('has_update', true)
+            ->assertJsonPath('latest_version_name', '0.03.02a');
     }
 }

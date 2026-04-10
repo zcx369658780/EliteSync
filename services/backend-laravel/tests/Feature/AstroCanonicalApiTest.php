@@ -18,7 +18,7 @@ class AstroCanonicalApiTest extends TestCase
             'http://127.0.0.1:8002/api/v1/profile/astro/render*' => Http::response([
                 'ok' => true,
                 'profile' => [
-                    'natal_chart_svg' => '<svg xmlns="http://www.w3.org/2000/svg"></svg>',
+                    'chart_data' => ['subject' => ['name' => 'EliteSync']],
                     'planets_data' => [
                         ['key' => 'sun', 'name' => '太阳', 'sign' => '狮子座', 'house' => '1'],
                     ],
@@ -39,7 +39,6 @@ class AstroCanonicalApiTest extends TestCase
                     'aspects_data' => [
                         ['p1_name' => '太阳', 'p2_name' => '月亮', 'aspect' => '合相'],
                     ],
-                    'chart_data' => ['subject' => ['name' => 'EliteSync']],
                     'generated_at' => '2026-04-02T00:00:00Z',
                 ],
             ], 200),
@@ -83,8 +82,8 @@ class AstroCanonicalApiTest extends TestCase
         $this->assertNotNull(data_get($res->json(), 'profile.equation_of_time_minutes'));
         $this->assertNotEmpty((string) data_get($res->json(), 'profile.position_signature'));
 
-        $this->assertIsString(data_get($res->json(), 'profile.natal_chart_svg'));
-        $this->assertStringContainsString('<svg', (string) data_get($res->json(), 'profile.natal_chart_svg'));
+        $this->assertArrayHasKey('chart_data', data_get($res->json(), 'profile'));
+        $this->assertArrayNotHasKey('natal_chart_svg', data_get($res->json(), 'profile'));
 
         $user->refresh();
         $this->assertNotEmpty($user->private_bazi);
@@ -159,7 +158,7 @@ class AstroCanonicalApiTest extends TestCase
             (string) ($firstProfile['position_signature'] ?? ''),
             (string) ($secondProfile['position_signature'] ?? '')
         );
-        $this->assertStringContainsString('<svg', (string) data_get($second->json(), 'profile.natal_chart_svg'));
+        $this->assertArrayHasKey('chart_data', data_get($second->json(), 'profile'));
     }
 
     public function test_astro_save_falls_back_when_user_birthday_missing(): void
@@ -221,7 +220,7 @@ class AstroCanonicalApiTest extends TestCase
             ->assertJsonPath('profile.accuracy', 'canonical_server');
     }
 
-    public function test_astro_chart_endpoint_returns_svg_payload(): void
+    public function test_astro_chart_endpoint_returns_chart_data_payload(): void
     {
         $this->fakePythonAstroService();
 
@@ -248,6 +247,9 @@ class AstroCanonicalApiTest extends TestCase
             ->assertJsonPath('exists', true)
             ->assertJsonPath('profile.birthday', '1992-06-16')
             ->assertJsonPath('profile.birth_place', '北京市朝阳区')
-            ->assertJsonPath('profile.natal_chart_svg', '<svg xmlns="http://www.w3.org/2000/svg"></svg>');
+            ->assertJsonPath('profile.chart_data.subject.name', 'EliteSync')
+            ->assertJsonMissingPath('profile.natal_chart_svg');
+
+        Http::assertSentCount(1);
     }
 }

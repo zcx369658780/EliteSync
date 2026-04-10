@@ -37,8 +37,8 @@ class AppReleaseUpsertCommand extends Command
             $this->error('Invalid --platform. Use android or ios.');
             return self::FAILURE;
         }
-        if ($versionName === '' || !preg_match('/^\d+\.\d+\.\d+$/', $versionName)) {
-            $this->error('Invalid --version-name. Expected major.minor.patch');
+        if ($versionName === '' || !preg_match('/^\d+\.\d+\.\d+[a-z]*$/i', $versionName)) {
+            $this->error('Invalid --version-name. Expected major.minor.patch or major.minor.patch[suffix]');
             return self::FAILURE;
         }
         if ($versionCodeRaw === null || !is_numeric((string) $versionCodeRaw) || (int) $versionCodeRaw <= 0) {

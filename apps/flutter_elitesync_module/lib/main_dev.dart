@@ -7,6 +7,14 @@ import 'package:flutter_elitesync_module/app/bootstrap/app_bootstrap.dart';
 import 'package:flutter_elitesync_module/app/config/app_env.dart';
 import 'package:flutter_elitesync_module/app/config/app_flavor.dart';
 
+String _resolveApiBaseUrl() {
+  final override = String.fromEnvironment('ELITESYNC_API_BASE_URL').trim();
+  if (override.isNotEmpty) {
+    return override.endsWith('/') ? override : '$override/';
+  }
+  return 'http://101.133.161.203/';
+}
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final debugAccessTokenB64 = String.fromEnvironment(
@@ -44,7 +52,7 @@ Future<void> main() async {
     AppEnv(
       flavor: AppFlavor.dev,
       appName: 'EliteSync Dev',
-      apiBaseUrl: 'http://101.133.161.203',
+      apiBaseUrl: _resolveApiBaseUrl(),
       useMockData: false,
       useMockAuth: false,
       useMockQuestionnaire: true,
