@@ -6,6 +6,20 @@ import 'package:flutter_elitesync_module/shared/providers/app_providers.dart';
 
 enum AstroChartDisplayPreset { full, balanced, minimal }
 
+enum AstroChartWorkbenchPreset { standard, classical, modern }
+
+enum AstroChartRouteMode { standard, classical, modern }
+
+enum AstroZodiacMode { tropical, sidereal }
+
+enum AstroHouseSystem { whole, placidus, alcabitius }
+
+enum AstroAspectMode { major, standard, extended }
+
+enum AstroOrbPreset { tight, standard, wide }
+
+enum AstroPointMode { core, extended, full }
+
 class AstroChartDisplayPrefs {
   const AstroChartDisplayPrefs({
     required this.showPlanetSummary,
@@ -234,6 +248,157 @@ class AstroChartDisplayPrefs {
   }
 }
 
+class AstroChartWorkbenchPrefs {
+  const AstroChartWorkbenchPrefs({
+    required this.zodiacMode,
+    required this.houseSystem,
+    required this.aspectMode,
+    required this.orbPreset,
+    required this.pointMode,
+  });
+
+  final AstroZodiacMode zodiacMode;
+  final AstroHouseSystem houseSystem;
+  final AstroAspectMode aspectMode;
+  final AstroOrbPreset orbPreset;
+  final AstroPointMode pointMode;
+
+  factory AstroChartWorkbenchPrefs.defaults() => const AstroChartWorkbenchPrefs(
+    zodiacMode: AstroZodiacMode.tropical,
+    houseSystem: AstroHouseSystem.whole,
+    aspectMode: AstroAspectMode.standard,
+    orbPreset: AstroOrbPreset.standard,
+    pointMode: AstroPointMode.full,
+  );
+
+  factory AstroChartWorkbenchPrefs.forRouteMode(AstroChartRouteMode routeMode) {
+    switch (routeMode) {
+      case AstroChartRouteMode.standard:
+        return AstroChartWorkbenchPrefs.defaults();
+      case AstroChartRouteMode.classical:
+        return AstroChartWorkbenchPrefs.forPreset(
+          AstroChartWorkbenchPreset.classical,
+        );
+      case AstroChartRouteMode.modern:
+        return AstroChartWorkbenchPrefs.forPreset(
+          AstroChartWorkbenchPreset.modern,
+        );
+    }
+  }
+
+  factory AstroChartWorkbenchPrefs.forPreset(AstroChartWorkbenchPreset preset) {
+    switch (preset) {
+      case AstroChartWorkbenchPreset.standard:
+        return AstroChartWorkbenchPrefs.defaults();
+      case AstroChartWorkbenchPreset.classical:
+        return const AstroChartWorkbenchPrefs(
+          zodiacMode: AstroZodiacMode.sidereal,
+          houseSystem: AstroHouseSystem.whole,
+          aspectMode: AstroAspectMode.major,
+          orbPreset: AstroOrbPreset.tight,
+          pointMode: AstroPointMode.core,
+        );
+      case AstroChartWorkbenchPreset.modern:
+        return const AstroChartWorkbenchPrefs(
+          zodiacMode: AstroZodiacMode.tropical,
+          houseSystem: AstroHouseSystem.placidus,
+          aspectMode: AstroAspectMode.extended,
+          orbPreset: AstroOrbPreset.wide,
+          pointMode: AstroPointMode.full,
+        );
+    }
+  }
+
+  AstroChartWorkbenchPrefs copyWith({
+    AstroZodiacMode? zodiacMode,
+    AstroHouseSystem? houseSystem,
+    AstroAspectMode? aspectMode,
+    AstroOrbPreset? orbPreset,
+    AstroPointMode? pointMode,
+  }) {
+    return AstroChartWorkbenchPrefs(
+      zodiacMode: zodiacMode ?? this.zodiacMode,
+      houseSystem: houseSystem ?? this.houseSystem,
+      aspectMode: aspectMode ?? this.aspectMode,
+      orbPreset: orbPreset ?? this.orbPreset,
+      pointMode: pointMode ?? this.pointMode,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    'zodiacMode': zodiacMode.name,
+    'houseSystem': houseSystem.name,
+    'aspectMode': aspectMode.name,
+    'orbPreset': orbPreset.name,
+    'pointMode': pointMode.name,
+  };
+
+  factory AstroChartWorkbenchPrefs.fromJson(Map<String, dynamic> json) {
+    return AstroChartWorkbenchPrefs(
+      zodiacMode: _readEnum(
+        json,
+        'zodiacMode',
+        AstroZodiacMode.values,
+        AstroZodiacMode.tropical,
+      ),
+      houseSystem: _readEnum(
+        json,
+        'houseSystem',
+        AstroHouseSystem.values,
+        AstroHouseSystem.whole,
+      ),
+      aspectMode: _readEnum(
+        json,
+        'aspectMode',
+        AstroAspectMode.values,
+        AstroAspectMode.standard,
+      ),
+      orbPreset: _readEnum(
+        json,
+        'orbPreset',
+        AstroOrbPreset.values,
+        AstroOrbPreset.standard,
+      ),
+      pointMode: _readEnum(
+        json,
+        'pointMode',
+        AstroPointMode.values,
+        AstroPointMode.full,
+      ),
+    );
+  }
+}
+
+class AstroChartRoutePrefs {
+  const AstroChartRoutePrefs({required this.routeMode});
+
+  final AstroChartRouteMode routeMode;
+
+  factory AstroChartRoutePrefs.defaults() =>
+      const AstroChartRoutePrefs(routeMode: AstroChartRouteMode.standard);
+
+  factory AstroChartRoutePrefs.forRouteMode(AstroChartRouteMode routeMode) {
+    return AstroChartRoutePrefs(routeMode: routeMode);
+  }
+
+  AstroChartRoutePrefs copyWith({AstroChartRouteMode? routeMode}) {
+    return AstroChartRoutePrefs(routeMode: routeMode ?? this.routeMode);
+  }
+
+  Map<String, dynamic> toJson() => {'routeMode': routeMode.name};
+
+  factory AstroChartRoutePrefs.fromJson(Map<String, dynamic> json) {
+    return AstroChartRoutePrefs(
+      routeMode: _readEnum(
+        json,
+        'routeMode',
+        AstroChartRouteMode.values,
+        AstroChartRouteMode.standard,
+      ),
+    );
+  }
+}
+
 class AstroChartSettingsNotifier extends Notifier<AstroChartDisplayPrefs> {
   bool _hydrated = false;
 
@@ -351,13 +516,136 @@ class AstroChartSettingsNotifier extends Notifier<AstroChartDisplayPrefs> {
   }
 }
 
+class AstroChartWorkbenchNotifier extends Notifier<AstroChartWorkbenchPrefs> {
+  bool _hydrated = false;
+
+  @override
+  AstroChartWorkbenchPrefs build() {
+    if (!_hydrated) {
+      _hydrated = true;
+      unawaited(_hydrate());
+    }
+    return AstroChartWorkbenchPrefs.defaults();
+  }
+
+  Future<void> _hydrate() async {
+    final raw = await ref
+        .read(localStorageProvider)
+        .getJson(CacheKeys.astroChartWorkbenchPreferences);
+    if (raw == null) return;
+    state = AstroChartWorkbenchPrefs.fromJson(raw);
+  }
+
+  Future<void> _persist(AstroChartWorkbenchPrefs prefs) async {
+    await ref
+        .read(localStorageProvider)
+        .setJson(CacheKeys.astroChartWorkbenchPreferences, prefs.toJson());
+  }
+
+  Future<void> setZodiacMode(AstroZodiacMode value) async {
+    state = state.copyWith(zodiacMode: value);
+    await _persist(state);
+  }
+
+  Future<void> setHouseSystem(AstroHouseSystem value) async {
+    state = state.copyWith(houseSystem: value);
+    await _persist(state);
+  }
+
+  Future<void> setAspectMode(AstroAspectMode value) async {
+    state = state.copyWith(aspectMode: value);
+    await _persist(state);
+  }
+
+  Future<void> setOrbPreset(AstroOrbPreset value) async {
+    state = state.copyWith(orbPreset: value);
+    await _persist(state);
+  }
+
+  Future<void> setPointMode(AstroPointMode value) async {
+    state = state.copyWith(pointMode: value);
+    await _persist(state);
+  }
+
+  Future<void> resetToDefaults() async {
+    state = AstroChartWorkbenchPrefs.defaults();
+    await _persist(state);
+  }
+
+  Future<void> applyPreset(AstroChartWorkbenchPreset preset) async {
+    state = AstroChartWorkbenchPrefs.forPreset(preset);
+    await _persist(state);
+  }
+}
+
+class AstroChartRouteNotifier extends Notifier<AstroChartRoutePrefs> {
+  bool _hydrated = false;
+
+  @override
+  AstroChartRoutePrefs build() {
+    if (!_hydrated) {
+      _hydrated = true;
+      unawaited(_hydrate());
+    }
+    return AstroChartRoutePrefs.defaults();
+  }
+
+  Future<void> _hydrate() async {
+    final raw = await ref
+        .read(localStorageProvider)
+        .getJson(CacheKeys.astroChartRoutePreferences);
+    if (raw == null) return;
+    state = AstroChartRoutePrefs.fromJson(raw);
+  }
+
+  Future<void> _persist(AstroChartRoutePrefs prefs) async {
+    await ref
+        .read(localStorageProvider)
+        .setJson(CacheKeys.astroChartRoutePreferences, prefs.toJson());
+  }
+
+  Future<void> setRouteMode(AstroChartRouteMode value) async {
+    state = state.copyWith(routeMode: value);
+    await _persist(state);
+  }
+
+  Future<void> resetToDefaults() async {
+    state = AstroChartRoutePrefs.defaults();
+    await _persist(state);
+  }
+}
+
 final astroChartSettingsProvider =
     NotifierProvider<AstroChartSettingsNotifier, AstroChartDisplayPrefs>(
       AstroChartSettingsNotifier.new,
     );
 
+final astroChartWorkbenchProvider =
+    NotifierProvider<AstroChartWorkbenchNotifier, AstroChartWorkbenchPrefs>(
+      AstroChartWorkbenchNotifier.new,
+    );
+
+final astroChartRouteProvider =
+    NotifierProvider<AstroChartRouteNotifier, AstroChartRoutePrefs>(
+      AstroChartRouteNotifier.new,
+    );
+
 bool _readBool(Map<String, dynamic> json, String key, bool defaultValue) {
   final value = json[key];
   if (value is bool) return value;
+  return defaultValue;
+}
+
+T _readEnum<T extends Enum>(
+  Map<String, dynamic> json,
+  String key,
+  List<T> values,
+  T defaultValue,
+) {
+  final raw = json[key]?.toString().trim();
+  if (raw == null || raw.isEmpty) return defaultValue;
+  for (final value in values) {
+    if (value.name == raw) return value;
+  }
   return defaultValue;
 }

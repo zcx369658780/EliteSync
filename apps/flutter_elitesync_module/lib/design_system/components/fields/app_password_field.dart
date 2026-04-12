@@ -52,6 +52,7 @@ class _AppPasswordFieldState extends State<AppPasswordField> {
       ),
       keyboardType: TextInputType.visiblePassword,
       obscureText: _obscure,
+      maxLines: 1,
     );
   }
 }

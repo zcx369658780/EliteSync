@@ -4,6 +4,8 @@ class ProfileSummaryEntity {
     required this.birthday,
     required this.birthTime,
     required this.birthPlace,
+    this.birthLat,
+    this.birthLng,
     required this.city,
     required this.target,
     required this.verified,
@@ -17,6 +19,8 @@ class ProfileSummaryEntity {
   final String birthday;
   final String birthTime;
   final String? birthPlace;
+  final double? birthLat;
+  final double? birthLng;
   final String city;
   final String target;
   final bool verified;

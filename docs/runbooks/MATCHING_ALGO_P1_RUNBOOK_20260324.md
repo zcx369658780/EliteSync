@@ -106,10 +106,10 @@ Optional variants:
 `powershell -ExecutionPolicy Bypass -File .\scripts\run_astro_calibration_cycle.ps1 -DryRun`
 
 Artifacts:
-- `docs/devlogs/ASTRO_SHADOW_COMPARE.md`
-- `docs/devlogs/PAIR_OUTCOME_METRICS.md`
+- `docs/archive/legacy_2026-04/reports/ASTRO_SHADOW_COMPARE.md`
+- `docs/archive/legacy_2026-04/reports/PAIR_OUTCOME_METRICS.md`
 - `docs/devlogs/MATCH_CALIBRATION_DATASET.csv`
-- `docs/devlogs/CALIBRATION_CYCLE_LOG.md`
+- `docs/archive/legacy_2026-04/reports/CALIBRATION_CYCLE_LOG.md`
 - Weekly report template:
 `docs/devlogs/CALIBRATION_WEEKLY_REPORT_TEMPLATE.md`
 - Auto advisor report:

@@ -11,6 +11,8 @@ class ProfileMapper {
         birthday: dto.birthday,
         birthTime: dto.birthTime,
         birthPlace: dto.birthPlace,
+        birthLat: dto.birthLat,
+        birthLng: dto.birthLng,
         city: dto.city,
         target: dto.target,
         verified: dto.verified,

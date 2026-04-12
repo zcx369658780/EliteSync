@@ -5,9 +5,9 @@
 使用规则：
 - 本目录文档不作为当前执行基线。
 - 当前开发与交接请优先使用：
-  - `docs/HANDOFF_CURRENT_20260319.md`
-  - `docs/plans/DEVELOPMENT_PLAN_UPDATED.md`
-  - `docs/runbooks/`
+  - `docs/DOC_INDEX_CURRENT.md`
+  - `docs/version_plans/README.md`
+  - `docs/runbooks/README.md`
 
 典型历史文件：
 - 旧阶段计划/报告（如 `STAGE_A_ACCEPTANCE.md`, `STAGE_B_PLAN.md`）

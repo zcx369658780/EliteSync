@@ -126,6 +126,30 @@ class ProfileController extends Controller
         return ['profile' => $profile, 'user' => $user];
     }
 
+    /**
+     * @return array<string, mixed>
+     */
+    private function astroProfileSnapshot(UserAstroProfile $profile): array
+    {
+        return [
+            'birth_time' => $profile->birth_time,
+            'birth_place' => $profile->birth_place,
+            'birth_lat' => $profile->birth_lat,
+            'birth_lng' => $profile->birth_lng,
+            'sun_sign' => $profile->sun_sign,
+            'moon_sign' => $profile->moon_sign,
+            'asc_sign' => $profile->asc_sign,
+            'bazi' => $profile->bazi,
+            'true_solar_time' => $profile->true_solar_time,
+            'da_yun' => $profile->da_yun ?? [],
+            'liu_nian' => $profile->liu_nian ?? [],
+            'wu_xing' => $profile->wu_xing ?? [],
+            'ziwei' => $profile->ziwei ?? [],
+            'notes' => $profile->notes ?? [],
+            'computed_at' => optional($profile->computed_at)->toIso8601String(),
+        ];
+    }
+
     public function basic(Request $request): JsonResponse
     {
         $user = $request->user();
@@ -204,6 +228,8 @@ class ProfileController extends Controller
 
         return response()->json([
             'ok' => true,
+            'recomputed_at' => optional($computed['profile']->computed_at)->toIso8601String(),
+            'astro_profile' => $this->astroProfileSnapshot($computed['profile']),
             'user' => [
                 'id' => $user->id,
                 'name' => $user->name,

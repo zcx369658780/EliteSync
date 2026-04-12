@@ -1,42 +1,22 @@
 # Docs Index
 
-## Start Here
-- `HANDOFF_MASTER_20260406.md`: 当前交接入口（最新状态、算法、接口、页面拓扑）
-- `PROJECT_INTRO.md`: 新成员项目介绍
+`docs/DOC_INDEX_CURRENT.md` 是当前唯一主入口。
 
-## Version Plans
-- `version_plans/README.md`: 版本开发计划总索引（2.3 及以后）
-
-## Release Gates
-- `ROLLBACK_PLAN.md`: 回滚计划
-- `RELEASE_SMOKE_CHECKLIST.md`: 发布烟测清单
-- `REGRESSION_CHECKLIST.md`: 修改后回归验收清单
-- `PROTECTED_SURFACES.md`: 高风险模块保护清单
-
-## Planning (Active)
-- `planning/Current_Development_Plan_2026-03-27.md`: 当前主计划
-- `planning/UI_Closeout_Execution_Plan_2026-03-27.md`: UI 收尾执行计划
-- `planning/Astro_Algorithm_Upgrade_Plan_2026-03-28.md`: 玄学算法升级计划
-- `planning/UI_Structure_Unification_Log_2026-03-28.md`: UI 结构统一记录
-
-## Runbooks
-- `runbooks/CLOUD_DEPLOY_RUNBOOK.md`: 本地改动部署到阿里云
-- `runbooks/HTTPS_WSS_CUTOVER.md`: 域名可用后 HTTPS/WSS 切换
-- `runbooks/DEMO_RUNBOOK_2026Q1.md`: 会议演示流程
-- `runbooks/REGRESSION_CHECKLIST_2026Q1.md`: 回归测试清单
-- `runbooks/BACKEND_WINDOWS_RUNBOOK.md`: Windows 后端运行说明
-- `runbooks/TROUBLESHOOTING_LOCAL.md`: 常见问题排查
-
-## Reference
-- `reference/API_P0_CONTRACT.md`
-- `reference/BRANCH_PROTECTION_RECOMMENDATION.md`
-- `reference/dating_system_design_integrated.md`
-- `reference/dating_system_design_supplement_for_codex.md`
-- `reference/DEMO_PERSONA_USERS.md`
-- `reference/GITHUB_PUSH_NETWORK_MODE.md`
-- `reference/APP_VERSIONING_SPEC.md`
+## Current
+- `HANDOFF_MASTER_CURRENT.md`: 当前项目总交接稿
+- `DEVELOPMENT_PLAN_CURRENT.md`: 当前整体开发计划书
+- `DOC_INDEX_CURRENT.md`: 当前有效文档索引
+- `PROJECT_INTRO.md`: 新成员快速上手
+- `planning/README.md`: 历史规划索引
+- `version_plans/README.md`: 当前版本计划索引
+- `runbooks/README.md`: 当前运行手册索引
+- `reference/README.md`: 长期参考资料索引
+- `licenses/README.md`: 第三方许可证索引
+- `RELEASE_SMOKE_CHECKLIST.md`: 当前发布烟测清单
+- `ROLLBACK_PLAN.md`: 当前回滚计划
+- `REGRESSION_CHECKLIST.md`: 当前回归清单
+- `PROTECTED_SURFACES.md`: 当前保护面清单
 
 ## Archive
-- `archive/legacy_2026-03/`: 历史版本文档归档（保留，不作为当前执行入口）
-- `archive/legacy_2026-03/docs_pruned_2026-03-28/`: 本轮精简归档（早期/重复计划与架构快照）
-- `archive/legacy_2026-04/DEVELOPMENT_PLAN_2_0_AND_EARLIER_ARCHIVE.md`: 2.0 及更早版本开发计划统一归档
+- `archive/legacy_2026-03/`: 历史版本文档归档
+- `archive/legacy_2026-04/`: 2.0 及更早版本开发计划与历史报告归档

@@ -72,7 +72,7 @@ class _AstroProfilePageState extends ConsumerState<AstroProfilePage>
           SectionReveal(
             child: PageTitleRail(
               title: '星座 / 星盘 / 八字画像',
-              subtitle: '用于匹配结果中的过程与结论解释',
+              subtitle: '用于匹配结果中的过程与结论解释，页面优先读取服务端真值',
             ),
           ),
           SizedBox(height: t.spacing.md),
@@ -80,7 +80,7 @@ class _AstroProfilePageState extends ConsumerState<AstroProfilePage>
             delay: const Duration(milliseconds: 70),
             child: AppInfoSectionCard(
               title: '当前画像',
-              subtitle: '八字 / 星象 / 五行 / 大运 / 流年 / 可信度',
+              subtitle: '八字 / 星象 / 五行 / 大运 / 流年 / 可信度（服务端真值）',
               leadingIcon: Icons.auto_graph_rounded,
               child: astroAsync.when(
                 loading: () =>
@@ -455,10 +455,10 @@ class _AstroProfilePageState extends ConsumerState<AstroProfilePage>
             delay: const Duration(milliseconds: 120),
             child: AppInfoSectionCard(
               title: '画像数据来源',
-              subtitle: '服务端优先，支持后续算法升级平滑替换',
+              subtitle: '服务端真值优先，保存资料后会自动重算并刷新各页',
               leadingIcon: Icons.storage_rounded,
               child: Text(
-                '当前页面优先读取服务端画像（八字 / 大运 / 流年 / 五行），并同步展示星盘与紫微的关键字段。',
+                '当前页面优先读取服务端画像（八字 / 大运 / 流年 / 五行），并同步展示星盘与紫微的关键字段。若你刚在编辑资料页修改了出生时间、出生地或经纬度，返回本页时会自动读取最新真值；本地只负责展示，不参与重算。',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: t.textSecondary,
                   height: 1.5,

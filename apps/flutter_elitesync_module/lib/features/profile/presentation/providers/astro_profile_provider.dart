@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_elitesync_module/core/network/network_result.dart';
 import 'package:flutter_elitesync_module/features/profile/presentation/providers/astro_profile_errors.dart';
+import 'package:flutter_elitesync_module/features/profile/presentation/providers/astro_chart_settings_provider.dart';
 import 'package:flutter_elitesync_module/features/profile/presentation/widgets/natal_chart_svg_builder.dart';
 import 'package:flutter_elitesync_module/shared/providers/app_providers.dart';
 import 'package:flutter_elitesync_module/shared/providers/session_provider.dart';
@@ -104,21 +105,26 @@ Future<Map<String, dynamic>?> _fetchAstroProfile(
 }
 
 final astroSummaryProvider = FutureProvider<Map<String, dynamic>?>((ref) async {
+  final routeMode = ref.watch(astroChartRouteProvider).routeMode.name;
   return _fetchAstroProfile(
     ref,
     path: '/api/v1/profile/astro/summary',
+    query: {'route_mode': routeMode},
     fallbackPath: '/api/v1/profile/astro',
-    fallbackQuery: const {'include_chart': 0},
+    fallbackQuery: {'include_chart': 0, 'route_mode': routeMode},
   );
 });
 
 final astroNatalChartProvider = FutureProvider<Map<String, dynamic>?>((
   ref,
 ) async {
+  final routeMode = ref.watch(astroChartRouteProvider).routeMode.name;
   return _fetchAstroProfile(
     ref,
     path: '/api/v1/profile/astro/chart',
+    query: {'route_mode': routeMode},
     fallbackPath: '/api/v1/profile/astro',
+    fallbackQuery: {'route_mode': routeMode},
   );
 });
 

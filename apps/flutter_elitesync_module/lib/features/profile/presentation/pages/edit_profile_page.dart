@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_elitesync_module/design_system/components/bars/app_top_bar.dart';
 import 'package:flutter_elitesync_module/design_system/components/buttons/app_primary_button.dart';
 import 'package:flutter_elitesync_module/design_system/components/cards/app_card.dart';
+import 'package:flutter_elitesync_module/design_system/components/cards/app_info_section_card.dart';
 import 'package:flutter_elitesync_module/design_system/components/fields/app_text_field.dart';
 import 'package:flutter_elitesync_module/design_system/components/layout/app_scaffold.dart';
 import 'package:flutter_elitesync_module/design_system/components/layout/page_title_rail.dart';
@@ -21,7 +22,8 @@ class EditProfilePage extends ConsumerStatefulWidget {
   ConsumerState<EditProfilePage> createState() => _EditProfilePageState();
 }
 
-class _EditProfilePageState extends ConsumerState<EditProfilePage> with RouteAware {
+class _EditProfilePageState extends ConsumerState<EditProfilePage>
+    with RouteAware {
   final _pageScrollController = ScrollController();
   final _nickname = TextEditingController();
   final _birthday = TextEditingController();
@@ -80,7 +82,10 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> with RouteAwa
     if (_routeObserver != observer) {
       _routeObserver?.unsubscribe(this);
       _routeObserver = observer;
-      _routeObserver?.subscribe(this, ModalRoute.of(context) as PageRoute<dynamic>);
+      _routeObserver?.subscribe(
+        this,
+        ModalRoute.of(context) as PageRoute<dynamic>,
+      );
     }
   }
 
@@ -132,12 +137,51 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> with RouteAwa
         padding: EdgeInsets.fromLTRB(0, t.spacing.sm, 0, t.spacing.xl),
         children: [
           const SectionReveal(
-            child: PageTitleRail(
-              title: '完善基础资料',
-              subtitle: '资料越完整，匹配解释越准确',
-            ),
+            child: PageTitleRail(title: '完善基础资料', subtitle: '资料越完整，匹配解释越准确'),
           ),
           SizedBox(height: t.spacing.md),
+          AppInfoSectionCard(
+            title: '保存后会发生什么',
+            subtitle: '资料保存会先写入服务端真值，再触发画像与星盘重算',
+            leadingIcon: Icons.sync_alt_rounded,
+            child: Text(
+              '当前页保存的是出生资料真值，不是本地展示草稿。提交后，服务端会重新计算八字、紫微与星盘所需字段；出生时间、出生地和经纬度都会先写回服务端，再由资料页、画像页和星盘页读取最新结果并自动刷新。本地只负责把服务端结果渲染出来，不会自己改真值。',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: t.textSecondary,
+                height: 1.5,
+              ),
+            ),
+          ),
+          if (async.asData?.value.saving ?? false) ...[
+            SizedBox(height: t.spacing.sm),
+            AppInfoSectionCard(
+              title: '正在保存与重算',
+              subtitle: '服务端写入资料真值后，会自动触发画像与星盘刷新',
+              leadingIcon: Icons.sync_problem_rounded,
+              child: Text(
+                '当前提交正在同步到服务端真值层。请保持网络连接，保存完成后会自动刷新资料页、画像页和星盘页的最新结果。',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: t.textSecondary,
+                  height: 1.5,
+                ),
+              ),
+            ),
+          ] else if ((async.asData?.value.error ?? '').isNotEmpty) ...[
+            SizedBox(height: t.spacing.sm),
+            AppInfoSectionCard(
+              title: '上次保存未成功',
+              subtitle: '请先确认网络与出生地信息，再重新提交',
+              leadingIcon: Icons.error_outline_rounded,
+              child: Text(
+                async.asData!.value.error!,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: t.textSecondary,
+                  height: 1.5,
+                ),
+              ),
+            ),
+          ],
+          SizedBox(height: t.spacing.sm),
           SectionReveal(
             delay: const Duration(milliseconds: 70),
             child: AppCard(
@@ -150,7 +194,8 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> with RouteAwa
                     value: _selectedGender,
                     options: _genderOptions,
                     hint: '请选择性别',
-                    onChanged: (value) => setState(() => _selectedGender = value),
+                    onChanged: (value) =>
+                        setState(() => _selectedGender = value),
                   ),
                   SizedBox(height: t.spacing.sm),
                   GestureDetector(
@@ -161,7 +206,10 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> with RouteAwa
                         label: '生日',
                         hint: '请选择生日',
                         readOnly: true,
-                        suffixIcon: const Icon(Icons.calendar_today_rounded, size: 18),
+                        suffixIcon: const Icon(
+                          Icons.calendar_today_rounded,
+                          size: 18,
+                        ),
                       ),
                     ),
                   ),
@@ -174,7 +222,10 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> with RouteAwa
                         label: '出生时间',
                         hint: '请选择出生时间',
                         readOnly: true,
-                        suffixIcon: const Icon(Icons.schedule_rounded, size: 18),
+                        suffixIcon: const Icon(
+                          Icons.schedule_rounded,
+                          size: 18,
+                        ),
                       ),
                     ),
                   ),
@@ -184,9 +235,9 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> with RouteAwa
                     child: Text(
                       '出生时间会影响八字 / 紫微 / 星盘计算，建议填写精确时间',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: t.textSecondary,
-                            height: 1.35,
-                          ),
+                        color: t.textSecondary,
+                        height: 1.35,
+                      ),
                     ),
                   ),
                   SizedBox(height: t.spacing.sm),
@@ -213,7 +264,9 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> with RouteAwa
                         _birthPlaceQuery.text = item.label;
                         _birthPlacePanelAnimatingOut = true;
                       });
-                      await Future<void>.delayed(const Duration(milliseconds: 500));
+                      await Future<void>.delayed(
+                        const Duration(milliseconds: 500),
+                      );
                       if (!mounted) return;
                       setState(() {
                         _birthPlacePanelAnimatingOut = false;
@@ -230,22 +283,26 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> with RouteAwa
                     value: _selectedTarget,
                     options: _targetOptions,
                     hint: '请选择婚恋目标',
-                    onChanged: (value) => setState(() => _selectedTarget = value),
+                    onChanged: (value) =>
+                        setState(() => _selectedTarget = value),
                   ),
                   SizedBox(height: t.spacing.lg),
                   AppPrimaryButton(
-                    label: '保存资料',
+                    label: '保存并重算',
                     isLoading: async.asData?.value.saving ?? false,
                     onPressed: () async {
                       final genderValue = _selectedGender ?? '';
                       final targetValue = _selectedTarget ?? '';
                       final birthTimeValue = _birthTime.text.trim();
                       if (birthTimeValue.isEmpty) {
-                        final shouldContinue = await _confirmSaveWithoutBirthTime(context);
+                        final shouldContinue =
+                            await _confirmSaveWithoutBirthTime(context);
                         if (!shouldContinue || !context.mounted) return;
                       }
                       try {
-                        await ref.read(editProfileProvider.notifier).save(
+                        await ref
+                            .read(editProfileProvider.notifier)
+                            .save(
                               ProfileDetailEntity(
                                 nickname: _nickname.text.trim(),
                                 gender: genderValue,
@@ -259,13 +316,21 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> with RouteAwa
                               ),
                             );
                         if (!context.mounted) return;
-                        ScaffoldMessenger.of(
-                          context,
-                        ).showSnackBar(const SnackBar(content: Text('资料已保存')));
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('资料已保存，服务端已重算并刷新资料 / 画像 / 星盘缓存'),
+                          ),
+                        );
                       } catch (e) {
                         if (!context.mounted) return;
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('保存失败：$e')),
+                          SnackBar(
+                            content: Text(
+                              e.toString().contains('Timeout')
+                                  ? '保存失败：请求超时，请检查网络后重试'
+                                  : '保存失败：请检查网络后重试',
+                            ),
+                          ),
                         );
                       }
                     },
@@ -296,44 +361,47 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> with RouteAwa
 
     final ticket = ++_birthPlaceSearchTicket;
     _birthPlaceSearchDebounce?.cancel();
-    _birthPlaceSearchDebounce = Timer(const Duration(milliseconds: 300), () async {
-      try {
-        final suggestions = await ref.read(profileRepositoryProvider).searchBirthPlaces(
-              query: trimmed,
-            );
-        if (!mounted || ticket != _birthPlaceSearchTicket) return;
-        setState(() {
-          _birthPlaceCandidatesView = suggestions
-              .map(
-                (item) => _BirthPlaceItem(
-                  label: item.label,
-                  address: item.address,
-                  city: item.city,
-                  district: item.district,
-                  lat: item.lat,
-                  lng: item.lng,
-                ),
-              )
-              .toList();
-          _birthPlaceSearchError = null;
-        });
-        if (suggestions.isNotEmpty) {
-          _ensureBirthPlacePanelVisible();
-        }
-      } catch (_) {
-        if (!mounted || ticket != _birthPlaceSearchTicket) return;
-        setState(() {
-          _birthPlaceCandidatesView = const [];
-          _birthPlaceSearchError = '百度地点服务当前不可用，请稍后重试';
-        });
-      } finally {
-        if (mounted && ticket == _birthPlaceSearchTicket) {
+    _birthPlaceSearchDebounce = Timer(
+      const Duration(milliseconds: 300),
+      () async {
+        try {
+          final suggestions = await ref
+              .read(profileRepositoryProvider)
+              .searchBirthPlaces(query: trimmed);
+          if (!mounted || ticket != _birthPlaceSearchTicket) return;
           setState(() {
-            _birthPlaceSearching = false;
+            _birthPlaceCandidatesView = suggestions
+                .map(
+                  (item) => _BirthPlaceItem(
+                    label: item.label,
+                    address: item.address,
+                    city: item.city,
+                    district: item.district,
+                    lat: item.lat,
+                    lng: item.lng,
+                  ),
+                )
+                .toList();
+            _birthPlaceSearchError = null;
           });
+          if (suggestions.isNotEmpty) {
+            _ensureBirthPlacePanelVisible();
+          }
+        } catch (_) {
+          if (!mounted || ticket != _birthPlaceSearchTicket) return;
+          setState(() {
+            _birthPlaceCandidatesView = const [];
+            _birthPlaceSearchError = '百度地点服务当前不可用，请稍后重试';
+          });
+        } finally {
+          if (mounted && ticket == _birthPlaceSearchTicket) {
+            setState(() {
+              _birthPlaceSearching = false;
+            });
+          }
         }
-      }
-    });
+      },
+    );
   }
 
   Future<void> _pickBirthday() async {
@@ -363,7 +431,9 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> with RouteAwa
   }
 
   Future<void> _pickBirthTime() async {
-    final initial = _parseBirthTime(_birthTime.text) ?? const TimeOfDay(hour: 12, minute: 0);
+    final initial =
+        _parseBirthTime(_birthTime.text) ??
+        const TimeOfDay(hour: 12, minute: 0);
     final picked = await showTimePicker(
       context: context,
       initialTime: initial,
@@ -373,7 +443,8 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> with RouteAwa
     );
     if (picked == null) return;
     setState(() {
-      _birthTime.text = '${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}';
+      _birthTime.text =
+          '${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}';
     });
   }
 
@@ -427,7 +498,7 @@ Future<bool> _confirmSaveWithoutBirthTime(BuildContext context) async {
     builder: (context) => AlertDialog(
       title: const Text('未填写出生时间'),
       content: const Text(
-        '出生时间会影响八字、紫微和星盘的计算精度。当前保存后，系统可能会使用历史值或默认值进行计算。是否继续保存？',
+        '出生时间会影响八字、紫微和星盘的服务端真值重算。当前保存后，系统可能会使用历史值或默认值进行计算；前端不会自行补算。是否继续保存？',
       ),
       actions: [
         TextButton(
@@ -471,9 +542,10 @@ class _SelectionField extends StatelessWidget {
       children: [
         Text(
           label,
-          style: Theme.of(
-            context,
-          ).textTheme.titleSmall?.copyWith(color: t.textPrimary, fontWeight: FontWeight.w600),
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+            color: t.textPrimary,
+            fontWeight: FontWeight.w600,
+          ),
         ),
         SizedBox(height: t.spacing.xs),
         DropdownButtonFormField<String>(
@@ -483,11 +555,18 @@ class _SelectionField extends StatelessWidget {
             filled: true,
             fillColor: t.surface,
             hintText: hint,
-            hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(color: t.textTertiary),
-            contentPadding: EdgeInsets.symmetric(horizontal: t.spacing.md, vertical: t.spacing.md),
+            hintStyle: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: t.textTertiary),
+            contentPadding: EdgeInsets.symmetric(
+              horizontal: t.spacing.md,
+              vertical: t.spacing.md,
+            ),
             border: border,
             enabledBorder: border,
-            focusedBorder: border.copyWith(borderSide: BorderSide(color: t.brandPrimary)),
+            focusedBorder: border.copyWith(
+              borderSide: BorderSide(color: t.brandPrimary),
+            ),
           ),
           icon: const Icon(Icons.keyboard_arrow_down_rounded),
           items: options
@@ -569,9 +648,9 @@ class _BirthPlaceSearchField extends StatelessWidget {
         Text(
           '出生地点',
           style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                color: t.textPrimary,
-                fontWeight: FontWeight.w600,
-              ),
+            color: t.textPrimary,
+            fontWeight: FontWeight.w600,
+          ),
         ),
         SizedBox(height: t.spacing.xs),
         GestureDetector(
@@ -599,13 +678,16 @@ class _BirthPlaceSearchField extends StatelessWidget {
                       if (searching) ...[
                         Text(
                           '正在搜索百度地点...',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(color: t.textTertiary),
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(color: t.textTertiary),
                         ),
                         SizedBox(height: t.spacing.xs),
-                      ] else if (candidates.isEmpty && (searchController.text.trim().isNotEmpty)) ...[
+                      ] else if (candidates.isEmpty &&
+                          (searchController.text.trim().isNotEmpty)) ...[
                         Text(
                           '未找到匹配地点，请继续输入更完整的地点名称',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(color: t.textTertiary),
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(color: t.textTertiary),
                         ),
                         SizedBox(height: t.spacing.xs),
                       ],
@@ -614,7 +696,8 @@ class _BirthPlaceSearchField extends StatelessWidget {
                         runSpacing: t.spacing.xs,
                         children: candidates.take(10).map((item) {
                           final selected = item.label == selectedLabel;
-                          final latLng = '${item.lat.toStringAsFixed(6)}, ${item.lng.toStringAsFixed(6)}';
+                          final latLng =
+                              '${item.lat.toStringAsFixed(6)}, ${item.lng.toStringAsFixed(6)}';
                           return AnimatedContainer(
                             duration: const Duration(milliseconds: 250),
                             curve: Curves.easeOut,
@@ -636,9 +719,10 @@ class _BirthPlaceSearchField extends StatelessWidget {
                                         item.address,
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
-                                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                              color: t.textTertiary,
-                                            ),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodySmall
+                                            ?.copyWith(color: t.textTertiary),
                                       ),
                                     ],
                                     const SizedBox(height: 2),
@@ -646,9 +730,10 @@ class _BirthPlaceSearchField extends StatelessWidget {
                                       latLng,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
-                                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                            color: t.textTertiary,
-                                          ),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall
+                                          ?.copyWith(color: t.textTertiary),
                                     ),
                                   ],
                                 ),
@@ -663,7 +748,9 @@ class _BirthPlaceSearchField extends StatelessWidget {
                         SizedBox(height: t.spacing.xs),
                         Text(
                           errorText!,
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(color: t.error),
+                          style: Theme.of(
+                            context,
+                          ).textTheme.bodySmall?.copyWith(color: t.error),
                         ),
                       ],
                     ],
@@ -675,7 +762,9 @@ class _BirthPlaceSearchField extends StatelessWidget {
           SizedBox(height: t.spacing.xs),
           Text(
             '已选出生地：${valueController.text}',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: t.textSecondary),
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: t.textSecondary),
           ),
         ],
       ],

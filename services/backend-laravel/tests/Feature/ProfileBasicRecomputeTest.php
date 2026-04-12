@@ -55,6 +55,8 @@ class ProfileBasicRecomputeTest extends TestCase
             'birth_lng' => 114.3628,
         ])->assertOk()
             ->assertJsonPath('ok', true)
+            ->assertJsonPath('astro_profile.birth_place', '湖北省武汉市武昌区八一路299号')
+            ->assertJsonPath('astro_profile.birth_time', '10:45')
             ->assertJsonPath('user.birthday', '1996-06-13')
             ->assertJsonPath('user.birth_time', '10:45')
             ->assertJsonPath('user.birth_place', '湖北省武汉市武昌区八一路299号');
@@ -77,7 +79,9 @@ class ProfileBasicRecomputeTest extends TestCase
         $this->getJson('/api/v1/profile/basic')
             ->assertOk()
             ->assertJsonPath('birth_time', '10:45')
-            ->assertJsonPath('birth_place', '湖北省武汉市武昌区八一路299号');
+            ->assertJsonPath('birth_place', '湖北省武汉市武昌区八一路299号')
+            ->assertJsonPath('birth_lat', 30.5431)
+            ->assertJsonPath('birth_lng', 114.3628);
     }
 
     public function test_save_basic_bootstraps_astro_profile_when_missing(): void
@@ -104,6 +108,8 @@ class ProfileBasicRecomputeTest extends TestCase
             'birth_lng' => 113.9304,
         ])->assertOk()
             ->assertJsonPath('ok', true)
+            ->assertJsonPath('astro_profile.birth_place', '广东省深圳市南山区深南大道')
+            ->assertJsonPath('astro_profile.birth_time', '08:15')
             ->assertJsonPath('user.birth_time', '08:15')
             ->assertJsonPath('user.birth_place', '广东省深圳市南山区深南大道');
 
@@ -122,7 +128,9 @@ class ProfileBasicRecomputeTest extends TestCase
         $this->getJson('/api/v1/profile/basic')
             ->assertOk()
             ->assertJsonPath('birth_time', '08:15')
-            ->assertJsonPath('birth_place', '广东省深圳市南山区深南大道');
+            ->assertJsonPath('birth_place', '广东省深圳市南山区深南大道')
+            ->assertJsonPath('birth_lat', 22.5431)
+            ->assertJsonPath('birth_lng', 113.9304);
     }
 
     public function test_save_basic_changes_astro_when_birth_place_changes_with_same_birth_time(): void
@@ -168,6 +176,8 @@ class ProfileBasicRecomputeTest extends TestCase
             'birth_lng' => 87.6168,
         ])->assertOk()
             ->assertJsonPath('ok', true)
+            ->assertJsonPath('astro_profile.birth_place', '新疆维吾尔自治区乌鲁木齐市天山区人民广场')
+            ->assertJsonPath('astro_profile.birth_time', '10:45')
             ->assertJsonPath('user.birth_time', '10:45')
             ->assertJsonPath('user.birth_place', '新疆维吾尔自治区乌鲁木齐市天山区人民广场');
 
@@ -190,6 +200,8 @@ class ProfileBasicRecomputeTest extends TestCase
         $this->getJson('/api/v1/profile/basic')
             ->assertOk()
             ->assertJsonPath('birth_time', '10:45')
-            ->assertJsonPath('birth_place', '新疆维吾尔自治区乌鲁木齐市天山区人民广场');
+            ->assertJsonPath('birth_place', '新疆维吾尔自治区乌鲁木齐市天山区人民广场')
+            ->assertJsonPath('birth_lat', 43.8256)
+            ->assertJsonPath('birth_lng', 87.6168);
     }
 }

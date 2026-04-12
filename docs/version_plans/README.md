@@ -1,102 +1,57 @@
 # 版本开发计划索引
 
-更新时间：2026-04-09
+更新时间：2026-04-12
 
-本目录用于存放 EliteSync 各版本的开发计划、执行清单与验收材料。`bazi_example/` 已归档清理，后续版本计划统一放在这里。
+本目录仅保留当前活跃版本和当前发布相关材料。历史版本已迁移到 `docs/archive/legacy_2026-04/version_plans/`。
 
-## 版本谱系
+## 当前活跃
 
-### 2.3 / 2.4 / 2.5
-- `顾问Agent玄学算法修改规划_2026-03-28.md`
-- `算法2.3版本开发规划_2026-03-29.md`
-- `算法2.4版本开发规划_2026-03-30.md`
-- `算法2.5版本开发规划_2026-03-30.md`
+- `0.03.02a_UPDATE_BRIEF.md`：当前发布简报
+- `elite_sync_整体开发计划书_更新版_2026_04_11.md`：当前总控计划书
+- `elite_sync_3_6_版本开发计划书_2026_04_12.md`：3.6 版本开发计划书
+- `elite_sync_3_7_版本开发计划书_2026_04_12.md`：3.7 版本开发计划书
+- `3.7_EXEC_PLAN.md`：3.7 执行计划
+- `3.7_RISK_REVIEW.md`：3.7 风险评审
+- `3.7_SCOPE_MATRIX.md`：3.7 范围矩阵
+- `3.7_ADVANCED_CAPABILITY_MATRIX.md`：3.7 高级能力矩阵
+- `3.7_SCHEMA_BOUNDARY.md`：3.7 高级 Schema 与边界说明
+- `3.7_MULTIAGENT_REVIEW_LOG.md`：3.7 多 Agent 审查日志
+- `3.7_ACCEPTANCE_REPORT.md`：3.7 最终验收报告
+- `3.7_HANDOFF_FINAL_20260412.md`：3.7 最终交接稿
+- `3.7_SCREENSHOT_EVIDENCE_INDEX.md`：3.7 截图证据索引
+- `3.6_EXEC_PLAN.md`：3.6 执行计划
+- `3.6_RISK_REVIEW.md`：3.6 风险评审
+- `3.6_BETA_REGRESSION_CHECKLIST.md`：3.6 Beta 回归清单
+- `3.6_SCOPE_MATRIX.md`：3.6 范围矩阵
+- `3.6_ROUTE_CAPABILITY_MATRIX.md`：3.6 路线能力矩阵
+- `3.6_ROUTE_PARITY_REPORT.md`：3.6 路线差异报告
+- `3.6_MULTI_ROUTE_SAMPLE_SET.md`：3.6 多路线样例集
+- `3.6_KNOWN_DEVIATIONS.md`：3.6 已知偏差
+- `3.6_MULTIAGENT_REVIEW_LOG.md`：3.6 多 Agent 审查日志
+- `3.6_ACCEPTANCE_REPORT.md`：3.6 最终验收报告
+- `3.6_HANDOFF_FINAL_20260412.md`：3.6 最终交接稿
+- `3.6_SCREENSHOT_EVIDENCE_INDEX.md`：3.6 截图证据索引
+- `3.6_MULTIAGENT_EVIDENCE_SUPPLEMENT.md`：3.6 多 Agent 证据补充
+- `elite_sync_3_5_版本开发计划书_2026_04_11.md`：3.5 版本开发计划书
+- `3.5_EXEC_PLAN.md`：3.5 执行计划
+- `3.5_RISK_REVIEW.md`：3.5 风险评审
+- `3.5_PROTECTED_SURFACES.md`：3.5 保护面清单
+- `3.5_BETA_REGRESSION_CHECKLIST.md`：3.5 Beta 回归清单
+- `3.5_DIFF_REPORT.md`：3.5 样例对照差异报告
+- `3.5_SCOPE_MATRIX.md`：3.5 范围矩阵
+- `3.5_ACCEPTANCE_REPORT.md`：3.5 最终验收报告
+- `3.5_HANDOFF_FINAL_20260411.md`：3.5 最终交接稿
+- `3.5_SCREENSHOT_EVIDENCE_INDEX.md`：3.5 截图证据索引
+- `3.5_MULTIAGENT_REVIEW_LOG.md`：3.5 Claude / Gemini 多 Agent 审查日志
+- `elite_sync_3_4_版本开发计划书_2026_04_11.md`：3.4 版本开发计划书
+- `3.4_EXEC_PLAN.md`：3.4 执行计划
+- `3.4_RISK_REVIEW.md`：3.4 风险评审
+- `3.4_PROTECTED_SURFACES.md`：3.4 保护面清单
+- `3.4_BETA_REGRESSION_CHECKLIST.md`：3.4 Beta 回归清单
+- `3.4_ACCEPTANCE_REPORT.md`：3.4 最终验收报告
+- `3.4_HANDOFF_FINAL_20260411.md`：3.4 最终交接稿
+- `3.4_SCREENSHOT_EVIDENCE_INDEX.md`：3.4 截图证据索引
 
-### 2.6
-- `算法2.6版本开发规划_2026-03-31.md`
-- `算法2.6执行拆解清单_2026-03-31.md`
-- `算法2.6后端执行清单_2026-03-31.md`
-- `算法2.6前端UI执行清单_2026-03-31.md`
-- `算法2.6今晚玄学可视化执行方案_2026-04-01.md`
+## 历史归档
 
-### 2.6.1 / 2.6.2
-- `算法2.6.1修改方案草案_2026-04-01.md`
-- `算法2.6.1执行清单_2026-04-01.md`
-- `算法2.6.2版本修改指令_2026-04-01.md`
-- `算法2.6.2开源库建议_2026-04-01.md`
-
-### 2.6.3 / 2.6.3a
-- `算法2.6.3开发规划与gemini监督方案.md`
-- `算法2.6.3执行清单_2026-04-03.md`
-- `算法2.6.3a开发规划与gemini监督方案.md`
-
-### 2.6.4
-- `elite_sync_2_6_4_版本执行清单_与_codex_gemini分工prompt_2026_04_06.md`
-- `2.6.4_EXEC_PLAN.md`
-- `2.6.4_RISK_REVIEW.md`
-- `2.6.4_ACCEPTANCE_REPORT.md`
-
-### 2.7
-- `elite_sync_2_7_版本prd_执行清单_与多agent_prompt_2026_04_06.md`
-- `reports/elite_sync_2_7_handoff_20260406.md`
-
-### 2.8
-- `elite_sync_2_8_版本开发计划_信任安全与运营后台版_2026_04_06.md`
-- `2.8_EXEC_PLAN.md`
-- `2.8_RISK_REVIEW.md`
-- `2.8_ACCEPTANCE_REPORT.md`
-
-### 2.9
-- `elite_sync_2_9_正式开发计划书.md`
-- `2.9_EXEC_PLAN.md`
-- `2.9_RISK_REVIEW.md`
-- `2.9_PROTECTED_SURFACES.md`
-- `2.9_SCOPE_BOUNDARY.md`
-- `2.9_BETA_SMOKE_CHECKLIST.md`
-- `2.9_BETA_REGRESSION_CHECKLIST.md`
-- `2.9_POST_CHANGE_ACCEPTANCE.md`
-- `2.9_ACCEPTANCE_REPORT.md`
-- `2.9_BETA_RELEASE_CHECKLIST.md`
-- `2.9_BETA_RELEASE_REHEARSAL.md`
-- `2.9_MONITORING_AND_ALERTS.md`
-- `2.9_ENVIRONMENT_MATRIX.md`
-- `2.9_OPERATIONS_SOP.md`
-- `2.9_INCIDENT_RUNBOOK.md`
-- `2.9_ROLLBACK_REHEARSAL.md`
-- `2.9_BETA_DAILY_REPORT_TEMPLATE.md`
-- `2.9_BETA_FINAL_SUMMARY.md`
-- `2.9_STAGE2_REAL_CHAIN_LOG.md`
-
-### 3.0 / 3.1 / 3.2
-- `elite_sync_3_0_开发计划书.md`
-- `elite_sync_3_0_返修说明.md`
-- `3.0_EXEC_PLAN.md`
-- `3.0_SCOPE_BOUNDARY.md`
-- `3.0_PROTECTED_SURFACES.md`
-- `3.0_METRICS_BASELINE.md`
-- `3.0_ACCEPTANCE_REPORT.md`
-- `3.0_CODEX_HANDOFF_20260408.md`
-- `elite_sync_3_1_版本任务书.md`
-- `3.1_EXEC_PLAN.md`
-- `3.1_RISK_REVIEW.md`
-- `3.1_PROTECTED_SURFACES.md`
-- `3.1_BETA_REGRESSION_CHECKLIST.md`
-- `3.1_FINAL_SUBMISSION_EVIDENCE.md`
-- `3.1_ACCEPTANCE_REPORT.md`
-- `3.1_SUBMISSION_PACKAGE_20260409.md`
-- `3.1_HANDOFF_FINAL_20260409.md`
-- `elite_sync_3_2_版本开发计划书_2026_04_10.md`
-- `3.2_EXEC_PLAN.md`
-- `3.2_RISK_REVIEW.md`
-- `3.2_PROTECTED_SURFACES.md`
-- `3.2_BETA_REGRESSION_CHECKLIST.md`
-- `3.2_ACCEPTANCE_REPORT.md`
-- `3.2_HANDOFF_STAGE_20260410.md`
-- `3.2_HANDOFF_FINAL_20260410.md`
-
-### 其他参考
-- `app算法资源与任务规划_修订版——2026-03-29.md`
-
-- `docs/version_plans/2.9_GEMINI_FINAL_ACCEPTANCE.md`：2.9 Gemini 最终验收报告
-### 2.0 及更早（历史归档）
-- `../archive/legacy_2026-04/DEVELOPMENT_PLAN_2_0_AND_EARLIER_ARCHIVE.md`
+- `../archive/legacy_2026-04/version_plans/README.md`：历史版本计划归档索引

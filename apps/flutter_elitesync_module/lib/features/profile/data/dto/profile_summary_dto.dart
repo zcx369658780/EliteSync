@@ -4,6 +4,8 @@ class ProfileSummaryDto {
     required this.birthday,
     required this.birthTime,
     required this.birthPlace,
+    this.birthLat,
+    this.birthLng,
     required this.city,
     required this.target,
     required this.verified,
@@ -16,6 +18,8 @@ class ProfileSummaryDto {
   final String birthday;
   final String birthTime;
   final String? birthPlace;
+  final double? birthLat;
+  final double? birthLng;
   final String city;
   final String target;
   final bool verified;
@@ -31,6 +35,8 @@ class ProfileSummaryDto {
         birthPlace: (json['birth_place'] ?? json['private_birth_place'] ?? '').toString().isEmpty
             ? null
             : (json['birth_place'] ?? json['private_birth_place'] ?? '').toString(),
+        birthLat: (json['birth_lat'] as num?)?.toDouble() ?? (json['private_birth_lat'] as num?)?.toDouble(),
+        birthLng: (json['birth_lng'] as num?)?.toDouble() ?? (json['private_birth_lng'] as num?)?.toDouble(),
         city: (json['city'] ?? '').toString(),
         target: (json['target'] ?? json['relationship_goal'] ?? '').toString(),
         verified: (json['verified'] as bool?) ?? (json['realname_verified'] as bool?) ?? false,

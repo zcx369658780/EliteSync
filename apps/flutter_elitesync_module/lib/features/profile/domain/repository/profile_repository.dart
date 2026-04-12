@@ -5,7 +5,7 @@ import 'package:flutter_elitesync_module/features/profile/domain/entities/birth_
 abstract class ProfileRepository {
   Future<ProfileSummaryEntity> getSummary();
   Future<ProfileDetailEntity> getDetail();
-  Future<void> update(ProfileDetailEntity detail);
+  Future<Map<String, dynamic>> update(ProfileDetailEntity detail);
   Future<List<BirthPlaceSuggestionEntity>> searchBirthPlaces({
     required String query,
     String region,

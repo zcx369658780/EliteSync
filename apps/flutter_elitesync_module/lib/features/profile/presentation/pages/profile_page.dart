@@ -24,7 +24,8 @@ class ProfilePage extends ConsumerWidget {
     return Scaffold(
       body: async.when(
         loading: () => const AppLoadingSkeleton(lines: 6),
-        error: (e, _) => AppErrorState(title: '资料加载失败', description: e.toString()),
+        error: (e, _) =>
+            AppErrorState(title: '资料加载失败', description: e.toString()),
         data: (state) {
           final summary = state.summary;
           if (summary == null) {
@@ -36,25 +37,34 @@ class ProfilePage extends ConsumerWidget {
                   children: [
                     Text(
                       '我的',
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        color: t.textPrimary,
-                        fontWeight: FontWeight.w800,
-                      ),
+                      style: Theme.of(context).textTheme.headlineSmall
+                          ?.copyWith(
+                            color: t.textPrimary,
+                            fontWeight: FontWeight.w800,
+                          ),
                     ),
                     const Spacer(),
                     IconButton(
                       onPressed: () => context.push(AppRouteNames.settings),
-                      icon: Icon(Icons.settings_rounded, color: t.textSecondary),
+                      icon: Icon(
+                        Icons.settings_rounded,
+                        color: t.textSecondary,
+                      ),
                     ),
                   ],
                 ),
               ),
               body: ListView(
-                padding: EdgeInsets.only(top: t.spacing.xs, bottom: t.spacing.huge),
+                padding: EdgeInsets.only(
+                  top: t.spacing.xs,
+                  bottom: t.spacing.huge,
+                ),
                 children: [
                   AppErrorState(
                     title: '资料暂不可用',
-                    description: (state.error ?? '').isNotEmpty ? state.error! : '你可以先完善基础资料',
+                    description: (state.error ?? '').isNotEmpty
+                        ? state.error!
+                        : '你可以先完善基础资料',
                     retryLabel: '重新加载',
                     onRetry: () => ref.invalidate(profileProvider),
                   ),
@@ -66,9 +76,9 @@ class ProfilePage extends ConsumerWidget {
                     child: Text(
                       '建议先填写昵称、性别、城市与婚恋目标，并完成问卷题库。完成后将自动生成更完整的匹配与画像信息。',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: t.textSecondary,
-                            height: 1.45,
-                          ),
+                        color: t.textSecondary,
+                        height: 1.45,
+                      ),
                     ),
                   ),
                   SizedBox(height: t.spacing.sm),
@@ -120,7 +130,10 @@ class ProfilePage extends ConsumerWidget {
                 await ref.read(profileProvider.future);
               },
               child: ListView(
-                padding: EdgeInsets.only(top: t.spacing.xs, bottom: t.spacing.huge),
+                padding: EdgeInsets.only(
+                  top: t.spacing.xs,
+                  bottom: t.spacing.huge,
+                ),
                 children: [
                   ProfileGlassHeaderCard(
                     nickname: summary.nickname,
@@ -148,7 +161,8 @@ class ProfilePage extends ConsumerWidget {
                           SizedBox(height: t.spacing.xs),
                           Text(
                             summary.moderationNote!,
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(
                                   color: t.textSecondary,
                                   height: 1.45,
                                 ),
@@ -160,23 +174,42 @@ class ProfilePage extends ConsumerWidget {
                   SizedBox(height: t.spacing.sm),
                   AppInfoSectionCard(
                     title: '基础资料',
-                    subtitle: '生日 / 出生时间 / 出生地 / 婚恋目标',
+                    subtitle: '生日 / 出生时间 / 出生地 / 经纬度 / 婚恋目标（服务端真值）',
                     leadingIcon: Icons.badge_outlined,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _ProfileInfoLine(label: '生日', value: summary.birthday.isEmpty ? '未填写' : summary.birthday),
+                        _ProfileInfoLine(
+                          label: '生日',
+                          value: summary.birthday.isEmpty
+                              ? '未填写'
+                              : summary.birthday,
+                        ),
                         SizedBox(height: t.spacing.xs),
-                        _ProfileInfoLine(label: '出生时间', value: summary.birthTime.isEmpty ? '未填写' : summary.birthTime),
+                        _ProfileInfoLine(
+                          label: '出生时间',
+                          value: summary.birthTime.isEmpty
+                              ? '未填写'
+                              : summary.birthTime,
+                        ),
                         SizedBox(height: t.spacing.xs),
                         _ProfileInfoLine(
                           label: '出生地',
-                          value: (summary.birthPlace ?? '').isEmpty ? '未填写' : summary.birthPlace!,
+                          value: (summary.birthPlace ?? '').isEmpty
+                              ? '未填写'
+                              : summary.birthPlace!,
+                        ),
+                        SizedBox(height: t.spacing.xs),
+                        _ProfileInfoLine(
+                          label: '经纬度',
+                          value: _formatCoordinates(summary.birthLat, summary.birthLng),
                         ),
                         SizedBox(height: t.spacing.xs),
                         _ProfileInfoLine(
                           label: '婚恋目标',
-                          value: summary.target.isEmpty ? '未填写' : _targetLabel(summary.target),
+                          value: summary.target.isEmpty
+                              ? '未填写'
+                              : _targetLabel(summary.target),
                         ),
                       ],
                     ),
@@ -187,8 +220,21 @@ class ProfilePage extends ConsumerWidget {
                   ProfileResultTagList(tags: summary.tags),
                   SizedBox(height: t.spacing.sm),
                   AppInfoSectionCard(
+                    title: '资料真值链路',
+                    subtitle: '保存后服务端重算，资料页与星盘页会读取最新结果',
+                    leadingIcon: Icons.sync_rounded,
+                    child: Text(
+                      '生日、出生时间、出生地和经纬度都会先写入服务端真值层，再触发八字、紫微与星盘重算。你保存后返回本页，相关摘要会自动刷新；如果刚编辑完，也可以下拉刷新确认最新结果。',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: t.textSecondary,
+                        height: 1.5,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: t.spacing.sm),
+                  AppInfoSectionCard(
                     title: '玄学入口',
-                    subtitle: '总览 / 八字 / 星盘 / 紫微',
+                    subtitle: '总览 / 八字 / 星盘 / 紫微（都读取服务端真值）',
                     leadingIcon: Icons.auto_awesome_rounded,
                     child: Column(
                       children: [
@@ -197,7 +243,8 @@ class ProfilePage extends ConsumerWidget {
                           subtitle: '模块状态、最近更新时间、入口汇总',
                           icon: Icons.dashboard_outlined,
                           compact: true,
-                          onTap: () => context.push(AppRouteNames.astroOverview),
+                          onTap: () =>
+                              context.push(AppRouteNames.astroOverview),
                         ),
                         SizedBox(height: t.spacing.xs),
                         SoulStyleFeatureCard(
@@ -213,7 +260,8 @@ class ProfilePage extends ConsumerWidget {
                           subtitle: '出生地、经纬度、位置修正与元信息',
                           icon: Icons.nightlight_round,
                           compact: true,
-                          onTap: () => context.push(AppRouteNames.astroNatalChart),
+                          onTap: () =>
+                              context.push(AppRouteNames.astroNatalChart),
                         ),
                         SizedBox(height: t.spacing.xs),
                         SoulStyleFeatureCard(
@@ -229,7 +277,7 @@ class ProfilePage extends ConsumerWidget {
                   SizedBox(height: t.spacing.sm),
                   SoulStyleFeatureCard(
                     title: '编辑资料',
-                    subtitle: '修改昵称、生日、出生时间、出生地、城市、婚恋目标',
+                    subtitle: '修改后会触发服务端重算并刷新画像与星盘',
                     icon: Icons.edit_outlined,
                     onTap: () => context.push(AppRouteNames.editProfile),
                   ),
@@ -267,18 +315,17 @@ class _ProfileInfoLine extends StatelessWidget {
           child: Text(
             label,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: t.textSecondary,
-                  fontWeight: FontWeight.w600,
-                ),
+              color: t.textSecondary,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
         Expanded(
           child: Text(
             value,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: t.textPrimary,
-                  height: 1.4,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: t.textPrimary, height: 1.4),
           ),
         ),
       ],
@@ -311,4 +358,11 @@ String _moderationLabel(String raw) {
     default:
       return '正常';
   }
+}
+
+String _formatCoordinates(double? lat, double? lng) {
+  if (lat == null && lng == null) return '未填写';
+  final latText = lat == null ? '-' : lat.toStringAsFixed(6);
+  final lngText = lng == null ? '-' : lng.toStringAsFixed(6);
+  return '$latText，$lngText';
 }
