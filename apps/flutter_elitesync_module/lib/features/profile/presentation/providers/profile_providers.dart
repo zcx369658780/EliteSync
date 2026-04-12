@@ -33,6 +33,8 @@ Map<String, dynamic> _summaryToJson(ProfileSummaryEntity summary) => {
   'birthday': summary.birthday,
   'birth_time': summary.birthTime,
   'birth_place': summary.birthPlace,
+  'birth_lat': summary.birthLat,
+  'birth_lng': summary.birthLng,
   'city': summary.city,
   'target': summary.target,
   'relationship_goal': summary.target,
@@ -73,6 +75,8 @@ ProfileSummaryEntity _summaryFromDetail(ProfileDetailEntity detail, ProfileSumma
     birthday: detail.birthday.isNotEmpty ? detail.birthday : (currentSummary?.birthday ?? ''),
     birthTime: detail.birthTime.isNotEmpty ? detail.birthTime : (currentSummary?.birthTime ?? ''),
     birthPlace: detail.birthPlace ?? currentSummary?.birthPlace,
+    birthLat: detail.birthLat ?? currentSummary?.birthLat,
+    birthLng: detail.birthLng ?? currentSummary?.birthLng,
     city: detail.city.isNotEmpty ? detail.city : (currentSummary?.city ?? ''),
     target: detail.target.isNotEmpty ? detail.target : (currentSummary?.target ?? ''),
     verified: currentSummary?.verified ?? false,
@@ -92,6 +96,8 @@ ProfileSummaryEntity? _summaryFromJson(Map<String, dynamic>? json) {
     birthPlace: (json['birth_place'] ?? json['private_birth_place'] ?? '').toString().isEmpty
         ? null
         : (json['birth_place'] ?? json['private_birth_place'] ?? '').toString(),
+    birthLat: (json['birth_lat'] as num?)?.toDouble() ?? (json['private_birth_lat'] as num?)?.toDouble(),
+    birthLng: (json['birth_lng'] as num?)?.toDouble() ?? (json['private_birth_lng'] as num?)?.toDouble(),
     city: (json['city'] ?? '').toString(),
     target: (json['target'] ?? json['relationship_goal'] ?? '').toString(),
     verified: (json['verified'] as bool?) ?? (json['realname_verified'] as bool?) ?? false,
@@ -130,6 +136,8 @@ ProfileSummaryEntity? _summaryFromSessionJson(Map<String, dynamic>? json) {
     birthPlace: (json['birth_place'] ?? json['private_birth_place'] ?? '').toString().isEmpty
         ? null
         : (json['birth_place'] ?? json['private_birth_place'] ?? '').toString(),
+    birthLat: (json['birth_lat'] as num?)?.toDouble() ?? (json['private_birth_lat'] as num?)?.toDouble(),
+    birthLng: (json['birth_lng'] as num?)?.toDouble() ?? (json['private_birth_lng'] as num?)?.toDouble(),
     city: (json['city'] ?? '').toString(),
     target: (json['relationship_goal'] ?? json['target'] ?? '').toString(),
     verified: (json['verified'] as bool?) ?? (json['realname_verified'] as bool?) ?? false,
@@ -236,8 +244,12 @@ class EditProfileNotifier extends AsyncNotifier<EditProfileUiState> {
     final current = state.asData?.value ?? const EditProfileUiState();
     state = AsyncData(EditProfileUiState(detail: detail, saving: true));
     try {
-      await ref.read(updateProfileUseCaseProvider).call(detail);
-      final persistedDetail = await ref.read(profileRepositoryProvider).getDetail().catchError((_) => detail);
+      final saveResult = await ref.read(updateProfileUseCaseProvider).call(detail);
+      final savedUser = saveResult['user'];
+      final persistedDetail =
+          savedUser is Map<String, dynamic>
+              ? _detailFromJson(savedUser) ?? detail
+              : await ref.read(profileRepositoryProvider).getDetail().catchError((_) => detail);
       final local = ref.read(localStorageProvider);
       await local.setJson(CacheKeys.profileDetailSnapshot, _detailToJson(persistedDetail));
       final currentSummary = ref.read(profileProvider).asData?.value.summary;
@@ -265,12 +277,12 @@ class EditProfileNotifier extends AsyncNotifier<EditProfileUiState> {
                 avatarUrl: user.avatarUrl,
                 verified: user.verified,
               ),
-            );
+              );
       }
       ref.invalidate(editProfileProvider);
       ref.invalidate(profileProvider);
-      ref.invalidate(astroServerProfileProvider);
       ref.invalidate(astroNatalChartProvider);
+      ref.invalidate(astroSummaryProvider);
       state = AsyncData(EditProfileUiState(detail: persistedDetail, saving: false));
       return persistedDetail;
     } catch (e) {

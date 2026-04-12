@@ -67,6 +67,9 @@ class AppTextField extends StatelessWidget {
               )
             : null);
 
+    final resolvedMinLines = obscureText ? 1 : minLines;
+    final resolvedMaxLines = obscureText ? 1 : maxLines;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -84,8 +87,8 @@ class AppTextField extends StatelessWidget {
           controller: controller,
           focusNode: focusNode,
           obscureText: obscureText,
-          minLines: minLines,
-          maxLines: maxLines,
+          minLines: resolvedMinLines,
+          maxLines: resolvedMaxLines,
           readOnly: readOnly,
           enabled: enabled,
           maxLength: maxLength,

@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List
+from typing import List, Literal
 
 
 class RegisterReq(BaseModel):
@@ -57,6 +57,43 @@ class AstroProfileReq(BaseModel):
     birth_lat: float | None = None
     birth_lng: float | None = None
     tz_str: str | None = "Asia/Shanghai"
+    route_mode: str | None = "standard"
+
+
+class AstroSubjectReq(BaseModel):
+    name: str | None = None
+    birthday: str
+    birth_time: str
+    birth_place: str | None = None
+    birth_lat: float | None = None
+    birth_lng: float | None = None
+    tz_str: str | None = "Asia/Shanghai"
+    nation: str | None = "CN"
+
+
+class AstroPairReq(BaseModel):
+    first: AstroSubjectReq
+    second: AstroSubjectReq
+    pair_mode: Literal["synastry", "comparison"] = "synastry"
+    route_mode: str | None = "standard"
+
+
+class AstroTransitReq(BaseModel):
+    natal: AstroSubjectReq
+    transit: AstroSubjectReq
+    route_mode: str | None = "standard"
+
+
+class AstroReturnReq(BaseModel):
+    natal: AstroSubjectReq
+    return_year: int
+    return_type: Literal["Lunar", "Solar"] = "Lunar"
+    route_mode: str | None = "standard"
+    return_place: str | None = None
+    return_lat: float | None = None
+    return_lng: float | None = None
+    return_tz_str: str | None = None
+    return_nation: str | None = None
 
 
 
@@ -68,3 +105,4 @@ class AstroRenderReq(BaseModel):
     birth_lat: float | None = None
     birth_lng: float | None = None
     tz_str: str | None = "Asia/Shanghai"
+    route_mode: str | None = "standard"

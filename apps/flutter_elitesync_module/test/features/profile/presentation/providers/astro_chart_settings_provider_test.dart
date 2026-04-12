@@ -23,6 +23,23 @@ void main() {
     expect(prefs.showChartCenterPlace, isTrue);
   });
 
+  test('AstroChartWorkbenchPrefs defaults keep workbench usable', () {
+    final prefs = AstroChartWorkbenchPrefs.defaults();
+
+    expect(prefs.zodiacMode, AstroZodiacMode.tropical);
+    expect(prefs.houseSystem, AstroHouseSystem.whole);
+    expect(prefs.aspectMode, AstroAspectMode.standard);
+    expect(prefs.orbPreset, AstroOrbPreset.standard);
+    expect(prefs.pointMode, AstroPointMode.full);
+  });
+
+  test('AstroChartRoutePrefs defaults keep route context stable', () {
+    final prefs = AstroChartRoutePrefs.defaults();
+
+    expect(prefs.routeMode, AstroChartRouteMode.standard);
+    expect(prefs.toJson(), containsPair('routeMode', 'standard'));
+  });
+
   test('AstroChartDisplayPrefs.fromJson keeps old caches compatible', () {
     final prefs = AstroChartDisplayPrefs.fromJson(const {
       'showPlanetSummary': false,
@@ -48,6 +65,31 @@ void main() {
     expect(prefs.showChartCenterTitle, isTrue);
     expect(prefs.showChartCenterSubtitle, isTrue);
     expect(prefs.showChartCenterPlace, isTrue);
+  });
+
+  test(
+    'AstroChartWorkbenchPrefs.fromJson keeps old caches compatible and reads new keys',
+    () {
+      final prefs = AstroChartWorkbenchPrefs.fromJson(const {
+        'zodiacMode': 'sidereal',
+        'houseSystem': 'placidus',
+        'aspectMode': 'major',
+        'orbPreset': 'tight',
+        'pointMode': 'core',
+      });
+
+      expect(prefs.zodiacMode, AstroZodiacMode.sidereal);
+      expect(prefs.houseSystem, AstroHouseSystem.placidus);
+      expect(prefs.aspectMode, AstroAspectMode.major);
+      expect(prefs.orbPreset, AstroOrbPreset.tight);
+      expect(prefs.pointMode, AstroPointMode.core);
+    },
+  );
+
+  test('AstroChartRoutePrefs.fromJson keeps old caches compatible', () {
+    final prefs = AstroChartRoutePrefs.fromJson(const {'routeMode': 'modern'});
+
+    expect(prefs.routeMode, AstroChartRouteMode.modern);
   });
 
   test(
@@ -91,4 +133,58 @@ void main() {
       expect(minimal.showChartCenterPlace, isFalse);
     },
   );
+
+  test(
+    'AstroChartWorkbenchPrefs.forPreset provides classical and modern variants',
+    () {
+      final classical = AstroChartWorkbenchPrefs.forPreset(
+        AstroChartWorkbenchPreset.classical,
+      );
+      final modern = AstroChartWorkbenchPrefs.forPreset(
+        AstroChartWorkbenchPreset.modern,
+      );
+
+      expect(classical.zodiacMode, AstroZodiacMode.sidereal);
+      expect(classical.houseSystem, AstroHouseSystem.whole);
+      expect(classical.aspectMode, AstroAspectMode.major);
+      expect(classical.orbPreset, AstroOrbPreset.tight);
+      expect(classical.pointMode, AstroPointMode.core);
+
+      expect(modern.zodiacMode, AstroZodiacMode.tropical);
+      expect(modern.houseSystem, AstroHouseSystem.placidus);
+      expect(modern.aspectMode, AstroAspectMode.extended);
+      expect(modern.orbPreset, AstroOrbPreset.wide);
+      expect(modern.pointMode, AstroPointMode.full);
+    },
+  );
+
+  test('AstroChartWorkbenchPrefs.forRouteMode mirrors route templates', () {
+    final standard = AstroChartWorkbenchPrefs.forRouteMode(
+      AstroChartRouteMode.standard,
+    );
+    final classical = AstroChartWorkbenchPrefs.forRouteMode(
+      AstroChartRouteMode.classical,
+    );
+    final modern = AstroChartWorkbenchPrefs.forRouteMode(
+      AstroChartRouteMode.modern,
+    );
+
+    expect(standard.zodiacMode, AstroZodiacMode.tropical);
+    expect(standard.houseSystem, AstroHouseSystem.whole);
+    expect(standard.aspectMode, AstroAspectMode.standard);
+    expect(standard.orbPreset, AstroOrbPreset.standard);
+    expect(standard.pointMode, AstroPointMode.full);
+
+    expect(classical.zodiacMode, AstroZodiacMode.sidereal);
+    expect(classical.houseSystem, AstroHouseSystem.whole);
+    expect(classical.aspectMode, AstroAspectMode.major);
+    expect(classical.orbPreset, AstroOrbPreset.tight);
+    expect(classical.pointMode, AstroPointMode.core);
+
+    expect(modern.zodiacMode, AstroZodiacMode.tropical);
+    expect(modern.houseSystem, AstroHouseSystem.placidus);
+    expect(modern.aspectMode, AstroAspectMode.extended);
+    expect(modern.orbPreset, AstroOrbPreset.wide);
+    expect(modern.pointMode, AstroPointMode.full);
+  });
 }

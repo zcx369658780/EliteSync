@@ -4,5 +4,5 @@ import 'package:flutter_elitesync_module/features/profile/domain/repository/prof
 class UpdateProfileUseCase {
   const UpdateProfileUseCase(this.repository);
   final ProfileRepository repository;
-  Future<void> call(ProfileDetailEntity detail) => repository.update(detail);
+  Future<Map<String, dynamic>> call(ProfileDetailEntity detail) => repository.update(detail);
 }

@@ -8,6 +8,7 @@ import 'package:flutter_elitesync_module/core/network/network_result.dart';
 import 'package:flutter_elitesync_module/design_system/components/bars/app_top_bar.dart';
 import 'package:flutter_elitesync_module/design_system/components/buttons/app_primary_button.dart';
 import 'package:flutter_elitesync_module/design_system/components/buttons/app_secondary_button.dart';
+import 'package:flutter_elitesync_module/design_system/components/cards/app_info_section_card.dart';
 import 'package:flutter_elitesync_module/design_system/components/cards/legal_document_card.dart';
 import 'package:flutter_elitesync_module/design_system/components/feedback/app_confirm_dialog.dart';
 import 'package:flutter_elitesync_module/design_system/components/layout/app_scaffold.dart';
@@ -50,13 +51,16 @@ class _AboutUpdatePageState extends ConsumerState<AboutUpdatePage> {
 
   Future<void> _loadLocalAboutConfig() async {
     try {
-      final raw = await rootBundle.loadString('assets/config/about_update_0_xx.json');
+      final raw = await rootBundle.loadString(
+        'assets/config/about_update_0_xx.json',
+      );
       final json = jsonDecode(raw);
       if (json is! Map<String, dynamic>) return;
       if (!mounted) return;
       setState(() {
         _historyTitle = (json['history_title'] ?? _historyTitle).toString();
-        _qualificationTitle = (json['qualification_title'] ?? _qualificationTitle).toString();
+        _qualificationTitle =
+            (json['qualification_title'] ?? _qualificationTitle).toString();
         _historyItems = (json['history_items'] is List)
             ? (json['history_items'] as List).map((e) => e.toString()).toList()
             : _historyItems;
@@ -75,11 +79,14 @@ class _AboutUpdatePageState extends ConsumerState<AboutUpdatePage> {
       _status = '';
     });
     final api = ref.read(apiClientProvider);
-    final result = await api.get('/api/v1/app/version/check', query: {
-      'platform': 'android',
-      'channel': 'stable',
-      'version_name': _currentVersion,
-    });
+    final result = await api.get(
+      '/api/v1/app/version/check',
+      query: {
+        'platform': 'android',
+        'channel': 'stable',
+        'version_name': _currentVersion,
+      },
+    );
     if (!mounted) return;
     setState(() => _checking = false);
 
@@ -106,7 +113,10 @@ class _AboutUpdatePageState extends ConsumerState<AboutUpdatePage> {
       cancelLabel: '稍后',
     );
     if (!confirmed) return;
-    await launchUrl(Uri.parse(downloadUrl), mode: LaunchMode.externalApplication);
+    await launchUrl(
+      Uri.parse(downloadUrl),
+      mode: LaunchMode.externalApplication,
+    );
   }
 
   Future<void> _checkBackendHealth() async {
@@ -139,7 +149,8 @@ class _AboutUpdatePageState extends ConsumerState<AboutUpdatePage> {
 
     setState(() {
       _healthChecking = false;
-      _healthSummary = '环境: $env · 服务: ${status == 'ok' ? '正常' : '降级'} · 版本: $version · DB: ${(database['ok'] == true) ? '正常' : '异常'}';
+      _healthSummary =
+          '环境: $env · 服务可观测性: ${status == 'ok' ? '正常' : '降级'} · 包版本: $version · DB: ${(database['ok'] == true) ? '正常' : '异常'}';
     });
   }
 
@@ -147,14 +158,57 @@ class _AboutUpdatePageState extends ConsumerState<AboutUpdatePage> {
   Widget build(BuildContext context) {
     final t = context.appTokens;
     return AppScaffold(
-      appBar: const AppTopBar(title: '关于与更新', mode: AppTopBarMode.backTitle),
+      appBar: const AppTopBar(title: '版本中心', mode: AppTopBarMode.backTitle),
       body: ListView(
         padding: EdgeInsets.fromLTRB(0, t.spacing.sm, 0, t.spacing.xl),
         children: [
           SectionReveal(
             child: PageTitleRail(
               title: '当前版本 $_currentVersion',
-              subtitle: _healthSummary,
+              subtitle: '版本中心信息、更新历史与服务状态',
+            ),
+          ),
+          SizedBox(height: t.spacing.md),
+          SectionReveal(
+            delay: const Duration(milliseconds: 20),
+            child: AppInfoSectionCard(
+              title: '版本中心口径',
+              subtitle: '本地包、服务健康与更新检查分开展示',
+              leadingIcon: Icons.info_outline_rounded,
+              child: Text(
+                '当前版本来自本地安装包，服务状态来自 /api/v1/app/health，更新结果来自 /api/v1/app/version/check。它们用于可观测性和版本提示，不会改写用户资料或其他业务真值。',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: t.textSecondary,
+                  height: 1.45,
+                ),
+              ),
+            ),
+          ),
+          SizedBox(height: t.spacing.md),
+          SectionReveal(
+            delay: const Duration(milliseconds: 40),
+            child: AppInfoSectionCard(
+              title: '版本状态',
+              subtitle: '本机版本、服务端健康与更新检查',
+              leadingIcon: Icons.system_update_alt_rounded,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _KeyValueLine(label: '本机版本', value: _currentVersion),
+                  SizedBox(height: t.spacing.xs),
+                  _KeyValueLine(label: '服务状态', value: _healthSummary),
+                  if (_status.isNotEmpty) ...[
+                    SizedBox(height: t.spacing.xs),
+                    Text(
+                      _status,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: t.textSecondary,
+                        height: 1.45,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
             ),
           ),
           SizedBox(height: t.spacing.md),
@@ -167,7 +221,7 @@ class _AboutUpdatePageState extends ConsumerState<AboutUpdatePage> {
           ),
           SizedBox(height: t.spacing.md),
           SectionReveal(
-            delay: const Duration(milliseconds: 60),
+            delay: const Duration(milliseconds: 70),
             child: LegalDocumentCard(
               title: _qualificationTitle,
               lines: _qualificationItems,
@@ -175,7 +229,7 @@ class _AboutUpdatePageState extends ConsumerState<AboutUpdatePage> {
           ),
           SizedBox(height: t.spacing.md),
           SectionReveal(
-            delay: const Duration(milliseconds: 90),
+            delay: const Duration(milliseconds: 100),
             child: LegalDocumentCard(
               title: _historyTitle,
               lines: _historyItems,
@@ -183,22 +237,50 @@ class _AboutUpdatePageState extends ConsumerState<AboutUpdatePage> {
           ),
           SizedBox(height: t.spacing.md),
           SectionReveal(
-            delay: const Duration(milliseconds: 120),
+            delay: const Duration(milliseconds: 130),
             child: AppPrimaryButton(
               label: '检查更新',
               isLoading: _checking,
               onPressed: _checkUpdate,
             ),
           ),
-          if (_status.isNotEmpty) ...[
-            SizedBox(height: t.spacing.sm),
-            Text(
-              _status,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: t.textSecondary),
-            ),
-          ],
         ],
       ),
+    );
+  }
+}
+
+class _KeyValueLine extends StatelessWidget {
+  const _KeyValueLine({required this.label, required this.value});
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.appTokens;
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: 72,
+          child: Text(
+            label,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: t.textSecondary,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+        Expanded(
+          child: Text(
+            value,
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: t.textPrimary, height: 1.45),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -23,6 +23,9 @@ abstract final class CacheKeys {
   static const matchDetailSnapshot = 'match_detail_snapshot_v1';
   static const matchFeedbackHistory = 'match_feedback_history_v1';
   static const astroChartPreferences = 'astro_chart_preferences_v1';
+  static const astroChartRoutePreferences = 'astro_chart_route_preferences_v1';
+  static const astroChartWorkbenchPreferences =
+      'astro_chart_workbench_preferences_v1';
   static const homeSearchQuery = 'home_search_query';
   static const discoverSearchQuery = 'discover_search_query';
   static const messagesSearchQuery = 'messages_search_query';
@@ -36,5 +39,6 @@ abstract final class CacheKeys {
   static const homeFeedSnapshot = 'home_feed_snapshot_v1';
   static const discoverFeedSnapshot = 'discover_feed_snapshot_v1';
   static const chatDraftPrefix = 'chat_draft_';
-  static const messagesConversationSnapshot = 'messages_conversation_snapshot_v1';
+  static const messagesConversationSnapshot =
+      'messages_conversation_snapshot_v1';
 }

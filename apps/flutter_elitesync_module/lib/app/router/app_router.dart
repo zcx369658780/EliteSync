@@ -21,6 +21,8 @@ import 'package:flutter_elitesync_module/features/match/presentation/pages/match
 import 'package:flutter_elitesync_module/features/match/presentation/pages/match_feedback_page.dart';
 import 'package:flutter_elitesync_module/features/match/presentation/pages/match_result_page.dart';
 import 'package:flutter_elitesync_module/features/profile/presentation/pages/astro_bazi_page.dart';
+import 'package:flutter_elitesync_module/features/profile/presentation/pages/astro_advanced_preview_page.dart';
+import 'package:flutter_elitesync_module/features/profile/presentation/pages/astro_advanced_preview_demo_page.dart';
 import 'package:flutter_elitesync_module/features/profile/presentation/pages/astro_natal_chart_page.dart';
 import 'package:flutter_elitesync_module/features/profile/presentation/pages/edit_profile_page.dart';
 import 'package:flutter_elitesync_module/features/profile/presentation/pages/astro_overview_page.dart';
@@ -177,6 +179,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             _fadeSlidePage(state, const AstroNatalChartPage()),
       ),
       GoRoute(
+        path: AppRouteNames.astroAdvancedPreview,
+        pageBuilder: (context, state) =>
+            _fadeSlidePage(state, const AstroAdvancedPreviewPage()),
+      ),
+      GoRoute(
+        path: AppRouteNames.astroAdvancedPreviewDemo,
+        pageBuilder: (context, state) =>
+            _fadeSlidePage(state, const AstroAdvancedPreviewDemoPage()),
+      ),
+      GoRoute(
         path: AppRouteNames.astroChartSettings,
         pageBuilder: (context, state) =>
             _fadeSlidePage(state, const AstroChartSettingsPage()),
@@ -322,3 +334,4 @@ CustomTransitionPage<void> _fadeSlidePage(GoRouterState state, Widget child) {
     },
   );
 }
+

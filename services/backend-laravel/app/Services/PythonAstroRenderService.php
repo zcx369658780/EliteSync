@@ -10,13 +10,17 @@ class PythonAstroRenderService
      * @param array<string,mixed> $payload
      * @return array<string,mixed>|null
      */
-    public function render(array $payload): ?array
+    public function request(string $path, array $payload): ?array
     {
-        $url = trim((string) config('python_astro.render_url', ''));
-        if ($url === '') {
+        $base = trim((string) config('python_astro.api_base', ''));
+        if ($base === '') {
+            $base = trim((string) preg_replace('~/render/?$~', '', (string) config('python_astro.render_url', '')));
+        }
+        if ($base === '') {
             return null;
         }
 
+        $url = rtrim($base, '/') . '/' . ltrim($path, '/');
         $timeout = (int) config('python_astro.timeout_seconds', 20);
 
         try {
@@ -43,5 +47,14 @@ class PythonAstroRenderService
         }
 
         return $json;
+    }
+
+    /**
+     * @param array<string,mixed> $payload
+     * @return array<string,mixed>|null
+     */
+    public function render(array $payload): ?array
+    {
+        return $this->request('/render', $payload);
     }
 }

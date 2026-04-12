@@ -39,6 +39,198 @@ class AstroCanonicalApiTest extends TestCase
                     'aspects_data' => [
                         ['p1_name' => '太阳', 'p2_name' => '月亮', 'aspect' => '合相'],
                     ],
+                    'route_mode' => 'standard',
+                    'engine_info' => [
+                        'engine_name' => 'kerykeion',
+                        'engine_version' => '5.12.7',
+                        'schema_version' => 'astro_engine_mvp_v1',
+                        'chart_kind' => 'natal',
+                    ],
+                    'metadata' => [
+                        'schema_version' => 'astro_engine_mvp_v1',
+                        'engine_name' => 'kerykeion',
+                        'engine_version' => '5.12.7',
+                        'chart_kind' => 'natal',
+                        'field_roles' => [
+                            'canonical' => ['birthday', 'birth_time', 'birth_place', 'birth_lat', 'birth_lng', 'tz_str'],
+                            'derived' => ['chart_data', 'planets_data', 'houses_data', 'aspects_data', 'generated_at'],
+                            'display_only' => ['route_mode'],
+                        ],
+                        'route_context' => [
+                            'route_mode' => 'standard',
+                            'route_preset' => 'standard',
+                            'source' => 'display_only',
+                        ],
+                    ],
+                    'generated_at' => '2026-04-02T00:00:00Z',
+                ],
+            ], 200),
+            'http://127.0.0.1:8002/api/v1/profile/astro/pair*' => Http::response([
+                'ok' => true,
+                'profile' => [
+                    'chart_data' => [
+                        'chart_type' => 'Synastry',
+                        'first_subject' => ['name' => 'Alice'],
+                        'second_subject' => ['name' => 'Bob'],
+                        'aspects' => [
+                            ['p1_name' => 'Sun', 'p2_name' => 'Moon', 'aspect' => 'trine'],
+                        ],
+                        'relationship_score' => [
+                            'score_value' => 12,
+                            'score_description' => 'Important',
+                        ],
+                    ],
+                    'primary_subject' => ['name' => 'Alice', 'city' => '北京', 'nation' => 'CN'],
+                    'secondary_subject' => ['name' => 'Bob', 'city' => '上海', 'nation' => 'CN'],
+                    'primary_planets_data' => [['key' => 'sun', 'name' => '太阳', 'sign' => '狮子座']],
+                    'primary_houses_data' => [['index' => 1, 'name' => '1宫', 'sign' => '白羊座']],
+                    'secondary_planets_data' => [['key' => 'sun', 'name' => '太阳', 'sign' => '天秤座']],
+                    'secondary_houses_data' => [['index' => 1, 'name' => '1宫', 'sign' => '天秤座']],
+                    'aspects_data' => [
+                        ['p1_name' => 'Sun', 'p2_name' => 'Moon', 'aspect' => 'trine'],
+                    ],
+                    'house_comparison' => ['shared_signs' => 3],
+                    'relationship_score' => ['score_value' => 12, 'score_description' => 'Important'],
+                    'pair_mode' => 'synastry',
+                    'advanced_mode' => 'pair',
+                    'advanced_summary' => [
+                        'advanced_mode' => 'pair',
+                        'pair_mode' => 'synastry',
+                        'aspects_count' => 1,
+                    ],
+                    'route_mode' => 'standard',
+                    'engine_info' => [
+                        'engine_name' => 'kerykeion',
+                        'engine_version' => '5.12.7',
+                        'schema_version' => 'astro_engine_mvp_v1',
+                        'chart_kind' => 'synastry',
+                        'advanced_mode' => 'pair',
+                    ],
+                    'metadata' => [
+                        'schema_version' => 'astro_engine_mvp_v1',
+                        'engine_name' => 'kerykeion',
+                        'engine_version' => '5.12.7',
+                        'chart_kind' => 'synastry',
+                        'route_context' => [
+                            'route_mode' => 'standard',
+                            'route_preset' => 'standard',
+                            'source' => 'display_only',
+                        ],
+                        'advanced_context' => [
+                            'mode' => 'pair',
+                            'pair_mode' => 'synastry',
+                            'source' => 'derived_only',
+                            'scope' => 'preview',
+                        ],
+                    ],
+                    'generated_at' => '2026-04-02T00:00:00Z',
+                ],
+            ], 200),
+            'http://127.0.0.1:8002/api/v1/profile/astro/transit*' => Http::response([
+                'ok' => true,
+                'profile' => [
+                    'chart_data' => [
+                        'chart_type' => 'Transit',
+                        'first_subject' => ['name' => 'Natal'],
+                        'second_subject' => ['name' => 'Transit'],
+                        'aspects' => [
+                            ['p1_name' => 'Sun', 'p2_name' => 'Saturn', 'aspect' => 'square'],
+                        ],
+                    ],
+                    'primary_subject' => ['name' => 'Natal', 'city' => '北京', 'nation' => 'CN'],
+                    'secondary_subject' => ['name' => 'Transit', 'city' => '北京', 'nation' => 'CN'],
+                    'primary_planets_data' => [['key' => 'sun', 'name' => '太阳', 'sign' => '狮子座']],
+                    'secondary_planets_data' => [['key' => 'sun', 'name' => '太阳', 'sign' => '处女座']],
+                    'primary_houses_data' => [['index' => 1, 'name' => '1宫', 'sign' => '白羊座']],
+                    'secondary_houses_data' => [['index' => 1, 'name' => '1宫', 'sign' => '天蝎座']],
+                    'aspects_data' => [
+                        ['p1_name' => 'Sun', 'p2_name' => 'Saturn', 'aspect' => 'square'],
+                    ],
+                    'advanced_mode' => 'transit',
+                    'advanced_summary' => [
+                        'advanced_mode' => 'transit',
+                        'aspects_count' => 1,
+                    ],
+                    'route_mode' => 'modern',
+                    'engine_info' => [
+                        'engine_name' => 'kerykeion',
+                        'engine_version' => '5.12.7',
+                        'schema_version' => 'astro_engine_mvp_v1',
+                        'chart_kind' => 'transit',
+                        'advanced_mode' => 'transit',
+                    ],
+                    'metadata' => [
+                        'schema_version' => 'astro_engine_mvp_v1',
+                        'engine_name' => 'kerykeion',
+                        'engine_version' => '5.12.7',
+                        'chart_kind' => 'transit',
+                        'route_context' => [
+                            'route_mode' => 'modern',
+                            'route_preset' => 'modern',
+                            'source' => 'display_only',
+                        ],
+                        'advanced_context' => [
+                            'mode' => 'transit',
+                            'source' => 'derived_only',
+                            'scope' => 'preview',
+                        ],
+                    ],
+                    'generated_at' => '2026-04-02T00:00:00Z',
+                ],
+            ], 200),
+            'http://127.0.0.1:8002/api/v1/profile/astro/return*' => Http::response([
+                'ok' => true,
+                'profile' => [
+                    'chart_data' => [
+                        'chart_type' => 'DualReturnChart',
+                        'first_subject' => ['name' => 'Natal'],
+                        'second_subject' => ['name' => 'Natal Lunar Return'],
+                        'aspects' => [
+                            ['p1_name' => 'Sun', 'p2_name' => 'Moon', 'aspect' => 'conjunction'],
+                        ],
+                    ],
+                    'primary_subject' => ['name' => 'Natal', 'city' => '北京', 'nation' => 'CN'],
+                    'secondary_subject' => ['name' => 'Natal Lunar Return', 'city' => '北京', 'nation' => 'CN'],
+                    'primary_planets_data' => [['key' => 'sun', 'name' => '太阳', 'sign' => '狮子座']],
+                    'secondary_planets_data' => [['key' => 'sun', 'name' => '太阳', 'sign' => '巨蟹座']],
+                    'primary_houses_data' => [['index' => 1, 'name' => '1宫', 'sign' => '白羊座']],
+                    'secondary_houses_data' => [['index' => 1, 'name' => '1宫', 'sign' => '摩羯座']],
+                    'aspects_data' => [
+                        ['p1_name' => 'Sun', 'p2_name' => 'Moon', 'aspect' => 'conjunction'],
+                    ],
+                    'advanced_mode' => 'return',
+                    'advanced_summary' => [
+                        'advanced_mode' => 'return',
+                        'return_type' => 'Lunar',
+                        'return_year' => 2026,
+                        'aspects_count' => 1,
+                    ],
+                    'route_mode' => 'classical',
+                    'engine_info' => [
+                        'engine_name' => 'kerykeion',
+                        'engine_version' => '5.12.7',
+                        'schema_version' => 'astro_engine_mvp_v1',
+                        'chart_kind' => 'return',
+                        'advanced_mode' => 'return',
+                    ],
+                    'metadata' => [
+                        'schema_version' => 'astro_engine_mvp_v1',
+                        'engine_name' => 'kerykeion',
+                        'engine_version' => '5.12.7',
+                        'chart_kind' => 'return',
+                        'route_context' => [
+                            'route_mode' => 'classical',
+                            'route_preset' => 'classical',
+                            'source' => 'display_only',
+                        ],
+                        'advanced_context' => [
+                            'mode' => 'return',
+                            'return_type' => 'Lunar',
+                            'return_year' => 2026,
+                            'source' => 'derived_only',
+                            'scope' => 'preview',
+                        ],
+                    ],
                     'generated_at' => '2026-04-02T00:00:00Z',
                 ],
             ], 200),
@@ -83,6 +275,9 @@ class AstroCanonicalApiTest extends TestCase
         $this->assertNotEmpty((string) data_get($res->json(), 'profile.position_signature'));
 
         $this->assertArrayHasKey('chart_data', data_get($res->json(), 'profile'));
+        $this->assertSame('standard', data_get($res->json(), 'profile.route_mode'));
+        $this->assertSame('kerykeion', data_get($res->json(), 'profile.engine_info.engine_name'));
+        $this->assertSame('astro_engine_mvp_v1', data_get($res->json(), 'profile.metadata.schema_version'));
         $this->assertArrayNotHasKey('natal_chart_svg', data_get($res->json(), 'profile'));
 
         $user->refresh();
@@ -211,13 +406,14 @@ class AstroCanonicalApiTest extends TestCase
 
         Http::preventStrayRequests();
 
-        $this->getJson('/api/v1/profile/astro/summary')
+        $summary = $this->getJson('/api/v1/profile/astro/summary?route_mode=classical')
             ->assertOk()
             ->assertJsonPath('exists', true)
             ->assertJsonMissingPath('profile.natal_chart_svg')
             ->assertJsonPath('profile.birthday', '1996-08-18')
             ->assertJsonPath('profile.birth_place', '河南南阳')
             ->assertJsonPath('profile.accuracy', 'canonical_server');
+        $this->assertSame('classical', data_get($summary->json(), 'profile.route_mode'));
     }
 
     public function test_astro_chart_endpoint_returns_chart_data_payload(): void
@@ -242,14 +438,146 @@ class AstroCanonicalApiTest extends TestCase
             'asc_sign' => '双子座',
         ])->assertOk();
 
-        $this->getJson('/api/v1/profile/astro/chart')
+        $this->getJson('/api/v1/profile/astro/chart?route_mode=modern')
             ->assertOk()
             ->assertJsonPath('exists', true)
             ->assertJsonPath('profile.birthday', '1992-06-16')
             ->assertJsonPath('profile.birth_place', '北京市朝阳区')
             ->assertJsonPath('profile.chart_data.subject.name', 'EliteSync')
+            ->assertJsonPath('profile.engine_info.schema_version', 'astro_engine_mvp_v1')
+            ->assertJsonPath('profile.route_mode', 'modern')
+            ->assertJsonPath('profile.metadata.route_context.route_mode', 'modern')
             ->assertJsonMissingPath('profile.natal_chart_svg');
 
         Http::assertSentCount(1);
+    }
+
+    public function test_astro_pair_endpoint_returns_advanced_context(): void
+    {
+        $this->fakePythonAstroService();
+
+        $user = User::create([
+            'phone' => '13800001106',
+            'password' => 'secret123',
+            'birthday' => '1992-06-16',
+            'gender' => 'female',
+        ]);
+
+        Sanctum::actingAs($user);
+
+        $this->postJson('/api/v1/profile/astro/pair', [
+            'pair_mode' => 'synastry',
+            'route_mode' => 'standard',
+            'first' => [
+                'name' => 'Alice',
+                'birthday' => '1990-01-01',
+                'birth_time' => '12:30',
+                'birth_place' => '北京',
+                'birth_lat' => 39.9042,
+                'birth_lng' => 116.4074,
+                'tz_str' => 'Asia/Shanghai',
+                'nation' => 'CN',
+            ],
+            'second' => [
+                'name' => 'Bob',
+                'birthday' => '1992-06-15',
+                'birth_time' => '14:30',
+                'birth_place' => '上海',
+                'birth_lat' => 31.2304,
+                'birth_lng' => 121.4737,
+                'tz_str' => 'Asia/Shanghai',
+                'nation' => 'CN',
+            ],
+        ])->assertOk()
+            ->assertJsonPath('ok', true)
+            ->assertJsonPath('profile.advanced_mode', 'pair')
+            ->assertJsonPath('profile.pair_mode', 'synastry')
+            ->assertJsonPath('profile.engine_info.chart_kind', 'synastry')
+            ->assertJsonPath('profile.metadata.advanced_context.mode', 'pair')
+            ->assertJsonPath('profile.metadata.advanced_context.pair_mode', 'synastry')
+            ->assertJsonPath('profile.primary_subject.name', 'Alice')
+            ->assertJsonPath('profile.secondary_subject.name', 'Bob');
+    }
+
+    public function test_astro_transit_endpoint_returns_advanced_context(): void
+    {
+        $this->fakePythonAstroService();
+
+        $user = User::create([
+            'phone' => '13800001107',
+            'password' => 'secret123',
+            'birthday' => '1992-06-16',
+            'gender' => 'male',
+        ]);
+
+        Sanctum::actingAs($user);
+
+        $this->postJson('/api/v1/profile/astro/transit', [
+            'route_mode' => 'modern',
+            'natal' => [
+                'name' => 'Natal',
+                'birthday' => '1990-01-01',
+                'birth_time' => '12:30',
+                'birth_place' => '北京',
+                'birth_lat' => 39.9042,
+                'birth_lng' => 116.4074,
+                'tz_str' => 'Asia/Shanghai',
+                'nation' => 'CN',
+            ],
+            'transit' => [
+                'name' => 'Transit',
+                'birthday' => '2026-04-12',
+                'birth_time' => '08:00',
+                'birth_place' => '北京',
+                'birth_lat' => 39.9042,
+                'birth_lng' => 116.4074,
+                'tz_str' => 'Asia/Shanghai',
+                'nation' => 'CN',
+            ],
+        ])->assertOk()
+            ->assertJsonPath('ok', true)
+            ->assertJsonPath('profile.advanced_mode', 'transit')
+            ->assertJsonPath('profile.engine_info.chart_kind', 'transit')
+            ->assertJsonPath('profile.metadata.advanced_context.mode', 'transit')
+            ->assertJsonPath('profile.primary_subject.name', 'Natal')
+            ->assertJsonPath('profile.secondary_subject.name', 'Transit');
+    }
+
+    public function test_astro_return_endpoint_returns_advanced_context(): void
+    {
+        $this->fakePythonAstroService();
+
+        $user = User::create([
+            'phone' => '13800001108',
+            'password' => 'secret123',
+            'birthday' => '1992-06-16',
+            'gender' => 'female',
+        ]);
+
+        Sanctum::actingAs($user);
+
+        $this->postJson('/api/v1/profile/astro/return', [
+            'route_mode' => 'classical',
+            'return_year' => 2026,
+            'return_type' => 'Lunar',
+            'natal' => [
+                'name' => 'Natal',
+                'birthday' => '1990-01-01',
+                'birth_time' => '12:30',
+                'birth_place' => '北京',
+                'birth_lat' => 39.9042,
+                'birth_lng' => 116.4074,
+                'tz_str' => 'Asia/Shanghai',
+                'nation' => 'CN',
+            ],
+        ])->assertOk()
+            ->assertJsonPath('ok', true)
+            ->assertJsonPath('profile.advanced_mode', 'return')
+            ->assertJsonPath('profile.engine_info.chart_kind', 'return')
+            ->assertJsonPath('profile.metadata.advanced_context.mode', 'return')
+            ->assertJsonPath('profile.metadata.advanced_context.return_type', 'Lunar')
+            ->assertJsonPath('profile.metadata.advanced_context.return_year', 2026)
+            ->assertJsonPath('profile.primary_subject.name', 'Natal')
+            ->assertJsonPath('profile.secondary_subject.name', 'Natal Lunar Return');
     }
 }

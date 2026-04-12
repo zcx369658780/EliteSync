@@ -10,6 +10,7 @@ import 'package:flutter_elitesync_module/design_system/theme/app_theme_extension
 import 'package:flutter_elitesync_module/features/profile/presentation/providers/astro_profile_provider.dart';
 import 'package:flutter_elitesync_module/features/profile/presentation/widgets/astro_overview_components.dart';
 import 'package:flutter_elitesync_module/features/profile/presentation/widgets/astro_profile_sections.dart';
+import 'package:flutter_elitesync_module/features/profile/presentation/widgets/astro_advanced_capability_card.dart';
 import 'package:flutter_elitesync_module/features/profile/presentation/widgets/astro_profile_state.dart';
 import 'package:flutter_elitesync_module/features/profile/presentation/widgets/astro_profile_state_view.dart';
 
@@ -38,16 +39,12 @@ class AstroOverviewPage extends ConsumerWidget {
           padding: EdgeInsets.only(top: t.spacing.sm, bottom: t.spacing.xl),
           children: [
             const SectionReveal(
-              child: PageTitleRail(
-                title: '玄学总览',
-                subtitle: '身份摘要、视觉门户与当前五行能量',
-              ),
+              child: PageTitleRail(title: '玄学总览', subtitle: '身份摘要、视觉门户与当前五行能量'),
             ),
             SizedBox(height: t.spacing.md),
             astroAsync.when(
-              loading: () => AstroProfileStateView(
-                spec: astroProfileLoadingSpec('玄学总览'),
-              ),
+              loading: () =>
+                  AstroProfileStateView(spec: astroProfileLoadingSpec('玄学总览')),
               error: (e, _) {
                 final spec = astroProfileErrorSpec('玄学总览', e);
                 return AstroProfileStateView(
@@ -75,6 +72,11 @@ class AstroOverviewPage extends ConsumerWidget {
                   children: [
                     AstroIdentityHeader(profile: profile),
                     SizedBox(height: t.spacing.sm),
+                    AstroAdvancedCapabilityCard(
+                      onOpenDetails: () =>
+                          context.push(AppRouteNames.astroAdvancedPreviewDemo),
+                    ),
+                    SizedBox(height: t.spacing.sm),
                     AstroSectionCard(
                       title: '视觉门户',
                       subtitle: '从总览直接进入八字、星盘与紫微详情',
@@ -83,16 +85,17 @@ class AstroOverviewPage extends ConsumerWidget {
                         children: [
                           AstroPortalCard(
                             title: '八字详情',
-                            subtitle: '四柱矩阵、五行能量、大运与流年',
+                            subtitle: '四柱矩阵、五行能量、大运与流年（服务端真值）',
                             preview: BaziOverviewPreview(bazi: bazi),
                             onTap: () => context.push(AppRouteNames.astroBazi),
                           ),
                           SizedBox(height: t.spacing.sm),
                           AstroPortalCard(
                             title: '本命盘详情',
-                            subtitle: '总览只展示三轴识别，完整盘面进入详情页查看',
+                            subtitle: '总览只展示三轴识别，完整盘面进入详情页查看（本地绘制）',
                             preview: NatalAxisPoster(profile: profile),
-                            onTap: () => context.push(AppRouteNames.astroNatalChart),
+                            onTap: () =>
+                                context.push(AppRouteNames.astroNatalChart),
                           ),
                           SizedBox(height: t.spacing.sm),
                           AstroPortalCard(
@@ -109,7 +112,7 @@ class AstroOverviewPage extends ConsumerWidget {
                     SizedBox(height: t.spacing.sm),
                     AstroModuleCard(
                       title: '画像详情',
-                      subtitle: '技术参数与完整画像保留在详情/诊断页',
+                      subtitle: '技术参数与完整画像保留在详情/诊断页，资料修改后会自动刷新',
                       summary: '查看服务端画像字段、调试字段与更新时间。最近更新：$computedAt',
                       icon: Icons.analytics_outlined,
                       badge: 'diagnostics',
@@ -125,3 +128,4 @@ class AstroOverviewPage extends ConsumerWidget {
     );
   }
 }
+

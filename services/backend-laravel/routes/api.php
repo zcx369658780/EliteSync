@@ -64,6 +64,9 @@ Route::prefix('v1')->group(function () {
             Route::get('/astro/chart', [AstroProfileController::class, 'showChart']);
             Route::get('/astro', [AstroProfileController::class, 'show']);
             Route::post('/astro', [AstroProfileController::class, 'save']);
+            Route::post('/astro/pair', [AstroProfileController::class, 'pair']);
+            Route::post('/astro/transit', [AstroProfileController::class, 'transit']);
+            Route::post('/astro/return', [AstroProfileController::class, 'returnChart']);
             Route::get('/mbti/quiz', [MbtiProfileController::class, 'quiz']);
             Route::post('/mbti/submit', [MbtiProfileController::class, 'submit']);
             Route::get('/mbti/result', [MbtiProfileController::class, 'result']);

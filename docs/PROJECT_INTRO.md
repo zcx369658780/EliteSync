@@ -69,7 +69,9 @@ EliteSync 是一个“慢约会”应用，核心闭环：
 4. 双端匹配后进入聊天，验证消息收发
 
 ---
-如需查看完整历史规划与阶段报告：
-- `docs/HANDOFF_MASTER_20260406.md`
+当前有效入口：
+- `docs/DOC_INDEX_CURRENT.md`
+
+如需查看历史规划与阶段报告：
 - `docs/archive/legacy_2026-03/STAGE_B_COMPLETION_REPORT.md`
 - `docs/archive/legacy_2026-03/STAGE_C_HANDOVER_20260315.md`

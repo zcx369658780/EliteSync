@@ -36,12 +36,16 @@ class ProfileRemoteDataSource {
     throw Exception(failure.message);
   }
 
-  Future<void> update(UpdateProfileRequestDto dto) async {
-    if (useMock) return;
+  Future<Map<String, dynamic>> update(UpdateProfileRequestDto dto) async {
+    if (useMock) return const {};
     final result = await apiClient.post('/api/v1/profile/basic', body: dto.toJson()).timeout(_requestTimeout);
+    if (result is NetworkSuccess<Map<String, dynamic>>) {
+      return result.data;
+    }
     if (result is NetworkFailure<Map<String, dynamic>>) {
       throw Exception(result.message);
     }
+    return const {};
   }
 
   Future<List<BirthPlaceSuggestionEntity>> searchBirthPlaces({

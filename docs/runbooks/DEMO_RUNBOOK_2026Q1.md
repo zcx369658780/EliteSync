@@ -64,4 +64,4 @@
 
 ## 7. 会后留档建议
 - 记录演示时间、演示版本、异常点和决策项。
-- 把会议结论更新到 `docs/HANDOFF_MASTER_20260406.md` 与 `docs/HANDOFF_MASTER_20260406.md`。
+- 把会议结论更新到 `docs/DOC_INDEX_CURRENT.md`，并按需要补充到当前版本交接稿。

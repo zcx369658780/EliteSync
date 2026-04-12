@@ -7,6 +7,7 @@ import 'package:flutter_elitesync_module/features/profile/presentation/providers
 String buildNatalChartSvgFromProfile(
   Map<String, dynamic> profile, {
   AstroChartDisplayPrefs? prefs,
+  AstroChartWorkbenchPrefs? workbenchPrefs,
 }) {
   final chartData = _map(profile['chart_data']);
   final nestedChart = _map(_map(profile['private_natal_chart'])['chart_data']);
@@ -14,18 +15,24 @@ String buildNatalChartSvgFromProfile(
   if (source.isEmpty) {
     return '';
   }
-  return buildNatalChartSvg(source, prefs: prefs);
+  return buildNatalChartSvg(
+    source,
+    prefs: prefs,
+    workbenchPrefs: workbenchPrefs,
+  );
 }
 
 String buildNatalChartSvg(
   Map<String, dynamic> chartData, {
   AstroChartDisplayPrefs? prefs,
+  AstroChartWorkbenchPrefs? workbenchPrefs,
 }) {
   final subject = _map(chartData['subject']);
   if (subject.isEmpty) return '';
 
   final displayPrefs = prefs ?? AstroChartDisplayPrefs.defaults();
-  final points = _extractPoints(subject);
+  final workbench = workbenchPrefs ?? AstroChartWorkbenchPrefs.defaults();
+  final points = _extractPoints(subject, workbench);
   if (points.isEmpty) return '';
 
   const size = 1000.0;
@@ -111,7 +118,7 @@ String buildNatalChartSvg(
   }
 
   if (displayPrefs.showChartAspectLines) {
-    final aspects = _extractAspects(chartData, pointLookup);
+    final aspects = _extractAspects(chartData, pointLookup, workbench);
     for (final aspect in aspects) {
       final p1 = pointLookup[aspect.p1Name];
       final p2 = pointLookup[aspect.p2Name];
@@ -119,33 +126,34 @@ String buildNatalChartSvg(
       final c1 = _polar(cx, cy, aspectRadius, _angleRad(p1.absPos));
       final c2 = _polar(cx, cy, aspectRadius, _angleRad(p2.absPos));
       final dash = _aspectDash(aspect.name);
+      final opacity = _aspectOpacity(aspect.name, aspect.orbit);
+      final strokeWidth = _aspectStrokeWidth(aspect.name, aspect.orbit);
       buffer.write(
-        "<line x1='${c1.dx.toStringAsFixed(2)}' y1='${c1.dy.toStringAsFixed(2)}' x2='${c2.dx.toStringAsFixed(2)}' y2='${c2.dy.toStringAsFixed(2)}' stroke='${aspect.color}' stroke-opacity='0.58' stroke-width='1.8' stroke-dasharray='$dash' />",
+        "<line x1='${c1.dx.toStringAsFixed(2)}' y1='${c1.dy.toStringAsFixed(2)}' x2='${c2.dx.toStringAsFixed(2)}' y2='${c2.dy.toStringAsFixed(2)}' stroke='${aspect.color}' stroke-opacity='${opacity.toStringAsFixed(2)}' stroke-width='${strokeWidth.toStringAsFixed(2)}' stroke-dasharray='$dash' />",
       );
     }
   }
 
-  for (var i = 0; i < points.length; i++) {
-    final point = points[i];
-    final angle = _angleRad(point.absPos);
-    final dot = _polar(cx, cy, planetRadius, angle);
-    final labelRadius = planetRadius + 30 + (i % 3) * 12;
-    final labelAngle = angle + ((i % 2 == 0) ? -0.06 : 0.06);
-    final labelPos = _polar(cx, cy, labelRadius, labelAngle);
-    final textAnchor = labelPos.dx >= cx ? 'start' : 'end';
+  final placements = _layoutPointLabels(
+    points,
+    cx: cx,
+    cy: cy,
+    planetRadius: planetRadius,
+  );
+  for (final placement in placements) {
     if (displayPrefs.showChartPlanetConnectors) {
       buffer.write(
-        "<line x1='${dot.dx.toStringAsFixed(2)}' y1='${dot.dy.toStringAsFixed(2)}' x2='${labelPos.dx.toStringAsFixed(2)}' y2='${labelPos.dy.toStringAsFixed(2)}' stroke='${point.color}' stroke-opacity='0.55' stroke-width='1.3' />",
+        "<line x1='${placement.dot.dx.toStringAsFixed(2)}' y1='${placement.dot.dy.toStringAsFixed(2)}' x2='${placement.labelPos.dx.toStringAsFixed(2)}' y2='${placement.labelPos.dy.toStringAsFixed(2)}' stroke='${placement.point.color}' stroke-opacity='0.55' stroke-width='1.3' />",
       );
     }
     if (displayPrefs.showChartPlanetMarkers) {
       buffer.write(
-        "<circle cx='${dot.dx.toStringAsFixed(2)}' cy='${dot.dy.toStringAsFixed(2)}' r='12.5' fill='${point.color}' stroke='rgba(255,255,255,0.92)' stroke-width='2' />",
+        "<circle cx='${placement.dot.dx.toStringAsFixed(2)}' cy='${placement.dot.dy.toStringAsFixed(2)}' r='12.5' fill='${placement.point.color}' stroke='rgba(255,255,255,0.92)' stroke-width='2' />",
       );
     }
     if (displayPrefs.showChartPlanetLabels) {
       buffer.write(
-        "<text x='${labelPos.dx.toStringAsFixed(2)}' y='${labelPos.dy.toStringAsFixed(2)}' text-anchor='$textAnchor' dominant-baseline='middle' fill='white' font-size='19' font-family='PingFang SC, Noto Sans SC, sans-serif' font-weight='700'>${_esc(point.label)}</text>",
+        "<text x='${placement.labelPos.dx.toStringAsFixed(2)}' y='${placement.labelPos.dy.toStringAsFixed(2)}' text-anchor='${placement.textAnchor}' dominant-baseline='middle' fill='white' font-size='${placement.fontSize}' font-family='PingFang SC, Noto Sans SC, sans-serif' font-weight='700'>${_esc(placement.point.label)}</text>",
       );
     }
   }
@@ -193,32 +201,38 @@ String _defs() => '''
 </defs>
 ''';
 
-List<_ChartPoint> _extractPoints(Map<String, dynamic> subject) {
+List<_ChartPoint> _extractPoints(
+  Map<String, dynamic> subject,
+  AstroChartWorkbenchPrefs workbench,
+) {
   const specs = [
-    ('sun', '日', '#F6C94C'),
-    ('moon', '月', '#E7ECFF'),
-    ('mercury', '水', '#8AD8FF'),
-    ('venus', '金', '#F6A6D0'),
-    ('mars', '火', '#FF8B7A'),
-    ('jupiter', '木', '#9BE38A'),
-    ('saturn', '土', '#D9C49A'),
-    ('uranus', '天', '#70E1C8'),
-    ('neptune', '海', '#7EB3FF'),
-    ('pluto', '冥', '#C69BFF'),
-    ('chiron', '凯', '#BFD3FF'),
-    ('ascendant', '升', '#FFB870'),
-    ('descendant', '降', '#FF9E9E'),
-    ('medium_coeli', '顶', '#A8D8FF'),
-    ('imum_coeli', '底', '#A8D8FF'),
-    ('mean_north_lunar_node', '北', '#86E0A9'),
-    ('true_north_lunar_node', '北', '#86E0A9'),
-    ('mean_south_lunar_node', '南', '#F8A3A3'),
-    ('true_south_lunar_node', '南', '#F8A3A3'),
-    ('earth', '地', '#B6B6B6'),
+    ('sun', '日', '#F6C94C', AstroPointMode.core),
+    ('moon', '月', '#E7ECFF', AstroPointMode.core),
+    ('mercury', '水', '#8AD8FF', AstroPointMode.core),
+    ('venus', '金', '#F6A6D0', AstroPointMode.core),
+    ('mars', '火', '#FF8B7A', AstroPointMode.core),
+    ('jupiter', '木', '#9BE38A', AstroPointMode.core),
+    ('saturn', '土', '#D9C49A', AstroPointMode.core),
+    ('ascendant', '升', '#FFB870', AstroPointMode.core),
+    ('descendant', '降', '#FF9E9E', AstroPointMode.core),
+    ('medium_coeli', '顶', '#A8D8FF', AstroPointMode.core),
+    ('imum_coeli', '底', '#A8D8FF', AstroPointMode.core),
+    ('uranus', '天', '#70E1C8', AstroPointMode.extended),
+    ('neptune', '海', '#7EB3FF', AstroPointMode.extended),
+    ('pluto', '冥', '#C69BFF', AstroPointMode.extended),
+    ('chiron', '凯', '#BFD3FF', AstroPointMode.extended),
+    ('mean_north_lunar_node', '北', '#86E0A9', AstroPointMode.extended),
+    ('true_north_lunar_node', '北', '#86E0A9', AstroPointMode.extended),
+    ('mean_south_lunar_node', '南', '#F8A3A3', AstroPointMode.extended),
+    ('true_south_lunar_node', '南', '#F8A3A3', AstroPointMode.extended),
+    ('earth', '地', '#B6B6B6', AstroPointMode.full),
   ];
 
   final result = <_ChartPoint>[];
   for (final spec in specs) {
+    if (!_pointModeAllows(spec.$4, workbench.pointMode)) {
+      continue;
+    }
     final raw = _map(subject[spec.$1]);
     final absPos = _toDouble(raw['abs_pos']);
     if (absPos == null) continue;
@@ -266,33 +280,136 @@ List<_HousePoint> _housePoints(Map<String, dynamic> subject) {
 List<_AspectLine> _extractAspects(
   Map<String, dynamic> chartData,
   Map<String, _ChartPoint> pointLookup,
+  AstroChartWorkbenchPrefs workbench,
 ) {
   final raw = chartData['aspects'];
   if (raw is! List) return const [];
   final rows = raw.whereType<Map>().map((row) => _map(row)).where((row) {
     final p1 = row['p1_name']?.toString() ?? '';
     final p2 = row['p2_name']?.toString() ?? '';
-    return pointLookup.containsKey(p1) && pointLookup.containsKey(p2);
+    if (!pointLookup.containsKey(p1) || !pointLookup.containsKey(p2)) {
+      return false;
+    }
+    final aspectName = row['aspect']?.toString() ?? '';
+    final orbit = _toDouble(row['orbit']) ?? 999.0;
+    return _aspectModeAllows(aspectName, workbench.aspectMode) &&
+        _aspectOrbitAllows(orbit, workbench.orbPreset);
   }).toList();
 
-  rows.sort((a, b) {
-    final oa = _toDouble(a['orbit']) ?? 999.0;
-    final ob = _toDouble(b['orbit']) ?? 999.0;
-    return oa.compareTo(ob);
-  });
-
-  return rows
+  final aspects = rows
       .take(24)
       .map((row) {
         final name = row['aspect']?.toString() ?? '';
+        final orbit = _toDouble(row['orbit']) ?? 999.0;
         return _AspectLine(
           p1Name: row['p1_name']?.toString() ?? '',
           p2Name: row['p2_name']?.toString() ?? '',
           name: name,
+          orbit: orbit,
+          priority: _aspectPriority(name),
           color: _aspectColor(name),
         );
       })
       .toList(growable: false);
+
+  aspects.sort((a, b) {
+    final priorityDiff = b.priority.compareTo(a.priority);
+    if (priorityDiff != 0) return priorityDiff;
+    final orbitDiff = b.orbit.compareTo(a.orbit);
+    if (orbitDiff != 0) return orbitDiff;
+    return a.name.compareTo(b.name);
+  });
+
+  return aspects;
+}
+
+bool _pointModeAllows(AstroPointMode required, AstroPointMode current) {
+  switch (current) {
+    case AstroPointMode.core:
+      return required == AstroPointMode.core;
+    case AstroPointMode.extended:
+      return required != AstroPointMode.full;
+    case AstroPointMode.full:
+      return true;
+  }
+}
+
+bool _aspectModeAllows(String aspectName, AstroAspectMode mode) {
+  final normalized = aspectName.toLowerCase().replaceAll(
+    RegExp(r'[^a-z]+'),
+    '',
+  );
+  const major = {'conjunction', 'opposition', 'trine', 'square', 'sextile'};
+  const standard = {
+    ...major,
+    'quincunx',
+    'semisextile',
+    'semisquare',
+    'sesquiquadrate',
+  };
+  switch (mode) {
+    case AstroAspectMode.major:
+      return major.contains(normalized);
+    case AstroAspectMode.standard:
+      return standard.contains(normalized) || major.contains(normalized);
+    case AstroAspectMode.extended:
+      return true;
+  }
+}
+
+bool _aspectOrbitAllows(double orbit, AstroOrbPreset preset) {
+  switch (preset) {
+    case AstroOrbPreset.tight:
+      return orbit <= 4.0;
+    case AstroOrbPreset.standard:
+      return orbit <= 6.5;
+    case AstroOrbPreset.wide:
+      return orbit <= 9.5;
+  }
+}
+
+int _aspectPriority(String name) {
+  switch (name.toLowerCase()) {
+    case 'conjunction':
+    case 'opposition':
+    case 'trine':
+    case 'square':
+    case 'sextile':
+      return 0;
+    case 'quincunx':
+    case 'semisextile':
+    case 'semisquare':
+    case 'sesquiquadrate':
+      return 1;
+    default:
+      return 2;
+  }
+}
+
+double _aspectOpacity(String name, double orbit) {
+  final priority = _aspectPriority(name);
+  final base = switch (priority) {
+    0 => 0.74,
+    1 => 0.62,
+    _ => 0.50,
+  };
+  final orbitPenalty = (orbit.clamp(0.0, 12.0) / 12.0) * 0.18;
+  return (base - orbitPenalty).clamp(0.28, 0.78).toDouble();
+}
+
+double _aspectStrokeWidth(String name, double orbit) {
+  final priority = _aspectPriority(name);
+  final base = switch (priority) {
+    0 => 2.05,
+    1 => 1.75,
+    _ => 1.45,
+  };
+  final orbitBonus = orbit <= 3.0
+      ? 0.14
+      : orbit >= 8.0
+      ? -0.08
+      : 0.0;
+  return (base + orbitBonus).clamp(1.25, 2.25).toDouble();
 }
 
 String _aspectDash(String name) {
@@ -310,6 +427,162 @@ String _aspectDash(String name) {
     default:
       return '7 7';
   }
+}
+
+double _labelLaneOffset(String key, double absPos) {
+  final sector = ((absPos % 360) / 30).floor();
+  final base = switch (key.toLowerCase()) {
+    'sun' || 'moon' => 78.0,
+    'mercury' || 'venus' || 'mars' => 94.0,
+    'jupiter' || 'saturn' => 112.0,
+    'uranus' || 'neptune' || 'pluto' => 128.0,
+    'ascendant' || 'descendant' || 'medium_coeli' || 'imum_coeli' => 132.0,
+    'mean_north_lunar_node' ||
+    'true_north_lunar_node' ||
+    'mean_south_lunar_node' ||
+    'true_south_lunar_node' => 120.0,
+    _ => 100.0,
+  };
+  final sectorBias = switch (sector % 4) {
+    0 => 0.0,
+    1 => 12.0,
+    2 => -8.0,
+    _ => 6.0,
+  };
+  return base + sectorBias;
+}
+
+double _labelLift(String key) {
+  return switch (key.toLowerCase()) {
+    'sun' || 'moon' => 0.055,
+    'mercury' || 'venus' || 'mars' => 0.060,
+    'jupiter' || 'saturn' => 0.064,
+    'uranus' || 'neptune' || 'pluto' => 0.070,
+    'ascendant' || 'descendant' || 'medium_coeli' || 'imum_coeli' => 0.060,
+    _ => 0.058,
+  };
+}
+
+List<_PointLabelPlacement> _layoutPointLabels(
+  List<_ChartPoint> points, {
+  required double cx,
+  required double cy,
+  required double planetRadius,
+}) {
+  final ordered = [...points]
+    ..sort((a, b) {
+      final pa = _pointPriority(a.key);
+      final pb = _pointPriority(b.key);
+      if (pa != pb) return pa.compareTo(pb);
+      final absPosDiff = a.absPos.compareTo(b.absPos);
+      if (absPosDiff != 0) return absPosDiff;
+      return a.key.compareTo(b.key);
+    });
+
+  final placements = <_PointLabelPlacement>[];
+  for (var i = 0; i < ordered.length; i++) {
+    final point = ordered[i];
+    final angle = _angleRad(point.absPos);
+    final dot = _polar(cx, cy, planetRadius, angle);
+    final laneOffset = _labelLaneOffset(point.key, point.absPos);
+    final labelLift = _labelLift(point.key);
+    final fontSize = _labelFontSize(point.key);
+    final baseRadius = planetRadius + laneOffset;
+    final parityDirection = i.isEven ? -1.0 : 1.0;
+    final sideDirection = dot.dx >= cx ? 1.0 : -1.0;
+
+    var chosen = _PointLabelPlacement(
+      point: point,
+      dot: dot,
+      labelPos: _polar(
+        cx,
+        cy,
+        baseRadius,
+        angle + (parityDirection * labelLift),
+      ),
+      textAnchor: dot.dx >= cx ? 'start' : 'end',
+      fontSize: fontSize,
+    );
+    for (var attempt = 0; attempt < 6; attempt++) {
+      final radius = baseRadius + (attempt * 14.0);
+      final angleJitter = attempt == 0 ? 0.0 : 0.014 * attempt * sideDirection;
+      final liftJitter = labelLift + (attempt * 0.0025);
+      final candidateAngle =
+          angle + (parityDirection * liftJitter) + angleJitter;
+      final candidate = _PointLabelPlacement(
+        point: point,
+        dot: dot,
+        labelPos: _polar(cx, cy, radius, candidateAngle),
+        textAnchor: _polar(cx, cy, radius, candidateAngle).dx >= cx
+            ? 'start'
+            : 'end',
+        fontSize: fontSize,
+      );
+      chosen = candidate;
+      if (!_labelOverlaps(candidate, placements)) {
+        break;
+      }
+    }
+    placements.add(chosen);
+  }
+  return placements;
+}
+
+bool _labelOverlaps(
+  _PointLabelPlacement candidate,
+  List<_PointLabelPlacement> placements,
+) {
+  final threshold = (candidate.fontSize * 1.45).clamp(32.0, 48.0).toDouble();
+  for (final existing in placements) {
+    final distance = (candidate.labelPos - existing.labelPos).distance;
+    if (distance < threshold) {
+      return true;
+    }
+  }
+  return false;
+}
+
+int _pointPriority(String key) {
+  switch (key.toLowerCase()) {
+    case 'sun':
+    case 'moon':
+    case 'mercury':
+    case 'venus':
+    case 'mars':
+    case 'jupiter':
+    case 'saturn':
+    case 'ascendant':
+    case 'descendant':
+    case 'medium_coeli':
+    case 'imum_coeli':
+      return 0;
+    case 'uranus':
+    case 'neptune':
+    case 'pluto':
+    case 'chiron':
+    case 'mean_north_lunar_node':
+    case 'true_north_lunar_node':
+    case 'mean_south_lunar_node':
+    case 'true_south_lunar_node':
+      return 1;
+    default:
+      return 2;
+  }
+}
+
+double _labelFontSize(String key) {
+  return switch (key.toLowerCase()) {
+    'sun' || 'moon' => 19,
+    'mercury' || 'venus' || 'mars' => 18,
+    'jupiter' || 'saturn' => 17,
+    'uranus' || 'neptune' || 'pluto' => 17,
+    'ascendant' || 'descendant' || 'medium_coeli' || 'imum_coeli' => 16,
+    'mean_north_lunar_node' ||
+    'true_north_lunar_node' ||
+    'mean_south_lunar_node' ||
+    'true_south_lunar_node' => 16,
+    _ => 17,
+  };
 }
 
 String _aspectColor(String name) {
@@ -393,11 +666,31 @@ class _AspectLine {
     required this.p1Name,
     required this.p2Name,
     required this.name,
+    required this.orbit,
+    required this.priority,
     required this.color,
   });
 
   final String p1Name;
   final String p2Name;
   final String name;
+  final double orbit;
+  final int priority;
   final String color;
+}
+
+class _PointLabelPlacement {
+  const _PointLabelPlacement({
+    required this.point,
+    required this.dot,
+    required this.labelPos,
+    required this.textAnchor,
+    required this.fontSize,
+  });
+
+  final _ChartPoint point;
+  final Offset dot;
+  final Offset labelPos;
+  final String textAnchor;
+  final double fontSize;
 }

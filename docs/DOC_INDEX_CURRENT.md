@@ -1,77 +1,85 @@
 # 文档索引（当前有效）
 
-更新时间：2026-04-10
+更新时间：2026-04-12
 
 ## 根目录
 - `README.md`：项目总览
-- `PROJECT_HANDOFF_20260407.md`：当前总交接文档（Claude / Gemini 协作版）
+- `docs/HANDOFF_MASTER_CURRENT.md`：当前项目总交接稿
+- `docs/DEVELOPMENT_PLAN_CURRENT.md`：当前整体开发计划书
 - `docs/archive/legacy_2026-04/DEVELOPMENT_PLAN_2_0_AND_EARLIER_ARCHIVE.md`：2.0 及更早版本开发计划归档
-- `CHANGELOG_0.03.02a.md`：0.03.02a 版本变更记录（当前发布）
+- `docs/CHANGELOG.md`：0.03.02a 版本变更记录（当前发布）
 - `docs/version_plans/0.03.02a_UPDATE_BRIEF.md`：0.03.02a 更新简报
+- `docs/runbooks/README.md`：运行手册索引
 - `LICENSE_DEPENDENCY_STATUS.md`：依赖许可证状态总表（长期维护）
-- `docs/HANDOFF_MASTER_20260406.md`：当前交接总览（总计划 + 2.0 后计划整合）
-- `docs/HANDOFF_2_8_FINAL_20260406.md`：2.8 最终交接稿（信任安全与运营后台结项）
 - `docs/version_plans/README.md`：版本开发计划索引（主入口）
+- `docs/version_plans/elite_sync_3_6_版本开发计划书_2026_04_12.md`：3.6 版本开发计划书
+- `docs/version_plans/elite_sync_3_7_版本开发计划书_2026_04_12.md`：3.7 版本开发计划书
+- `docs/version_plans/3.7_EXEC_PLAN.md`：3.7 执行计划
+- `docs/version_plans/3.7_RISK_REVIEW.md`：3.7 风险评审
+- `docs/version_plans/3.7_SCOPE_MATRIX.md`：3.7 范围矩阵
+- `docs/version_plans/3.7_ADVANCED_CAPABILITY_MATRIX.md`：3.7 高级能力矩阵
+- `docs/version_plans/3.7_SCHEMA_BOUNDARY.md`：3.7 高级 Schema 与边界说明
+- `docs/version_plans/3.7_MULTIAGENT_REVIEW_LOG.md`：3.7 多 Agent 审查日志
+- `docs/version_plans/3.7_ACCEPTANCE_REPORT.md`：3.7 最终验收报告
+- `docs/version_plans/3.7_HANDOFF_FINAL_20260412.md`：3.7 最终交接稿
+- `docs/version_plans/3.7_SCREENSHOT_EVIDENCE_INDEX.md`：3.7 截图证据索引
+- `docs/version_plans/3.6_EXEC_PLAN.md`：3.6 执行计划
+- `docs/version_plans/3.6_RISK_REVIEW.md`：3.6 风险评审
+- `docs/version_plans/3.6_BETA_REGRESSION_CHECKLIST.md`：3.6 Beta 回归清单
+- `docs/version_plans/3.6_SCOPE_MATRIX.md`：3.6 范围矩阵
+- `docs/version_plans/3.6_ROUTE_CAPABILITY_MATRIX.md`：3.6 路线能力矩阵
+- `docs/version_plans/3.6_ROUTE_PARITY_REPORT.md`：3.6 路线差异报告
+- `docs/version_plans/3.6_MULTI_ROUTE_SAMPLE_SET.md`：3.6 多路线样例集
+- `docs/version_plans/3.6_KNOWN_DEVIATIONS.md`：3.6 已知偏差
+- `docs/version_plans/3.6_MULTIAGENT_REVIEW_LOG.md`：3.6 多 Agent 审查日志
+- `docs/version_plans/3.6_ACCEPTANCE_REPORT.md`：3.6 最终验收报告
+- `docs/version_plans/3.6_HANDOFF_FINAL_20260412.md`：3.6 最终交接稿
+- `docs/version_plans/3.6_SCREENSHOT_EVIDENCE_INDEX.md`：3.6 截图证据索引
+- `docs/version_plans/3.6_MULTIAGENT_EVIDENCE_SUPPLEMENT.md`：3.6 多 Agent 证据补充
 - `docs/ROLLBACK_PLAN.md`：回滚计划
 - `docs/RELEASE_SMOKE_CHECKLIST.md`：发布烟测清单
 - `AGENTS.md`：仓库级多 subagent 安全开发工作流
+- `docs/devlogs/README.md`：devlogs 目录说明（活跃运行数据）
+- `docs/reference/README.md`：长期参考资料索引
+- `docs/licenses/README.md`：第三方许可证索引
 
 ## 版本计划（docs/version_plans）
 - `docs/version_plans/README.md`：版本计划总索引
-- `docs/version_plans/elite_sync_3_2_版本开发计划书_2026_04_10.md`
-- `docs/version_plans/3.2_EXEC_PLAN.md`
-- `docs/version_plans/3.2_RISK_REVIEW.md`
-- `docs/version_plans/3.2_PROTECTED_SURFACES.md`
-- `docs/version_plans/3.2_BETA_REGRESSION_CHECKLIST.md`
-- `docs/version_plans/3.2_ACCEPTANCE_REPORT.md`
-- `docs/version_plans/3.2_HANDOFF_STAGE_20260410.md`
-- `docs/version_plans/3.2_HANDOFF_FINAL_20260410.md`
-- `docs/version_plans/3.2a_HANDOFF_FINAL_20260410.md`
-- `docs/version_plans/顾问Agent玄学算法修改规划_2026-03-28.md`
-- `docs/version_plans/算法2.3版本开发规划_2026-03-29.md`
-- `docs/version_plans/算法2.4版本开发规划_2026-03-30.md`
-- `docs/version_plans/算法2.5版本开发规划_2026-03-30.md`
-- `docs/version_plans/算法2.6版本开发规划_2026-03-31.md`
-- `docs/version_plans/算法2.6执行拆解清单_2026-03-31.md`
-- `docs/version_plans/算法2.6后端执行清单_2026-03-31.md`
-- `docs/version_plans/算法2.6前端UI执行清单_2026-03-31.md`
-- `docs/version_plans/算法2.6今晚玄学可视化执行方案_2026-04-01.md`
-- `docs/version_plans/算法2.6.1修改方案草案_2026-04-01.md`
-- `docs/version_plans/算法2.6.1执行清单_2026-04-01.md`
-- `docs/version_plans/算法2.6.2版本修改指令_2026-04-01.md`
-- `docs/version_plans/算法2.6.2开源库建议_2026-04-01.md`
-- `docs/version_plans/算法2.6.3开发规划与gemini监督方案.md`
-- `docs/version_plans/算法2.6.3执行清单_2026-04-03.md`
-- `docs/version_plans/算法2.6.3a开发规划与gemini监督方案.md`
-- `docs/version_plans/elite_sync_后续整体开发方案_2026_04_06.md`
-- `docs/version_plans/elite_sync_2_6_4_版本执行清单_与_codex_gemini分工prompt_2026_04_06.md`
-- `docs/version_plans/elite_sync_2_7_版本prd_执行清单_与多agent_prompt_2026_04_06.md`
-- `docs/version_plans/elite_sync_2_8_版本开发计划_信任安全与运营后台版_2026_04_06.md`
-- `docs/version_plans/elite_sync_2_9_正式开发计划书.md`
-- `docs/version_plans/2.6.4_EXEC_PLAN.md`
-- `docs/version_plans/2.6.4_RISK_REVIEW.md`
-- `docs/version_plans/2.6.4_ACCEPTANCE_REPORT.md`
-- `docs/version_plans/2.8_EXEC_PLAN.md`
-- `docs/version_plans/2.8_RISK_REVIEW.md`
-- `docs/version_plans/2.8_ACCEPTANCE_REPORT.md`
-- `docs/version_plans/2.9_EXEC_PLAN.md`
-- `docs/version_plans/2.9_RISK_REVIEW.md`
-- `docs/version_plans/2.9_PROTECTED_SURFACES.md`
-- `docs/version_plans/2.9_BETA_REGRESSION_CHECKLIST.md`
-- `docs/version_plans/2.9_ACCEPTANCE_REPORT.md`
-- `docs/version_plans/2.9_STAGE2_REAL_CHAIN_LOG.md`
-- `docs/version_plans/2.9_SCOPE_BOUNDARY.md`：2.9 范围边界
-- `docs/version_plans/2.9_BETA_SMOKE_CHECKLIST.md`：2.9 Beta 烟测清单
-- `docs/version_plans/2.9_BETA_RELEASE_CHECKLIST.md`：2.9 Beta 发布清单
-- `docs/version_plans/2.9_BETA_RELEASE_REHEARSAL.md`：2.9 Beta 发布演练
-- `docs/version_plans/2.9_MONITORING_AND_ALERTS.md`：2.9 观测与告警
-- `docs/version_plans/2.9_ENVIRONMENT_MATRIX.md`：2.9 环境矩阵
-- `docs/version_plans/2.9_OPERATIONS_SOP.md`：2.9 运营 SOP
-- `docs/version_plans/2.9_INCIDENT_RUNBOOK.md`：2.9 应急手册
-- `docs/version_plans/2.9_ROLLBACK_REHEARSAL.md`：2.9 回滚演练
-- `docs/version_plans/2.9_BETA_DAILY_REPORT_TEMPLATE.md`：2.9 Beta 日报模板
-- `docs/version_plans/2.9_POST_CHANGE_ACCEPTANCE.md`：2.9 修改后验收
-- `docs/version_plans/app算法资源与任务规划_修订版——2026-03-29.md`
+- `docs/version_plans/0.03.02a_UPDATE_BRIEF.md`
+- `docs/version_plans/elite_sync_整体开发计划书_更新版_2026_04_11.md`
+- `docs/version_plans/elite_sync_3_6_版本开发计划书_2026_04_12.md`
+- `docs/version_plans/3.6_EXEC_PLAN.md`
+- `docs/version_plans/3.6_RISK_REVIEW.md`
+- `docs/version_plans/3.6_SCOPE_MATRIX.md`
+- `docs/version_plans/3.6_ROUTE_CAPABILITY_MATRIX.md`
+- `docs/version_plans/3.6_ROUTE_PARITY_REPORT.md`
+- `docs/version_plans/3.6_MULTI_ROUTE_SAMPLE_SET.md`
+- `docs/version_plans/3.6_KNOWN_DEVIATIONS.md`
+- `docs/version_plans/3.6_MULTIAGENT_REVIEW_LOG.md`
+- `docs/version_plans/3.6_ACCEPTANCE_REPORT.md`
+- `docs/version_plans/3.6_HANDOFF_FINAL_20260412.md`
+- `docs/version_plans/3.6_SCREENSHOT_EVIDENCE_INDEX.md`
+- `docs/version_plans/3.6_MULTIAGENT_EVIDENCE_SUPPLEMENT.md`
+- `docs/version_plans/elite_sync_3_5_版本开发计划书_2026_04_11.md`
+- `docs/version_plans/3.5_EXEC_PLAN.md`
+- `docs/version_plans/3.5_RISK_REVIEW.md`
+- `docs/version_plans/3.5_PROTECTED_SURFACES.md`
+- `docs/version_plans/3.5_BETA_REGRESSION_CHECKLIST.md`
+- `docs/version_plans/3.5_DIFF_REPORT.md`
+- `docs/version_plans/3.5_SCOPE_MATRIX.md`
+- `docs/version_plans/3.5_ACCEPTANCE_REPORT.md`
+- `docs/version_plans/3.5_HANDOFF_FINAL_20260411.md`
+- `docs/version_plans/3.5_SCREENSHOT_EVIDENCE_INDEX.md`
+- `docs/version_plans/3.5_MULTIAGENT_REVIEW_LOG.md`
+- `docs/version_plans/elite_sync_3_4_版本开发计划书_2026_04_11.md`
+- `docs/version_plans/3.4_EXEC_PLAN.md`
+- `docs/version_plans/3.4_RISK_REVIEW.md`
+- `docs/version_plans/3.4_PROTECTED_SURFACES.md`
+- `docs/version_plans/3.4_BETA_REGRESSION_CHECKLIST.md`
+- `docs/version_plans/3.4_ACCEPTANCE_REPORT.md`
+- `docs/version_plans/3.4_HANDOFF_FINAL_20260411.md`
+- `docs/version_plans/3.4_SCREENSHOT_EVIDENCE_INDEX.md`
+- `docs/archive/legacy_2026-04/version_plans/README.md`：历史版本计划归档索引
 
 ## docs
 - `docs/EXEC_PLAN_TEMPLATE.md`：需求执行计划模板
@@ -79,49 +87,15 @@
 - `docs/PROTECTED_SURFACES.md`：高风险模块保护清单
 - `docs/REQUIREMENT_RISK_REVIEW.md`：需求评审与风险拆解规范
 - `docs/POST_CHANGE_ACCEPTANCE.md`：修改后验收评估规范
-- `reports/elite_sync_2_7_handoff_20260406.md`：2.7 结项交接说明
-- `docs/dependency_audit_astrology.md`：玄学依赖审计
-- `docs/dependency_audit_ziwei_2_5.md`：紫微依赖审计
-- `docs/licenses/astrology/kerykeion__LICENSE.txt`：Kerykeion AGPL-3.0 许可证快照
-- `docs/licenses/astrology/flutter_svg__LICENSE.txt`：Flutter SVG MIT 许可证快照
-- `docs/db_backup_strategy_2_6.md`：2.6 数据库备份策略
-- `docs/db_restore_playbook_2_6.md`：2.6 数据库恢复手册
-- `docs/profile_input_pipeline_2_6.md`：2.6 资料输入与玄学可视化整合验收材料
-- `reports/db_backup_run_log_2_6.md`：2.6 数据库备份运行日志
-- `reports/db_restore_drill_2_6.md`：2.6 数据库恢复演练记录
-- `docs/ziwei_release_checklist_2_5.md`：2.5 紫微发布清单
-- `docs/ziwei_rollback_playbook_2_5.md`：2.5 紫微回滚手册
-- `reports/personality_mbti_shutdown_evidence_2_5.md`：MBTI 关闭证据包
-- `reports/ziwei_backfill_report_2_5.md`：紫微回填报告
-- `reports/ziwei_shadow_compare_report_2_5.md`：紫微 shadow compare 报告
-- `reports/ziwei_explanation_snapshots_2_5.md`：紫微解释样例快照
-- `reports/ziwei_release_execution_log_2_5.md`：紫微发布执行记录
-- `reports/ziwei_rollback_drill_2_5.md`：紫微回滚 drill 记录
-- `reports/ziwei_backfill_report_2_5_rerun.md`：紫微回填实际结果报告
-- `reports/ziwei_shadow_compare_report_2_5_rerun.md`：紫微 shadow compare 实际结果报告
-- `reports/ziwei_rollback_drill_2_5_rerun.md`：紫微 rollback drill 实际执行记录
-- `reports/ziwei_backfill_report_2_5_final.md`：紫微回填最终修正版
-- `reports/ziwei_shadow_compare_report_2_5_final.md`：紫微 shadow compare 最终修正版
-- `docs/western_execution_decision_2_4.md`：2.4 西占执行决策
-- `docs/western_lite_contract.md`：western_lite 合同边界
-- `docs/explanation_release_gate_2_4.md`：Explanation 发布门禁
-- `docs/drill_evidence_index_2_4.md`：演练证据索引
-- `docs/compat_cleanup_plan_2_4.md`：兼容层收束计划
-- `docs/deprecation_register_2_4.md`：退役登记
-- `docs/dashboard_metric_spec_2_4.md`：看板指标规范
-- `docs/cleanup_todo_2_5.md`：2.5 待删清单
+- `docs/planning/README.md`：历史规划索引
+- `docs/reference/README.md`：长期参考资料索引
 - `docs/project_memory.md`：项目长期记忆
-- `docs/devlogs/ALGO22_PR_CHANGESET_2026-03-29.md`：PR分组与回滚清单
-- `docs/devlogs/CALIBRATION_CYCLE_LOG.md`：校准周期日志
-- `docs/devlogs/CALIBRATION_WEEKLY_REPORT_2026W13_AUTO.md`：自动周报
-- `docs/devlogs/CALIBRATION_WECHAT_BRIEF_2026W13.txt`：微信群简报
-- `docs/devlogs/ASTRO_SHADOW_COMPARE.md`：对拍结果
-- `docs/devlogs/PAIR_OUTCOME_METRICS.md`：行为漏斗汇总
+- `docs/archive/legacy_2026-04/reports/CALIBRATION_CYCLE_LOG.md`：校准周期日志（归档）
+- `docs/archive/legacy_2026-04/reports/CALIBRATION_WEEKLY_REPORT_2026W13_AUTO.md`：自动周报（归档）
+- `docs/archive/legacy_2026-04/reports/CALIBRATION_WECHAT_BRIEF_2026W13.txt`：微信群简报（归档）
+- `docs/archive/legacy_2026-04/reports/ASTRO_SHADOW_COMPARE.md`：对拍结果（归档）
+- `docs/archive/legacy_2026-04/reports/PAIR_OUTCOME_METRICS.md`：行为漏斗汇总（归档）
 - `docs/runbooks/MATCHING_ALGO_P1_RUNBOOK_20260324.md`：运行手册
 - 其余 `runbooks/`、`reference/` 保留为长期工程文档
-- `reports/elite_sync_2_7_handoff_20260406.md`：2.7 结项交接说明
-- `docs/version_plans/2.9_BETA_FINAL_SUMMARY.md`：2.9 Beta 最终摘要
-- `docs/version_plans/2.9_GEMINI_FINAL_ACCEPTANCE.md`：2.9 Gemini 最终验收报告
-## 清理说明
-- 已删除：过期日更/周更简报、被最终报告覆盖的阶段报告、重复 UI 改造日报、旧交接文档。
-- 未删除：回归日志、发布日志、运行手册、合规与许可证文档。
+- `docs/archive/legacy_2026-04/reports/README.md`：历史报告归档索引
+- `docs/devlogs/README.md`：devlogs 目录说明（活跃运行数据）

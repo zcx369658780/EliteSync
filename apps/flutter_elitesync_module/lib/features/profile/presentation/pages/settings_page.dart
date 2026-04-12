@@ -158,17 +158,17 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         padding: EdgeInsets.fromLTRB(0, t.spacing.sm, 0, t.spacing.xl),
         children: [
           const SectionReveal(
-            child: PageTitleRail(title: '设置中心', subtitle: '管理账号、隐私与通知偏好'),
+            child: PageTitleRail(title: '设置中心', subtitle: '管理账号、显示、隐私、性能与版本偏好'),
           ),
           SizedBox(height: t.spacing.sm),
           SectionReveal(
             delay: const Duration(milliseconds: 40),
             child: AppInfoSectionCard(
-              title: '设置说明',
-              subtitle: '当前页面支持本地偏好与服务端账号项协同管理',
+              title: '设置口径',
+              subtitle: '本地偏好、账号设置与版本信息分区展示',
               leadingIcon: Icons.tune_rounded,
               child: Text(
-                '建议先完成账号与安全设置，再调整通知、性能与内容策略。后续算法升级不影响本页配置结构。',
+                '夜间模式、盘面设置、性能模式与内容缓存属于本地偏好；隐私、密码与账号状态由服务端真值管理；版本中心只展示包体版本、服务状态和更新历史，不会改写任何业务真值。',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: t.textSecondary,
                   height: 1.45,
@@ -180,7 +180,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
           SectionReveal(
             delay: const Duration(milliseconds: 50),
             child: SettingsGroup(
-              title: '外观',
+              title: '显示与外观',
               children: [
                 SettingsItemTile(
                   title: '夜间模式',
@@ -189,6 +189,13 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   trailing: Switch.adaptive(value: isDark, onChanged: setDark),
                   onTap: () => setDark(!isDark),
                 ),
+                Divider(height: 1, color: t.overlay.withValues(alpha: 0.35)),
+                SettingsItemTile(
+                  title: '盘面设置',
+                  subtitle: '星盘元素、预设档位与恢复默认',
+                  icon: Icons.auto_awesome_outlined,
+                  onTap: () => context.push(AppRouteNames.astroChartSettings),
+                ),
               ],
             ),
           ),
@@ -196,7 +203,27 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
           SectionReveal(
             delay: const Duration(milliseconds: 60),
             child: SettingsGroup(
-              title: '账号与安全',
+              title: '性能偏好',
+              children: [
+                SettingsItemTile(
+                  title: '性能模式',
+                  subtitle: '降低动画与背景渲染，改善卡顿',
+                  icon: Icons.bolt_outlined,
+                  trailing: AppSwitch(
+                    value: _performanceLiteMode,
+                    onChanged: _togglePerformanceLiteMode,
+                  ),
+                  onTap: () =>
+                      _togglePerformanceLiteMode(!_performanceLiteMode),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: t.spacing.md),
+          SectionReveal(
+            delay: const Duration(milliseconds: 70),
+            child: SettingsGroup(
+              title: '资料与显示',
               children: [
                 SettingsItemTile(
                   title: '隐私设置',
@@ -204,7 +231,15 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   icon: Icons.privacy_tip_outlined,
                   onTap: () => context.push(AppRouteNames.privacySettings),
                 ),
-                Divider(height: 1, color: t.overlay.withValues(alpha: 0.35)),
+              ],
+            ),
+          ),
+          SizedBox(height: t.spacing.md),
+          SectionReveal(
+            delay: const Duration(milliseconds: 80),
+            child: SettingsGroup(
+              title: '账号与安全',
+              children: [
                 SettingsItemTile(
                   title: '修改密码',
                   subtitle: '通过后端接口更新登录密码',
@@ -224,7 +259,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             ),
           ),
           SectionReveal(
-            delay: const Duration(milliseconds: 110),
+            delay: const Duration(milliseconds: 130),
             child: _pushLoaded
                 ? SettingsGroup(
                     title: '消息与提醒',
@@ -243,17 +278,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                         height: 1,
                         color: t.overlay.withValues(alpha: 0.35),
                       ),
-                      SettingsItemTile(
-                        title: '性能模式',
-                        subtitle: '降低动画与背景渲染，改善卡顿',
-                        icon: Icons.bolt_outlined,
-                        trailing: AppSwitch(
-                          value: _performanceLiteMode,
-                          onChanged: _togglePerformanceLiteMode,
-                        ),
-                        onTap: () =>
-                            _togglePerformanceLiteMode(!_performanceLiteMode),
-                      ),
                     ],
                   )
                 : SettingsGroup(
@@ -267,10 +291,26 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     ],
                   ),
           ),
+          SizedBox(height: t.spacing.md),
+          SectionReveal(
+            delay: const Duration(milliseconds: 145),
+            child: AppInfoSectionCard(
+              title: 'Beta 运营准备',
+              subtitle: '版本检查、健康检查与回归门禁单独管理',
+              leadingIcon: Icons.verified_rounded,
+              child: Text(
+                '正式 Beta 前，建议先确认版本中心、服务健康、弱网首进与回滚检查均已通过。这里展示的版本状态与健康检查只属于可观测性，不会改写任何资料真值或星盘真值。',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: t.textSecondary,
+                  height: 1.45,
+                ),
+              ),
+            ),
+          ),
           if (ref.watch(appEnvProvider).isDev) ...[
             SizedBox(height: t.spacing.md),
             SectionReveal(
-              delay: const Duration(milliseconds: 150),
+              delay: const Duration(milliseconds: 160),
               child: SettingsGroup(
                 title: '开发者',
                 children: [
@@ -306,7 +346,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             ),
           ],
           SectionReveal(
-            delay: const Duration(milliseconds: 140),
+            delay: const Duration(milliseconds: 170),
             child: SettingsGroup(
               title: '内容缓存',
               children: [
@@ -334,13 +374,13 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             ),
           ),
           SectionReveal(
-            delay: const Duration(milliseconds: 170),
+            delay: const Duration(milliseconds: 200),
             child: SettingsGroup(
-              title: '关于',
+              title: '版本中心',
               children: [
                 SettingsItemTile(
-                  title: '版本与更新',
-                  subtitle: '查看版本号与更新历史',
+                  title: '版本中心',
+                  subtitle: '查看版本号、服务状态与更新历史',
                   icon: Icons.system_update_alt_rounded,
                   onTap: () => context.push(AppRouteNames.aboutUpdate),
                 ),

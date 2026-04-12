@@ -8,14 +8,15 @@ import 'package:flutter_elitesync_module/design_system/components/layout/app_sca
 import 'package:flutter_elitesync_module/design_system/components/layout/page_title_rail.dart';
 import 'package:flutter_elitesync_module/design_system/components/layout/section_reveal.dart';
 import 'package:flutter_elitesync_module/design_system/theme/app_theme_extensions.dart';
+import 'package:flutter_elitesync_module/features/profile/presentation/widgets/astro_profile_sections.dart';
 import 'package:flutter_elitesync_module/features/profile/presentation/providers/astro_chart_settings_provider.dart';
 import 'package:flutter_elitesync_module/features/profile/presentation/providers/astro_profile_provider.dart';
 import 'package:flutter_elitesync_module/features/profile/presentation/widgets/astro_chart_panels.dart';
-import 'package:flutter_elitesync_module/features/profile/presentation/widgets/astro_profile_sections.dart';
 import 'package:flutter_elitesync_module/features/profile/presentation/widgets/astro_profile_state.dart';
 import 'package:flutter_elitesync_module/features/profile/presentation/widgets/astro_profile_state_view.dart';
 import 'package:flutter_elitesync_module/features/profile/presentation/widgets/natal_chart_svg_builder.dart';
 import 'package:flutter_elitesync_module/features/profile/presentation/widgets/natal_chart_svg_card.dart';
+import 'package:flutter_elitesync_module/features/profile/presentation/widgets/astro_route_parity_report.dart';
 
 class AstroNatalChartPage extends ConsumerWidget {
   const AstroNatalChartPage({super.key});
@@ -24,7 +25,9 @@ class AstroNatalChartPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final t = context.appTokens;
     final async = ref.watch(astroNatalChartProvider);
+    final routePrefs = ref.watch(astroChartRouteProvider);
     final chartPrefs = ref.watch(astroChartSettingsProvider);
+    final workbenchPrefs = ref.watch(astroChartWorkbenchProvider);
     final sectionGap = chartPrefs.compactDensity ? t.spacing.xxs : t.spacing.sm;
 
     Future<void> reloadAstro() async {
@@ -54,7 +57,7 @@ class AstroNatalChartPage extends ConsumerWidget {
           padding: EdgeInsets.only(top: t.spacing.sm, bottom: t.spacing.xl),
           children: [
             const SectionReveal(
-              child: PageTitleRail(title: "西洋星盘", subtitle: "盘面主视觉"),
+              child: PageTitleRail(title: "西洋星盘", subtitle: "盘面主视觉（服务端真值驱动）"),
             ),
             SizedBox(
               height: chartPrefs.compactDensity ? t.spacing.xs : t.spacing.md,
@@ -119,6 +122,7 @@ class AstroNatalChartPage extends ConsumerWidget {
                 final svg = buildNatalChartSvgFromProfile(
                   profile,
                   prefs: chartPrefs,
+                  workbenchPrefs: workbenchPrefs,
                 );
                 final planets = _mapList(profile['planets_data']);
                 final houses = _mapList(profile['houses_data']);
@@ -126,17 +130,171 @@ class AstroNatalChartPage extends ConsumerWidget {
 
                 return Column(
                   children: [
+                    AppInfoSectionCard(
+                      title: '路线模板',
+                      subtitle: '当前路线只表示展示与解释上下文，不改写服务端真值',
+                      leadingIcon: Icons.alt_route_rounded,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '当前本命盘会按「${_routeModeLabel(routePrefs.routeMode)}」路由上下文向服务端请求，并用本地工作台参数绘制。切换路线会同步调整推荐工作台参数，你仍然可以回到设置页继续微调。',
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(
+                                  color: t.textSecondary,
+                                  height: 1.45,
+                                ),
+                          ),
+                          SizedBox(height: t.spacing.sm),
+                          Wrap(
+                            spacing: t.spacing.xs,
+                            runSpacing: t.spacing.xs,
+                            children: [
+                              AstroPill(
+                                label:
+                                    '当前路线：${_routeModeLabel(routePrefs.routeMode)}',
+                              ),
+                              AstroPill(
+                                label:
+                                    '上下文：${_routeModeDescription(routePrefs.routeMode)}',
+                              ),
+                              AstroPill(
+                                label: '工作台：${_workbenchLabel(workbenchPrefs)}',
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: t.spacing.sm),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: FilledButton.icon(
+                              onPressed: () => context.push(
+                                AppRouteNames.astroChartSettings,
+                              ),
+                              icon: const Icon(Icons.tune_rounded),
+                              label: const Text('切换路线 / 工作台'),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: sectionGap),
+                    AstroRouteParityReportCard(
+                      currentRouteMode: routePrefs.routeMode,
+                      currentWorkbench: workbenchPrefs,
+                      compact: true,
+                      onOpenDetails: () =>
+                          context.push(AppRouteNames.astroChartSettings),
+                    ),
+                    SizedBox(height: sectionGap),
                     NatalChartSvgCard(svg: svg),
                     SizedBox(height: sectionGap),
                     AppInfoSectionCard(
+                      title: '盘面阅读提示',
+                      subtitle: '先看路线，再看外圈、宫位、行星与相位，最后看中心信息',
+                      leadingIcon: Icons.map_outlined,
+                      child: Wrap(
+                        spacing: t.spacing.xs,
+                        runSpacing: t.spacing.xs,
+                        children: [
+                          AstroPill(
+                            label:
+                                '路线：${_routeModeLabel(routePrefs.routeMode)}',
+                          ),
+                          AstroPill(
+                            label: chartPrefs.showChartSignLabels
+                                ? '外圈星座已显示'
+                                : '外圈星座已隐藏',
+                          ),
+                          AstroPill(
+                            label: chartPrefs.showChartHouseLines
+                                ? '宫位分割已显示'
+                                : '宫位分割已隐藏',
+                          ),
+                          AstroPill(
+                            label: chartPrefs.showChartPlanetLabels
+                                ? '行星标签已显示'
+                                : '行星标签已隐藏',
+                          ),
+                          AstroPill(
+                            label: chartPrefs.showChartAspectLines
+                                ? '相位连线已显示'
+                                : '相位连线已隐藏',
+                          ),
+                          AstroPill(
+                            label: chartPrefs.showChartCenterTitle
+                                ? '中心标题已显示'
+                                : '中心标题已隐藏',
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: sectionGap),
+                    AppInfoSectionCard(
+                      title: '参数工作台',
+                      subtitle: '星盘页只展示当前工作台状态，交互集中在设置页',
+                      leadingIcon: Icons.tune_rounded,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '黄道制与宫位制目前先作为工作台口径保留；相位密度、容许度和点位范围会直接影响本地盘面的可见元素。所有参数仍然不改写服务端 canonical 真值。',
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(
+                                  color: t.textSecondary,
+                                  height: 1.45,
+                                ),
+                          ),
+                          SizedBox(height: t.spacing.sm),
+                          Wrap(
+                            spacing: t.spacing.xs,
+                            runSpacing: t.spacing.xs,
+                            children: [
+                              AstroPill(
+                                label:
+                                    '黄道：${_zodiacModeLabel(workbenchPrefs.zodiacMode)}',
+                              ),
+                              AstroPill(
+                                label:
+                                    '宫位：${_houseSystemLabel(workbenchPrefs.houseSystem)}',
+                              ),
+                              AstroPill(
+                                label:
+                                    '相位：${_aspectModeLabel(workbenchPrefs.aspectMode)}',
+                              ),
+                              AstroPill(
+                                label:
+                                    '容许度：${_orbPresetLabel(workbenchPrefs.orbPreset)}',
+                              ),
+                              AstroPill(
+                                label:
+                                    '点位：${_pointModeLabel(workbenchPrefs.pointMode)}',
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: t.spacing.sm),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: FilledButton.icon(
+                              onPressed: () => context.push(
+                                AppRouteNames.astroChartSettings,
+                              ),
+                              icon: const Icon(Icons.tune_rounded),
+                              label: const Text('打开工作台'),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: sectionGap),
+                    AppInfoSectionCard(
                       title: '本地绘制',
-                      subtitle: '星盘已改为 APP 端本地生成',
+                      subtitle: '星盘已改为 APP 端本地生成，读取服务端 chart_data 后绘制',
                       leadingIcon: Icons.edit_location_alt_outlined,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '当前页面直接使用服务端返回的 chart_data 在本机绘制星盘，不再依赖后端输出 SVG。你可以去编辑资料页修改出生时间、出生地点或经纬度，保存后会重新计算并刷新盘面。',
+                            '当前页面直接使用服务端返回的 chart_data 在本机绘制星盘，不再依赖后端输出 SVG。出生时间、出生地与经纬度仍然由服务端真值决定。你可以去编辑资料页修改出生时间、出生地点或经纬度，保存后服务端会先重算真值，再由本页重新渲染盘面。',
                             style: Theme.of(context).textTheme.bodySmall
                                 ?.copyWith(
                                   color: t.textSecondary,
@@ -396,6 +554,50 @@ class AstroNatalChartPage extends ConsumerWidget {
     );
   }
 }
+
+String _zodiacModeLabel(AstroZodiacMode mode) => switch (mode) {
+  AstroZodiacMode.tropical => '回归黄道',
+  AstroZodiacMode.sidereal => '恒星黄道',
+};
+
+String _houseSystemLabel(AstroHouseSystem system) => switch (system) {
+  AstroHouseSystem.whole => 'Whole',
+  AstroHouseSystem.placidus => 'Placidus',
+  AstroHouseSystem.alcabitius => 'Alcabitius',
+};
+
+String _aspectModeLabel(AstroAspectMode mode) => switch (mode) {
+  AstroAspectMode.major => '主相位',
+  AstroAspectMode.standard => '标准',
+  AstroAspectMode.extended => '扩展',
+};
+
+String _orbPresetLabel(AstroOrbPreset preset) => switch (preset) {
+  AstroOrbPreset.tight => '紧凑',
+  AstroOrbPreset.standard => '标准',
+  AstroOrbPreset.wide => '宽松',
+};
+
+String _pointModeLabel(AstroPointMode mode) => switch (mode) {
+  AstroPointMode.core => '核心',
+  AstroPointMode.extended => '扩展',
+  AstroPointMode.full => '全量',
+};
+
+String _routeModeLabel(AstroChartRouteMode mode) => switch (mode) {
+  AstroChartRouteMode.standard => '标准路线',
+  AstroChartRouteMode.classical => '古典路线',
+  AstroChartRouteMode.modern => '现代路线',
+};
+
+String _routeModeDescription(AstroChartRouteMode mode) => switch (mode) {
+  AstroChartRouteMode.standard => 'tropical / whole / standard',
+  AstroChartRouteMode.classical => 'sidereal / whole / tight',
+  AstroChartRouteMode.modern => 'tropical / placidus / wide',
+};
+
+String _workbenchLabel(AstroChartWorkbenchPrefs prefs) =>
+    '黄道=${_zodiacModeLabel(prefs.zodiacMode)} / 宫位=${_houseSystemLabel(prefs.houseSystem)} / 相位=${_aspectModeLabel(prefs.aspectMode)} / 容许度=${_orbPresetLabel(prefs.orbPreset)} / 点位=${_pointModeLabel(prefs.pointMode)}';
 
 List<Map<String, dynamic>> _mapList(dynamic value) {
   if (value is! List) return const [];

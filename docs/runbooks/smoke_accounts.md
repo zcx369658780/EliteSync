@@ -55,5 +55,5 @@ cd D:\EliteSync
 
 ### 5. 账号口径变更时
 - 先更新 `docs/project_memory.md`
-- 再更新 `docs/version_plans/README.md`
+- 再更新 `docs/DOC_INDEX_CURRENT.md`
 - 最后更新本文件和总交接文档

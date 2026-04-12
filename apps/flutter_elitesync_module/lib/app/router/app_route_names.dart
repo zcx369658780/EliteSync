@@ -40,7 +40,10 @@ abstract class AppRouteNames {
   static const astroOverview = '/profile/astro/overview';
   static const astroBazi = '/profile/astro/bazi';
   static const astroNatalChart = '/profile/astro/natal';
+  static const astroAdvancedPreview = '/profile/astro/advanced';
+  static const astroAdvancedPreviewDemo = '/profile/astro/advanced-demo';
   static const astroZiwei = '/profile/astro/ziwei';
   static const astroChartSettings = '/profile/astro/chart-settings';
   static const astroProfile = '/profile/astro';
 }
+

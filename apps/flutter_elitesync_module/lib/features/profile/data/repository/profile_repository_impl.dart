@@ -19,7 +19,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
   Future<ProfileSummaryEntity> getSummary() async => mapper.toSummary(await remote.getSummary());
 
   @override
-  Future<void> update(ProfileDetailEntity detail) {
+  Future<Map<String, dynamic>> update(ProfileDetailEntity detail) {
     return remote.update(
       UpdateProfileRequestDto(
         nickname: detail.nickname,

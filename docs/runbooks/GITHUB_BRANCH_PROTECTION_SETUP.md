@@ -37,8 +37,8 @@ Enable branch protection on `main`, then mark these checks as required:
 2. Full gate is still required before actual release:
    - `powershell -ExecutionPolicy Bypass -File .\scripts\release_gate_alpha.ps1 -Phone 13800000022 -Password "******"`
 3. Gate logs are uploaded as workflow artifacts and appended locally to:
-   - `docs/devlogs/RELEASE_GATE_LOG.md`
-   - `docs/devlogs/REGRESSION_BASELINE_LOG.md`
+   - `docs/archive/legacy_2026-04/reports/RELEASE_GATE_LOG.md`
+   - `docs/archive/legacy_2026-04/reports/REGRESSION_BASELINE_LOG.md`
 
 ## Manual Full Regression Workflow
 Use workflow `regression-full-manual` when you need full baseline validation in GitHub Actions.

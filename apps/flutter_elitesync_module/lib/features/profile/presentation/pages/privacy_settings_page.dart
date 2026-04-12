@@ -16,7 +16,8 @@ class PrivacySettingsPage extends ConsumerStatefulWidget {
   const PrivacySettingsPage({super.key});
 
   @override
-  ConsumerState<PrivacySettingsPage> createState() => _PrivacySettingsPageState();
+  ConsumerState<PrivacySettingsPage> createState() =>
+      _PrivacySettingsPageState();
 }
 
 class _PrivacySettingsPageState extends ConsumerState<PrivacySettingsPage> {
@@ -69,7 +70,7 @@ class _PrivacySettingsPageState extends ConsumerState<PrivacySettingsPage> {
           const SectionReveal(
             child: PageTitleRail(
               title: '隐私与可见性',
-              subtitle: '你可以随时调整对外展示范围',
+              subtitle: '你可以随时调整资料摘要、城市展示与公开范围',
             ),
           ),
           SizedBox(height: t.spacing.sm),
@@ -80,11 +81,27 @@ class _PrivacySettingsPageState extends ConsumerState<PrivacySettingsPage> {
               subtitle: '默认优先保护敏感画像信息',
               leadingIcon: Icons.privacy_tip_outlined,
               child: Text(
-                '出生地点、八字、星盘等敏感信息默认不对外公开。你可在本页控制资料摘要可见范围与城市展示。',
+                '出生地点、八字、星盘等敏感信息默认不对外公开。本页只调整资料摘要与城市展示等可见性偏好，不会改写服务端的画像真值；你随时可以返回这里重新调整。',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: t.textSecondary,
-                      height: 1.45,
-                    ),
+                  color: t.textSecondary,
+                  height: 1.45,
+                ),
+              ),
+            ),
+          ),
+          SizedBox(height: t.spacing.md),
+          SectionReveal(
+            delay: const Duration(milliseconds: 55),
+            child: AppInfoSectionCard(
+              title: '可见性边界',
+              subtitle: '开关只影响前台展示，不影响后台计算',
+              leadingIcon: Icons.visibility_outlined,
+              child: Text(
+                '公开个人资料只会影响资料摘要是否对外展示；显示城市只会影响同城相关展示。若你修改了出生时间、出生地点或经纬度，请到资料页保存，服务端会重新计算星盘与画像结果。',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: t.textSecondary,
+                  height: 1.45,
+                ),
               ),
             ),
           ),
@@ -93,31 +110,31 @@ class _PrivacySettingsPageState extends ConsumerState<PrivacySettingsPage> {
             delay: const Duration(milliseconds: 70),
             child: _loaded
                 ? SettingsGroup(
-              title: '个人资料',
-              children: [
-                SettingsItemTile(
-                  title: '公开个人资料',
-                  subtitle: '关闭后仅匹配对象可见你的资料摘要',
-                  icon: Icons.visibility_outlined,
-                  trailing: AppSwitch(
-                    value: profileVisible,
-                    onChanged: _setProfileVisible,
-                  ),
-                  onTap: () => _setProfileVisible(!profileVisible),
-                ),
-                const Divider(height: 1),
-                SettingsItemTile(
-                  title: '显示城市',
-                  subtitle: '用于同城匹配和线下活动组织',
-                  icon: Icons.location_city_outlined,
-                  trailing: AppSwitch(
-                    value: showCity,
-                    onChanged: _setShowCity,
-                  ),
-                  onTap: () => _setShowCity(!showCity),
-                ),
-              ],
-            )
+                    title: '个人资料',
+                    children: [
+                      SettingsItemTile(
+                        title: '公开个人资料',
+                        subtitle: '关闭后仅匹配对象可见你的资料摘要',
+                        icon: Icons.visibility_outlined,
+                        trailing: AppSwitch(
+                          value: profileVisible,
+                          onChanged: _setProfileVisible,
+                        ),
+                        onTap: () => _setProfileVisible(!profileVisible),
+                      ),
+                      const Divider(height: 1),
+                      SettingsItemTile(
+                        title: '显示城市',
+                        subtitle: '用于同城匹配和线下活动组织',
+                        icon: Icons.location_city_outlined,
+                        trailing: AppSwitch(
+                          value: showCity,
+                          onChanged: _setShowCity,
+                        ),
+                        onTap: () => _setShowCity(!showCity),
+                      ),
+                    ],
+                  )
                 : const SettingsGroup(
                     title: '个人资料',
                     children: [
