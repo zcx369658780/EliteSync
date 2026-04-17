@@ -102,6 +102,11 @@ void main() {
   testWidgets('advanced preview page renders detail sections', (tester) async {
     final bundle = AstroAdvancedPreviewBundle(
       routeMode: AstroChartRouteMode.modern,
+      timing: buildAstroTimingFrameworkBundle(
+        const {'name': '华严魂', 'birthday': '1994-04-17', 'birth_time': '09:30'},
+        AstroChartRouteMode.modern,
+        referenceNow: DateTime(2026, 4, 17, 10, 30),
+      ),
       requests: const AstroAdvancedPreviewRequests(
         pair: {'route_mode': 'modern'},
         comparison: {'route_mode': 'modern'},
@@ -180,8 +185,10 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('高级解读'), findsWidgets);
+    expect(find.text('高级时法'), findsWidgets);
     expect(find.text('高级能力口径'), findsOneWidget);
+    expect(find.text('高级时法框架'), findsOneWidget);
+    expect(find.text('细粒度解释层'), findsOneWidget);
     expect(find.text('路线能力复核'), findsOneWidget);
     expect(find.text('高级样例矩阵'), findsOneWidget);
     expect(find.text('预览日志'), findsOneWidget);

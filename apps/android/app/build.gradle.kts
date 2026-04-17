@@ -83,8 +83,8 @@ android {
         targetSdk = 34
         // Versioning rule: major.minor.patch[alpha suffix]
         // versionCode uses an expanded numeric form to keep suffix releases ordered.
-        versionCode = 30700
-        versionName = "0.03.07"
+        versionCode = 30900
+        versionName = "0.03.09"
         ndk {
             // Google Play 16KB page-size compliance: avoid x86_64 native libs from third-party SDKs.
             // Keep ARM ABIs for real-device testing and release publishing.
@@ -185,6 +185,10 @@ configurations.all {
         force("androidx.browser:browser:1.8.0")
     }
 }
+
+
+
+
 
 
 

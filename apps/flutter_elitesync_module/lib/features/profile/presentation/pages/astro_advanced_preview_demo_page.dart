@@ -11,6 +11,8 @@ import 'package:flutter_elitesync_module/design_system/theme/app_theme_extension
 import 'package:flutter_elitesync_module/features/profile/presentation/providers/astro_advanced_profile_provider.dart';
 import 'package:flutter_elitesync_module/features/profile/presentation/providers/astro_chart_settings_provider.dart';
 import 'package:flutter_elitesync_module/features/profile/presentation/widgets/astro_advanced_sample_set.dart';
+import 'package:flutter_elitesync_module/features/profile/presentation/widgets/astro_advanced_explanation_layer_card.dart';
+import 'package:flutter_elitesync_module/features/profile/presentation/widgets/astro_timing_framework_card.dart';
 import 'package:flutter_elitesync_module/features/profile/presentation/widgets/astro_route_parity_report.dart';
 
 class AstroAdvancedPreviewDemoPage extends StatelessWidget {
@@ -20,16 +22,18 @@ class AstroAdvancedPreviewDemoPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = context.appTokens;
     final bundle = _buildDemoBundle();
-    final workbenchPrefs = AstroChartWorkbenchPrefs.forRouteMode(bundle.routeMode);
+    final workbenchPrefs = AstroChartWorkbenchPrefs.forRouteMode(
+      bundle.routeMode,
+    );
 
     return AppScaffold(
-      appBar: const AppTopBar(title: '高级解读演示', mode: AppTopBarMode.backTitle),
+      appBar: const AppTopBar(title: '高级时法演示', mode: AppTopBarMode.backTitle),
       body: ListView(
         padding: EdgeInsets.only(top: t.spacing.sm, bottom: t.spacing.xl),
         children: [
           const SectionReveal(
             child: PageTitleRail(
-              title: '高级解读演示',
+              title: '高级时法演示',
               subtitle: '离线样例矩阵 / 路线对照 / 归档截图',
             ),
           ),
@@ -39,7 +43,7 @@ class AstroAdvancedPreviewDemoPage extends StatelessWidget {
             subtitle: 'stage 4 / stage 5 归档用静态页面',
             leadingIcon: Icons.rocket_launch_rounded,
             child: Text(
-              '这一页不依赖服务端高级接口，专门用于 stage 4 / stage 5 的视觉验收、截图归档和 Gemini 复核。它保留 derived-only / display-only / advanced-context 口径，重点展示路线差异、样例矩阵和已知偏差。',
+              '这一页不依赖服务端高级接口，专门用于 stage 4 / stage 5 的视觉验收、截图归档和 Gemini 复核。它保留 derived-only / display-only / advanced-context 口径，重点展示路线差异、时法框架、样例矩阵和已知偏差。',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: t.textSecondary,
                 height: 1.45,
@@ -47,12 +51,16 @@ class AstroAdvancedPreviewDemoPage extends StatelessWidget {
             ),
           ),
           SizedBox(height: t.spacing.sm),
+          AstroTimingFrameworkCard(bundle: bundle.timing),
+          SizedBox(height: t.spacing.sm),
+          AstroAdvancedExplanationLayerCard(bundle: bundle),
+          SizedBox(height: t.spacing.sm),
           AstroRouteParityReportCard(
             currentRouteMode: bundle.routeMode,
             currentWorkbench: workbenchPrefs,
             compact: false,
             title: '路线能力复核',
-            subtitle: '标准 / 古典 / 现代路线与高级能力同框复核',
+            subtitle: '标准 / 古典 / 现代路线与高级时法同框复核',
             onOpenDetails: () => context.push(AppRouteNames.astroChartSettings),
           ),
           SizedBox(height: t.spacing.sm),
@@ -61,7 +69,7 @@ class AstroAdvancedPreviewDemoPage extends StatelessWidget {
             subtitle: '只展示 derived-only / display-only / advanced-context',
             leadingIcon: Icons.auto_awesome_rounded,
             child: Text(
-              '当前演示页面把合盘、对比盘、行运、返照分开陈列，作为 3.7 stage 4 / stage 5 的正式截图入口。等正式高级页面恢复在线预览后，这个演示页仍然可作为回归基线保留。',
+              '当前演示页面把合盘、对比盘、行运、返照与时法框架分开陈列，作为 3.9 的正式截图入口。等正式高级页面恢复在线预览后，这个演示页仍然可作为回归基线保留。',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: t.textSecondary,
                 height: 1.45,
@@ -102,6 +110,11 @@ AstroAdvancedPreviewBundle _buildDemoBundle() {
   return AstroAdvancedPreviewBundle(
     routeMode: routeMode,
     offlineFallback: true,
+    timing: buildAstroTimingFrameworkBundle(
+      const {'name': subject, 'birthday': '1994-04-17', 'birth_time': '09:30'},
+      routeMode,
+      referenceNow: DateTime(2026, 4, 17, 10, 30),
+    ),
     requests: AstroAdvancedPreviewRequests(
       pair: const {
         'first': {'name': subject},
@@ -194,4 +207,3 @@ AstroAdvancedPreviewBundle _buildDemoBundle() {
     ),
   );
 }
-

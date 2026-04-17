@@ -97,12 +97,78 @@ class AstroAdvancedPreviewItem {
     if ((relationshipScoreDescription ?? '').trim().isNotEmpty)
       '- 关系评分：$relationshipScoreDescription',
   ];
+
+  List<AstroExplainabilityEntry> buildExplainabilityEntries() => [
+    AstroExplainabilityEntry(
+      layerLabel: '相位级',
+      title: '$title · 相位条目',
+      summary: '$aspectCount 相位 · $modeLabel · $chartKind',
+      detail:
+          '当前只展示条目化说明与权重表达，不把结果冒充为真值层；这层用于 3.9 的 first-pass explanation scaffold。',
+      badges: ['相位 $aspectCount', '图种 $chartKind', '路线 ${routeLabel}'],
+    ),
+    AstroExplainabilityEntry(
+      layerLabel: '点位级',
+      title: '$title · 点位条目',
+      summary: '主档 $primaryPointCount 点位 / 对照 $secondaryPointCount 点位',
+      detail: '点位条目只负责把主要对象与可见范围拆成可读单元，后续小行星、虚点和扩展点位可以继续挂接到这个槽位。',
+      badges: [
+        '主档 $primaryPointCount',
+        '对照 $secondaryPointCount',
+        '模式 $modeLabel',
+      ],
+    ),
+    AstroExplainabilityEntry(
+      layerLabel: '高级时法关联层',
+      title: '$title · 关联条目',
+      summary: _buildExplainabilityAssociationSummary(
+        mode: advancedMode,
+        returnType: returnType,
+        returnYear: returnYear,
+        pairMode: pairMode,
+      ),
+      detail:
+          '这一层只做 advanced-context 关联，不回写 natal 主结构；用来说明当前解释与时间维度、关系维度之间的连接方式。',
+      badges: [
+        '关联 ${modeLabel}',
+        '路线 ${routeLabel}',
+        if ((pairMode ?? '').isNotEmpty) 'pair_mode $pairMode',
+        if ((returnType ?? '').isNotEmpty) 'return $returnType',
+        if (returnYear != null) 'return_year $returnYear',
+      ],
+    ),
+  ];
+}
+
+class AstroExplainabilityEntry {
+  const AstroExplainabilityEntry({
+    required this.layerLabel,
+    required this.title,
+    required this.summary,
+    required this.detail,
+    required this.badges,
+  });
+
+  final String layerLabel;
+  final String title;
+  final String summary;
+  final String detail;
+  final List<String> badges;
+
+  List<String> toMarkdownLines() => [
+    '- 层级：$layerLabel',
+    '- 标题：$title',
+    '- 概要：$summary',
+    '- 说明：$detail',
+    if (badges.isNotEmpty) '- 标签：${badges.join('，')}',
+  ];
 }
 
 class AstroAdvancedPreviewBundle {
   const AstroAdvancedPreviewBundle({
     required this.routeMode,
     required this.requests,
+    required this.timing,
     required this.pair,
     required this.comparison,
     required this.transit,
@@ -112,22 +178,28 @@ class AstroAdvancedPreviewBundle {
 
   final AstroChartRouteMode routeMode;
   final AstroAdvancedPreviewRequests requests;
+  final AstroTimingFrameworkBundle timing;
   final AstroAdvancedPreviewItem pair;
   final AstroAdvancedPreviewItem comparison;
   final AstroAdvancedPreviewItem transit;
   final AstroAdvancedPreviewItem returnChart;
   final bool offlineFallback;
 
-  List<AstroAdvancedPreviewItem> get items =>
-      [pair, comparison, transit, returnChart];
+  List<AstroAdvancedPreviewItem> get items => [
+    pair,
+    comparison,
+    transit,
+    returnChart,
+  ];
 
   List<String> toMarkdownLines() => [
-    '# 3.7 高级能力预览',
+    '# 3.9 高级时法预览',
     '- 报告性质：derived-only / display-only / advanced-context',
     '- 当前路线：${_routeModeLabel(routeMode)}',
-    if (offlineFallback)
-      '- 说明：当前使用离线样例预览，服务端高级接口暂不可用。',
+    if (offlineFallback) '- 说明：当前使用离线样例预览，服务端高级接口暂不可用。',
     '- 说明：预览数据使用当前画像与 scaffold 对照主体生成，不回写 canonical truth。',
+    '',
+    ...timing.toMarkdownLines(),
     '',
     ...pair.toMarkdownLines(),
     '',
@@ -136,6 +208,174 @@ class AstroAdvancedPreviewBundle {
     ...transit.toMarkdownLines(),
     '',
     ...returnChart.toMarkdownLines(),
+    '',
+    '# 3.9 细粒度解释层',
+    ...items.expand(
+      (item) => [
+        ...item.buildExplainabilityEntries().expand(
+          (entry) => [...entry.toMarkdownLines()],
+        ),
+        '',
+      ],
+    ),
+    '# 3.9 高级时法关联层',
+    '- 时法框架：${timing.frameworkTitle}',
+    '- 时法摘要：${timing.frameworkSummary}',
+    '- 正式能力：${timing.formalSignal.title} / ${timing.formalSignal.summary}',
+    '- 占位能力：${timing.placeholderSignal.title} / ${timing.placeholderSignal.summary}',
+  ];
+}
+
+enum AstroTimingMode { annualProfectionLike, firdariaLike, placeholder }
+
+class AstroTimingSignal {
+  const AstroTimingSignal({
+    required this.mode,
+    required this.title,
+    required this.summary,
+    required this.scopeLabel,
+    required this.windowLabel,
+    required this.sourceLayer,
+    required this.basisLabel,
+    required this.tags,
+    this.isFormal = false,
+    this.degraded = false,
+  });
+
+  final AstroTimingMode mode;
+  final String title;
+  final String summary;
+  final String scopeLabel;
+  final String windowLabel;
+  final String sourceLayer;
+  final String basisLabel;
+  final List<String> tags;
+  final bool isFormal;
+  final bool degraded;
+
+  String get modeLabel => switch (mode) {
+    AstroTimingMode.annualProfectionLike => 'annual/profection-like',
+    AstroTimingMode.firdariaLike => 'firdaria-like',
+    AstroTimingMode.placeholder => 'placeholder',
+  };
+
+  String get layerLabel => degraded ? 'display-only' : sourceLayer;
+
+  List<String> get badges => [
+    if (isFormal) '正式能力' else '占位能力',
+    modeLabel,
+    '范围：$scopeLabel',
+    '窗口：$windowLabel',
+    '层：$layerLabel',
+  ];
+
+  AstroTimingSignal copyWith({
+    String? summary,
+    String? scopeLabel,
+    String? windowLabel,
+    String? sourceLayer,
+    String? basisLabel,
+    List<String>? tags,
+    bool? isFormal,
+    bool? degraded,
+  }) {
+    return AstroTimingSignal(
+      mode: mode,
+      title: title,
+      summary: summary ?? this.summary,
+      scopeLabel: scopeLabel ?? this.scopeLabel,
+      windowLabel: windowLabel ?? this.windowLabel,
+      sourceLayer: sourceLayer ?? this.sourceLayer,
+      basisLabel: basisLabel ?? this.basisLabel,
+      tags: tags ?? this.tags,
+      isFormal: isFormal ?? this.isFormal,
+      degraded: degraded ?? this.degraded,
+    );
+  }
+
+  List<String> toMarkdownLines() => [
+    '- 时法：$title',
+    '- 模式：$modeLabel',
+    '- 范围：$scopeLabel',
+    '- 窗口：$windowLabel',
+    '- 层：$layerLabel',
+    '- 基础：$basisLabel',
+    '- 说明：$summary',
+    if (tags.isNotEmpty) '- 标签：${tags.join('，')}',
+  ];
+}
+
+class AstroTimingSampleCase {
+  const AstroTimingSampleCase({
+    required this.title,
+    required this.subtitle,
+    required this.signals,
+    required this.notes,
+    this.isEdgeCase = false,
+  });
+
+  final String title;
+  final String subtitle;
+  final List<AstroTimingSignal> signals;
+  final List<String> notes;
+  final bool isEdgeCase;
+
+  List<String> toMarkdownLines() => [
+    '- 用例：$title',
+    '- 场景：$subtitle',
+    '- 类型：${isEdgeCase ? 'edge' : 'baseline/dense'}',
+    ...signals.expand((signal) => signal.toMarkdownLines()),
+    ...notes.map((item) => '- 备注：$item'),
+  ];
+}
+
+class AstroTimingFrameworkBundle {
+  const AstroTimingFrameworkBundle({
+    required this.routeMode,
+    required this.generatedAt,
+    required this.frameworkTitle,
+    required this.frameworkSummary,
+    required this.formalSignal,
+    required this.placeholderSignal,
+    required this.sampleCases,
+    required this.knownDeviations,
+    this.offlineFallback = false,
+    this.hasBirthData = true,
+  });
+
+  final AstroChartRouteMode routeMode;
+  final String generatedAt;
+  final String frameworkTitle;
+  final String frameworkSummary;
+  final AstroTimingSignal formalSignal;
+  final AstroTimingSignal placeholderSignal;
+  final List<AstroTimingSampleCase> sampleCases;
+  final List<String> knownDeviations;
+  final bool offlineFallback;
+  final bool hasBirthData;
+
+  List<AstroTimingSignal> get signals => [formalSignal, placeholderSignal];
+
+  List<String> toMarkdownLines() => [
+    '# 3.9 高级时法框架',
+    '- 报告性质：derived-only / display-only / advanced-context',
+    '- 当前路线：${_routeModeLabel(routeMode)}',
+    '- 生成时间：$generatedAt',
+    '- 框架标题：$frameworkTitle',
+    '- 框架摘要：$frameworkSummary',
+    '- 正式能力：${formalSignal.modeLabel}',
+    '- 占位能力：${placeholderSignal.modeLabel}',
+    '- 出生数据：${hasBirthData ? '已提供最小锚点' : '仅保留容器占位'}',
+    if (offlineFallback) '- 说明：当前使用离线样例与显示层占位，等待正式接口扩展。',
+    '',
+    ...signals.expand((signal) => signal.toMarkdownLines()),
+    '',
+    '# 3.9 时法样例矩阵',
+    ...sampleCases.expand(
+      (sampleCase) => [...sampleCase.toMarkdownLines(), ''],
+    ),
+    '# 3.9 已知偏差',
+    ...knownDeviations.map((item) => '- $item'),
   ];
 }
 
@@ -147,6 +387,7 @@ final astroAdvancedPreviewProvider =
         if (summary == null) return null;
 
         final requests = buildAstroAdvancedPreviewRequests(summary, routeMode);
+        final timing = buildAstroTimingFrameworkBundle(summary, routeMode);
 
         final pairPayload = await _postAdvancedProfile(
           ref,
@@ -172,10 +413,8 @@ final astroAdvancedPreviewProvider =
         return AstroAdvancedPreviewBundle(
           routeMode: routeMode,
           requests: requests,
-          pair: _buildAdvancedPreviewItem(
-            title: '合盘预览',
-            payload: pairPayload,
-          ),
+          timing: timing,
+          pair: _buildAdvancedPreviewItem(title: '合盘预览', payload: pairPayload),
           comparison: _buildAdvancedPreviewItem(
             title: '对比盘预览',
             payload: comparisonPayload,
@@ -196,10 +435,16 @@ final astroAdvancedPreviewProvider =
           fallbackProfile,
           routeMode,
         );
+        final fallbackTiming = buildAstroTimingFrameworkBundle(
+          fallbackProfile,
+          routeMode,
+          referenceNow: DateTime.now(),
+        );
         return _buildOfflineAdvancedPreviewBundle(
           fallbackProfile,
           routeMode,
           fallbackRequests,
+          fallbackTiming,
         );
       }
     });
@@ -296,12 +541,14 @@ AstroAdvancedPreviewBundle _buildOfflineAdvancedPreviewBundle(
   Map<String, dynamic> profile,
   AstroChartRouteMode routeMode,
   AstroAdvancedPreviewRequests requests,
+  AstroTimingFrameworkBundle timing,
 ) {
   final nowLabel = astroDateTimeLabel(DateTime.now());
   final subject = _subjectName(profile);
   return AstroAdvancedPreviewBundle(
     routeMode: routeMode,
     requests: requests,
+    timing: timing,
     offlineFallback: true,
     pair: AstroAdvancedPreviewItem(
       title: '合盘预览（离线）',
@@ -364,6 +611,122 @@ AstroAdvancedPreviewBundle _buildOfflineAdvancedPreviewBundle(
       returnYear: DateTime.now().year,
     ),
   );
+}
+
+AstroTimingFrameworkBundle buildAstroTimingFrameworkBundle(
+  Map<String, dynamic> profile,
+  AstroChartRouteMode routeMode, {
+  DateTime? referenceNow,
+}) {
+  final now = referenceNow ?? DateTime.now();
+  final generatedAt = astroDateTimeLabel(now);
+  final subject = _subjectName(profile);
+  final birthday = _readString(profile, ['birthday']);
+  final birthTime = _readString(profile, ['birth_time']);
+  final birthDate = _parseDate(birthday);
+  final hasBirthData = birthDate != null && (birthTime ?? '').trim().isNotEmpty;
+  final age = birthDate == null
+      ? null
+      : now.year -
+            birthDate.year -
+            ((now.month < birthDate.month ||
+                    (now.month == birthDate.month && now.day < birthDate.day))
+                ? 1
+                : 0);
+  final annualCycle = age == null ? null : ((age % 12) + 1);
+  final formalSummary = hasBirthData
+      ? '以 $subject 的当前年龄${age == null ? '' : '（$age 岁）'}与当前年份 $generatedAt 生成年限视角，仅作为 display-only scaffold。'
+      : '缺少生日或出生时间锚点，当前仅保留年限容器与阅读占位，不生成强结论。';
+  final formalSignal = AstroTimingSignal(
+    mode: AstroTimingMode.annualProfectionLike,
+    title: '年度视角',
+    summary: formalSummary,
+    scopeLabel: '年限 / 流年',
+    windowLabel: annualCycle == null ? '当前年' : '第$annualCycle 宫循环 / 当前年',
+    sourceLayer: 'advanced-context',
+    basisLabel: hasBirthData ? '年龄锚点 ${age ?? '-'} + 当前年份' : '生日 / 出生时间缺失',
+    tags: [
+      'timing_framework_v1',
+      'annual_profection_like',
+      routeMode.name,
+      if (hasBirthData) 'formal' else 'degraded',
+    ],
+    isFormal: true,
+    degraded: !hasBirthData,
+  );
+  final placeholderSignal = AstroTimingSignal(
+    mode: AstroTimingMode.firdariaLike,
+    title: '主时段视角',
+    summary: '预留法达类接入位的时段容器，当前仅展示占位窗口与解释边界，不把结果当作 natal truth。',
+    scopeLabel: '主时段 / 次时段',
+    windowLabel: '待接入',
+    sourceLayer: 'advanced-context',
+    basisLabel: '后续可接法达 / 时段轮转',
+    tags: [
+      'timing_framework_v1',
+      'firdaria_like',
+      'placeholder',
+      routeMode.name,
+    ],
+    isFormal: false,
+    degraded: true,
+  );
+
+  final baselineCase = AstroTimingSampleCase(
+    title: 'baseline case',
+    subtitle: '最小正式能力：年度视角单独展示',
+    signals: [formalSignal],
+    notes: ['用于验证 timing mode 容器是否可读、可审查、可归档。', '该用例只展示高级上下文，不回写 natal 主结构。'],
+  );
+  final edgeCase = AstroTimingSampleCase(
+    title: 'edge case',
+    subtitle: '出生数据不完整时的降级表现',
+    isEdgeCase: true,
+    signals: [formalSignal.copyWith(degraded: true, basisLabel: '出生锚点不完整')],
+    notes: [
+      '如果生日或出生时间缺失，年限容器保留，但不继续放大解释结论。',
+      '边界说明优先于结果陈述，避免把 scaffold 冒充为真值。',
+    ],
+  );
+  final denseCase = AstroTimingSampleCase(
+    title: 'dense case',
+    subtitle: '年度视角 + 主时段视角并列展示',
+    signals: [formalSignal, placeholderSignal],
+    notes: ['用于验证多层展示时的卡片密度、排序与命名是否稳定。', '后续若接入第二个正式时法能力，可直接替换占位信号。'],
+  );
+
+  return AstroTimingFrameworkBundle(
+    routeMode: routeMode,
+    generatedAt: generatedAt,
+    frameworkTitle: 'timing mode 容器 v1',
+    frameworkSummary:
+        '先建立年限类正式能力，再保留法达类接入口，所有输出均保持 advanced-context / display-only 口径。',
+    formalSignal: formalSignal,
+    placeholderSignal: placeholderSignal,
+    sampleCases: [baselineCase, edgeCase, denseCase],
+    knownDeviations: [
+      '年度视角使用年龄锚点与当前年份生成 scaffold，不代表最终时法真值层。',
+      '主时段视角当前仍是占位能力，后续正式接入前不得冒充为已完成算法。',
+      '高级时法层只做挂接式扩展，不回写 profile/basic 或 natal canonical truth。',
+    ],
+    hasBirthData: hasBirthData,
+  );
+}
+
+String _buildExplainabilityAssociationSummary({
+  required String mode,
+  String? returnType,
+  int? returnYear,
+  String? pairMode,
+}) {
+  return switch (mode) {
+    'pair' =>
+      '关系维度条目继续保留主档 / 对照档 / 评分描述，并通过 ${pairMode ?? 'synastry'} 作为上下文锚点。',
+    'transit' => '时间维度条目以过境盘为锚点，仅说明当前窗口与显示层关联，不进入真值层。',
+    'return' =>
+      '返照条目以 ${(returnType ?? '返照').trim()}${returnYear == null ? '' : ' $returnYear'} 为上下文锚点。',
+    _ => '$mode 关联条目仅用于 advanced-context 展示。',
+  };
 }
 
 String _buildSummaryText({
@@ -587,6 +950,3 @@ String _routeModeLabelText(String mode) {
       return mode;
   }
 }
-
-
-

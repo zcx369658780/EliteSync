@@ -2,14 +2,16 @@
 
 更新时间：2026-04-17
 
-当前 3.8 已完成 stage 5 最终归档收口；正式截图已补齐，第二次验收材料已完成，顾问已确认正式归档通过。
+当前 3.9 已完成正式归档收口；截图证据、验收摘要与多 Agent 审查链已补齐，顾问已确认正式归档通过。当前发布版本已升级为 `0.03.09 / 30900`。
+3.9 开发计划已归档，后续以 0.03.09 发布基线继续维护。
 
 本目录仅保留当前活跃版本和当前发布相关材料。历史版本已迁移到 `docs/archive/legacy_2026-04/version_plans/`。
 
 ## 当前活跃
 
-- `0.03.07_UPDATE_BRIEF.md`：当前发布简报
+- `0.03.09_UPDATE_BRIEF.md`：当前发布简报
 - `elite_sync_整体开发计划书_更新版_2026_04_11.md`：当前总控计划书
+- `elite_sync_3_9_版本开发计划书_2026_04_17.md`：3.9 版本开发计划书
 - `elite_sync_3_8_版本开发计划书_2026_04_13.md`：3.8 版本开发计划书
 - `3.8_EXEC_PLAN.md`：3.8 执行计划
 - `3.8_RISK_REVIEW.md`：3.8 风险评审
@@ -24,6 +26,19 @@
 - `3.8_SCREENSHOT_VERIFICATION_NOTE.md`：3.8 截图验收说明
 - `3.8_MULTIAGENT_REVIEW_LOG.md`：3.8 多 Agent 审查日志
 - `3.8_SECOND_ACCEPTANCE_PACK.md`：3.8 第二次验收材料包
+- `3.9_SCOPE.md`：3.9 范围与边界说明
+- `3.9_SCHEMA_NOTES.md`：3.9 时法 Schema 说明
+- `3.9_UI_INFORMATION_ARCHITECTURE.md`：3.9 UI 信息架构说明
+- `3.9_SAMPLE_MATRIX.md`：3.9 样例矩阵
+- `3.9_CALIBRATION_REPORT.md`：3.9 校准报告
+- `3.9_DIFF_REPORT.md`：3.9 差异报告
+- `3.9_KNOWN_DEVIATIONS.md`：3.9 已知偏差
+- `3.9_REGRESSION_REPORT.md`：3.9 回归报告
+- `3.9_ACCEPTANCE_SUMMARY.md`：3.9 验收摘要
+- `3.9_MULTIAGENT_REVIEW_LOG.md`：3.9 多 Agent 审查日志
+- `3.9_FINAL_ARCHIVE_NOTE.md`：3.9 最终归档说明
+- `3.9_SCREENSHOT_EVIDENCE_INDEX.md`：3.9 截图证据索引
+- `3.9_SCREENSHOT_VERIFICATION_NOTE.md`：3.9 截图验收说明
 - `elite_sync_3_6_版本开发计划书_2026_04_12.md`：3.6 版本开发计划书
 - `elite_sync_3_7_版本开发计划书_2026_04_12.md`：3.7 版本开发计划书
 - `3.7_EXEC_PLAN.md`：3.7 执行计划

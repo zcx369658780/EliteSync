@@ -12,7 +12,9 @@ import 'package:flutter_elitesync_module/design_system/theme/app_theme_extension
 import 'package:flutter_elitesync_module/features/profile/presentation/providers/astro_advanced_profile_provider.dart';
 import 'package:flutter_elitesync_module/features/profile/presentation/providers/astro_chart_settings_provider.dart';
 import 'package:flutter_elitesync_module/features/profile/presentation/widgets/astro_advanced_capability_card.dart';
+import 'package:flutter_elitesync_module/features/profile/presentation/widgets/astro_advanced_explanation_layer_card.dart';
 import 'package:flutter_elitesync_module/features/profile/presentation/widgets/astro_advanced_sample_set.dart';
+import 'package:flutter_elitesync_module/features/profile/presentation/widgets/astro_timing_framework_card.dart';
 import 'package:flutter_elitesync_module/features/profile/presentation/widgets/astro_profile_state.dart';
 import 'package:flutter_elitesync_module/features/profile/presentation/widgets/astro_profile_state_view.dart';
 import 'package:flutter_elitesync_module/features/profile/presentation/widgets/astro_route_parity_report.dart';
@@ -36,7 +38,7 @@ class AstroAdvancedPreviewPage extends ConsumerWidget {
     }
 
     return AppScaffold(
-      appBar: const AppTopBar(title: '高级解读', mode: AppTopBarMode.backTitle),
+      appBar: const AppTopBar(title: '高级时法', mode: AppTopBarMode.backTitle),
       body: RefreshIndicator(
         onRefresh: reloadPreview,
         child: ListView(
@@ -44,16 +46,16 @@ class AstroAdvancedPreviewPage extends ConsumerWidget {
           children: [
             const SectionReveal(
               child: PageTitleRail(
-                title: '高级解读',
-                subtitle: '合盘 / 行运 / 返照的 scaffold 预览与路线解释',
+                title: '高级时法',
+                subtitle: '合盘 / 行运 / 返照 / 时法 scaffold 预览与路线解释',
               ),
             ),
             SizedBox(height: t.spacing.md),
             async.when(
               loading: () =>
-                  AstroProfileStateView(spec: astroProfileLoadingSpec('高级解读')),
+                  AstroProfileStateView(spec: astroProfileLoadingSpec('高级时法')),
               error: (e, _) {
-                final spec = astroProfileErrorSpec('高级解读', e);
+                final spec = astroProfileErrorSpec('高级时法', e);
                 return AstroProfileStateView(
                   spec: spec,
                   onAction: spec.actionLabel == '去登录'
@@ -63,7 +65,7 @@ class AstroAdvancedPreviewPage extends ConsumerWidget {
               },
               data: (bundle) {
                 if (bundle == null) {
-                  final spec = astroProfileEmptySpec('高级解读');
+                  final spec = astroProfileEmptySpec('高级时法');
                   return AstroProfileStateView(
                     spec: spec,
                     onAction: reloadPreview,
@@ -78,13 +80,17 @@ class AstroAdvancedPreviewPage extends ConsumerWidget {
                           '只展示 derived-only / display-only / advanced-context',
                       leadingIcon: Icons.auto_awesome_rounded,
                       child: Text(
-                        '当前高级解读预览基于已保存画像与 scaffold 对照主体生成：合盘、行运、返照都只用于解释层与展示层，不回写 canonical truth。若要微调路线上下文和工作台偏好，请回到设置中心；若要看 route parity，请返回本命盘详情页。',
+                        '当前高级时法预览基于已保存画像与 scaffold 对照主体生成：合盘、行运、返照和时法都只用于解释层与展示层，不回写 canonical truth。若要微调路线上下文和工作台偏好，请回到设置中心；若要看 route parity，请返回本命盘详情页。',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: t.textSecondary,
                           height: 1.45,
                         ),
                       ),
                     ),
+                    SizedBox(height: t.spacing.sm),
+                    AstroTimingFrameworkCard(bundle: bundle.timing),
+                    SizedBox(height: t.spacing.sm),
+                    AstroAdvancedExplanationLayerCard(bundle: bundle),
                     SizedBox(height: t.spacing.sm),
                     if (bundle.offlineFallback) ...[
                       AppInfoSectionCard(
@@ -93,10 +99,8 @@ class AstroAdvancedPreviewPage extends ConsumerWidget {
                         leadingIcon: Icons.cloud_off_rounded,
                         child: Text(
                           'stage 4 / stage 5 的高级能力仍然遵守 derived-only / display-only / advanced-context 口径。现在页面切换到离线样例预览，方便你完成截图与归档，不会影响 canonical truth。等正式接口恢复后，再回到在线预览即可。',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: t.textSecondary,
-                            height: 1.45,
-                          ),
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(color: t.textSecondary, height: 1.45),
                         ),
                       ),
                       SizedBox(height: t.spacing.sm),
@@ -106,7 +110,7 @@ class AstroAdvancedPreviewPage extends ConsumerWidget {
                       currentWorkbench: workbenchPrefs,
                       compact: false,
                       title: '路线能力复核',
-                      subtitle: '标准 / 古典 / 现代路线与高级能力同框复核',
+                      subtitle: '标准 / 古典 / 现代路线与高级时法同框复核',
                       onOpenDetails: () =>
                           context.push(AppRouteNames.astroChartSettings),
                     ),

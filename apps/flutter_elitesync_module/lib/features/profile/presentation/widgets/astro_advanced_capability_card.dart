@@ -22,9 +22,9 @@ class AstroAdvancedCapabilityCard extends ConsumerWidget {
 
     return async.when(
       loading: () =>
-          AstroProfileStateView(spec: astroProfileLoadingSpec('高级解读')),
+          AstroProfileStateView(spec: astroProfileLoadingSpec('高级时法')),
       error: (error, _) {
-        final spec = astroProfileErrorSpec('高级解读', error);
+        final spec = astroProfileErrorSpec('高级时法', error);
         return AstroProfileStateView(
           spec: spec,
           onAction: spec.actionLabel == '去登录'
@@ -34,7 +34,7 @@ class AstroAdvancedCapabilityCard extends ConsumerWidget {
       },
       data: (bundle) {
         if (bundle == null) {
-          final spec = astroProfileEmptySpec('高级解读');
+          final spec = astroProfileEmptySpec('高级时法');
           return AstroProfileStateView(
             spec: spec,
             onAction: () => ref.invalidate(astroAdvancedPreviewProvider),
@@ -42,14 +42,14 @@ class AstroAdvancedCapabilityCard extends ConsumerWidget {
         }
 
         return AppInfoSectionCard(
-          title: '高级解读预览',
-          subtitle: '合盘 / 行运 / 返照的 scaffold 预览已接入',
+          title: '高级时法预览',
+          subtitle: '合盘 / 行运 / 返照 / 时法 scaffold 预览已接入',
           leadingIcon: Icons.auto_awesome_rounded,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '这层内容只展示 derived-only / display-only / advanced-context 的结果，不回写真值；当前会优先使用已保存画像并生成 scaffold 预览，方便验证 3.7 的关系维度与时间维度链路。',
+                '这层内容只展示 derived-only / display-only / advanced-context 的结果，不回写真值；当前会优先使用已保存画像并生成 scaffold 预览，方便验证 3.9 的关系维度、时间维度与时法容器链路。',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: t.textSecondary,
                   height: 1.45,
@@ -61,6 +61,7 @@ class AstroAdvancedCapabilityCard extends ConsumerWidget {
                 runSpacing: t.spacing.xs,
                 children: [
                   AstroPill(label: '路线：${_routeModeLabel(bundle.routeMode)}'),
+                  AstroPill(label: '时法：timing mode v1'),
                   AstroPill(label: '接口：pair / comparison / transit / return'),
                   AstroPill(label: '报告：advanced context'),
                 ],

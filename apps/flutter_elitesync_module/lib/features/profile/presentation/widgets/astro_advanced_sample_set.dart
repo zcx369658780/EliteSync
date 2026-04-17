@@ -16,7 +16,7 @@ class AstroAdvancedSampleSetReport {
   final List<String> knownDeviations;
 
   List<String> toMarkdownLines() => [
-    '# 3.7 高级样例集',
+    '# 3.9 高级样例集',
     '- 报告性质：derived-only / display-only / advanced-context',
     '- 关系样例数：${relationshipSamples.length}',
     '- 时间样例数：${timeSamples.length}',
@@ -59,7 +59,7 @@ class AstroAdvancedSampleSetCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'stage 4 重点不是继续加入口，而是把合盘 / 对比盘 / 行运 / 返照各自的样例、计数和偏差固定下来，确保后续回归时能重复复核。',
+            '3.9 重点不是继续加入口，而是把合盘 / 对比盘 / 行运 / 返照 / 时法各自的样例、计数和偏差固定下来，确保后续回归时能重复复核。',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
               color: t.textSecondary,
               height: 1.45,

@@ -1,14 +1,16 @@
 # 文档索引（当前有效）
 
-更新时间：2026-04-16
+更新时间：2026-04-17
 
 ## 根目录
 - `README.md`：项目总览
 - `docs/HANDOFF_MASTER_CURRENT.md`：当前项目总交接稿
+- `docs/HANDOFF_NEW_SESSION_20260417.md`：新会话交接摘要
 - `docs/DEVELOPMENT_PLAN_CURRENT.md`：当前整体开发计划书
 - `docs/archive/legacy_2026-04/DEVELOPMENT_PLAN_2_0_AND_EARLIER_ARCHIVE.md`：2.0 及更早版本开发计划归档
-- `docs/CHANGELOG.md`：0.03.07 版本变更记录（当前发布）
-- `docs/version_plans/0.03.07_UPDATE_BRIEF.md`：0.03.07 更新简报
+- `docs/CHANGELOG.md`：0.03.09 版本变更记录（当前发布）
+- `docs/version_plans/0.03.09_UPDATE_BRIEF.md`：0.03.09 更新简报
+- `docs/version_plans/elite_sync_3_9_版本开发计划书_2026_04_17.md`：3.9 版本开发计划书
 - `docs/runbooks/README.md`：运行手册索引
 - `LICENSE_DEPENDENCY_STATUS.md`：依赖许可证状态总表（长期维护）
 - `docs/version_plans/README.md`：版本开发计划索引（主入口）
@@ -26,6 +28,19 @@
 - `docs/version_plans/3.8_SCREENSHOT_VERIFICATION_NOTE.md`：3.8 截图验收说明
 - `docs/version_plans/3.8_MULTIAGENT_REVIEW_LOG.md`：3.8 多 Agent 审查日志
 - `docs/version_plans/3.8_SECOND_ACCEPTANCE_PACK.md`：3.8 第二次验收材料包
+- `docs/version_plans/3.9_SCOPE.md`：3.9 范围与边界说明
+- `docs/version_plans/3.9_SCHEMA_NOTES.md`：3.9 时法 Schema 说明
+- `docs/version_plans/3.9_UI_INFORMATION_ARCHITECTURE.md`：3.9 UI 信息架构说明
+- `docs/version_plans/3.9_SAMPLE_MATRIX.md`：3.9 样例矩阵
+- `docs/version_plans/3.9_CALIBRATION_REPORT.md`：3.9 校准报告
+- `docs/version_plans/3.9_DIFF_REPORT.md`：3.9 差异报告
+- `docs/version_plans/3.9_KNOWN_DEVIATIONS.md`：3.9 已知偏差
+- `docs/version_plans/3.9_REGRESSION_REPORT.md`：3.9 回归报告
+- `docs/version_plans/3.9_ACCEPTANCE_SUMMARY.md`：3.9 验收摘要
+- `docs/version_plans/3.9_MULTIAGENT_REVIEW_LOG.md`：3.9 多 Agent 审查日志
+- `docs/version_plans/3.9_FINAL_ARCHIVE_NOTE.md`：3.9 最终归档说明
+- `docs/version_plans/3.9_SCREENSHOT_EVIDENCE_INDEX.md`：3.9 截图证据索引
+- `docs/version_plans/3.9_SCREENSHOT_VERIFICATION_NOTE.md`：3.9 截图验收说明
 - `docs/version_plans/elite_sync_3_6_版本开发计划书_2026_04_12.md`：3.6 版本开发计划书
 - `docs/version_plans/elite_sync_3_7_版本开发计划书_2026_04_12.md`：3.7 版本开发计划书
 - `docs/version_plans/3.7_EXEC_PLAN.md`：3.7 执行计划
@@ -59,7 +74,7 @@
 
 ## 版本计划（docs/version_plans）
 - `docs/version_plans/README.md`：版本计划总索引
-- `docs/version_plans/0.03.07_UPDATE_BRIEF.md`
+- `docs/version_plans/0.03.09_UPDATE_BRIEF.md`
 - `docs/version_plans/elite_sync_整体开发计划书_更新版_2026_04_11.md`
 - `docs/version_plans/elite_sync_3_8_版本开发计划书_2026_04_13.md`
 - `docs/version_plans/3.8_EXEC_PLAN.md`

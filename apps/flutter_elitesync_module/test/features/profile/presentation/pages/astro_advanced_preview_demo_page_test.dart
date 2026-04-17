@@ -102,7 +102,24 @@ void main() {
     await tester.pumpWidget(_wrap(const AstroAdvancedPreviewDemoPage()));
     await tester.pumpAndSettle();
 
-    expect(find.text('高级解读演示'), findsWidgets);
+    expect(find.text('高级时法演示'), findsWidgets);
+
+    await tester.scrollUntilVisible(
+      find.text('细粒度解释层'),
+      400.0,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('细粒度解释层'), findsOneWidget);
+
+    await tester.scrollUntilVisible(
+      find.text('路线能力复核'),
+      400.0,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+
     expect(find.text('路线能力复核'), findsOneWidget);
 
     await tester.scrollUntilVisible(
