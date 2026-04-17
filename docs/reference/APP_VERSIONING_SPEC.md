@@ -5,7 +5,7 @@
 ## 版本号格式
 
 统一使用三段式并允许可选后缀：`major.minor.patch[suffix]`  
-示例：`0.03.02a`
+示例：`0.03.07`
 
 ## 各段含义
 
@@ -26,8 +26,8 @@
 
 ## 当前版本
 
-- 当前版本：`0.03.02a`
-- 含义：`开发阶段 (major=0)` + `Beta 预热阶段 (minor=03)` + `第 2 个版本 (patch=02)` + `alpha 后缀 a`
+- 当前版本：`0.03.07`
+- 含义：`开发阶段 (major=0)` + `Beta 预热阶段 (minor=03)` + `第 7 个版本 (patch=07)`
 
 ## Android 映射规则
 
@@ -47,6 +47,7 @@ Android `versionCode` 使用数值映射。
 
 示例：
 - `0.03.02a` -> `30201`
+- `0.03.07` -> `30700`
 - `0.03.03` -> `30300`
 - `1.02.03` -> `1020300`
 
@@ -55,6 +56,6 @@ Android `versionCode` 使用数值映射。
 - `GET /api/v1/app/version/check`
 - 参数：
   - `platform`: `android` / `ios`
-  - `version_name`: 当前版本号（如 `0.03.02a`）
+  - `version_name`: 当前版本号（如 `0.03.07`）
   - `version_code`: 当前版本码（如 `30201`）
   - `channel`: 可选，默认 `stable`

@@ -1,17 +1,31 @@
 # 文档索引（当前有效）
 
-更新时间：2026-04-12
+更新时间：2026-04-16
 
 ## 根目录
 - `README.md`：项目总览
 - `docs/HANDOFF_MASTER_CURRENT.md`：当前项目总交接稿
 - `docs/DEVELOPMENT_PLAN_CURRENT.md`：当前整体开发计划书
 - `docs/archive/legacy_2026-04/DEVELOPMENT_PLAN_2_0_AND_EARLIER_ARCHIVE.md`：2.0 及更早版本开发计划归档
-- `docs/CHANGELOG.md`：0.03.02a 版本变更记录（当前发布）
-- `docs/version_plans/0.03.02a_UPDATE_BRIEF.md`：0.03.02a 更新简报
+- `docs/CHANGELOG.md`：0.03.07 版本变更记录（当前发布）
+- `docs/version_plans/0.03.07_UPDATE_BRIEF.md`：0.03.07 更新简报
 - `docs/runbooks/README.md`：运行手册索引
 - `LICENSE_DEPENDENCY_STATUS.md`：依赖许可证状态总表（长期维护）
 - `docs/version_plans/README.md`：版本开发计划索引（主入口）
+- `docs/version_plans/elite_sync_3_8_版本开发计划书_2026_04_13.md`：3.8 版本开发计划书
+- `docs/version_plans/3.8_EXEC_PLAN.md`：3.8 执行计划
+- `docs/version_plans/3.8_RISK_REVIEW.md`：3.8 风险评审
+- `docs/version_plans/3.8_SCOPE_MATRIX.md`：3.8 范围矩阵
+- `docs/version_plans/3.8_GAP_MATRIX.md`：3.8 缺口矩阵
+- `docs/version_plans/3.8_CALIBRATION_REPORT.md`：3.8 校准报告
+- `docs/version_plans/3.8_KNOWN_DEVIATIONS.md`：3.8 已知偏差
+- `docs/version_plans/3.8_BETA_REGRESSION_CHECKLIST.md`：3.8 Beta 回归清单
+- `docs/version_plans/3.8_ACCEPTANCE_REPORT.md`：3.8 验收报告
+- `docs/version_plans/3.8_HANDOFF_FINAL_20260416.md`：3.8 最终交接稿
+- `docs/version_plans/3.8_SCREENSHOT_EVIDENCE_INDEX.md`：3.8 截图证据索引
+- `docs/version_plans/3.8_SCREENSHOT_VERIFICATION_NOTE.md`：3.8 截图验收说明
+- `docs/version_plans/3.8_MULTIAGENT_REVIEW_LOG.md`：3.8 多 Agent 审查日志
+- `docs/version_plans/3.8_SECOND_ACCEPTANCE_PACK.md`：3.8 第二次验收材料包
 - `docs/version_plans/elite_sync_3_6_版本开发计划书_2026_04_12.md`：3.6 版本开发计划书
 - `docs/version_plans/elite_sync_3_7_版本开发计划书_2026_04_12.md`：3.7 版本开发计划书
 - `docs/version_plans/3.7_EXEC_PLAN.md`：3.7 执行计划
@@ -45,8 +59,22 @@
 
 ## 版本计划（docs/version_plans）
 - `docs/version_plans/README.md`：版本计划总索引
-- `docs/version_plans/0.03.02a_UPDATE_BRIEF.md`
+- `docs/version_plans/0.03.07_UPDATE_BRIEF.md`
 - `docs/version_plans/elite_sync_整体开发计划书_更新版_2026_04_11.md`
+- `docs/version_plans/elite_sync_3_8_版本开发计划书_2026_04_13.md`
+- `docs/version_plans/3.8_EXEC_PLAN.md`
+- `docs/version_plans/3.8_RISK_REVIEW.md`
+- `docs/version_plans/3.8_SCOPE_MATRIX.md`
+- `docs/version_plans/3.8_GAP_MATRIX.md`
+- `docs/version_plans/3.8_CALIBRATION_REPORT.md`
+- `docs/version_plans/3.8_KNOWN_DEVIATIONS.md`
+- `docs/version_plans/3.8_BETA_REGRESSION_CHECKLIST.md`
+- `docs/version_plans/3.8_ACCEPTANCE_REPORT.md`
+- `docs/version_plans/3.8_HANDOFF_FINAL_20260416.md`
+- `docs/version_plans/3.8_SCREENSHOT_EVIDENCE_INDEX.md`
+- `docs/version_plans/3.8_SCREENSHOT_VERIFICATION_NOTE.md`
+- `docs/version_plans/3.8_MULTIAGENT_REVIEW_LOG.md`
+- `docs/version_plans/3.8_SECOND_ACCEPTANCE_PACK.md`
 - `docs/version_plans/elite_sync_3_6_版本开发计划书_2026_04_12.md`
 - `docs/version_plans/3.6_EXEC_PLAN.md`
 - `docs/version_plans/3.6_RISK_REVIEW.md`

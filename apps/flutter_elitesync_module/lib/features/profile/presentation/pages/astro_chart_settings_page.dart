@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:flutter_elitesync_module/app/router/app_route_names.dart';
 import 'package:flutter_elitesync_module/design_system/components/bars/app_top_bar.dart';
 import 'package:flutter_elitesync_module/design_system/components/cards/app_info_section_card.dart';
 import 'package:flutter_elitesync_module/design_system/components/controls/app_switch.dart';
@@ -8,6 +10,7 @@ import 'package:flutter_elitesync_module/design_system/components/layout/page_ti
 import 'package:flutter_elitesync_module/design_system/components/layout/section_reveal.dart';
 import 'package:flutter_elitesync_module/design_system/components/tags/app_choice_chip.dart';
 import 'package:flutter_elitesync_module/design_system/theme/app_theme_extensions.dart';
+import 'package:flutter_elitesync_module/features/profile/presentation/widgets/astro_calibration_report.dart';
 import 'package:flutter_elitesync_module/features/profile/presentation/widgets/astro_profile_sections.dart';
 import 'package:flutter_elitesync_module/features/profile/presentation/widgets/astro_route_parity_report.dart';
 import 'package:flutter_elitesync_module/features/profile/presentation/providers/astro_chart_settings_provider.dart';
@@ -39,13 +42,13 @@ class AstroChartSettingsPage extends ConsumerWidget {
             delay: const Duration(milliseconds: 30),
             child: AppInfoSectionCard(
               title: '设置说明',
-              subtitle: '星盘页可按本地偏好控制摘要密度与盘面元素',
+              subtitle: '星盘页可按本地偏好控制显示摘要密度与盘面元素',
               leadingIcon: Icons.tune_rounded,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '这些开关只控制本地展示，不修改后端画像、星盘、八字或紫微的 canonical 真值。你可以用上方的摘要开关控制下方信息，也可以用盘面元素开关直接隐藏图上的标签、相位线和辅助线。',
+                    '这些开关只控制本地展示，不修改后端画像、星盘、八字或紫微的 canonical 真值。你可以用上方的摘要显示开关控制下方信息，也可以用盘面元素开关直接隐藏图上的标签、相位线和辅助线。',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: t.textSecondary,
                       height: 1.45,
@@ -62,7 +65,7 @@ class AstroChartSettingsPage extends ConsumerWidget {
                   ),
                   SizedBox(height: t.spacing.xs),
                   Text(
-                    '恢复默认会把摘要显示和盘面元素重新设为推荐值，便于验收时回到标准构图。',
+                    '恢复默认会把显示摘要和盘面元素重新设为推荐值，便于验收时回到标准构图。',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: t.textSecondary,
                       height: 1.35,
@@ -437,6 +440,14 @@ class AstroChartSettingsPage extends ConsumerWidget {
           ),
           SizedBox(height: t.spacing.md),
           SectionReveal(
+            delay: const Duration(milliseconds: 62),
+            child: _ParameterLinkageCard(
+              routePrefs: routePrefs,
+              workbenchPrefs: workbenchPrefs,
+            ),
+          ),
+          SizedBox(height: t.spacing.md),
+          SectionReveal(
             delay: const Duration(milliseconds: 64),
             child: AstroRouteParityReportCard(
               currentRouteMode: routePrefs.routeMode,
@@ -446,12 +457,20 @@ class AstroChartSettingsPage extends ConsumerWidget {
           ),
           SizedBox(height: t.spacing.md),
           SectionReveal(
+            delay: const Duration(milliseconds: 66),
+            child: AstroCalibrationReportCard(
+              onOpenDetails: () =>
+                  context.push(AppRouteNames.astroAdvancedPreviewDemo),
+            ),
+          ),
+          SizedBox(height: t.spacing.md),
+          SectionReveal(
             delay: const Duration(milliseconds: 60),
             child: SettingsGroup(
-              title: '显示项',
+              title: '摘要显示',
               children: [
                 SettingsItemTile(
-                  title: '行星摘要',
+                  title: '显示行星摘要',
                   subtitle: '显示行星、星座和落座列表',
                   icon: Icons.public_rounded,
                   trailing: AppSwitch(
@@ -463,7 +482,7 @@ class AstroChartSettingsPage extends ConsumerWidget {
                 ),
                 Divider(height: 1, color: t.overlay.withValues(alpha: 0.35)),
                 SettingsItemTile(
-                  title: '宫位摘要',
+                  title: '显示宫位摘要',
                   subtitle: '显示十二宫列表与位置',
                   icon: Icons.view_column_rounded,
                   trailing: AppSwitch(
@@ -475,7 +494,7 @@ class AstroChartSettingsPage extends ConsumerWidget {
                 ),
                 Divider(height: 1, color: t.overlay.withValues(alpha: 0.35)),
                 SettingsItemTile(
-                  title: '相位摘要',
+                  title: '显示相位摘要',
                   subtitle: '显示主要相位关系',
                   icon: Icons.share_outlined,
                   trailing: AppSwitch(
@@ -487,7 +506,7 @@ class AstroChartSettingsPage extends ConsumerWidget {
                 ),
                 Divider(height: 1, color: t.overlay.withValues(alpha: 0.35)),
                 SettingsItemTile(
-                  title: '技术参数',
+                  title: '显示技术参数',
                   subtitle: '显示真太阳时、位置修正与引擎信息',
                   icon: Icons.fact_check_outlined,
                   trailing: AppSwitch(
@@ -814,6 +833,60 @@ String _routeModeDescription(AstroChartRouteMode mode) {
       return 'sidereal / whole / tight';
     case AstroChartRouteMode.modern:
       return 'tropical / placidus / wide';
+  }
+}
+
+class _ParameterLinkageCard extends StatelessWidget {
+  const _ParameterLinkageCard({
+    required this.routePrefs,
+    required this.workbenchPrefs,
+  });
+
+  final AstroChartRoutePrefs routePrefs;
+  final AstroChartWorkbenchPrefs workbenchPrefs;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.appTokens;
+    return AppInfoSectionCard(
+      title: '参数联动',
+      subtitle: '从参数解读直达高级解读预览',
+      leadingIcon: Icons.auto_awesome_motion_rounded,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            '这里把路线模板、工作台参数和高级解读连成一条链：先看当前参数口径，再进入高级解读核对合盘、行运、返照的 scaffold 预览。该链路只做 derived-only / display-only / advanced-context 展示，不回写 canonical truth。',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: t.textSecondary,
+              height: 1.45,
+            ),
+          ),
+          SizedBox(height: t.spacing.sm),
+          Wrap(
+            spacing: t.spacing.xs,
+            runSpacing: t.spacing.xs,
+            children: [
+              AstroPill(label: '路线：${_routeModeLabel(routePrefs.routeMode)}'),
+              AstroPill(label: '黄道：${_zodiacModeLabel(workbenchPrefs.zodiacMode)}'),
+              AstroPill(label: '宫位：${_houseSystemLabel(workbenchPrefs.houseSystem)}'),
+              AstroPill(label: '相位：${_aspectModeLabel(workbenchPrefs.aspectMode)}'),
+              AstroPill(label: '容许度：${_orbPresetLabel(workbenchPrefs.orbPreset)}'),
+              AstroPill(label: '点位：${_pointModeLabel(workbenchPrefs.pointMode)}'),
+            ],
+          ),
+          SizedBox(height: t.spacing.sm),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: FilledButton.icon(
+              onPressed: () => context.push(AppRouteNames.astroAdvancedPreview),
+              icon: const Icon(Icons.open_in_new_rounded),
+              label: const Text('打开高级解读'),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 

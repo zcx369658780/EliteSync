@@ -1,13 +1,29 @@
 # 版本开发计划索引
 
-更新时间：2026-04-12
+更新时间：2026-04-17
+
+当前 3.8 已完成 stage 5 最终归档收口；正式截图已补齐，第二次验收材料已完成，顾问已确认正式归档通过。
 
 本目录仅保留当前活跃版本和当前发布相关材料。历史版本已迁移到 `docs/archive/legacy_2026-04/version_plans/`。
 
 ## 当前活跃
 
-- `0.03.02a_UPDATE_BRIEF.md`：当前发布简报
+- `0.03.07_UPDATE_BRIEF.md`：当前发布简报
 - `elite_sync_整体开发计划书_更新版_2026_04_11.md`：当前总控计划书
+- `elite_sync_3_8_版本开发计划书_2026_04_13.md`：3.8 版本开发计划书
+- `3.8_EXEC_PLAN.md`：3.8 执行计划
+- `3.8_RISK_REVIEW.md`：3.8 风险评审
+- `3.8_SCOPE_MATRIX.md`：3.8 范围矩阵
+- `3.8_GAP_MATRIX.md`：3.8 缺口矩阵
+- `3.8_CALIBRATION_REPORT.md`：3.8 校准报告
+- `3.8_KNOWN_DEVIATIONS.md`：3.8 已知偏差
+- `3.8_BETA_REGRESSION_CHECKLIST.md`：3.8 Beta 回归清单
+- `3.8_ACCEPTANCE_REPORT.md`：3.8 验收报告
+- `3.8_HANDOFF_FINAL_20260416.md`：3.8 最终交接稿
+- `3.8_SCREENSHOT_EVIDENCE_INDEX.md`：3.8 截图证据索引
+- `3.8_SCREENSHOT_VERIFICATION_NOTE.md`：3.8 截图验收说明
+- `3.8_MULTIAGENT_REVIEW_LOG.md`：3.8 多 Agent 审查日志
+- `3.8_SECOND_ACCEPTANCE_PACK.md`：3.8 第二次验收材料包
 - `elite_sync_3_6_版本开发计划书_2026_04_12.md`：3.6 版本开发计划书
 - `elite_sync_3_7_版本开发计划书_2026_04_12.md`：3.7 版本开发计划书
 - `3.7_EXEC_PLAN.md`：3.7 执行计划
