@@ -64,6 +64,8 @@ class MainActivity : FlutterActivity() {
                                     extras?.getString("elitesync_initial_route"),
                                     fileBootstrap["elitesync_initial_route"],
                                 ),
+                                "appVersionName" to BuildConfig.VERSION_NAME,
+                                "appVersionCode" to BuildConfig.VERSION_CODE.toString(),
                                 "debugBuild" to BuildConfig.DEBUG.toString(),
                             ),
                         )

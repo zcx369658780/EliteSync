@@ -22,12 +22,13 @@ class SettingsGroup extends StatelessWidget {
               ),
         ),
         SizedBox(height: t.spacing.xs),
-        Container(
-          decoration: BoxDecoration(
-            color: t.surface.withValues(alpha: 0.88),
+        Material(
+          color: t.surface.withValues(alpha: 0.88),
+          shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(t.radius.lg),
-            border: Border.all(color: t.overlay.withValues(alpha: 0.75)),
+            side: BorderSide(color: t.overlay.withValues(alpha: 0.75)),
           ),
+          clipBehavior: Clip.antiAlias,
           child: Column(children: children),
         ),
         SizedBox(height: t.spacing.md),

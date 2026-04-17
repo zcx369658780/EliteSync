@@ -2,7 +2,7 @@
 
 ## Current Baseline
 
-- Current release: `0.03.02a / 30201`
+- Current release: `0.03.07 / 30700`
 - Current completed version: `3.5`
 - `3.6` has entered planning/execution prep; stage 0, stage 1, and stage 2 are complete with exec/risk/scope/capability matrices landed and route_mode schema now implemented
 - `3.6` stage 3 is complete: route explanation is a lightweight reading layer, the settings page has a route parity report, and the natal chart keeps a compact explanation card
@@ -21,6 +21,7 @@
 - `3.7` stage 3 Flutter advanced preview is landed: `astro_advanced_profile_provider.dart`, `AstroAdvancedCapabilityCard`, and `AstroAdvancedPreviewPage` now surface pair / transit / return scaffold previews in the overview page and dedicated advanced entry, still keeping everything derived-only / display-only / advanced-context
 - `3.7` stage 4 advanced demo is landed: `AstroAdvancedPreviewDemoPage` now serves as the formal stage 4 / stage 5 handoff entry, with sample matrix, route capability matrix, and preview log captured
 - `3.7` stage 5 final archive is complete: `3.7_ACCEPTANCE_REPORT.md`, `3.7_HANDOFF_FINAL_20260412.md`, and `3.7_SCREENSHOT_EVIDENCE_INDEX.md` are the current handoff material
+- `3.8` stage 0 decomposition is complete and the work has advanced to stage 5 final archive and passed the second顾问验收: Claude stage 1 review returned conditional pass and Gemini stage 2 review returned pass with observations; the parameter linkage region now lands on the settings page and can jump to advanced preview, calibration report / known deviations / beta regression checklist / acceptance report / handoff / screenshot index / screenshot verification note / second acceptance pack have now landed, and the formal screenshots were refreshed on 2026-04-17 to align the version center to `0.03.07 / 30700 / 0.03.07+30700`
 
 ## Workflow Rules
 

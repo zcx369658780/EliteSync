@@ -25,7 +25,10 @@ class AboutUpdatePage extends ConsumerStatefulWidget {
 }
 
 class _AboutUpdatePageState extends ConsumerState<AboutUpdatePage> {
-  String _currentVersion = '-';
+  String _productVersion = '-';
+  String _productBuild = '-';
+  String _moduleVersionName = '-';
+  String _moduleVersion = '-';
   String _status = '';
   String _healthSummary = '服务状态加载中...';
   bool _checking = false;
@@ -44,9 +47,49 @@ class _AboutUpdatePageState extends ConsumerState<AboutUpdatePage> {
   }
 
   Future<void> _loadVersion() async {
-    final info = await PackageInfo.fromPlatform();
     if (!mounted) return;
-    setState(() => _currentVersion = info.version);
+    String moduleVersion = '-';
+    String moduleVersionName = '-';
+    String productVersion = '-';
+    String productBuild = '-';
+    try {
+      final info = await PackageInfo.fromPlatform();
+      moduleVersionName = info.version;
+      moduleVersion = '${info.version}+${info.buildNumber}';
+    } catch (_) {
+      // Keep fallback text when package info is unavailable.
+    }
+
+    try {
+      const channel = MethodChannel('elitesync/bootstrap');
+      final payload = await channel.invokeMapMethod<dynamic, dynamic>(
+        'getBootstrap',
+      );
+      if (payload != null) {
+        final map = payload.map(
+          (key, value) => MapEntry(key.toString(), value?.toString() ?? ''),
+        );
+        productVersion = (map['appVersionName'] ?? '').trim();
+        productBuild = (map['appVersionCode'] ?? '').trim();
+      }
+    } catch (_) {
+      // Ignore missing bootstrap channel and fall back to module version.
+    }
+
+    if (productVersion.isEmpty) {
+      productVersion = moduleVersionName;
+    }
+    if (productBuild.isEmpty) {
+      productBuild = '-';
+    }
+
+    if (!mounted) return;
+    setState(() {
+      _productVersion = productVersion;
+      _productBuild = productBuild;
+      _moduleVersionName = moduleVersionName;
+      _moduleVersion = moduleVersion;
+    });
   }
 
   Future<void> _loadLocalAboutConfig() async {
@@ -84,7 +127,9 @@ class _AboutUpdatePageState extends ConsumerState<AboutUpdatePage> {
       query: {
         'platform': 'android',
         'channel': 'stable',
-        'version_name': _currentVersion,
+        'version_name': _productVersion == _moduleVersionName
+            ? _moduleVersionName
+            : _productVersion,
       },
     );
     if (!mounted) return;
@@ -108,7 +153,7 @@ class _AboutUpdatePageState extends ConsumerState<AboutUpdatePage> {
     final confirmed = await AppConfirmDialog.show(
       context,
       title: forceUpdate ? '发现强制更新' : '发现新版本',
-      message: '当前版本 $_currentVersion，最新版本 $latest，是否下载更新？',
+      message: '当前产品版本 $_productVersion，最新版本 $latest，是否下载更新？',
       confirmLabel: '下载',
       cancelLabel: '稍后',
     );
@@ -150,7 +195,7 @@ class _AboutUpdatePageState extends ConsumerState<AboutUpdatePage> {
     setState(() {
       _healthChecking = false;
       _healthSummary =
-          '环境: $env · 服务可观测性: ${status == 'ok' ? '正常' : '降级'} · 包版本: $version · DB: ${(database['ok'] == true) ? '正常' : '异常'}';
+          '环境: $env · 服务可观测性: ${status == 'ok' ? '正常' : '降级'} · 服务端版本: $version · DB: ${(database['ok'] == true) ? '正常' : '异常'}';
     });
   }
 
@@ -164,8 +209,8 @@ class _AboutUpdatePageState extends ConsumerState<AboutUpdatePage> {
         children: [
           SectionReveal(
             child: PageTitleRail(
-              title: '当前版本 $_currentVersion',
-              subtitle: '版本中心信息、更新历史与服务状态',
+              title: '当前产品版本 $_productVersion',
+              subtitle: '本机产品、Flutter 模块与服务状态分开展示',
             ),
           ),
           SizedBox(height: t.spacing.md),
@@ -176,7 +221,7 @@ class _AboutUpdatePageState extends ConsumerState<AboutUpdatePage> {
               subtitle: '本地包、服务健康与更新检查分开展示',
               leadingIcon: Icons.info_outline_rounded,
               child: Text(
-                '当前版本来自本地安装包，服务状态来自 /api/v1/app/health，更新结果来自 /api/v1/app/version/check。它们用于可观测性和版本提示，不会改写用户资料或其他业务真值。',
+                '当前产品版本来自 Android 宿主安装包，Flutter 模块版本来自插件包信息，服务状态来自 /api/v1/app/health，更新结果来自 /api/v1/app/version/check。它们用于可观测性和版本提示，不会改写用户资料或其他业务真值。',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: t.textSecondary,
                   height: 1.45,
@@ -189,12 +234,16 @@ class _AboutUpdatePageState extends ConsumerState<AboutUpdatePage> {
             delay: const Duration(milliseconds: 40),
             child: AppInfoSectionCard(
               title: '版本状态',
-              subtitle: '本机版本、服务端健康与更新检查',
+              subtitle: '产品版本、模块版本、服务健康与更新检查',
               leadingIcon: Icons.system_update_alt_rounded,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _KeyValueLine(label: '本机版本', value: _currentVersion),
+                  _KeyValueLine(label: '当前产品版本', value: _productVersion),
+                  SizedBox(height: t.spacing.xs),
+                  _KeyValueLine(label: '产品构建号', value: _productBuild),
+                  SizedBox(height: t.spacing.xs),
+                  _KeyValueLine(label: 'Flutter 模块版本', value: _moduleVersion),
                   SizedBox(height: t.spacing.xs),
                   _KeyValueLine(label: '服务状态', value: _healthSummary),
                   if (_status.isNotEmpty) ...[
