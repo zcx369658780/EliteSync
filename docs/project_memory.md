@@ -9,7 +9,7 @@
 
 ## 当前基线
 
-- 对外发布版本：`0.03.07 / 30700`
+- 对外发布版本：`0.03.09 / 30900`
 - 当前阶段结论：`3.5` 已正式验收通过并归档
 - `3.6` 已进入计划执行阶段，stage 0、stage 1 与 stage 2 已完成
 - `3.6` stage 3 也已完成：路线解释层已落地为轻量阅读卡，设置页补齐路线差异报告，本命盘详情页保留 compact 解释卡
@@ -30,7 +30,8 @@
 - `3.7` stage 3 已开始并落地 Flutter 侧高级预览卡与高级详情页：新增 `astro_advanced_profile_provider.dart`、`AstroAdvancedCapabilityCard` 与 `AstroAdvancedPreviewPage`，在玄学总览页展示合盘 / 行运 / 返照 scaffold 预览并提供高级入口
 - `3.7` stage 4 已完成高级演示页与样例矩阵补证：`AstroAdvancedPreviewDemoPage`、路线能力矩阵、样例集和已知偏差已形成 stage 4 / stage 5 的交接基础
 - `3.7` stage 5 已完成最终验收：`3.7_ACCEPTANCE_REPORT.md`、`3.7_HANDOFF_FINAL_20260412.md` 与 `3.7_SCREENSHOT_EVIDENCE_INDEX.md` 为当前交接材料
-- `3.8` 已完成 stage 5 最终归档收口并通过顾问第二次验收：执行计划、风险评审、范围矩阵、缺口矩阵、校准报告、已知偏差、Beta 回归清单、验收报告、最终交接稿、截图证据索引、截图验收说明和第二次验收材料包都已落盘；参数联动区域已接入设置页并可直达高级解读页，正式截图已在 2026-04-17 刷新并统一到 `0.03.07 / 30700 / 0.03.07+30700` 口径
+- `3.8` 已完成 stage 5 最终归档收口并通过顾问第二次验收：执行计划、风险评审、范围矩阵、缺口矩阵、校准报告、已知偏差、Beta 回归清单、验收报告、最终交接稿、截图证据索引、截图验收说明和第二次验收材料包都已落盘；参数联动区域已接入设置页并可直达高级解读页，正式截图已在 2026-04-17 刷新并统一到 `0.03.07 / 30700 / 0.03.07+30700` 口径；后续发布版本已升到 `0.03.09 / 30900`
+- `3.9` 版本已正式归档收口；高级时法框架首版、细粒度解释层、截图证据索引、验收摘要与多 Agent 审查链均已落盘，Gemini 基于截图证据给出最终验收 `pass with observations`，3.9 已满足正式归档条件
 
 ## 星盘与资料链路
 
@@ -42,17 +43,16 @@
 ## 运行与接入
 
 - Android 宿主启动 Flutter 时必须注入 `elitesync_api_base_url` 和 `elitesync_ws_base_url`
-- Gemini MCP 服务目录：`D:\GeminiCLIAgentMCP`
-- Gemini CLI 默认模型仍记为 `gemini-2.5-flash`
-- 3.5 的 UI / 验收仍优先使用 Gemini-MCP；Claude-mcp 仅在架构边界问题上咨询
-- 3.6 计划明确要求 Claude-mcp 参与路线 / schema / 兼容性审查，Gemini-MCP 参与 UI / 可读性 / 验收审查
-- 3.6 stage 3 的 Gemini / Claude 只读审查结论已归档，路线解释层与差异报告边界已确认安全
-- Gemini 对 3.5 参数工作台给出的只读审查结论为 `conditional pass`
-- Claude 现在固定为本机唯一版本：`C:\Users\zcxve\.local\bin\claude.exe`
-- 旧的 WinGet 版和 npm 全局版 Claude Code 已卸载，不再作为默认入口
+- Gemini CLI 默认模型改为 `gemini-3-flash-preview`，落点在 `~/.gemini/settings.json` 的 `model.name`
+- 直接在 PowerShell 中调用 CLI 的默认方式是：
+  - `claude -p "<prompt>" --output-format text --tools ""`
+- `gemini -p "<prompt>" --output-format text --approval-mode plan`
+- 如果需要结构化输出，可用：
+  - `gemini -p "<prompt>" --output-format json --approval-mode plan`
 - `claude` 默认命令应命中 `C:\Users\zcxve\.local\bin\claude.exe`
-- Codex 的 Claude MCP 入口固定指向该原生 exe，当前配置保留 `ANTHROPIC_BASE_URL`、`ANTHROPIC_AUTH_TOKEN`、`CLAUDE_CODE_GIT_BASH_PATH`、`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`
-- Claude 认证状态目前可用：`claude auth status` 返回 `loggedIn: true`
+- `Get-Command claude` / `Get-Command gemini` 可用于确认当前直连入口
+- 当前不再把 Claude-mcp / Codex-mcp 作为默认工作流入口
+- Gemini 网页版仅用于临时浏览或探索，不作为 3.9 及后续版本的验收默认入口；验收与审查回到 PowerShell 直连 `gemini` CLI。
 
 ## 维护原则
 

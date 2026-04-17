@@ -2,7 +2,7 @@
 
 ## Current Baseline
 
-- Current release: `0.03.07 / 30700`
+- Current release: `0.03.09 / 30900`
 - Current completed version: `3.5`
 - `3.6` has entered planning/execution prep; stage 0, stage 1, and stage 2 are complete with exec/risk/scope/capability matrices landed and route_mode schema now implemented
 - `3.6` stage 3 is complete: route explanation is a lightweight reading layer, the settings page has a route parity report, and the natal chart keeps a compact explanation card
@@ -22,6 +22,7 @@
 - `3.7` stage 4 advanced demo is landed: `AstroAdvancedPreviewDemoPage` now serves as the formal stage 4 / stage 5 handoff entry, with sample matrix, route capability matrix, and preview log captured
 - `3.7` stage 5 final archive is complete: `3.7_ACCEPTANCE_REPORT.md`, `3.7_HANDOFF_FINAL_20260412.md`, and `3.7_SCREENSHOT_EVIDENCE_INDEX.md` are the current handoff material
 - `3.8` stage 0 decomposition is complete and the work has advanced to stage 5 final archive and passed the second顾问验收: Claude stage 1 review returned conditional pass and Gemini stage 2 review returned pass with observations; the parameter linkage region now lands on the settings page and can jump to advanced preview, calibration report / known deviations / beta regression checklist / acceptance report / handoff / screenshot index / screenshot verification note / second acceptance pack have now landed, and the formal screenshots were refreshed on 2026-04-17 to align the version center to `0.03.07 / 30700 / 0.03.07+30700`
+- `3.9` has now been formally archived: the fine-grained explanation layer card is landed, preview/demo pages are wired, screenshots and review logs are in place, and Gemini acceptance returned `pass with observations`
 
 ## Workflow Rules
 
@@ -44,17 +45,15 @@
 
 ## External Tooling
 
-- Gemini CLI default model in this repo is `gemini-2.5-flash`.
-- Gemini MCP server directory: `D:\GeminiCLIAgentMCP`
-- FastMCP listens on `0.0.0.0:8000` and exposes `call_gemini`
-- For 3.5 UI/acceptance, prefer Gemini-MCP; use Claude-mcp only for architecture boundary questions
-- Gemini read-only review for the 3.5 parameter workbench came back as `conditional pass`
-- For 3.6, use Claude-mcp for route/schema/compatibility boundary review and Gemini-MCP for UI/readability/acceptance review
-- Claude is pinned to a single native install: `C:\Users\zcxve\.local\bin\claude.exe`
-- WinGet Claude Code and npm global `@anthropic-ai/claude-code` are removed and should not be treated as default entrypoints
-- `claude` should resolve to `C:\Users\zcxve\.local\bin\claude.exe`
-- Codex Claude MCP should point `CLAUDE_CODE_MCP_PATH` to the native exe and keep `ANTHROPIC_BASE_URL`, `ANTHROPIC_AUTH_TOKEN`, `CLAUDE_CODE_GIT_BASH_PATH`, and `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` set
-- `claude auth status` currently reports `loggedIn: true`
+- Gemini CLI default model in this repo is `gemini-3-flash-preview`, stored in `~/.gemini/settings.json` under `model.name`.
+- Direct PowerShell usage is now the default workflow for both tools:
+  - `claude -p "<prompt>" --output-format text --tools ""`
+  - `gemini -p "<prompt>" --output-format text --approval-mode plan`
+  - `gemini -p "<prompt>" --output-format json --approval-mode plan`
+- `claude` should resolve to `C:\Users\zcxve\.local\bin\claude.exe`.
+- Use `Get-Command claude` / `Get-Command gemini` to confirm the current direct entrypoints.
+- Claude-mcp / Codex-mcp are no longer default entrypoints in this workspace.
+- Gemini web app may be used only for ad hoc exploration; acceptance/review work must default back to PowerShell `gemini` CLI.
 
 ## Pointers
 

@@ -850,13 +850,13 @@ class _ParameterLinkageCard extends StatelessWidget {
     final t = context.appTokens;
     return AppInfoSectionCard(
       title: '参数联动',
-      subtitle: '从参数解读直达高级解读预览',
+      subtitle: '从参数解读直达高级时法预览',
       leadingIcon: Icons.auto_awesome_motion_rounded,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            '这里把路线模板、工作台参数和高级解读连成一条链：先看当前参数口径，再进入高级解读核对合盘、行运、返照的 scaffold 预览。该链路只做 derived-only / display-only / advanced-context 展示，不回写 canonical truth。',
+            '这里把路线模板、工作台参数和高级时法连成一条链：先看当前参数口径，再进入高级时法核对合盘、行运、返照与时法 scaffold 预览。该链路只做 derived-only / display-only / advanced-context 展示，不回写 canonical truth。',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
               color: t.textSecondary,
               height: 1.45,
@@ -881,7 +881,7 @@ class _ParameterLinkageCard extends StatelessWidget {
             child: FilledButton.icon(
               onPressed: () => context.push(AppRouteNames.astroAdvancedPreview),
               icon: const Icon(Icons.open_in_new_rounded),
-              label: const Text('打开高级解读'),
+              label: const Text('打开高级时法'),
             ),
           ),
         ],
