@@ -2,11 +2,11 @@
 
 return [
     'android' => [
-        'latest_version_name' => env('ANDROID_LATEST_VERSION_NAME', '0.03.02a'),
-        'latest_version_code' => (int) env('ANDROID_LATEST_VERSION_CODE', 30201),
+        'latest_version_name' => env('ANDROID_LATEST_VERSION_NAME', '0.04.04'),
+        'latest_version_code' => (int) env('ANDROID_LATEST_VERSION_CODE', 40400),
         'min_supported_version_name' => env('ANDROID_MIN_SUPPORTED_VERSION_NAME', '0.01.01'),
-        'download_url' => env('ANDROID_DOWNLOAD_URL', 'http://101.133.161.203/downloads/elitesync-0.03.02a.apk'),
-        'changelog' => env('ANDROID_CHANGELOG', '完成 3.2a 版本收口：星盘主视觉切换为 APP 端本地绘制，盘面元素开关细分到星体 / 虚点 / 相位 / 盘心，Android 宿主 bootstrap 已补齐 API / WS 基线注入，并同步版本检查、下载地址与发布元数据到 0.03.02a / 30201。'),
+        'download_url' => env('ANDROID_DOWNLOAD_URL', 'http://101.133.161.203/downloads/elitesync-0.04.04.apk'),
+        'changelog' => env('ANDROID_CHANGELOG', '完成 4.3 动态流基础版、4.4 视频消息版与 4.4S 媒体链稳定性修正版的收口：动态发布 / 读取 / 点赞 / 删除 / 举报 / 拉黑 / 作者页联动、视频消息发送 / 预览 / 回读，以及图片 / 视频内容端点与 public_url 规范化修复已纳入主链，并同步版本检查、下载地址与发布元数据到 0.04.04 / 40400。'),
         'sha256' => env('ANDROID_APK_SHA256', ''),
         'force_update' => (bool) env('ANDROID_FORCE_UPDATE', false),
     ],

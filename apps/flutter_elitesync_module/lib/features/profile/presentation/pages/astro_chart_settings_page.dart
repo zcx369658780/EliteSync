@@ -856,7 +856,7 @@ class _ParameterLinkageCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            '这里把路线模板、工作台参数和高级时法连成一条链：先看当前参数口径，再进入高级时法核对合盘、行运、返照与时法 scaffold 预览。该链路只做 derived-only / display-only / advanced-context 展示，不回写 canonical truth。',
+            '这里把路线模板、工作台参数和高级时法连成一条链：先看当前参数口径，再进入高级时法核对合盘、行运、返照与时法预览。该链路只做展示与关联说明，不回写 canonical truth。',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
               color: t.textSecondary,
               height: 1.45,

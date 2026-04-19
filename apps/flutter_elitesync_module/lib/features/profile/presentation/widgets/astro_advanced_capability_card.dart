@@ -43,13 +43,13 @@ class AstroAdvancedCapabilityCard extends ConsumerWidget {
 
         return AppInfoSectionCard(
           title: '高级时法预览',
-          subtitle: '合盘 / 行运 / 返照 / 时法 scaffold 预览已接入',
+          subtitle: '合盘 / 行运 / 返照 / 时法预览已接入',
           leadingIcon: Icons.auto_awesome_rounded,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '这层内容只展示 derived-only / display-only / advanced-context 的结果，不回写真值；当前会优先使用已保存画像并生成 scaffold 预览，方便验证 3.9 的关系维度、时间维度与时法容器链路。',
+                '这层内容只展示展示层与关联层结果，不回写真值；当前会优先使用已保存画像并生成预览，方便验证 3.9 的关系维度、时间维度与时法容器链路。',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: t.textSecondary,
                   height: 1.45,

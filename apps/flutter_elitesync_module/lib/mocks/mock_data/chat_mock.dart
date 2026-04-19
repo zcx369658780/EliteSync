@@ -4,7 +4,7 @@ class ChatMock {
       'id': 'c001',
       'name': '晨雾',
       'avatar': null,
-      'last_message': '今晚有空聊聊你的旅行清单吗？',
+      'last_message': '图片消息',
       'last_time': '10:18',
       'unread': 2,
     },
@@ -27,7 +27,39 @@ class ChatMock {
   };
 
   static const messagesHappy = [
-    {'id': 'm001', 'mine': false, 'text': '你好呀，看到你也喜欢看展。', 'time': '10:15'},
-    {'id': 'm002', 'mine': true, 'text': '是的，我最近在看摄影展。', 'time': '10:16'},
+    {
+      'id': 'm001',
+      'mine': false,
+      'text': '你好呀，看到你也喜欢看展。',
+      'time': '10:15',
+    },
+    {
+      'id': 'm002',
+      'mine': true,
+      'text': '是的，我最近在看摄影展。',
+      'time': '10:16',
+    },
+    {
+      'id': 'm003',
+      'mine': true,
+      'text': '',
+      'time': '10:17',
+      'attachments': [
+        {
+          'id': 'a001',
+          'attachment_type': 'image',
+          'media_asset': {
+            'id': '9001',
+            'media_type': 'image',
+            'public_url': 'file:///data/user/0/com.elitesync/files/4_2_demo_image.png',
+            'status': 'ready',
+            'mime_type': 'image/png',
+            'size_bytes': 58241,
+            'width': 1024,
+            'height': 1024,
+          },
+        },
+      ],
+    },
   ];
 }

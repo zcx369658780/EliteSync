@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_elitesync_module/core/media/media_url_resolver.dart';
 import 'package:flutter_elitesync_module/design_system/components/bars/app_top_bar.dart';
 import 'package:flutter_elitesync_module/design_system/components/feedback/app_feedback.dart';
 import 'package:flutter_elitesync_module/design_system/components/layout/app_scaffold.dart';
@@ -10,13 +11,10 @@ import 'package:flutter_elitesync_module/design_system/components/tags/app_tag.d
 import 'package:flutter_elitesync_module/design_system/theme/app_theme_extensions.dart';
 import 'package:flutter_elitesync_module/features/home/domain/entities/home_feed_entity.dart';
 import 'package:flutter_elitesync_module/features/home/presentation/providers/content_detail_provider.dart';
+import 'package:flutter_elitesync_module/shared/providers/app_providers.dart';
 
 class ContentDetailPage extends ConsumerWidget {
-  const ContentDetailPage({
-    super.key,
-    required this.contentId,
-    this.content,
-  });
+  const ContentDetailPage({super.key, required this.contentId, this.content});
 
   final String contentId;
   final HomeFeedEntity? content;
@@ -25,6 +23,7 @@ class ContentDetailPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final query = ContentDetailQuery(contentId: contentId, seed: content);
     final asyncData = ref.watch(contentDetailProvider(query));
+    final apiBaseUrl = ref.watch(appEnvProvider).apiBaseUrl;
 
     final loadingSeed =
         content ??
@@ -39,14 +38,15 @@ class ContentDetailPage extends ConsumerWidget {
         );
 
     final data = asyncData.asData?.value ?? loadingSeed;
-    return _ContentDetailBody(data: data);
+    return _ContentDetailBody(data: data, apiBaseUrl: apiBaseUrl);
   }
 }
 
 class _ContentDetailBody extends StatelessWidget {
-  const _ContentDetailBody({required this.data});
+  const _ContentDetailBody({required this.data, required this.apiBaseUrl});
 
   final HomeFeedEntity data;
+  final String apiBaseUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -89,11 +89,7 @@ class _ContentDetailBody extends StatelessWidget {
               child: Wrap(
                 spacing: 8,
                 runSpacing: 8,
-                children: data.tags
-                    .map(
-                      (tag) => AppTag(label: tag),
-                    )
-                    .toList(),
+                children: data.tags.map((tag) => AppTag(label: tag)).toList(),
               ),
             ),
           ],
@@ -101,7 +97,7 @@ class _ContentDetailBody extends StatelessWidget {
             SizedBox(height: t.spacing.md),
             SectionReveal(
               delay: const Duration(milliseconds: 130),
-              child: _MediaGallery(media: data.media),
+              child: _MediaGallery(media: data.media, apiBaseUrl: apiBaseUrl),
             ),
           ],
           SizedBox(height: t.spacing.md),
@@ -133,7 +129,9 @@ class _MetaBlock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = context.appTokens;
-    final words = body.trim().isEmpty ? 0 : body.trim().split(RegExp(r'\s+')).length;
+    final words = body.trim().isEmpty
+        ? 0
+        : body.trim().split(RegExp(r'\s+')).length;
     final readMinutes = (words / 180).ceil().clamp(1, 10);
     return Container(
       padding: EdgeInsets.all(t.spacing.cardPadding),
@@ -149,9 +147,9 @@ class _MetaBlock extends StatelessWidget {
           Expanded(
             child: Text(
               '作者：$author · 预计阅读 $readMinutes 分钟 · 热度 $likes',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: t.textSecondary,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: t.textSecondary),
             ),
           ),
         ],
@@ -161,9 +159,10 @@ class _MetaBlock extends StatelessWidget {
 }
 
 class _MediaGallery extends StatelessWidget {
-  const _MediaGallery({required this.media});
+  const _MediaGallery({required this.media, required this.apiBaseUrl});
 
   final List<String> media;
+  final String apiBaseUrl;
 
   bool _isLikelyImage(String input) {
     final v = input.toLowerCase();
@@ -216,7 +215,7 @@ class _MediaGallery extends StatelessWidget {
                       child: AspectRatio(
                         aspectRatio: 16 / 9,
                         child: Image.network(
-                          item,
+                          resolveMediaUrl(item, apiBaseUrl: apiBaseUrl),
                           fit: BoxFit.cover,
                           errorBuilder: (context, error, stackTrace) {
                             return Container(
@@ -224,9 +223,8 @@ class _MediaGallery extends StatelessWidget {
                               alignment: Alignment.center,
                               child: Text(
                                 '图片加载失败',
-                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: t.textSecondary,
-                                ),
+                                style: Theme.of(context).textTheme.bodySmall
+                                    ?.copyWith(color: t.textSecondary),
                               ),
                             );
                           },
@@ -240,17 +238,22 @@ class _MediaGallery extends StatelessWidget {
                         padding: EdgeInsets.all(t.spacing.xs),
                         child: Row(
                           children: [
-                            Icon(Icons.open_in_new_rounded, color: t.textSecondary, size: 18),
+                            Icon(
+                              Icons.open_in_new_rounded,
+                              color: t.textSecondary,
+                              size: 18,
+                            ),
                             SizedBox(width: t.spacing.xs),
                             Expanded(
                               child: Text(
                                 item,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: t.textSecondary,
-                                  decoration: TextDecoration.underline,
-                                ),
+                                style: Theme.of(context).textTheme.bodySmall
+                                    ?.copyWith(
+                                      color: t.textSecondary,
+                                      decoration: TextDecoration.underline,
+                                    ),
                               ),
                             ),
                           ],

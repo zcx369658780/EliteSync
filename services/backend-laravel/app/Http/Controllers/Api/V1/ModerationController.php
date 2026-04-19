@@ -22,7 +22,8 @@ class ModerationController extends Controller
         $data = $request->validate([
             'target_user_id' => ['required', 'integer', 'exists:users,id'],
             'target_message_id' => ['nullable', 'integer', 'exists:chat_messages,id'],
-            'category' => ['required', 'string', 'in:user,message,match,profile,other'],
+            'target_status_post_id' => ['nullable', 'integer', 'exists:status_posts,id'],
+            'category' => ['required', 'string', 'in:user,message,match,profile,status_post,other'],
             'reason_code' => ['required', 'string', 'max:64'],
             'detail' => ['nullable', 'string', 'max:2000'],
         ]);
@@ -37,6 +38,7 @@ class ModerationController extends Controller
             'reporter_id' => $reporterId,
             'target_user_id' => $targetUserId,
             'target_message_id' => $data['target_message_id'] ?? null,
+            'target_status_post_id' => $data['target_status_post_id'] ?? null,
             'category' => $data['category'],
             'reason_code' => $data['reason_code'],
             'detail' => $data['detail'] ?? null,

@@ -1,19 +1,43 @@
 # 文档索引（当前有效）
 
-更新时间：2026-04-17
+更新时间：2026-04-19
 
 ## 根目录
 - `README.md`：项目总览
 - `docs/HANDOFF_MASTER_CURRENT.md`：当前项目总交接稿
+- `docs/HANDOFF_3X_CLOSEOUT_20260417.md`：3.x 收口与下一阶段交接稿
 - `docs/HANDOFF_NEW_SESSION_20260417.md`：新会话交接摘要
 - `docs/DEVELOPMENT_PLAN_CURRENT.md`：当前整体开发计划书
+- `docs/version_plans/elite_sync_4_0_版本开发计划书_2026_04_18.md`：4.0 版本开发计划书
+- `docs/version_plans/elite_sync_4_1_版本开发计划书_2026_04_18.md`：4.1 版本开发计划书
+- `docs/version_plans/elite_sync_4_2_版本开发计划书_2026_04_18.md`：4.2 版本开发计划书
+- `docs/version_plans/elite_sync_4_3_版本开发计划书_2026_04_19.md`：4.3 版本开发计划书
+- `docs/version_plans/elite_sync_4_4_版本开发计划书_2026_04_19.md`：4.4 版本开发计划书
+- `docs/version_plans/4.4_EXECUTION_NOTE.md`：4.4 执行记录
+- `docs/version_plans/4.4_ACCEPTANCE_SUMMARY.md`：4.4 验收摘要
+- `docs/version_plans/4.4_HANDOFF_NOTE.md`：4.4 交接说明
+- `docs/version_plans/4.4_GPT_ADVISOR_HANDOFF.md`：4.4 给 GPT 顾问的交接稿
+- `docs/version_plans/4.4_SCREENSHOT_EVIDENCE_INDEX.md`：4.4 截图证据索引
+- `docs/version_plans/4.4_SCREENSHOT_VERIFICATION_NOTE.md`：4.4 截图验收说明
+- `docs/version_plans/4.4_CLOSEOUT_NOTE.md`：4.4 收尾说明
+- `docs/version_plans/4.4_MULTIAGENT_REVIEW_LOG.md`：4.4 多 Agent 审查日志
+- `docs/version_plans/4.4A_BOUNDARY_NOTE.md`：4.4A 边界冻结说明
+- `docs/version_plans/elite_sync_4_4_s_版本开发计划书_2026_04_19.md`：4.4S 版本开发计划书
+- `docs/version_plans/4.4S_EXECUTION_NOTE.md`：4.4S 执行记录
+- `docs/version_plans/4.4S_ACCEPTANCE_SUMMARY.md`：4.4S 验收摘要
+- `docs/version_plans/4.4S_CLOSEOUT_NOTE.md`：4.4S 收尾说明
+- `docs/version_plans/4.4S_GPT_ADVISOR_HANDOFF.md`：4.4S 给 GPT 顾问的交接稿
+- `docs/version_plans/4.4S_SCREENSHOT_EVIDENCE_INDEX.md`：4.4S 截图证据索引
+- `docs/version_plans/4.1_GPT_ADVISOR_HANDOFF.md`：4.1 给 GPT 顾问的交接稿
+- `docs/version_plans/elite_sync_整体开发计划书_4_x方向重整版_2026_04_17.md`：4.x 方向重整版整体开发计划书
 - `docs/archive/legacy_2026-04/DEVELOPMENT_PLAN_2_0_AND_EARLIER_ARCHIVE.md`：2.0 及更早版本开发计划归档
-- `docs/CHANGELOG.md`：0.03.09 版本变更记录（当前发布）
-- `docs/version_plans/0.03.09_UPDATE_BRIEF.md`：0.03.09 更新简报
+- `docs/CHANGELOG.md`：0.04.04 版本变更记录（当前发布）
+- `docs/version_plans/0.04.04_UPDATE_BRIEF.md`：0.04.04 更新简报
 - `docs/version_plans/elite_sync_3_9_版本开发计划书_2026_04_17.md`：3.9 版本开发计划书
 - `docs/runbooks/README.md`：运行手册索引
 - `LICENSE_DEPENDENCY_STATUS.md`：依赖许可证状态总表（长期维护）
 - `docs/version_plans/README.md`：版本开发计划索引（主入口）
+- `docs/version_plans/elite_sync_整体开发计划书_4_x方向重整版_2026_04_17.md`
 - `docs/version_plans/elite_sync_3_8_版本开发计划书_2026_04_13.md`：3.8 版本开发计划书
 - `docs/version_plans/3.8_EXEC_PLAN.md`：3.8 执行计划
 - `docs/version_plans/3.8_RISK_REVIEW.md`：3.8 风险评审
@@ -41,6 +65,45 @@
 - `docs/version_plans/3.9_FINAL_ARCHIVE_NOTE.md`：3.9 最终归档说明
 - `docs/version_plans/3.9_SCREENSHOT_EVIDENCE_INDEX.md`：3.9 截图证据索引
 - `docs/version_plans/3.9_SCREENSHOT_VERIFICATION_NOTE.md`：3.9 截图验收说明
+- `docs/version_plans/3.9A_EXECUTION_NOTE.md`：3.9a 执行记录
+- `docs/version_plans/3.9A_ACCEPTANCE_SUMMARY.md`：3.9a 验收摘要
+- `docs/version_plans/3.9A_ACCEPTANCE_CHECKLIST.md`：3.9a 验收核对清单
+- `docs/version_plans/3.9B_REGRESSION_EXECUTION.md`：3.9B 回归执行记录
+- `docs/version_plans/3.9C_BOUNDARY_NOTE.md`：3.9C 边界说明收口
+- `docs/version_plans/3.9C_BOUNDARY_BRIEF.md`：3.9C 边界总结短版
+- `docs/version_plans/4.0A_EXECUTION_NOTE.md`：4.0A 执行记录
+- `docs/version_plans/4.0A_DATA_SKELETON.md`：4.0A 数据骨架说明
+- `docs/version_plans/4.0B_MEDIA_BASELINE.md`：4.0B 媒体对象存储最小闭环
+- `docs/version_plans/4.0C_PIPELINE_NOTE.md`：4.0C 队列与缓存闭环说明
+- `docs/version_plans/4.0D_ATTACHMENT_SKELETON.md`：4.0D Flutter 附件上传状态骨架
+- `docs/version_plans/4.0E_OBSERVABILITY_NOTE.md`：4.0E 可观测性与限流说明
+- `docs/version_plans/4.0_ACCEPTANCE_SUMMARY.md`：4.0 总验收摘要
+- `docs/version_plans/4.0_ACCEPTANCE_REPORT.md`：4.0 验收报告
+- `docs/version_plans/4.0_MULTIAGENT_REVIEW_LOG.md`：4.0 多 Agent 审查日志
+- `docs/version_plans/4.0_PATCH_CLOSEOUT_NOTE.md`：4.0 收尾补丁说明
+- `docs/version_plans/4.1D_EXECUTION_NOTE.md`：4.1D 轻量联动与可观测性记录
+- `docs/version_plans/4.1_EXECUTION_NOTE.md`：4.1 执行记录
+- `docs/version_plans/4.1_ACCEPTANCE_SUMMARY.md`：4.1 验收摘要
+- `docs/version_plans/4.1_HANDOFF_NOTE.md`：4.1 交接说明
+- `docs/version_plans/4.1_MULTIAGENT_REVIEW_LOG.md`：4.1 多 Agent 审查日志
+- `docs/version_plans/4.1_SCREENSHOT_EVIDENCE_INDEX.md`：4.1 截图证据索引
+- `docs/version_plans/4.1_SCREENSHOT_VERIFICATION_NOTE.md`：4.1 截图验收说明
+- `docs/version_plans/4.2_EXECUTION_NOTE.md`：4.2 执行记录
+- `docs/version_plans/4.2_ACCEPTANCE_SUMMARY.md`：4.2 验收摘要
+- `docs/version_plans/4.2_HANDOFF_NOTE.md`：4.2 交接说明
+- `docs/version_plans/4.2_GPT_ADVISOR_HANDOFF.md`：4.2 给 GPT 顾问的交接稿
+- `docs/version_plans/4.2_MULTIAGENT_REVIEW_LOG.md`：4.2 多 Agent 审查日志
+- `docs/version_plans/4.2_CLOSEOUT_NOTE.md`：4.2 收尾说明
+- `docs/version_plans/4.2_SCREENSHOT_EVIDENCE_INDEX.md`：4.2 截图证据索引
+- `docs/version_plans/4.2_SCREENSHOT_VERIFICATION_NOTE.md`：4.2 截图验收说明
+- `docs/version_plans/4.3_EXECUTION_NOTE.md`：4.3 执行记录
+- `docs/version_plans/4.3_ACCEPTANCE_SUMMARY.md`：4.3 验收摘要
+- `docs/version_plans/4.3_HANDOFF_NOTE.md`：4.3 交接说明
+- `docs/version_plans/4.3_GPT_ADVISOR_HANDOFF.md`：4.3 给 GPT 顾问的交接稿
+- `docs/version_plans/4.3_MULTIAGENT_REVIEW_LOG.md`：4.3 多 Agent 审查日志
+- `docs/version_plans/4.3_SCREENSHOT_EVIDENCE_INDEX.md`：4.3 截图证据索引
+- `docs/version_plans/4.3_SCREENSHOT_VERIFICATION_NOTE.md`：4.3 截图验收说明
+- `docs/version_plans/4.3_CLOSEOUT_NOTE.md`：4.3 收尾说明
 - `docs/version_plans/elite_sync_3_6_版本开发计划书_2026_04_12.md`：3.6 版本开发计划书
 - `docs/version_plans/elite_sync_3_7_版本开发计划书_2026_04_12.md`：3.7 版本开发计划书
 - `docs/version_plans/3.7_EXEC_PLAN.md`：3.7 执行计划
@@ -74,7 +137,8 @@
 
 ## 版本计划（docs/version_plans）
 - `docs/version_plans/README.md`：版本计划总索引
-- `docs/version_plans/0.03.09_UPDATE_BRIEF.md`
+- `docs/HANDOFF_3X_CLOSEOUT_20260417.md`
+- `docs/version_plans/0.04.04_UPDATE_BRIEF.md`
 - `docs/version_plans/elite_sync_整体开发计划书_更新版_2026_04_11.md`
 - `docs/version_plans/elite_sync_3_8_版本开发计划书_2026_04_13.md`
 - `docs/version_plans/3.8_EXEC_PLAN.md`

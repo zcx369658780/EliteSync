@@ -60,6 +60,19 @@ return [
             'report' => false,
         ],
 
+        'oss' => [
+            'driver' => 's3',
+            'key' => env('OSS_ACCESS_KEY_ID', env('AWS_ACCESS_KEY_ID')),
+            'secret' => env('OSS_ACCESS_KEY_SECRET', env('AWS_SECRET_ACCESS_KEY')),
+            'region' => env('OSS_DEFAULT_REGION', env('AWS_DEFAULT_REGION')),
+            'bucket' => env('OSS_BUCKET', env('AWS_BUCKET')),
+            'url' => env('OSS_URL', env('AWS_URL')),
+            'endpoint' => env('OSS_ENDPOINT', env('AWS_ENDPOINT')),
+            'use_path_style_endpoint' => env('OSS_USE_PATH_STYLE_ENDPOINT', env('AWS_USE_PATH_STYLE_ENDPOINT', false)),
+            'throw' => false,
+            'report' => false,
+        ],
+
     ],
 
     /*

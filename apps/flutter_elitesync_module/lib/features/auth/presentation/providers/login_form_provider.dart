@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_elitesync_module/features/auth/presentation/providers/auth_guard_provider.dart';
 import 'package:flutter_elitesync_module/features/auth/presentation/state/login_form_state.dart';
+import 'package:flutter_elitesync_module/features/profile/presentation/providers/profile_providers.dart';
 import 'package:flutter_elitesync_module/shared/models/user_summary.dart';
 import 'package:flutter_elitesync_module/shared/providers/session_provider.dart';
 
@@ -60,6 +61,14 @@ class LoginFormNotifier extends Notifier<LoginFormState> {
               verified: session.user.verified,
             ),
           );
+
+      ref.invalidate(profileProvider);
+      ref.invalidate(editProfileProvider);
+      try {
+        await ref.read(profileProvider.future);
+      } catch (_) {
+        // 资料刷新失败不应阻塞登录结果，页面会继续按 provider 的 error 状态兜底。
+      }
 
       state = state.copyWith(isSubmitting: false, clearError: true);
       return true;

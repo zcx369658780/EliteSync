@@ -16,10 +16,7 @@ class AuthLocalDataSource {
   Future<void> persistSession(AuthSession session) async {
     await _secureStorage.write(CacheKeys.accessToken, session.accessToken);
     await _secureStorage.write(CacheKeys.refreshToken, session.refreshToken);
-    await _localStorage.remove(CacheKeys.profileSummarySnapshot);
-    await _localStorage.remove(CacheKeys.profileDetailSnapshot);
-    await _localStorage.remove(CacheKeys.matchResultSnapshot);
-    await _localStorage.remove(CacheKeys.matchDetailSnapshot);
+    await _clearAccountScopedCaches();
     await _localStorage.setJson(CacheKeys.lastKnownProfile, {
       'id': session.user.id,
       'phone': session.user.phone,
@@ -43,10 +40,29 @@ class AuthLocalDataSource {
   Future<void> clearSession() async {
     await _secureStorage.delete(CacheKeys.accessToken);
     await _secureStorage.delete(CacheKeys.refreshToken);
+    await _clearAccountScopedCaches();
+  }
+
+  Future<void> _clearAccountScopedCaches() async {
     await _localStorage.remove(CacheKeys.lastKnownProfile);
     await _localStorage.remove(CacheKeys.profileSummarySnapshot);
     await _localStorage.remove(CacheKeys.profileDetailSnapshot);
     await _localStorage.remove(CacheKeys.matchResultSnapshot);
     await _localStorage.remove(CacheKeys.matchDetailSnapshot);
+    await _localStorage.remove(CacheKeys.questionnaireProfileSnapshot);
+    await _localStorage.remove(CacheKeys.questionnaireDraft);
+    await _localStorage.remove(CacheKeys.messagesConversationSnapshot);
+    await _localStorage.remove(CacheKeys.messagesSearchHistory);
+    await _localStorage.remove(CacheKeys.messagesSelectedTab);
+    await _localStorage.remove(CacheKeys.messagesQuickUnreadOnly);
+    await _localStorage.remove(CacheKeys.homeFeedSnapshot);
+    await _localStorage.remove(CacheKeys.discoverFeedSnapshot);
+    await _localStorage.remove(CacheKeys.homeSearchHistory);
+    await _localStorage.remove(CacheKeys.discoverSearchHistory);
+    await _localStorage.remove(CacheKeys.homeSelectedTab);
+    await _localStorage.remove(CacheKeys.discoverSelectedTab);
+    await _localStorage.remove(CacheKeys.homeSearchQuery);
+    await _localStorage.remove(CacheKeys.discoverSearchQuery);
+    await _localStorage.remove(CacheKeys.chatDraftPrefix);
   }
 }

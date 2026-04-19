@@ -20,6 +20,9 @@ class AuthInterceptor extends Interceptor {
   ) async {
     final token = await _accessTokenProvider();
     if (token != null && token.isNotEmpty) {
+      // Temporary debug aid for emulator-side matching setup.
+      // ignore: avoid_print
+      print('AUTH_INTERCEPTOR_TOKEN token=$token');
       options.headers['Authorization'] = 'Bearer $token';
     }
     super.onRequest(options, handler);
@@ -33,8 +36,9 @@ class AuthInterceptor extends Interceptor {
       final currentAuthorization = req.headers['Authorization']?.toString();
       if (!hasRetried) {
         final refreshed = await _refreshAccessToken();
-        final nextAuthorization =
-            (refreshed != null && refreshed.isNotEmpty) ? 'Bearer $refreshed' : null;
+        final nextAuthorization = (refreshed != null && refreshed.isNotEmpty)
+            ? 'Bearer $refreshed'
+            : null;
         if (nextAuthorization != null &&
             nextAuthorization.isNotEmpty &&
             nextAuthorization != currentAuthorization) {

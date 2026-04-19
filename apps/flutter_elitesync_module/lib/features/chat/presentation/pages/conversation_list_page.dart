@@ -16,6 +16,7 @@ import 'package:flutter_elitesync_module/design_system/components/states/app_loa
 import 'package:flutter_elitesync_module/design_system/components/tags/app_choice_chip.dart';
 import 'package:flutter_elitesync_module/design_system/theme/app_theme_extensions.dart';
 import 'package:flutter_elitesync_module/features/chat/domain/entities/conversation_entity.dart';
+import 'package:flutter_elitesync_module/features/chat/domain/utils/conversation_snapshot_utils.dart';
 import 'package:flutter_elitesync_module/features/chat/presentation/providers/chat_providers.dart';
 import 'package:flutter_elitesync_module/features/chat/presentation/widgets/conversation_list_item.dart';
 import 'package:flutter_elitesync_module/shared/providers/app_providers.dart';
@@ -25,7 +26,8 @@ class ConversationListPage extends ConsumerStatefulWidget {
   const ConversationListPage({super.key});
 
   @override
-  ConsumerState<ConversationListPage> createState() => _ConversationListPageState();
+  ConsumerState<ConversationListPage> createState() =>
+      _ConversationListPageState();
 }
 
 class _ConversationListPageState extends ConsumerState<ConversationListPage>
@@ -90,7 +92,11 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage>
       final decoded = jsonDecode(raw);
       if (decoded is List) {
         setState(() {
-          _recentSearches = decoded.map((e) => e.toString()).where((e) => e.isNotEmpty).take(8).toList();
+          _recentSearches = decoded
+              .map((e) => e.toString())
+              .where((e) => e.isNotEmpty)
+              .take(8)
+              .toList();
         });
       }
     } catch (_) {}
@@ -99,9 +105,14 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage>
   Future<void> _addSearchHistory(String term) async {
     final t = term.trim();
     if (t.isEmpty) return;
-    final next = [t, ..._recentSearches.where((e) => e.toLowerCase() != t.toLowerCase())].take(8).toList();
+    final next = [
+      t,
+      ..._recentSearches.where((e) => e.toLowerCase() != t.toLowerCase()),
+    ].take(8).toList();
     setState(() => _recentSearches = next);
-    await ref.read(localStorageProvider).setString(CacheKeys.messagesSearchHistory, jsonEncode(next));
+    await ref
+        .read(localStorageProvider)
+        .setString(CacheKeys.messagesSearchHistory, jsonEncode(next));
   }
 
   void _onSearchChanged(String value) {
@@ -141,7 +152,8 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage>
       if (!_listController.hasClients) return;
       final raw = _tabScrollOffsets[tab] ?? 0;
       final target = raw.clamp(0, _listController.position.maxScrollExtent);
-      final liteMode = ref.read(performanceLiteModeProvider).asData?.value ?? false;
+      final liteMode =
+          ref.read(performanceLiteModeProvider).asData?.value ?? false;
       final t = context.appTokens;
       _listController.animateTo(
         target.toDouble(),
@@ -215,7 +227,8 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage>
         onRetry: () => ref.invalidate(conversationListProvider),
       ),
       data: (state) {
-        final liteMode = ref.watch(performanceLiteModeProvider).asData?.value ?? false;
+        final liteMode =
+            ref.watch(performanceLiteModeProvider).asData?.value ?? false;
         if (state.items.isNotEmpty) {
           _snapshotItems = state.items;
           _snapshotHydrated = true;
@@ -248,10 +261,15 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage>
           builder: (context, searchQuery, _) {
             final t = context.appTokens;
             final showRecentChips = _searchFocused && searchQuery.isEmpty;
-            final sourceItems = state.items.isNotEmpty ? state.items : (_snapshotHydrated ? _snapshotItems : state.items);
+            final sourceItems = state.items.isNotEmpty
+                ? state.items
+                : (_snapshotHydrated ? _snapshotItems : state.items);
             final filtered = _applyFilter(sourceItems);
             final hasAnyConversations = sourceItems.isNotEmpty;
-            final hasActiveFilter = _quickUnreadOnly || _tabIndex != 0 || searchQuery.trim().isNotEmpty;
+            final hasActiveFilter =
+                _quickUnreadOnly ||
+                _tabIndex != 0 ||
+                searchQuery.trim().isNotEmpty;
             return BrowseScaffold(
               header: Column(
                 children: [
@@ -264,7 +282,9 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage>
                     onSubmitted: (v) => _onSearchSubmitted(v),
                     onClear: _clearSearch,
                     onRightActionTap: _quickRefresh,
-                    rightIcon: _quickRefreshing ? Icons.hourglass_top_rounded : Icons.refresh_rounded,
+                    rightIcon: _quickRefreshing
+                        ? Icons.hourglass_top_rounded
+                        : Icons.refresh_rounded,
                   ),
                   SizedBox(height: t.spacing.xs),
                   Row(
@@ -272,9 +292,8 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage>
                       Expanded(
                         child: Text(
                           '当前会话 ${filtered.length} 条',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: t.textSecondary,
-                              ),
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(color: t.textSecondary),
                         ),
                       ),
                       AppChoiceChip(
@@ -296,7 +315,10 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage>
                                   Expanded(
                                     child: Text(
                                       '已筛选关键词: $searchQuery（找到 ${filtered.length} 条）',
-                                      style: Theme.of(context).textTheme.bodySmall?.copyWith(color: t.textSecondary),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall
+                                          ?.copyWith(color: t.textSecondary),
                                     ),
                                   ),
                                   AppChoiceChip(
@@ -309,32 +331,36 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage>
                             ],
                           )
                         : (showRecentChips && _recentSearches.isNotEmpty)
-                            ? Column(
-                                children: [
-                                  SizedBox(height: t.spacing.xs),
-                                  SizedBox(
-                                    height: 32,
-                                    child: ListView.separated(
-                                      scrollDirection: Axis.horizontal,
-                                      itemCount: _recentSearches.length,
-                                      separatorBuilder: (_, index) => SizedBox(width: t.spacing.xs),
-                                      itemBuilder: (context, index) {
-                                        final term = _recentSearches[index];
-                                        return AppChoiceChip(
-                                          label: term,
-                                          onTap: () {
-                                            _searchController.text = term;
-                                            _searchController.selection = TextSelection.collapsed(offset: term.length);
-                                            _onSearchChanged(term);
-                                            _searchFocusNode.unfocus();
-                                          },
-                                        );
+                        ? Column(
+                            children: [
+                              SizedBox(height: t.spacing.xs),
+                              SizedBox(
+                                height: 32,
+                                child: ListView.separated(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: _recentSearches.length,
+                                  separatorBuilder: (_, index) =>
+                                      SizedBox(width: t.spacing.xs),
+                                  itemBuilder: (context, index) {
+                                    final term = _recentSearches[index];
+                                    return AppChoiceChip(
+                                      label: term,
+                                      onTap: () {
+                                        _searchController.text = term;
+                                        _searchController.selection =
+                                            TextSelection.collapsed(
+                                              offset: term.length,
+                                            );
+                                        _onSearchChanged(term);
+                                        _searchFocusNode.unfocus();
                                       },
-                                    ),
-                                  ),
-                                ],
-                              )
-                            : const SizedBox.shrink(),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          )
+                        : const SizedBox.shrink(),
                   ),
                   SizedBox(height: t.spacing.xs),
                   Align(
@@ -409,18 +435,26 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage>
                           ],
                         )
                       : ListView.separated(
-                          key: ValueKey('messages-list-$_tabIndex-${_quickUnreadOnly ? 1 : 0}-${searchQuery.isEmpty ? "none" : "query"}'),
+                          key: ValueKey(
+                            'messages-list-$_tabIndex-${_quickUnreadOnly ? 1 : 0}-${searchQuery.isEmpty ? "none" : "query"}',
+                          ),
                           controller: _listController,
-                          padding: EdgeInsets.only(top: t.spacing.xs, bottom: t.spacing.huge),
+                          padding: EdgeInsets.only(
+                            top: t.spacing.xs,
+                            bottom: t.spacing.huge,
+                          ),
                           itemCount: filtered.length,
-                          separatorBuilder: (context, index) => SizedBox(height: t.spacing.xs),
+                          separatorBuilder: (context, index) =>
+                              SizedBox(height: t.spacing.xs),
                           itemBuilder: (context, index) {
                             final item = filtered[index];
                             return RepaintBoundary(
                               child: DecoratedBox(
                                 decoration: BoxDecoration(
                                   color: t.browseSurface,
-                                  borderRadius: BorderRadius.circular(t.radius.lg),
+                                  borderRadius: BorderRadius.circular(
+                                    t.radius.lg,
+                                  ),
                                   border: Border.all(color: t.browseBorder),
                                 ),
                                 child: ConversationListItem(
@@ -445,7 +479,10 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage>
   }
 
   Future<void> _loadConversationSnapshot() async {
-    final raw = await ref.read(localStorageProvider).getString(CacheKeys.messagesConversationSnapshot);
+    final env = ref.read(appEnvProvider);
+    final raw = await ref
+        .read(localStorageProvider)
+        .getString(CacheKeys.messagesConversationSnapshot);
     if (!mounted || raw == null || raw.isEmpty) return;
     try {
       final decoded = jsonDecode(raw);
@@ -462,17 +499,36 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage>
             ),
           )
           .toList();
-      if (list.isEmpty) return;
+      final sanitized = sanitizeConversationSnapshot(
+        list,
+        allowMockIds: env.useMockChat,
+      );
+      if (sanitized.isEmpty) {
+        await ref
+            .read(localStorageProvider)
+            .remove(CacheKeys.messagesConversationSnapshot);
+        return;
+      }
       setState(() {
-        _snapshotItems = list;
+        _snapshotItems = sanitized;
         _snapshotHydrated = true;
       });
     } catch (_) {}
   }
 
   Future<void> _saveConversationSnapshot(List<ConversationEntity> items) async {
-    if (items.isEmpty) return;
-    final payload = items
+    final env = ref.read(appEnvProvider);
+    final sanitized = sanitizeConversationSnapshot(
+      items,
+      allowMockIds: env.useMockChat,
+    );
+    if (sanitized.isEmpty) {
+      await ref
+          .read(localStorageProvider)
+          .remove(CacheKeys.messagesConversationSnapshot);
+      return;
+    }
+    final payload = sanitized
         .map(
           (e) => {
             'id': e.id,
@@ -483,13 +539,11 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage>
           },
         )
         .toList();
-    await ref.read(localStorageProvider).setString(
-          CacheKeys.messagesConversationSnapshot,
-          jsonEncode(payload),
-        );
+    await ref
+        .read(localStorageProvider)
+        .setString(CacheKeys.messagesConversationSnapshot, jsonEncode(payload));
   }
 
   @override
   bool get wantKeepAlive => true;
-
 }

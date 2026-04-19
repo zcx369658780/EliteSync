@@ -43,7 +43,7 @@ class AstroAdvancedPreviewDemoPage extends StatelessWidget {
             subtitle: 'stage 4 / stage 5 归档用静态页面',
             leadingIcon: Icons.rocket_launch_rounded,
             child: Text(
-              '这一页不依赖服务端高级接口，专门用于 stage 4 / stage 5 的视觉验收、截图归档和 Gemini 复核。它保留 derived-only / display-only / advanced-context 口径，重点展示路线差异、时法框架、样例矩阵和已知偏差。',
+              '这一页不依赖服务端高级接口，专门用于 stage 4 / stage 5 的视觉验收、截图归档和 Gemini 复核。它保留展示与关联说明口径，重点展示路线差异、时法框架、样例矩阵和已知偏差。',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: t.textSecondary,
                 height: 1.45,
@@ -66,7 +66,7 @@ class AstroAdvancedPreviewDemoPage extends StatelessWidget {
           SizedBox(height: t.spacing.sm),
           AppInfoSectionCard(
             title: '高级能力口径',
-            subtitle: '只展示 derived-only / display-only / advanced-context',
+            subtitle: '只做展示与关联说明',
             leadingIcon: Icons.auto_awesome_rounded,
             child: Text(
               '当前演示页面把合盘、对比盘、行运、返照与时法框架分开陈列，作为 3.9 的正式截图入口。等正式高级页面恢复在线预览后，这个演示页仍然可作为回归基线保留。',

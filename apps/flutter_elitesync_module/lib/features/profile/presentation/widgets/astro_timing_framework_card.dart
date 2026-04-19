@@ -21,7 +21,7 @@ class AstroTimingFrameworkCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            '3.9 先把时法容器搭起来，再逐步替换占位能力。当前输出只用于 display-only / advanced-context，不会回写 natal canonical truth，也不会把 scaffold 冒充成最终真值。',
+            '3.9 先把时法容器搭起来，再逐步替换占位能力。当前输出只用于展示与说明，不会回写 natal canonical truth，也不会把占位内容冒充成最终真值。',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
               color: t.textSecondary,
               height: 1.45,

@@ -1,5 +1,13 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:flutter_elitesync_module/app/router/app_route_names.dart';
+import 'package:flutter_elitesync_module/core/network/network_result.dart';
+import 'package:flutter_elitesync_module/core/telemetry/frontend_telemetry.dart';
 import 'package:flutter_elitesync_module/design_system/components/bars/app_top_bar.dart';
 import 'package:flutter_elitesync_module/design_system/components/cards/app_info_section_card.dart';
 import 'package:flutter_elitesync_module/design_system/components/fields/app_text_field.dart';
@@ -14,6 +22,11 @@ import 'package:flutter_elitesync_module/design_system/theme/app_theme_extension
 import 'package:flutter_elitesync_module/features/profile/presentation/providers/profile_providers.dart';
 import 'package:flutter_elitesync_module/features/status/domain/entities/status_post_entity.dart';
 import 'package:flutter_elitesync_module/features/status/presentation/providers/status_posts_provider.dart';
+import 'package:flutter_elitesync_module/features/status/presentation/widgets/status_post_card.dart';
+import 'package:flutter_elitesync_module/features/status/presentation/widgets/status_report_sheet.dart';
+import 'package:flutter_elitesync_module/shared/providers/app_providers.dart';
+
+enum _CoverUploadStage { idle, uploading, processing, ready, failed }
 
 class StatusSquarePage extends ConsumerStatefulWidget {
   const StatusSquarePage({super.key});
@@ -26,9 +39,15 @@ class _StatusSquarePageState extends ConsumerState<StatusSquarePage> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _bodyController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
+  final ImagePicker _imagePicker = ImagePicker();
   String _visibility = 'public';
   bool _submitting = false;
   bool _prefilledLocation = false;
+  String? _coverImagePath;
+  String? _coverImageName;
+  int? _coverMediaAssetId;
+  String? _coverUploadError;
+  _CoverUploadStage _coverStage = _CoverUploadStage.idle;
 
   @override
   void dispose() {
@@ -45,6 +64,15 @@ class _StatusSquarePageState extends ConsumerState<StatusSquarePage> {
       AppFeedback.showInfo(context, '请先填写标题和内容');
       return;
     }
+    if (_coverStage == _CoverUploadStage.uploading) {
+      AppFeedback.showInfo(context, '封面图片正在上传，请稍后再发布');
+      return;
+    }
+    if (_coverImagePath != null && _coverStage == _CoverUploadStage.failed) {
+      AppFeedback.showInfo(context, '封面图片上传失败，请重试或清除后再发布');
+      return;
+    }
+
     setState(() => _submitting = true);
     try {
       final item = await ref
@@ -56,9 +84,16 @@ class _StatusSquarePageState extends ConsumerState<StatusSquarePage> {
                 ? null
                 : _locationController.text.trim(),
             visibility: _visibility,
+            coverMediaAssetId: _coverStage == _CoverUploadStage.ready
+                ? _coverMediaAssetId
+                : null,
           );
+      ref
+          .read(frontendTelemetryProvider)
+          .statusPostPublished(sourcePage: 'status_square', postId: item.id);
       _titleController.clear();
       _bodyController.clear();
+      _clearCoverImage();
       ref.invalidate(statusPostsProvider);
       if (!mounted) return;
       AppFeedback.showSuccess(
@@ -94,6 +129,255 @@ class _StatusSquarePageState extends ConsumerState<StatusSquarePage> {
       if (!mounted) return;
       AppFeedback.showError(context, '删除失败：$e');
     }
+  }
+
+  Future<void> _toggleLike(StatusPostEntity post) async {
+    try {
+      final remote = ref.read(statusRemoteDataSourceProvider);
+      if (post.likedByViewer) {
+        await remote.unlikeStatusPost(post.id);
+      } else {
+        await remote.likeStatusPost(post.id);
+      }
+      ref
+          .read(frontendTelemetryProvider)
+          .statusPostLiked(
+            sourcePage: 'status_square',
+            postId: post.id,
+            liked: !post.likedByViewer,
+          );
+      ref.invalidate(statusPostsProvider);
+    } catch (e) {
+      if (!mounted) return;
+      AppFeedback.showError(context, '操作失败：$e');
+    }
+  }
+
+  Future<void> _reportPost(StatusPostEntity post) async {
+    final remote = ref.read(statusRemoteDataSourceProvider);
+    await StatusReportSheet.show(
+      context,
+      targetName: post.displayAuthorName,
+      onSubmit: ({required String reasonCode, String? detail}) async {
+        await remote.reportStatusPost(
+          postId: post.id,
+          reasonCode: reasonCode,
+          detail: detail,
+        );
+        ref
+            .read(frontendTelemetryProvider)
+            .statusPostReported(sourcePage: 'status_square', postId: post.id);
+      },
+    );
+  }
+
+  Future<void> _openAuthor(StatusPostEntity post) async {
+    ref
+        .read(frontendTelemetryProvider)
+        .statusAuthorOpened(sourcePage: 'status_square', userId: post.authorId);
+    if (!mounted) return;
+    await context.push(
+      '${AppRouteNames.statusAuthor}/${post.authorId}?name=${Uri.encodeComponent(post.displayAuthorName)}',
+    );
+  }
+
+  Future<void> _pickAndUploadCoverImage() async {
+    if (_submitting || _coverStage == _CoverUploadStage.uploading) return;
+    ref
+        .read(frontendTelemetryProvider)
+        .statusImagePickerOpened(sourcePage: 'status_square');
+    final picked = await _imagePicker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 88,
+    );
+    if (picked == null) return;
+
+    setState(() {
+      _coverImagePath = picked.path;
+      _coverImageName = picked.name.isNotEmpty ? picked.name : 'status.jpg';
+      _coverStage = _CoverUploadStage.uploading;
+      _coverUploadError = null;
+    });
+    ref
+        .read(frontendTelemetryProvider)
+        .statusImageUploadStarted(sourcePage: 'status_square');
+
+    try {
+      final api = ref.read(apiClientProvider);
+      final form = FormData.fromMap({
+        'media_type': 'image',
+        'original_name': _coverImageName,
+        'file': await MultipartFile.fromFile(
+          picked.path,
+          filename: _coverImageName,
+        ),
+        'metadata': {'source_page': 'status_square'},
+      });
+      final result = await api.post('/api/v1/media', body: form);
+      if (result is! NetworkSuccess<Map<String, dynamic>>) {
+        throw Exception(
+          (result as NetworkFailure<Map<String, dynamic>>).message,
+        );
+      }
+      final asset = result.data['asset'];
+      if (asset is! Map<String, dynamic>) {
+        throw Exception('media upload did not return an asset');
+      }
+      final assetId = (asset['id'] as num?)?.toInt() ?? 0;
+      final status = (asset['status'] ?? '').toString();
+      if (!mounted) return;
+      setState(() {
+        _coverMediaAssetId = assetId > 0 ? assetId : null;
+        _coverStage = status == 'processing'
+            ? _CoverUploadStage.processing
+            : _CoverUploadStage.ready;
+        _coverUploadError = null;
+      });
+      ref
+          .read(frontendTelemetryProvider)
+          .statusImageUploadSucceeded(
+            sourcePage: 'status_square',
+            assetId: assetId,
+          );
+      AppFeedback.showSuccess(context, '封面图片已准备好，可以发布状态');
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _coverMediaAssetId = null;
+        _coverStage = _CoverUploadStage.failed;
+        _coverUploadError = e.toString();
+      });
+      ref
+          .read(frontendTelemetryProvider)
+          .statusImageUploadFailed(
+            sourcePage: 'status_square',
+            errorCode: 'upload_failed',
+          );
+      AppFeedback.showError(context, '封面上传失败，请重试');
+    }
+  }
+
+  void _clearCoverImage() {
+    setState(() {
+      _coverImagePath = null;
+      _coverImageName = null;
+      _coverMediaAssetId = null;
+      _coverUploadError = null;
+      _coverStage = _CoverUploadStage.idle;
+    });
+  }
+
+  Widget _buildCoverPreview(BuildContext context) {
+    final t = context.appTokens;
+    final label = switch (_coverStage) {
+      _CoverUploadStage.uploading => '上传中',
+      _CoverUploadStage.processing => '处理中',
+      _CoverUploadStage.failed => '失败',
+      _CoverUploadStage.ready => '已完成',
+      _CoverUploadStage.idle => '待选择',
+    };
+    final detail =
+        _coverUploadError ??
+        switch (_coverStage) {
+          _CoverUploadStage.uploading => '封面正在上传到对象存储主路径。',
+          _CoverUploadStage.processing => '封面已入库，等待后台处理。',
+          _CoverUploadStage.failed => '封面上传失败，可重试或重新选择。',
+          _CoverUploadStage.ready => '封面已可用于状态发布。',
+          _CoverUploadStage.idle => '单图状态优先，建议先补一张轻量封面。',
+        };
+
+    return AppInfoSectionCard(
+      title: '封面图片',
+      subtitle: '单图状态，先上传再发布',
+      leadingIcon: Icons.photo_outlined,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (_coverImagePath != null)
+            ClipRRect(
+              borderRadius: BorderRadius.circular(t.radius.lg),
+              child: AspectRatio(
+                aspectRatio: 4 / 3,
+                child: Image.file(
+                  File(_coverImagePath!),
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => Container(
+                    color: t.surface,
+                    alignment: Alignment.center,
+                    child: const Text('图片预览失败'),
+                  ),
+                ),
+              ),
+            )
+          else
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(t.spacing.lg),
+              decoration: BoxDecoration(
+                color: t.surface.withValues(alpha: 0.72),
+                borderRadius: BorderRadius.circular(t.radius.lg),
+                border: Border.all(color: t.overlay.withValues(alpha: 0.22)),
+              ),
+              child: Column(
+                children: [
+                  Icon(Icons.image_outlined, color: t.textSecondary),
+                  SizedBox(height: t.spacing.xs),
+                  Text(
+                    '暂未选择封面图片',
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodyMedium?.copyWith(color: t.textSecondary),
+                  ),
+                ],
+              ),
+            ),
+          SizedBox(height: t.spacing.sm),
+          Row(
+            children: [
+              AppChoiceChip(label: label, selected: true),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  detail,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(color: t.textSecondary),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: t.spacing.sm),
+          Wrap(
+            spacing: t.spacing.xs,
+            runSpacing: t.spacing.xs,
+            children: [
+              FilledButton.icon(
+                onPressed:
+                    _submitting || _coverStage == _CoverUploadStage.uploading
+                    ? null
+                    : _pickAndUploadCoverImage,
+                icon: _coverStage == _CoverUploadStage.uploading
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.photo_library_outlined),
+                label: Text(
+                  _coverStage == _CoverUploadStage.uploading
+                      ? '上传中...'
+                      : '选择封面',
+                ),
+              ),
+              OutlinedButton(
+                onPressed: _coverImagePath == null ? null : _clearCoverImage,
+                child: const Text('清除封面'),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -203,6 +487,8 @@ class _StatusSquarePageState extends ConsumerState<StatusSquarePage> {
                     ],
                   ),
                   SizedBox(height: t.spacing.sm),
+                  _buildCoverPreview(context),
+                  SizedBox(height: t.spacing.sm),
                   FilledButton.icon(
                     onPressed: _submitting ? null : _publish,
                     icon: _submitting
@@ -236,9 +522,7 @@ class _StatusSquarePageState extends ConsumerState<StatusSquarePage> {
                       title: '还没有公开状态',
                       description: '先发布一条状态，看看会不会出现在广场里。',
                       actionLabel: '去发布',
-                      onAction: () {
-                        _publish();
-                      },
+                      onAction: _publish,
                     );
                   }
 
@@ -247,8 +531,13 @@ class _StatusSquarePageState extends ConsumerState<StatusSquarePage> {
                       for (final post in posts)
                         Padding(
                           padding: EdgeInsets.only(bottom: t.spacing.sm),
-                          child: _StatusPostCard(
+                          child: StatusPostCard(
                             post: post,
+                            onTapAuthor: () => _openAuthor(post),
+                            onLikeToggle: () => _toggleLike(post),
+                            onReport: post.canDelete
+                                ? null
+                                : () => _reportPost(post),
                             onDelete: post.canDelete
                                 ? () => _deletePost(post)
                                 : null,
@@ -261,64 +550,6 @@ class _StatusSquarePageState extends ConsumerState<StatusSquarePage> {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _StatusPostCard extends StatelessWidget {
-  const _StatusPostCard({required this.post, this.onDelete});
-
-  final StatusPostEntity post;
-  final VoidCallback? onDelete;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = context.appTokens;
-    final time = MaterialLocalizations.of(
-      context,
-    ).formatShortDate(post.createdAt);
-    return AppInfoSectionCard(
-      title: post.title,
-      subtitle:
-          '${post.authorName} · ${post.locationName.isEmpty ? '同城' : post.locationName} · $time',
-      leadingIcon: Icons.waving_hand_rounded,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Text(
-                post.visibilityLabel,
-                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: t.textSecondary,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Text(
-                post.authorLayerLabel,
-                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: t.textSecondary,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const Spacer(),
-              if (onDelete != null)
-                IconButton(
-                  onPressed: onDelete,
-                  icon: const Icon(Icons.delete_outline_rounded),
-                ),
-            ],
-          ),
-          Text(
-            post.body,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: t.textPrimary,
-              height: 1.45,
-            ),
-          ),
-        ],
       ),
     );
   }

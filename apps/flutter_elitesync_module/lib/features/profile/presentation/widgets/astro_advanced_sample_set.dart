@@ -34,8 +34,8 @@ AstroAdvancedSampleSetReport buildAstroAdvancedSampleSetReport(
     relationshipSamples: [bundle.pair, bundle.comparison],
     timeSamples: [bundle.transit, bundle.returnChart],
     knownDeviations: [
-      '合盘与对比盘的样例仅作 scaffold 对照，关系评分字段可能在 comparison 模式下为空或弱化。',
-      '行运与返照都保持 advanced-context，不回写 canonical truth；返回结构更强调解释层而非结果层。',
+      '合盘与对比盘的样例仅作对照预览，关系评分字段可能在 comparison 模式下为空或弱化。',
+      '行运与返照都保持关联说明，不回写 canonical truth；返回结构更强调解释层而非结果层。',
       '返照优先使用 Lunar 回归口径，若未来扩展 Solar 仍应单独注明。',
     ],
   );

@@ -47,7 +47,7 @@ class AstroAdvancedPreviewPage extends ConsumerWidget {
             const SectionReveal(
               child: PageTitleRail(
                 title: '高级时法',
-                subtitle: '合盘 / 行运 / 返照 / 时法 scaffold 预览与路线解释',
+                subtitle: '合盘 / 行运 / 返照 / 时法预览与路线解释',
               ),
             ),
             SizedBox(height: t.spacing.md),
@@ -76,11 +76,10 @@ class AstroAdvancedPreviewPage extends ConsumerWidget {
                   children: [
                     AppInfoSectionCard(
                       title: '高级能力口径',
-                      subtitle:
-                          '只展示 derived-only / display-only / advanced-context',
+                      subtitle: '只做展示与关联说明',
                       leadingIcon: Icons.auto_awesome_rounded,
                       child: Text(
-                        '当前高级时法预览基于已保存画像与 scaffold 对照主体生成：合盘、行运、返照和时法都只用于解释层与展示层，不回写 canonical truth。若要微调路线上下文和工作台偏好，请回到设置中心；若要看 route parity，请返回本命盘详情页。',
+                        '当前高级时法预览基于已保存画像与对照样例生成：合盘、行运、返照和时法都只用于解释层与展示层，不回写 canonical truth。若要微调路线上下文和工作台偏好，请回到设置中心；若要看 route parity，请返回本命盘详情页。',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: t.textSecondary,
                           height: 1.45,

@@ -75,16 +75,16 @@ tasks.named("preBuild") {
 
 android {
     namespace = "com.elitesync"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.elitesync"
         minSdk = 26
-        targetSdk = 34
+        targetSdk = 36
         // Versioning rule: major.minor.patch[alpha suffix]
         // versionCode uses an expanded numeric form to keep suffix releases ordered.
-        versionCode = 30900
-        versionName = "0.03.09"
+        versionCode = 40400
+        versionName = "0.04.04"
         ndk {
             // Google Play 16KB page-size compliance: avoid x86_64 native libs from third-party SDKs.
             // Keep ARM ABIs for real-device testing and release publishing.
@@ -185,7 +185,6 @@ configurations.all {
         force("androidx.browser:browser:1.8.0")
     }
 }
-
 
 
 

@@ -9,6 +9,7 @@ abstract class AppRouteNames {
 
   static const questionnaire = '/questionnaire';
   static const questionnaireResult = '/questionnaire/result';
+  static const questionnaireHistory = '/questionnaire/history';
 
   static const home = '/home';
   static const discover = '/discover';
@@ -25,6 +26,7 @@ abstract class AppRouteNames {
 
   static const chatRoom = '/messages/chat';
   static const statusSquare = '/status/square';
+  static const statusAuthor = '/status/author';
 
   static const editProfile = '/profile/edit';
   static const settings = '/profile/settings';
@@ -46,4 +48,3 @@ abstract class AppRouteNames {
   static const astroChartSettings = '/profile/astro/chart-settings';
   static const astroProfile = '/profile/astro';
 }
-

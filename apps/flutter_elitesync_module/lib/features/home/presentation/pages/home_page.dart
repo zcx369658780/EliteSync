@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_elitesync_module/app/router/app_route_names.dart';
 import 'package:flutter_elitesync_module/core/storage/cache_keys.dart';
+import 'package:flutter_elitesync_module/core/telemetry/frontend_telemetry.dart';
 import 'package:flutter_elitesync_module/design_system/components/brand/browse_top_search_bar.dart';
 import 'package:flutter_elitesync_module/design_system/components/brand/category_tab_strip.dart';
 import 'package:flutter_elitesync_module/design_system/components/layout/browse_scaffold.dart';
@@ -20,8 +21,11 @@ import 'package:flutter_elitesync_module/features/home/domain/entities/home_feed
 import 'package:flutter_elitesync_module/features/home/domain/entities/home_shortcut_entity.dart';
 import 'package:flutter_elitesync_module/features/home/presentation/providers/home_provider.dart';
 import 'package:flutter_elitesync_module/features/home/presentation/widgets/media_feed_card.dart';
+import 'package:flutter_elitesync_module/features/questionnaire/presentation/providers/questionnaire_provider.dart';
+import 'package:flutter_elitesync_module/features/questionnaire/presentation/widgets/questionnaire_profile_summary_card.dart';
 import 'package:flutter_elitesync_module/features/status/domain/entities/status_post_entity.dart';
 import 'package:flutter_elitesync_module/features/status/presentation/providers/status_posts_provider.dart';
+import 'package:flutter_elitesync_module/features/status/presentation/widgets/status_post_card.dart';
 import 'package:flutter_elitesync_module/shared/providers/app_providers.dart';
 import 'package:flutter_elitesync_module/shared/providers/performance_mode_provider.dart';
 
@@ -37,6 +41,7 @@ enum _HomeCtaState { questionnaire, profile, match, discover }
 class _HomePageState extends ConsumerState<HomePage>
     with AutomaticKeepAliveClientMixin<HomePage> {
   int _selectedTabIndex = 0;
+  bool _questionnaireSummaryOpenedTracked = false;
   final ValueNotifier<String> _searchQueryNotifier = ValueNotifier<String>('');
   static const _tabs = ['推荐', '附近', '话题', '活动', '灵感'];
   final ScrollController _scrollController = ScrollController();
@@ -157,6 +162,7 @@ class _HomePageState extends ConsumerState<HomePage>
     super.build(context);
     final asyncState = ref.watch(homeProvider);
     final statusAsync = ref.watch(statusPostsProvider);
+    final questionnaireAsync = ref.watch(questionnaireProfileSnapshotProvider);
 
     return asyncState.when(
       loading: () => const AppLoadingSkeleton(lines: 8),
@@ -175,7 +181,18 @@ class _HomePageState extends ConsumerState<HomePage>
             final t = context.appTokens;
             final showRecentChips = _searchFocused && searchQuery.isEmpty;
             final filteredFeed = _filterFeed(state.feed);
+            final questionnaireSummary = questionnaireAsync.asData?.value;
             final ctaState = _resolveCtaState(state.shortcuts);
+            if (questionnaireSummary != null &&
+                !_questionnaireSummaryOpenedTracked) {
+              _questionnaireSummaryOpenedTracked = true;
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (!mounted) return;
+                ref
+                    .read(frontendTelemetryProvider)
+                    .homepagePersonalitySummaryOpened(sourcePage: 'home');
+              });
+            }
             return BrowseScaffold(
               header: Column(
                 children: [
@@ -294,6 +311,28 @@ class _HomePageState extends ConsumerState<HomePage>
                           _handleShortcutTap(context, item),
                     ),
                     SizedBox(height: t.spacing.sm),
+                    if (questionnaireSummary != null)
+                      QuestionnaireProfileSummaryCard(
+                        snapshot: questionnaireSummary,
+                        onViewHistory: () {
+                          ref
+                              .read(frontendTelemetryProvider)
+                              .questionnaireSummaryHistoryOpened(
+                                sourcePage: 'home',
+                              );
+                          context.push(AppRouteNames.questionnaireHistory);
+                        },
+                        onContinueQuestionnaire: () {
+                          ref
+                              .read(frontendTelemetryProvider)
+                              .questionnaireSummaryContinueTapped(
+                                sourcePage: 'home',
+                              );
+                          context.push(AppRouteNames.questionnaire);
+                        },
+                      ),
+                    if (questionnaireSummary != null)
+                      SizedBox(height: t.spacing.sm),
                     _StatusPreviewSection(
                       statusAsync: statusAsync,
                       onTapMore: () => context.push(AppRouteNames.statusSquare),
@@ -824,95 +863,21 @@ class _StatusPreviewSection extends StatelessWidget {
                 ),
               ),
               for (var i = 0; i < posts.length; i++) ...[
-                _HomeStatusPreviewCard(post: posts[i], onTap: onTapMore),
+                StatusPostCard(
+                  post: posts[i],
+                  compact: true,
+                  onTapAuthor: () {
+                    context.push(
+                      '${AppRouteNames.statusAuthor}/${posts[i].authorId}?name=${Uri.encodeComponent(posts[i].displayAuthorName)}',
+                    );
+                  },
+                ),
                 if (i < posts.length - 1) SizedBox(height: t.spacing.xs),
               ],
             ],
           ),
         );
       },
-    );
-  }
-}
-
-class _HomeStatusPreviewCard extends StatelessWidget {
-  const _HomeStatusPreviewCard({required this.post, required this.onTap});
-
-  final StatusPostEntity post;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = context.appTokens;
-    final time = MaterialLocalizations.of(
-      context,
-    ).formatShortDate(post.createdAt);
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(t.radius.lg),
-        onTap: onTap,
-        child: Container(
-          padding: EdgeInsets.all(t.spacing.sm),
-          decoration: BoxDecoration(
-            color: t.surface.withValues(alpha: 0.72),
-            borderRadius: BorderRadius.circular(t.radius.lg),
-            border: Border.all(color: t.overlay.withValues(alpha: 0.22)),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      post.title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        color: t.textPrimary,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                  Text(
-                    post.visibilityLabel,
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: t.textSecondary,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: t.spacing.xs / 2),
-              Text(
-                '${post.authorName} · ${post.locationName.isEmpty ? '同城' : post.locationName} · $time',
-                style: Theme.of(
-                  context,
-                ).textTheme.bodySmall?.copyWith(color: t.textSecondary),
-              ),
-              SizedBox(height: t.spacing.xxs),
-              Text(
-                '${post.authorLayerLabel} · ${post.visibilityTierLabel}',
-                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: t.textSecondary,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              SizedBox(height: t.spacing.xs),
-              Text(
-                post.body,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: t.textPrimary,
-                  height: 1.4,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

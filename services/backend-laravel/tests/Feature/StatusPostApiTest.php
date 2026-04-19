@@ -3,8 +3,12 @@
 namespace Tests\Feature;
 
 use App\Models\StatusPost;
+use App\Models\MediaAsset;
+use App\Models\ModerationReport;
+use App\Models\UserBlock;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class StatusPostApiTest extends TestCase
@@ -94,5 +98,117 @@ class StatusPostApiTest extends TestCase
             ->assertJsonPath('ok', true);
 
         $this->assertTrue((bool) $post->fresh()->is_deleted);
+    }
+
+    public function test_single_image_status_like_report_and_author_page_flow(): void
+    {
+        config([
+            'app.url' => 'http://101.133.161.203',
+            'filesystems.disks.public.url' => 'http://101.133.161.203/storage',
+        ]);
+
+        $author = $this->makeUser([
+            'phone' => '17000000003',
+            'name' => 'Author',
+        ]);
+        $viewer = $this->makeUser([
+            'phone' => '17000000004',
+            'name' => 'Viewer',
+        ]);
+
+        $asset = MediaAsset::create([
+            'owner_user_id' => $author->id,
+            'media_type' => 'image',
+            'storage_provider' => 'oss',
+            'storage_disk' => 'public',
+            'storage_key' => 'status-media/'.$author->id.'/cover.jpg',
+            'original_name' => 'cover.jpg',
+            'mime_type' => 'image/jpeg',
+            'size_bytes' => 1024,
+            'status' => 'ready',
+            'public_url' => 'http://localhost:8080/storage/status-media/'.$author->id.'/cover.jpg',
+            'uploaded_at' => now(),
+            'processed_at' => now(),
+        ]);
+
+        $expectedUrl = 'http://localhost:8080/api/v1/media/'.$asset->id.'/content';
+
+        Sanctum::actingAs($author);
+        $created = $this->postJson('/api/v1/status/posts', [
+            'title' => '今晚想散步',
+            'body' => '单图动态测试。',
+            'cover_media_asset_id' => $asset->id,
+        ])
+            ->assertCreated()
+            ->assertJsonPath('item.cover_media.public_url', $expectedUrl)
+            ->json('item');
+
+        $postId = (int) $created['id'];
+
+        Sanctum::actingAs($viewer);
+        $this->getJson('/api/v1/status/posts/'.$postId)
+            ->assertOk()
+            ->assertJsonPath('item.id', $postId)
+            ->assertJsonPath('item.media.0', $expectedUrl);
+
+        $this->postJson('/api/v1/status/posts/'.$postId.'/likes')
+            ->assertOk()
+            ->assertJsonPath('item.likes_count', 1)
+            ->assertJsonPath('item.liked_by_viewer', true);
+
+        $this->deleteJson('/api/v1/status/posts/'.$postId.'/likes')
+            ->assertOk()
+            ->assertJsonPath('item.likes_count', 0)
+            ->assertJsonPath('item.liked_by_viewer', false);
+
+        $this->postJson('/api/v1/status/posts/'.$postId.'/report', [
+            'reason_code' => 'spam',
+            'detail' => 'demo report',
+        ])
+            ->assertOk()
+            ->assertJsonPath('report.status', 'new');
+
+        $this->assertDatabaseHas('moderation_reports', [
+            'target_user_id' => $author->id,
+            'target_status_post_id' => $postId,
+            'category' => 'status_post',
+            'reason_code' => 'spam',
+        ]);
+
+        $this->getJson('/api/v1/status/authors/'.$author->id)
+            ->assertOk()
+            ->assertJsonPath('author.id', $author->id)
+            ->assertJsonPath('items.0.id', $postId);
+    }
+
+    public function test_blocked_author_is_filtered_from_status_feed(): void
+    {
+        $viewer = $this->makeUser([
+            'phone' => '17000000005',
+            'name' => 'Viewer2',
+        ]);
+        $author = $this->makeUser([
+            'phone' => '17000000006',
+            'name' => 'BlockedAuthor',
+        ]);
+
+        StatusPost::create([
+            'author_user_id' => (int) $author->id,
+            'title' => '被屏蔽状态',
+            'body' => '应该不会出现在 viewer 流里。',
+            'location_name' => '南阳',
+            'visibility' => 'public',
+            'is_deleted' => false,
+        ]);
+
+        UserBlock::create([
+            'blocker_id' => $viewer->id,
+            'blocked_user_id' => $author->id,
+        ]);
+
+        Sanctum::actingAs($viewer);
+        $this->getJson('/api/v1/status/posts')
+            ->assertOk()
+            ->assertJsonCount(0, 'items');
     }
 }

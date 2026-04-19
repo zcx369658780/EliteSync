@@ -25,7 +25,7 @@
 > 说明：当前为 P0 联调版本，重点是打通主流程，UI/状态管理与本地缓存会在下一阶段优化。
 
 ## 构建版本约束（重要）
-- Android Gradle Plugin: `8.5.2`
+- Android Gradle Plugin: `8.9.1`
 - Kotlin Android Plugin: `1.9.24`
 - JDK / Gradle JDK: **17**（建议 Temurin 17.0.10+）
 - Gradle 运行 JDK 不要使用 25（否则会出现 `Unsupported class file major version 69`）

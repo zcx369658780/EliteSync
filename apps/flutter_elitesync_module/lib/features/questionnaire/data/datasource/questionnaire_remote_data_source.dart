@@ -1,7 +1,9 @@
 import 'package:flutter_elitesync_module/core/error/app_exception.dart';
 import 'package:flutter_elitesync_module/core/network/api_client.dart';
 import 'package:flutter_elitesync_module/core/network/network_result.dart';
+import 'package:flutter_elitesync_module/features/questionnaire/data/dto/questionnaire_attempt_dto.dart';
 import 'package:flutter_elitesync_module/features/questionnaire/data/dto/questionnaire_bundle_dto.dart';
+import 'package:flutter_elitesync_module/features/questionnaire/data/dto/questionnaire_submission_result_dto.dart';
 import 'package:flutter_elitesync_module/mocks/mock_data/questionnaire_mock.dart';
 
 class QuestionnaireRemoteDataSource {
@@ -46,9 +48,13 @@ class QuestionnaireRemoteDataSource {
     return;
   }
 
-  Future<void> submitAnswers(Map<int, int> answers) async {
+  Future<QuestionnaireSubmissionResultDto> submitAnswers(
+    Map<int, int> answers,
+  ) async {
     if (_useMockQuestionnaire) {
-      return;
+      return QuestionnaireSubmissionResultDto.fromJson(
+        QuestionnaireMock.submitHappy,
+      );
     }
 
     final normalizedAnswers = answers.entries
@@ -69,13 +75,37 @@ class QuestionnaireRemoteDataSource {
     );
 
     if (result is NetworkSuccess<Map<String, dynamic>>) {
-      return;
+      return QuestionnaireSubmissionResultDto.fromJson(result.data);
     }
 
     final failure = result as NetworkFailure<Map<String, dynamic>>;
     throw ValidationException(
       failure.message,
       code: failure.code ?? 'QUESTIONNAIRE_SUBMIT_FAILED',
+    );
+  }
+
+  Future<List<QuestionnaireAttemptDto>> fetchHistory() async {
+    if (_useMockQuestionnaire) {
+      return QuestionnaireMock.history
+          .whereType<Map<String, dynamic>>()
+          .map(QuestionnaireAttemptDto.fromJson)
+          .toList();
+    }
+
+    final result = await _apiClient.get('/api/v1/questionnaire/history');
+    if (result is NetworkSuccess<Map<String, dynamic>>) {
+      final items = (result.data['items'] as List?) ?? const [];
+      return items
+          .whereType<Map<String, dynamic>>()
+          .map(QuestionnaireAttemptDto.fromJson)
+          .toList();
+    }
+
+    final failure = result as NetworkFailure<Map<String, dynamic>>;
+    throw ValidationException(
+      failure.message,
+      code: failure.code ?? 'QUESTIONNAIRE_HISTORY_FETCH_FAILED',
     );
   }
 }

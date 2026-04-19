@@ -20,6 +20,9 @@ import 'package:flutter_elitesync_module/features/match/domain/entities/match_hi
 import 'package:flutter_elitesync_module/features/match/domain/entities/match_result_entity.dart';
 import 'package:flutter_elitesync_module/features/match/presentation/widgets/match_hero_summary_card.dart';
 import 'package:flutter_elitesync_module/features/match/presentation/widgets/match_reason_card.dart';
+import 'package:flutter_elitesync_module/features/questionnaire/domain/entities/questionnaire_profile_snapshot.dart';
+import 'package:flutter_elitesync_module/features/questionnaire/presentation/providers/questionnaire_provider.dart';
+import 'package:flutter_elitesync_module/features/questionnaire/presentation/widgets/questionnaire_profile_summary_card.dart';
 import 'package:flutter_elitesync_module/shared/providers/app_providers.dart';
 
 class _ChatSuggestion {
@@ -29,8 +32,15 @@ class _ChatSuggestion {
   final String prompt;
 }
 
-class MatchResultPage extends ConsumerWidget {
+class MatchResultPage extends ConsumerStatefulWidget {
   const MatchResultPage({super.key});
+
+  @override
+  ConsumerState<MatchResultPage> createState() => _MatchResultPageState();
+}
+
+class _MatchResultPageState extends ConsumerState<MatchResultPage> {
+  bool _questionnaireSummaryOpenedTracked = false;
 
   void _trackMatchExplanationEntry(
     WidgetRef ref,
@@ -97,7 +107,14 @@ class MatchResultPage extends ConsumerWidget {
     return '当前证据层信息暂不完整，建议先查看完整解释，再决定是否进入首聊。';
   }
 
-  String _actionSuggestion(List<MatchHighlightEntity> highlights) {
+  String _actionSuggestion(
+    List<MatchHighlightEntity> highlights,
+    QuestionnaireProfileSnapshot? questionnaire,
+  ) {
+    final summaryLabel = questionnaire?.label.trim() ?? '';
+    if (summaryLabel.isNotEmpty) {
+      return '你在问卷里更靠近「$summaryLabel」，首聊可以先从这个倾向出发：讲一个最近的真实感受，再问对方一个开放问题。';
+    }
     final first = highlights.isNotEmpty ? highlights.first : null;
     if (first != null) {
       final title = first.title.trim();
@@ -108,8 +125,20 @@ class MatchResultPage extends ConsumerWidget {
     return '可以先从最近一周的生活节奏聊起：你最近最想投入的一件事是什么？';
   }
 
-  List<_ChatSuggestion> _chatSuggestions(MatchResultEntity data) {
+  List<_ChatSuggestion> _chatSuggestions(
+    MatchResultEntity data,
+    QuestionnaireProfileSnapshot? questionnaire,
+  ) {
     final suggestions = <_ChatSuggestion>[];
+    final questionnaireLabel = questionnaire?.label.trim() ?? '';
+    if (questionnaireLabel.isNotEmpty) {
+      suggestions.add(
+        _ChatSuggestion(
+          label: '接住问卷倾向',
+          prompt: '你在问卷里更靠近「$questionnaireLabel」，这会怎样影响你理解一段关系？',
+        ),
+      );
+    }
     final firstTag = data.tags.isNotEmpty ? data.tags.first.trim() : '';
     if (firstTag.isNotEmpty) {
       suggestions.add(
@@ -168,8 +197,9 @@ class MatchResultPage extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final asyncState = ref.watch(matchResultProvider);
+    final questionnaireAsync = ref.watch(questionnaireProfileSnapshotProvider);
 
     return Scaffold(
       body: asyncState.when(
@@ -181,6 +211,17 @@ class MatchResultPage extends ConsumerWidget {
         ),
         data: (state) {
           final data = state.data;
+          final questionnaireSummary = questionnaireAsync.asData?.value;
+          if (questionnaireSummary != null &&
+              !_questionnaireSummaryOpenedTracked) {
+            _questionnaireSummaryOpenedTracked = true;
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (!mounted) return;
+              ref
+                  .read(frontendTelemetryProvider)
+                  .matchPersonalityHintOpened(sourcePage: 'match_result');
+            });
+          }
           if (data == null) {
             final tip = '请先完成问卷并等待揭晓，若已完成可稍后下拉刷新。';
             return BrowseScaffold(
@@ -282,6 +323,30 @@ class MatchResultPage extends ConsumerWidget {
                     ),
                   ),
                   SizedBox(height: t.spacing.sm),
+                  if (questionnaireSummary != null)
+                    QuestionnaireProfileSummaryCard(
+                      snapshot: questionnaireSummary,
+                      title: '你的问卷摘要已参与解释',
+                      subtitle: '首聊建议会参考这份摘要，但不会改变匹配分数或关系主链。',
+                      onViewHistory: () {
+                        ref
+                            .read(frontendTelemetryProvider)
+                            .questionnaireSummaryHistoryOpened(
+                              sourcePage: 'match_result',
+                            );
+                        context.push(AppRouteNames.questionnaireHistory);
+                      },
+                      onContinueQuestionnaire: () {
+                        ref
+                            .read(frontendTelemetryProvider)
+                            .questionnaireSummaryContinueTapped(
+                              sourcePage: 'match_result',
+                            );
+                        context.push(AppRouteNames.questionnaire);
+                      },
+                    ),
+                  if (questionnaireSummary != null)
+                    SizedBox(height: t.spacing.sm),
                   Row(
                     children: [
                       Expanded(
@@ -350,7 +415,7 @@ class MatchResultPage extends ConsumerWidget {
                     padding: EdgeInsets.only(bottom: t.spacing.md),
                     child: MatchReasonCard(
                       reason:
-                          '行动层｜建议怎样开始聊天\n给你一个可直接使用的开场动作\n${_actionSuggestion(data.highlights)}',
+                          '行动层｜建议怎样开始聊天\n给你一个可直接使用的开场动作\n${_actionSuggestion(data.highlights, questionnaireSummary)}',
                     ),
                   ),
                   AppCard(
@@ -386,7 +451,7 @@ class MatchResultPage extends ConsumerWidget {
                         Wrap(
                           spacing: 8,
                           runSpacing: 8,
-                          children: _chatSuggestions(data)
+                          children: _chatSuggestions(data, questionnaireSummary)
                               .map(
                                 (item) => AppChoiceChip(
                                   label: item.label,

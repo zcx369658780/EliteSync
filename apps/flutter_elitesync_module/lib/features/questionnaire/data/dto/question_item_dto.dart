@@ -3,11 +3,13 @@ class QuestionItemDto {
     required this.id,
     required this.title,
     required this.options,
+    required this.version,
   });
 
   final int id;
   final String title;
   final List<String> options;
+  final int version;
 
   factory QuestionItemDto.fromJson(Map<String, dynamic> json) {
     final optionItems = (json['option_items'] as List?) ?? const [];
@@ -25,13 +27,12 @@ class QuestionItemDto {
         .where((v) => v.isNotEmpty)
         .toList();
 
-    final options =
-        optionsFromItems.isNotEmpty
-            ? optionsFromItems
-            : ((json['options'] as List?) ?? const [])
-                .map((e) => e.toString())
-                .where((v) => v.trim().isNotEmpty)
-                .toList();
+    final options = optionsFromItems.isNotEmpty
+        ? optionsFromItems
+        : ((json['options'] as List?) ?? const [])
+              .map((e) => e.toString())
+              .where((v) => v.trim().isNotEmpty)
+              .toList();
 
     return QuestionItemDto(
       id: (json['id'] as num?)?.toInt() ?? 0,
@@ -42,6 +43,10 @@ class QuestionItemDto {
           (json['question_text_en'] as String?) ??
           '',
       options: options,
+      version:
+          (json['question_version'] as num?)?.toInt() ??
+          (json['version'] as num?)?.toInt() ??
+          1,
     );
   }
 }

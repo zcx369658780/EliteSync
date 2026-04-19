@@ -10,7 +10,11 @@ use App\Http\Controllers\Api\V1\ModerationController;
 use App\Http\Controllers\Api\V1\HomeController;
 use App\Http\Controllers\Api\V1\MatchController;
 use App\Http\Controllers\Api\V1\MbtiProfileController;
+use App\Http\Controllers\Api\V1\ConversationController;
+use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\MessageController;
+use App\Http\Controllers\Api\V1\MediaController;
+use App\Http\Controllers\Api\V1\RelationshipController;
 use App\Http\Controllers\Api\V1\ProfileController;
 use App\Http\Controllers\Api\V1\StatusPostController;
 use App\Http\Controllers\Api\V1\QuestionnaireController;
@@ -21,6 +25,9 @@ Route::prefix('v1')->group(function () {
         Route::get('/health', [AppVersionController::class, 'health']);
         Route::get('/version/check', [AppVersionController::class, 'check']);
     });
+
+    Route::get('/media/{assetId}/content', [MediaController::class, 'content'])
+        ->whereNumber('assetId');
 
     Route::prefix('auth')->group(function () {
         Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:auth');
@@ -34,6 +41,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/questions', [QuestionnaireController::class, 'questions']);
         Route::post('/questions/replace', [QuestionnaireController::class, 'replaceQuestion']);
         Route::post('/answers', [QuestionnaireController::class, 'submitAnswers']);
+        Route::get('/history', [QuestionnaireController::class, 'history']);
         // Legacy compatibility endpoints (old Android/Flutter builds)
         Route::post('/submit', [QuestionnaireController::class, 'submitAnswers']);
         Route::post('/draft', [QuestionnaireController::class, 'saveDraftLegacy']);
@@ -80,6 +88,37 @@ Route::prefix('v1')->group(function () {
                 ->whereNumber('targetUserId');
         });
 
+        Route::prefix('conversations')->group(function () {
+            Route::get('', [ConversationController::class, 'index'])->middleware('throttle:conversations');
+            Route::post('', [ConversationController::class, 'store'])->middleware('throttle:conversations');
+            Route::get('/{conversationId}', [ConversationController::class, 'show'])
+                ->whereNumber('conversationId')
+                ->middleware('throttle:conversations');
+        });
+
+        Route::prefix('media')->group(function () {
+            Route::get('', [MediaController::class, 'index'])->middleware('throttle:media');
+            Route::post('', [MediaController::class, 'store'])->middleware('throttle:media');
+            Route::get('/{assetId}', [MediaController::class, 'show'])
+                ->whereNumber('assetId')
+                ->middleware('throttle:media');
+            Route::post('/{assetId}/process-demo', [MediaController::class, 'processDemo'])
+                ->whereNumber('assetId')
+                ->middleware('throttle:media');
+        });
+
+        Route::prefix('relationships')->group(function () {
+            Route::get('', [RelationshipController::class, 'index'])->middleware('throttle:relationships');
+            Route::post('', [RelationshipController::class, 'store'])->middleware('throttle:relationships');
+        });
+
+        Route::prefix('notifications')->group(function () {
+            Route::get('', [NotificationController::class, 'index'])->middleware('throttle:notifications');
+            Route::post('/{notificationId}/read', [NotificationController::class, 'markRead'])
+                ->whereNumber('notificationId')
+                ->middleware('throttle:notifications');
+        });
+
         // 兼容旧设计中的单数路径
         Route::prefix('match')->group(function () {
             Route::get('/current', [MatchController::class, 'current']);
@@ -113,7 +152,17 @@ Route::prefix('v1')->group(function () {
 
         Route::prefix('status')->group(function () {
             Route::get('/posts', [StatusPostController::class, 'index']);
+            Route::get('/posts/{postId}', [StatusPostController::class, 'show'])
+                ->whereNumber('postId');
             Route::post('/posts', [StatusPostController::class, 'store']);
+            Route::post('/posts/{postId}/likes', [StatusPostController::class, 'like'])
+                ->whereNumber('postId');
+            Route::delete('/posts/{postId}/likes', [StatusPostController::class, 'unlike'])
+                ->whereNumber('postId');
+            Route::post('/posts/{postId}/report', [StatusPostController::class, 'report'])
+                ->whereNumber('postId');
+            Route::get('/authors/{userId}', [StatusPostController::class, 'author'])
+                ->whereNumber('userId');
             Route::delete('/posts/{postId}', [StatusPostController::class, 'destroy'])
                 ->whereNumber('postId');
         });
