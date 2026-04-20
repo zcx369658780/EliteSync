@@ -4,14 +4,10 @@ import 'package:flutter_elitesync_module/shared/enums/match_status.dart';
 import 'package:flutter_elitesync_module/shared/enums/questionnaire_status.dart';
 import 'package:flutter_elitesync_module/shared/enums/verification_status.dart';
 import 'package:flutter_elitesync_module/shared/models/navigation_snapshot.dart';
-import 'package:flutter_elitesync_module/shared/providers/app_providers.dart';
 import 'package:flutter_elitesync_module/shared/providers/session_provider.dart';
 
 final navigationGuardProvider = Provider<NavigationSnapshot>((ref) {
-  final env = ref.watch(appEnvProvider);
-  final auth = env.debugAccessToken.isNotEmpty
-      ? AuthStatus.authenticated
-      : ref.watch(authStatusProvider);
+  final auth = ref.watch(authStatusProvider);
 
   final verificationStatus = auth == AuthStatus.authenticated
       ? VerificationStatus.approved

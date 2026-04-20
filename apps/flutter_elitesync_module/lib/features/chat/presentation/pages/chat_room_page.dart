@@ -1,9 +1,14 @@
+import 'dart:io';
 import 'dart:async';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:flutter_elitesync_module/core/storage/local_storage_service.dart';
 import 'package:flutter_elitesync_module/core/storage/cache_keys.dart';
+import 'package:flutter_elitesync_module/core/network/network_result.dart';
+import 'package:flutter_elitesync_module/core/telemetry/frontend_telemetry.dart';
 import 'package:flutter_elitesync_module/design_system/components/bars/app_top_bar.dart';
 import 'package:flutter_elitesync_module/design_system/components/buttons/app_secondary_button.dart';
 import 'package:flutter_elitesync_module/design_system/components/feedback/app_feedback.dart';
@@ -12,8 +17,11 @@ import 'package:flutter_elitesync_module/design_system/components/layout/section
 import 'package:flutter_elitesync_module/design_system/components/states/app_empty_state.dart';
 import 'package:flutter_elitesync_module/design_system/theme/app_theme_extensions.dart';
 import 'package:flutter_elitesync_module/features/chat/domain/entities/message_entity.dart';
+import 'package:flutter_elitesync_module/features/chat/domain/entities/message_attachment_entity.dart';
+import 'package:flutter_elitesync_module/features/chat/domain/utils/conversation_snapshot_utils.dart';
 import 'package:flutter_elitesync_module/features/chat/presentation/providers/chat_providers.dart';
 import 'package:flutter_elitesync_module/features/chat/presentation/widgets/connection_status_banner.dart';
+import 'package:flutter_elitesync_module/features/chat/presentation/widgets/attachment_upload_card.dart';
 import 'package:flutter_elitesync_module/features/chat/presentation/widgets/icebreaker_card.dart';
 import 'package:flutter_elitesync_module/features/chat/presentation/widgets/message_bubble.dart';
 import 'package:flutter_elitesync_module/features/chat/presentation/widgets/message_input_bar.dart';
@@ -21,6 +29,25 @@ import 'package:flutter_elitesync_module/features/moderation/presentation/provid
 import 'package:flutter_elitesync_module/features/moderation/presentation/widgets/report_block_sheet.dart';
 import 'package:flutter_elitesync_module/shared/providers/app_providers.dart';
 import 'package:flutter_elitesync_module/shared/providers/performance_mode_provider.dart';
+
+enum ChatAttachmentKind { image, video }
+
+extension ChatAttachmentKindX on ChatAttachmentKind {
+  String get label => switch (this) {
+    ChatAttachmentKind.image => '图片',
+    ChatAttachmentKind.video => '视频',
+  };
+
+  String get mediaType => switch (this) {
+    ChatAttachmentKind.image => 'image',
+    ChatAttachmentKind.video => 'video',
+  };
+
+  String get pickerTooltip => switch (this) {
+    ChatAttachmentKind.image => '选择图片',
+    ChatAttachmentKind.video => '选择视频',
+  };
+}
 
 class ChatRoomPage extends ConsumerStatefulWidget {
   const ChatRoomPage({
@@ -41,13 +68,26 @@ class _ChatRoomPageState extends ConsumerState<ChatRoomPage> {
   final _listController = ScrollController();
   final List<MessageEntity> _localMessages = <MessageEntity>[];
   late final LocalStorageService _localStorage;
+  final _imagePicker = ImagePicker();
   Timer? _draftSaveDebounce;
+  Timer? _realtimeRefreshTimer;
+  StreamSubscription<MessageEntity>? _realtimeSubscription;
   bool _sending = false;
   int _lastMergedCount = 0;
+  String? _selectedImagePath;
+  String? _selectedImageName;
+  String? _selectedImagePreviewUrl;
+  int? _selectedAttachmentId;
+  String? _selectedAttachmentStatus;
+  String? _attachmentError;
+  ChatAttachmentKind _selectedAttachmentKind = ChatAttachmentKind.image;
+  AttachmentUploadStage _attachmentStage = AttachmentUploadStage.pending;
 
   String get _draftKey =>
       '${CacheKeys.chatDraftPrefix}${widget.conversationId}';
   int? get _peerId => int.tryParse(widget.conversationId);
+  bool get _isConversationIdSupported =>
+      isSupportedConversationId(widget.conversationId, allowMockIds: false);
 
   @override
   void initState() {
@@ -55,11 +95,22 @@ class _ChatRoomPageState extends ConsumerState<ChatRoomPage> {
     _localStorage = ref.read(localStorageProvider);
     _controller.addListener(_onDraftChanged);
     _loadDraft();
+    _startRealtimeSync();
+  }
+
+  @override
+  void didUpdateWidget(covariant ChatRoomPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.conversationId != widget.conversationId) {
+      _stopRealtimeSync();
+      _startRealtimeSync();
+    }
   }
 
   @override
   void dispose() {
     _draftSaveDebounce?.cancel();
+    _stopRealtimeSync();
     _persistDraftNow();
     _controller.removeListener(_onDraftChanged);
     _controller.dispose();
@@ -109,17 +160,77 @@ class _ChatRoomPageState extends ConsumerState<ChatRoomPage> {
     });
   }
 
+  void _startRealtimeSync() {
+    if (!_isConversationIdSupported) return;
+    _realtimeSubscription = ref
+        .read(observeMessagesUseCaseProvider)
+        .call(widget.conversationId)
+        .listen(
+          (_) {
+            if (!mounted) return;
+            ref.invalidate(chatRoomMessagesProvider(widget.conversationId));
+            ref.invalidate(conversationListProvider);
+            _scheduleScrollToBottom();
+          },
+          onError: (_) {
+            // Keep the fallback polling timer running; the next tick will refresh.
+          },
+        );
+    _realtimeRefreshTimer?.cancel();
+    _realtimeRefreshTimer = Timer.periodic(const Duration(seconds: 8), (_) {
+      if (!mounted) return;
+      ref.invalidate(chatRoomMessagesProvider(widget.conversationId));
+      ref.invalidate(conversationListProvider);
+    });
+  }
+
+  void _stopRealtimeSync() {
+    _realtimeRefreshTimer?.cancel();
+    _realtimeRefreshTimer = null;
+    _realtimeSubscription?.cancel();
+    _realtimeSubscription = null;
+  }
+
   Future<void> _sendMessage() async {
+    if (!_isConversationIdSupported) {
+      AppFeedback.showError(context, '当前会话已失效，请返回会话列表重新选择后重试');
+      return;
+    }
     final text = _controller.text.trim();
-    if (text.isEmpty || _sending) return;
-    _controller.clear();
-    await _localStorage.remove(_draftKey);
+    final hasReadyAttachment =
+        _attachmentStage == AttachmentUploadStage.ready &&
+        _selectedAttachmentId != null;
+    if (_sending || (text.isEmpty && !hasReadyAttachment)) return;
+
+    final attachmentIds = hasReadyAttachment
+        ? <int>[_selectedAttachmentId!]
+        : <int>[];
+    final selectedMediaType = _selectedAttachmentKind.mediaType;
     final optimistic = MessageEntity(
       id: 'local-${DateTime.now().millisecondsSinceEpoch}',
       mine: true,
       text: text,
       time: '刚刚',
+      attachments: hasReadyAttachment
+          ? [
+              MessageAttachmentEntity(
+                id: 'local-$_selectedAttachmentId',
+                attachmentType: selectedMediaType,
+                mediaAssetId: '$_selectedAttachmentId',
+                mediaType: selectedMediaType,
+                publicUrl: _selectedImagePreviewUrl ?? '',
+                status: _selectedAttachmentStatus ?? 'ready',
+                mimeType: selectedMediaType == 'video' ? 'video/*' : 'image/*',
+                sizeBytes: 0,
+                width: null,
+                height: null,
+                durationMs: null,
+              ),
+            ]
+          : const [],
     );
+    _controller.clear();
+    await _localStorage.remove(_draftKey);
     setState(() {
       _localMessages.add(optimistic);
       _sending = true;
@@ -128,8 +239,25 @@ class _ChatRoomPageState extends ConsumerState<ChatRoomPage> {
     try {
       await ref
           .read(sendMessageUseCaseProvider)
-          .call(widget.conversationId, text);
+          .call(widget.conversationId, text, attachmentIds: attachmentIds);
       ref.invalidate(chatRoomMessagesProvider(widget.conversationId));
+      if (attachmentIds.isNotEmpty) {
+        final telemetry = ref.read(frontendTelemetryProvider);
+        if (_selectedAttachmentKind == ChatAttachmentKind.video) {
+          telemetry.chatVideoMessageSent(
+            sourcePage: 'chat_room',
+            attachmentCount: attachmentIds.length,
+          );
+        } else {
+          telemetry.chatImageMessageSent(
+            sourcePage: 'chat_room',
+            attachmentCount: attachmentIds.length,
+          );
+        }
+      }
+      if (hasReadyAttachment) {
+        _clearAttachmentDraft();
+      }
     } catch (_) {
       if (!mounted) return;
       setState(() {
@@ -141,6 +269,181 @@ class _ChatRoomPageState extends ConsumerState<ChatRoomPage> {
     } finally {
       if (mounted) {
         setState(() => _sending = false);
+      }
+    }
+  }
+
+  void _clearAttachmentDraft() {
+    setState(() {
+      _selectedImagePath = null;
+      _selectedImageName = null;
+      _selectedImagePreviewUrl = null;
+      _selectedAttachmentId = null;
+      _selectedAttachmentStatus = null;
+      _attachmentError = null;
+      _selectedAttachmentKind = ChatAttachmentKind.image;
+      _attachmentStage = AttachmentUploadStage.pending;
+    });
+  }
+
+  Future<void> _pickAndUploadImage() async {
+    await _pickAndUploadMedia(ChatAttachmentKind.image);
+  }
+
+  Future<void> _pickAndUploadVideo() async {
+    await _pickAndUploadMedia(ChatAttachmentKind.video);
+  }
+
+  Future<void> _openAttachmentPicker() async {
+    if (_sending || _attachmentStage == AttachmentUploadStage.uploading) return;
+    await showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      useSafeArea: true,
+      builder: (sheetContext) {
+        final t = context.appTokens;
+        return Padding(
+          padding: EdgeInsets.fromLTRB(
+            t.spacing.pageHorizontal,
+            0,
+            t.spacing.pageHorizontal,
+            t.spacing.lg,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.photo_library_outlined),
+                title: const Text('选择图片'),
+                subtitle: const Text('发送图片附件'),
+                onTap: () {
+                  Navigator.of(sheetContext).pop();
+                  _pickAndUploadImage();
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.videocam_outlined),
+                title: const Text('选择视频'),
+                subtitle: const Text('发送单视频消息'),
+                onTap: () {
+                  Navigator.of(sheetContext).pop();
+                  _pickAndUploadVideo();
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _pickAndUploadMedia(ChatAttachmentKind kind) async {
+    if (_sending || _attachmentStage == AttachmentUploadStage.uploading) return;
+    final telemetry = ref.read(frontendTelemetryProvider);
+    _selectedAttachmentKind = kind;
+    if (kind == ChatAttachmentKind.video) {
+      telemetry.chatVideoPickerOpened(sourcePage: 'chat_room');
+    } else {
+      telemetry.chatImagePickerOpened(sourcePage: 'chat_room');
+    }
+
+    final picked = switch (kind) {
+      ChatAttachmentKind.image => await _imagePicker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 88,
+      ),
+      ChatAttachmentKind.video => await _imagePicker.pickVideo(
+        source: ImageSource.gallery,
+      ),
+    };
+    if (picked == null) return;
+
+    final selectedName = picked.name.isNotEmpty
+        ? picked.name
+        : (kind == ChatAttachmentKind.video ? 'video.mp4' : 'image.jpg');
+
+    setState(() {
+      _selectedImagePath = picked.path;
+      _selectedImageName = selectedName;
+      _attachmentStage = AttachmentUploadStage.uploading;
+      _attachmentError = null;
+    });
+    if (kind == ChatAttachmentKind.video) {
+      telemetry.chatVideoUploadStarted(sourcePage: 'chat_room');
+    } else {
+      telemetry.chatImageUploadStarted(sourcePage: 'chat_room');
+    }
+
+    try {
+      final api = ref.read(apiClientProvider);
+      final form = FormData.fromMap({
+        'media_type': kind.mediaType,
+        'original_name': selectedName,
+        'file': await MultipartFile.fromFile(
+          picked.path,
+          filename: selectedName,
+        ),
+        'metadata': {'source_page': 'chat_room', 'media_kind': kind.mediaType},
+      });
+      final result = await api.post('/api/v1/media', body: form);
+      if (result is! NetworkSuccess<Map<String, dynamic>>) {
+        throw Exception(
+          (result as NetworkFailure<Map<String, dynamic>>).message,
+        );
+      }
+      final asset = result.data['asset'];
+      if (asset is! Map<String, dynamic>) {
+        throw Exception('media upload did not return an asset');
+      }
+      final assetId = (asset['id'] as num?)?.toInt() ?? 0;
+      final publicUrl = (asset['public_url'] ?? '').toString();
+      final status = (asset['status'] ?? '').toString();
+      if (assetId <= 0 || publicUrl.isEmpty) {
+        throw Exception('media asset response incomplete');
+      }
+      setState(() {
+        _selectedAttachmentId = assetId;
+        _selectedAttachmentStatus = status.isNotEmpty ? status : 'uploaded';
+        _selectedImagePreviewUrl = publicUrl;
+        _attachmentStage = status == 'failed'
+            ? AttachmentUploadStage.failed
+            : AttachmentUploadStage.ready;
+      });
+      if (!mounted) return;
+      if (kind == ChatAttachmentKind.video) {
+        telemetry.chatVideoUploadSucceeded(
+          sourcePage: 'chat_room',
+          assetId: assetId,
+        );
+        AppFeedback.showSuccess(context, '视频已准备好，可以发送');
+      } else {
+        telemetry.chatImageUploadSucceeded(
+          sourcePage: 'chat_room',
+          assetId: assetId,
+        );
+        AppFeedback.showSuccess(context, '图片已准备好，可以发送');
+      }
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _selectedAttachmentId = null;
+        _selectedImagePreviewUrl = null;
+        _selectedAttachmentStatus = 'failed';
+        _attachmentStage = AttachmentUploadStage.failed;
+        _attachmentError = e.toString();
+      });
+      if (kind == ChatAttachmentKind.video) {
+        telemetry.chatVideoUploadFailed(
+          sourcePage: 'chat_room',
+          errorCode: 'upload_failed',
+        );
+        AppFeedback.showError(context, '视频上传失败，请重试');
+      } else {
+        telemetry.chatImageUploadFailed(
+          sourcePage: 'chat_room',
+          errorCode: 'upload_failed',
+        );
+        AppFeedback.showError(context, '图片上传失败，请重试');
       }
     }
   }
@@ -185,6 +488,135 @@ class _ChatRoomPageState extends ConsumerState<ChatRoomPage> {
     FocusScope.of(context).unfocus();
   }
 
+  Widget _buildAttachmentDraftCard() {
+    if (_selectedImagePath == null) return const SizedBox.shrink();
+    final t = context.appTokens;
+    final file = File(_selectedImagePath!);
+    final isVideo = _selectedAttachmentKind == ChatAttachmentKind.video;
+    final label = switch (_attachmentStage) {
+      AttachmentUploadStage.pending => '待上传',
+      AttachmentUploadStage.uploading => '上传中',
+      AttachmentUploadStage.processing => '处理中',
+      AttachmentUploadStage.failed => '失败',
+      AttachmentUploadStage.ready => '已完成',
+    };
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: t.surface.withValues(alpha: 0.9),
+        borderRadius: BorderRadius.circular(t.radius.lg),
+        border: Border.all(color: t.overlay.withValues(alpha: 0.75)),
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(t.spacing.sm),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(t.radius.md),
+              child: SizedBox(
+                width: 68,
+                height: 68,
+                child: isVideo
+                    ? ColoredBox(
+                        color: Colors.black12,
+                        child: Center(
+                          child: Icon(
+                            Icons.videocam_outlined,
+                            color: t.textSecondary,
+                          ),
+                        ),
+                      )
+                    : Image.file(
+                        file,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) =>
+                            const ColoredBox(
+                              color: Colors.black12,
+                              child: Icon(Icons.broken_image_outlined),
+                            ),
+                      ),
+              ),
+            ),
+            SizedBox(width: t.spacing.sm),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          _selectedImageName ?? '已选择${isVideo ? '视频' : '图片'}',
+                          style: Theme.of(context).textTheme.titleSmall
+                              ?.copyWith(
+                                color: t.textPrimary,
+                                fontWeight: FontWeight.w700,
+                              ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: t.secondarySurface,
+                          borderRadius: BorderRadius.circular(999),
+                        ),
+                        child: Text(label),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: t.spacing.xxs),
+                  Text(
+                    _attachmentError ??
+                        switch (_attachmentStage) {
+                          AttachmentUploadStage.pending =>
+                            '已选择${isVideo ? '视频' : '图片'}，等待上传。',
+                          AttachmentUploadStage.uploading =>
+                            '${isVideo ? '视频' : '图片'}正在上传到对象存储主路径。',
+                          AttachmentUploadStage.processing =>
+                            '${isVideo ? '视频' : '图片'}已入库，正在等待后台处理。',
+                          AttachmentUploadStage.failed => '上传失败，可重试或重新选择。',
+                          AttachmentUploadStage.ready =>
+                            '${isVideo ? '视频' : '图片'}已可发送。',
+                        },
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.copyWith(color: t.textSecondary),
+                  ),
+                  SizedBox(height: t.spacing.xs),
+                  Wrap(
+                    spacing: t.spacing.xs,
+                    runSpacing: t.spacing.xs,
+                    children: [
+                      AppSecondaryButton(
+                        label: _attachmentStage == AttachmentUploadStage.failed
+                            ? '重试上传'
+                            : '重新选择',
+                        onPressed:
+                            _selectedAttachmentKind == ChatAttachmentKind.video
+                            ? _pickAndUploadVideo
+                            : _pickAndUploadImage,
+                      ),
+                      AppSecondaryButton(
+                        label: '清除',
+                        onPressed: _clearAttachmentDraft,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   List<IcebreakerSuggestion> _icebreakerSuggestions() {
     return const [
       IcebreakerSuggestion(
@@ -198,6 +630,39 @@ class _ChatRoomPageState extends ConsumerState<ChatRoomPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (!_isConversationIdSupported) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(widget.title),
+          leading: BackButton(
+            onPressed: () => Navigator.of(context).maybePop(),
+          ),
+        ),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.chat_bubble_outline_rounded, size: 48),
+                const SizedBox(height: 16),
+                Text('当前会话已失效', style: Theme.of(context).textTheme.titleMedium),
+                const SizedBox(height: 8),
+                const Text(
+                  '请返回会话列表后重新选择一个有效的聊天对象。',
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () => Navigator.of(context).maybePop(),
+                  child: const Text('返回会话列表'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
     final async = ref.watch(chatRoomMessagesProvider(widget.conversationId));
     final connection = ref.watch(chatConnectionProvider);
     final t = context.appTokens;
@@ -256,6 +721,40 @@ class _ChatRoomPageState extends ConsumerState<ChatRoomPage> {
               suggestions: _icebreakerSuggestions(),
               onSuggestionTap: _applyIcebreakerSuggestion,
             ),
+          ),
+          Padding(
+            padding: EdgeInsets.fromLTRB(
+              t.spacing.pageHorizontal,
+              t.spacing.xs,
+              t.spacing.pageHorizontal,
+              t.spacing.xs,
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    '图片/视频附件入口已接入，可直接选择并上传。',
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.copyWith(color: t.textSecondary),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                AppSecondaryButton(
+                  label: '选择图片 / 视频',
+                  onPressed: _openAttachmentPicker,
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.fromLTRB(
+              t.spacing.pageHorizontal,
+              t.spacing.xs,
+              t.spacing.pageHorizontal,
+              t.spacing.xs,
+            ),
+            child: _buildAttachmentDraftCard(),
           ),
           Expanded(
             child: async.when(
@@ -364,7 +863,7 @@ class _ChatRoomPageState extends ConsumerState<ChatRoomPage> {
               t.spacing.pageHorizontal,
               t.spacing.xs,
               t.spacing.pageHorizontal,
-              t.spacing.sm,
+              t.spacing.xs,
             ),
             child: DecoratedBox(
               decoration: BoxDecoration(
@@ -376,6 +875,7 @@ class _ChatRoomPageState extends ConsumerState<ChatRoomPage> {
                 controller: _controller,
                 sending: _sending,
                 onSend: _sendMessage,
+                onAttach: _openAttachmentPicker,
               ),
             ),
           ),

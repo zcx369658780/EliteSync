@@ -5,6 +5,7 @@ import 'package:flutter_elitesync_module/features/chat/data/mapper/chat_mapper.d
 import 'package:flutter_elitesync_module/features/chat/data/repository/chat_repository_impl.dart';
 import 'package:flutter_elitesync_module/features/chat/domain/entities/message_entity.dart';
 import 'package:flutter_elitesync_module/features/chat/domain/repository/chat_repository.dart';
+import 'package:flutter_elitesync_module/features/chat/domain/usecases/observe_messages_usecase.dart';
 import 'package:flutter_elitesync_module/features/chat/domain/usecases/get_conversations_usecase.dart';
 import 'package:flutter_elitesync_module/features/chat/domain/usecases/get_messages_usecase.dart';
 import 'package:flutter_elitesync_module/features/chat/domain/usecases/send_message_usecase.dart';
@@ -22,7 +23,11 @@ final chatRemoteDataSourceProvider = Provider<ChatRemoteDataSource>((ref) {
 
 final chatSocketDataSourceProvider = Provider<ChatSocketDataSource>((
   ref,
-) => ChatSocketDataSource());
+) => ChatSocketDataSource(
+      apiClient: ref.watch(apiClientProvider),
+      localStorage: ref.watch(localStorageProvider),
+      env: ref.watch(appEnvProvider),
+    ));
 
 final chatRepositoryProvider = Provider<ChatRepository>((ref) {
   return ChatRepositoryImpl(
@@ -40,6 +45,9 @@ final getMessagesUseCaseProvider = Provider<GetMessagesUseCase>(
 );
 final sendMessageUseCaseProvider = Provider<SendMessageUseCase>(
   (ref) => SendMessageUseCase(ref.watch(chatRepositoryProvider)),
+);
+final observeMessagesUseCaseProvider = Provider<ObserveMessagesUseCase>(
+  (ref) => ObserveMessagesUseCase(ref.watch(chatRepositoryProvider)),
 );
 final conversationListProvider = FutureProvider<ConversationListUiState>((
   ref,

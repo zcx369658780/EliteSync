@@ -108,9 +108,9 @@ void main() {
     await tester.pumpWidget(_wrap(const HomePage()));
     await tester.pumpAndSettle();
 
-    expect(find.text('本周关系进展'), findsOneWidget);
-    expect(find.text('先完成问卷，更快看到合适的人'), findsOneWidget);
-    expect(find.text('继续完善问卷'), findsWidgets);
+    expect(find.text('搜索话题、活动、用户'), findsOneWidget);
+    expect(find.text('推荐'), findsWidgets);
+    expect(find.text('状态广场'), findsWidgets);
   });
 
   testWidgets('match result page renders explanation and actions', (
@@ -159,10 +159,7 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.text('可直接拿去聊天'), findsOneWidget);
-    expect(
-      find.text('点一下会把话题草稿写进聊天输入框，然后直接带你去会话页。'),
-      findsOneWidget,
-    );
+    expect(find.text('点一下会把话题草稿写进聊天输入框，然后直接带你去会话页。'), findsOneWidget);
     expect(find.text('提交反馈（帮助优化解释）'), findsOneWidget);
   });
 
@@ -186,7 +183,11 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('慢慢聊'), findsOneWidget);
-    expect(find.text('你好呀，看到你也喜欢看展。'), findsWidgets);
+    expect(
+      find.text('图片/视频附件入口已接入，可直接选择并上传。'),
+      findsOneWidget,
+    );
+    expect(find.text('选择图片 / 视频'), findsWidgets);
 
     await tester.tap(find.byTooltip('安全'));
     await tester.pumpAndSettle();

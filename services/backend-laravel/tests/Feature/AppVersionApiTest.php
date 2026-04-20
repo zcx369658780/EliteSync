@@ -17,7 +17,7 @@ class AppVersionApiTest extends TestCase
             ->assertJsonPath('status', 'ok')
             ->assertJsonPath('checks.database.ok', true)
             ->assertJsonPath('checks.config.ok', true)
-            ->assertJsonPath('app_version', '0.03.02a');
+            ->assertJsonPath('app_version', '0.04.04');
     }
 
     public function test_version_check_returns_soft_update(): void

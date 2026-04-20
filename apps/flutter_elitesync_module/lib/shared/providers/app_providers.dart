@@ -33,11 +33,15 @@ final localStorageProvider = Provider<LocalStorageService>((ref) {
 
 final accessTokenProvider = Provider<AccessTokenProvider>((ref) {
   return () async {
-    final env = ref.read(appEnvProvider);
-    if (env.debugAccessToken.isNotEmpty) {
-      return env.debugAccessToken;
+    final token = await ref
+        .read(secureStorageProvider)
+        .read(CacheKeys.accessToken);
+    if (token != null && token.isNotEmpty) {
+      // Temporary debug aid for emulator-side matching setup.
+      // ignore: avoid_print
+      print('ACCESS_TOKEN_READ token=$token');
     }
-    return ref.read(secureStorageProvider).read(CacheKeys.accessToken);
+    return token;
   };
 });
 

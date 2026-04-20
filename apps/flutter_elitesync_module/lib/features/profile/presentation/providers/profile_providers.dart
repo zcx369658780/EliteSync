@@ -15,17 +15,29 @@ import 'package:flutter_elitesync_module/shared/providers/app_providers.dart';
 import 'package:flutter_elitesync_module/shared/providers/session_provider.dart';
 import 'package:flutter_elitesync_module/shared/models/user_summary.dart';
 
-final profileRemoteDataSourceProvider = Provider<ProfileRemoteDataSource>((ref) {
+final profileRemoteDataSourceProvider = Provider<ProfileRemoteDataSource>((
+  ref,
+) {
   final env = ref.watch(appEnvProvider);
-  return ProfileRemoteDataSource(apiClient: ref.watch(apiClientProvider), useMock: env.useMockProfile);
+  return ProfileRemoteDataSource(
+    apiClient: ref.watch(apiClientProvider),
+    useMock: env.useMockProfile,
+  );
 });
 
 final profileRepositoryProvider = Provider<ProfileRepository>((ref) {
-  return ProfileRepositoryImpl(remote: ref.watch(profileRemoteDataSourceProvider), mapper: const ProfileMapper());
+  return ProfileRepositoryImpl(
+    remote: ref.watch(profileRemoteDataSourceProvider),
+    mapper: const ProfileMapper(),
+  );
 });
 
-final getProfileUseCaseProvider = Provider<GetProfileUseCase>((ref) => GetProfileUseCase(ref.watch(profileRepositoryProvider)));
-final updateProfileUseCaseProvider = Provider<UpdateProfileUseCase>((ref) => UpdateProfileUseCase(ref.watch(profileRepositoryProvider)));
+final getProfileUseCaseProvider = Provider<GetProfileUseCase>(
+  (ref) => GetProfileUseCase(ref.watch(profileRepositoryProvider)),
+);
+final updateProfileUseCaseProvider = Provider<UpdateProfileUseCase>(
+  (ref) => UpdateProfileUseCase(ref.watch(profileRepositoryProvider)),
+);
 
 Map<String, dynamic> _summaryToJson(ProfileSummaryEntity summary) => {
   'nickname': summary.nickname,
@@ -60,7 +72,10 @@ Map<String, dynamic> _detailToJson(ProfileDetailEntity detail) => {
   'birth_lng': detail.birthLng,
 };
 
-ProfileSummaryEntity _summaryFromDetail(ProfileDetailEntity detail, ProfileSummaryEntity? currentSummary) {
+ProfileSummaryEntity _summaryFromDetail(
+  ProfileDetailEntity detail,
+  ProfileSummaryEntity? currentSummary,
+) {
   final tags = <String>[
     if (detail.birthday.isNotEmpty) '生日已保存',
     if (detail.birthTime.isNotEmpty) '出生时间已保存',
@@ -71,14 +86,22 @@ ProfileSummaryEntity _summaryFromDetail(ProfileDetailEntity detail, ProfileSumma
     '资料已同步',
   ];
   return ProfileSummaryEntity(
-    nickname: detail.nickname.isNotEmpty ? detail.nickname : (currentSummary?.nickname ?? ''),
-    birthday: detail.birthday.isNotEmpty ? detail.birthday : (currentSummary?.birthday ?? ''),
-    birthTime: detail.birthTime.isNotEmpty ? detail.birthTime : (currentSummary?.birthTime ?? ''),
+    nickname: detail.nickname.isNotEmpty
+        ? detail.nickname
+        : (currentSummary?.nickname ?? ''),
+    birthday: detail.birthday.isNotEmpty
+        ? detail.birthday
+        : (currentSummary?.birthday ?? ''),
+    birthTime: detail.birthTime.isNotEmpty
+        ? detail.birthTime
+        : (currentSummary?.birthTime ?? ''),
     birthPlace: detail.birthPlace ?? currentSummary?.birthPlace,
     birthLat: detail.birthLat ?? currentSummary?.birthLat,
     birthLng: detail.birthLng ?? currentSummary?.birthLng,
     city: detail.city.isNotEmpty ? detail.city : (currentSummary?.city ?? ''),
-    target: detail.target.isNotEmpty ? detail.target : (currentSummary?.target ?? ''),
+    target: detail.target.isNotEmpty
+        ? detail.target
+        : (currentSummary?.target ?? ''),
     verified: currentSummary?.verified ?? false,
     moderationStatus: currentSummary?.moderationStatus ?? 'normal',
     moderationNote: currentSummary?.moderationNote,
@@ -93,20 +116,32 @@ ProfileSummaryEntity? _summaryFromJson(Map<String, dynamic>? json) {
     nickname: (json['nickname'] ?? json['name'] ?? '').toString(),
     birthday: (json['birthday'] ?? '').toString(),
     birthTime: (json['birth_time'] ?? json['birthTime'] ?? '').toString(),
-    birthPlace: (json['birth_place'] ?? json['private_birth_place'] ?? '').toString().isEmpty
+    birthPlace:
+        (json['birth_place'] ?? json['private_birth_place'] ?? '')
+            .toString()
+            .isEmpty
         ? null
         : (json['birth_place'] ?? json['private_birth_place'] ?? '').toString(),
-    birthLat: (json['birth_lat'] as num?)?.toDouble() ?? (json['private_birth_lat'] as num?)?.toDouble(),
-    birthLng: (json['birth_lng'] as num?)?.toDouble() ?? (json['private_birth_lng'] as num?)?.toDouble(),
+    birthLat:
+        (json['birth_lat'] as num?)?.toDouble() ??
+        (json['private_birth_lat'] as num?)?.toDouble(),
+    birthLng:
+        (json['birth_lng'] as num?)?.toDouble() ??
+        (json['private_birth_lng'] as num?)?.toDouble(),
     city: (json['city'] ?? '').toString(),
     target: (json['target'] ?? json['relationship_goal'] ?? '').toString(),
-    verified: (json['verified'] as bool?) ?? (json['realname_verified'] as bool?) ?? false,
+    verified:
+        (json['verified'] as bool?) ??
+        (json['realname_verified'] as bool?) ??
+        false,
     moderationStatus: (json['moderation_status'] ?? 'normal').toString(),
     moderationNote: (json['moderation_note'] ?? '').toString().isEmpty
         ? null
         : (json['moderation_note'] ?? '').toString(),
     completion: (json['completion'] as num?)?.toDouble() ?? 0,
-    tags: (json['tags'] as List<dynamic>? ?? const []).map((e) => e.toString()).toList(),
+    tags: (json['tags'] as List<dynamic>? ?? const [])
+        .map((e) => e.toString())
+        .toList(),
   );
 }
 
@@ -119,11 +154,18 @@ ProfileDetailEntity? _detailFromJson(Map<String, dynamic>? json) {
     birthTime: (json['birth_time'] ?? json['birthTime'] ?? '').toString(),
     city: (json['city'] ?? '').toString(),
     target: (json['target'] ?? json['relationship_goal'] ?? '').toString(),
-    birthPlace: (json['birth_place'] ?? json['private_birth_place'] ?? '').toString().isEmpty
+    birthPlace:
+        (json['birth_place'] ?? json['private_birth_place'] ?? '')
+            .toString()
+            .isEmpty
         ? null
         : (json['birth_place'] ?? json['private_birth_place'] ?? '').toString(),
-    birthLat: (json['birth_lat'] as num?)?.toDouble() ?? (json['private_birth_lat'] as num?)?.toDouble(),
-    birthLng: (json['birth_lng'] as num?)?.toDouble() ?? (json['private_birth_lng'] as num?)?.toDouble(),
+    birthLat:
+        (json['birth_lat'] as num?)?.toDouble() ??
+        (json['private_birth_lat'] as num?)?.toDouble(),
+    birthLng:
+        (json['birth_lng'] as num?)?.toDouble() ??
+        (json['private_birth_lng'] as num?)?.toDouble(),
   );
 }
 
@@ -133,14 +175,24 @@ ProfileSummaryEntity? _summaryFromSessionJson(Map<String, dynamic>? json) {
     nickname: (json['nickname'] ?? json['name'] ?? '').toString(),
     birthday: (json['birthday'] ?? '').toString(),
     birthTime: (json['birth_time'] ?? json['birthTime'] ?? '').toString(),
-    birthPlace: (json['birth_place'] ?? json['private_birth_place'] ?? '').toString().isEmpty
+    birthPlace:
+        (json['birth_place'] ?? json['private_birth_place'] ?? '')
+            .toString()
+            .isEmpty
         ? null
         : (json['birth_place'] ?? json['private_birth_place'] ?? '').toString(),
-    birthLat: (json['birth_lat'] as num?)?.toDouble() ?? (json['private_birth_lat'] as num?)?.toDouble(),
-    birthLng: (json['birth_lng'] as num?)?.toDouble() ?? (json['private_birth_lng'] as num?)?.toDouble(),
+    birthLat:
+        (json['birth_lat'] as num?)?.toDouble() ??
+        (json['private_birth_lat'] as num?)?.toDouble(),
+    birthLng:
+        (json['birth_lng'] as num?)?.toDouble() ??
+        (json['private_birth_lng'] as num?)?.toDouble(),
     city: (json['city'] ?? '').toString(),
     target: (json['relationship_goal'] ?? json['target'] ?? '').toString(),
-    verified: (json['verified'] as bool?) ?? (json['realname_verified'] as bool?) ?? false,
+    verified:
+        (json['verified'] as bool?) ??
+        (json['realname_verified'] as bool?) ??
+        false,
     moderationStatus: (json['moderation_status'] ?? 'normal').toString(),
     moderationNote: (json['moderation_note'] ?? '').toString().isEmpty
         ? null
@@ -148,9 +200,13 @@ ProfileSummaryEntity? _summaryFromSessionJson(Map<String, dynamic>? json) {
     completion: 0.5,
     tags: [
       if ((json['birthday'] ?? '').toString().isNotEmpty) '生日已保存',
-      if ((json['birth_time'] ?? json['birthTime'] ?? '').toString().isNotEmpty) '出生时间已保存',
+      if ((json['birth_time'] ?? json['birthTime'] ?? '').toString().isNotEmpty)
+        '出生时间已保存',
       if ((json['gender'] ?? '').toString().isNotEmpty) '性别已保存',
-      if ((json['relationship_goal'] ?? json['target'] ?? '').toString().isNotEmpty) '婚恋目标已保存',
+      if ((json['relationship_goal'] ?? json['target'] ?? '')
+          .toString()
+          .isNotEmpty)
+        '婚恋目标已保存',
       '资料已同步',
     ],
   );
@@ -165,11 +221,18 @@ ProfileDetailEntity? _detailFromSessionJson(Map<String, dynamic>? json) {
     birthTime: (json['birth_time'] ?? json['birthTime'] ?? '').toString(),
     city: (json['city'] ?? '').toString(),
     target: (json['relationship_goal'] ?? json['target'] ?? '').toString(),
-    birthPlace: (json['birth_place'] ?? json['private_birth_place'] ?? '').toString().isEmpty
+    birthPlace:
+        (json['birth_place'] ?? json['private_birth_place'] ?? '')
+            .toString()
+            .isEmpty
         ? null
         : (json['birth_place'] ?? json['private_birth_place'] ?? '').toString(),
-    birthLat: (json['birth_lat'] as num?)?.toDouble() ?? (json['private_birth_lat'] as num?)?.toDouble(),
-    birthLng: (json['birth_lng'] as num?)?.toDouble() ?? (json['private_birth_lng'] as num?)?.toDouble(),
+    birthLat:
+        (json['birth_lat'] as num?)?.toDouble() ??
+        (json['private_birth_lat'] as num?)?.toDouble(),
+    birthLng:
+        (json['birth_lng'] as num?)?.toDouble() ??
+        (json['private_birth_lng'] as num?)?.toDouble(),
   );
 }
 
@@ -182,23 +245,81 @@ ProfileDetailEntity? _detailFromSessionUser(Map<String, dynamic>? map) {
     birthTime: (map['birth_time'] ?? map['birthTime'] ?? '').toString(),
     city: (map['city'] ?? '').toString(),
     target: (map['relationship_goal'] ?? map['target'] ?? '').toString(),
-    birthPlace: (map['birth_place'] ?? map['private_birth_place'] ?? '').toString().isEmpty
+    birthPlace:
+        (map['birth_place'] ?? map['private_birth_place'] ?? '')
+            .toString()
+            .isEmpty
         ? null
         : (map['birth_place'] ?? map['private_birth_place'] ?? '').toString(),
-    birthLat: (map['birth_lat'] as num?)?.toDouble() ?? (map['private_birth_lat'] as num?)?.toDouble(),
-    birthLng: (map['birth_lng'] as num?)?.toDouble() ?? (map['private_birth_lng'] as num?)?.toDouble(),
+    birthLat:
+        (map['birth_lat'] as num?)?.toDouble() ??
+        (map['private_birth_lat'] as num?)?.toDouble(),
+    birthLng:
+        (map['birth_lng'] as num?)?.toDouble() ??
+        (map['private_birth_lng'] as num?)?.toDouble(),
   );
 }
 
+ProfileSummaryEntity? _summaryFromSessionUser(UserSummary? user) {
+  if (user == null) return null;
+  final nickname = (user.nickname ?? '').trim();
+  return ProfileSummaryEntity(
+    nickname: nickname,
+    birthday: (user.birthday ?? '').trim(),
+    birthTime: (user.birthTime ?? '').trim(),
+    birthPlace: (user.birthPlace ?? '').trim().isEmpty ? null : user.birthPlace,
+    birthLat: user.birthLat,
+    birthLng: user.birthLng,
+    city: (user.city ?? '').trim(),
+    target: (user.relationshipGoal ?? '').trim(),
+    verified: user.verified,
+    moderationStatus: user.moderationStatus,
+    moderationNote: user.moderationNote,
+    completion: 0.5,
+    tags: [
+      if ((user.birthday ?? '').trim().isNotEmpty) '生日已保存',
+      if ((user.birthTime ?? '').trim().isNotEmpty) '出生时间已保存',
+      if ((user.gender ?? '').trim().isNotEmpty) '性别已保存',
+      if ((user.relationshipGoal ?? '').trim().isNotEmpty) '婚恋目标已保存',
+      '资料已同步',
+    ],
+  );
+}
+
+bool _sameAccount(Map<String, dynamic>? json, UserSummary? user) {
+  if (json == null || user == null) return false;
+  final cachedId =
+      (json['id'] as num?)?.toInt() ??
+      int.tryParse((json['id'] ?? '').toString()) ??
+      0;
+  final cachedPhone = (json['phone'] ?? '').toString().trim();
+  return (cachedId != 0 && cachedId == user.id) ||
+      (cachedPhone.isNotEmpty && cachedPhone == user.phone.trim());
+}
+
 final profileProvider = FutureProvider<ProfileUiState>((ref) async {
+  final sessionState = ref.watch(sessionProvider);
+  final sessionUser = sessionState.maybeWhen(
+    data: (state) => state.user,
+    orElse: () => null,
+  );
   final local = ref.read(localStorageProvider);
   try {
     final summary = await ref.read(getProfileUseCaseProvider).call();
-    await local.setJson(CacheKeys.profileSummarySnapshot, _summaryToJson(summary));
+    await local.setJson(
+      CacheKeys.profileSummarySnapshot,
+      _summaryToJson(summary),
+    );
     return ProfileUiState(summary: summary);
   } catch (e) {
     final cached = await local.getJson(CacheKeys.profileSummarySnapshot);
-    final summary = _summaryFromJson(cached) ?? _summaryFromSessionJson(await local.getJson(CacheKeys.lastKnownProfile));
+    final lastKnown = await local.getJson(CacheKeys.lastKnownProfile);
+    final summary =
+        (_sameAccount(cached, sessionUser) ? _summaryFromJson(cached) : null) ??
+        (_sameAccount(lastKnown, sessionUser)
+            ? _summaryFromSessionJson(lastKnown)
+            : null) ??
+        _summaryFromSessionUser(sessionUser);
     return ProfileUiState(summary: summary, error: e.toString());
   }
 });
@@ -206,21 +327,30 @@ final profileProvider = FutureProvider<ProfileUiState>((ref) async {
 class EditProfileNotifier extends AsyncNotifier<EditProfileUiState> {
   @override
   Future<EditProfileUiState> build() async {
+    final sessionState = ref.watch(sessionProvider);
+    final sessionUser = sessionState.maybeWhen(
+      data: (state) => state.user,
+      orElse: () => null,
+    );
     final local = ref.read(localStorageProvider);
     try {
       final detail = await ref.read(profileRepositoryProvider).getDetail();
-      await local.setJson(CacheKeys.profileDetailSnapshot, _detailToJson(detail));
+      await local.setJson(
+        CacheKeys.profileDetailSnapshot,
+        _detailToJson(detail),
+      );
       return EditProfileUiState(detail: detail);
     } catch (_) {
       final cached = await local.getJson(CacheKeys.profileDetailSnapshot);
-      final sessionUser = ref.read(sessionProvider).maybeWhen(
-            data: (state) => state.user,
-            orElse: () => null,
-          );
+      final lastKnown = await local.getJson(CacheKeys.lastKnownProfile);
       return EditProfileUiState(
         detail:
-            _detailFromJson(cached) ??
-            _detailFromSessionJson(await local.getJson(CacheKeys.lastKnownProfile)) ??
+            (_sameAccount(cached, sessionUser)
+                ? _detailFromJson(cached)
+                : null) ??
+            (_sameAccount(lastKnown, sessionUser)
+                ? _detailFromSessionJson(lastKnown)
+                : null) ??
             (sessionUser == null
                 ? null
                 : _detailFromSessionUser({
@@ -244,24 +374,35 @@ class EditProfileNotifier extends AsyncNotifier<EditProfileUiState> {
     final current = state.asData?.value ?? const EditProfileUiState();
     state = AsyncData(EditProfileUiState(detail: detail, saving: true));
     try {
-      final saveResult = await ref.read(updateProfileUseCaseProvider).call(detail);
+      final saveResult = await ref
+          .read(updateProfileUseCaseProvider)
+          .call(detail);
       final savedUser = saveResult['user'];
-      final persistedDetail =
-          savedUser is Map<String, dynamic>
-              ? _detailFromJson(savedUser) ?? detail
-              : await ref.read(profileRepositoryProvider).getDetail().catchError((_) => detail);
+      final persistedDetail = savedUser is Map<String, dynamic>
+          ? _detailFromJson(savedUser) ?? detail
+          : await ref
+                .read(profileRepositoryProvider)
+                .getDetail()
+                .catchError((_) => detail);
       final local = ref.read(localStorageProvider);
-      await local.setJson(CacheKeys.profileDetailSnapshot, _detailToJson(persistedDetail));
+      await local.setJson(
+        CacheKeys.profileDetailSnapshot,
+        _detailToJson(persistedDetail),
+      );
       final currentSummary = ref.read(profileProvider).asData?.value.summary;
       final summary = _summaryFromDetail(persistedDetail, currentSummary);
-      await local.setJson(CacheKeys.profileSummarySnapshot, _summaryToJson(summary));
-      final sessionState = ref.read(sessionProvider).maybeWhen(
-            data: (s) => s,
-            orElse: () => null,
-          );
+      await local.setJson(
+        CacheKeys.profileSummarySnapshot,
+        _summaryToJson(summary),
+      );
+      final sessionState = ref
+          .read(sessionProvider)
+          .maybeWhen(data: (s) => s, orElse: () => null);
       if (sessionState?.user != null) {
         final user = sessionState!.user!;
-        await ref.read(sessionProvider.notifier).updateProfile(
+        await ref
+            .read(sessionProvider.notifier)
+            .updateProfile(
               UserSummary(
                 id: user.id,
                 phone: user.phone,
@@ -277,13 +418,15 @@ class EditProfileNotifier extends AsyncNotifier<EditProfileUiState> {
                 avatarUrl: user.avatarUrl,
                 verified: user.verified,
               ),
-              );
+            );
       }
       ref.invalidate(editProfileProvider);
       ref.invalidate(profileProvider);
       ref.invalidate(astroNatalChartProvider);
       ref.invalidate(astroSummaryProvider);
-      state = AsyncData(EditProfileUiState(detail: persistedDetail, saving: false));
+      state = AsyncData(
+        EditProfileUiState(detail: persistedDetail, saving: false),
+      );
       return persistedDetail;
     } catch (e) {
       state = AsyncData(current.copyWith(error: e.toString()));
@@ -293,10 +436,20 @@ class EditProfileNotifier extends AsyncNotifier<EditProfileUiState> {
 }
 
 extension on EditProfileUiState {
-  EditProfileUiState copyWith({ProfileDetailEntity? detail, bool? saving, String? error}) {
-    return EditProfileUiState(detail: detail ?? this.detail, saving: saving ?? this.saving, error: error ?? this.error);
+  EditProfileUiState copyWith({
+    ProfileDetailEntity? detail,
+    bool? saving,
+    String? error,
+  }) {
+    return EditProfileUiState(
+      detail: detail ?? this.detail,
+      saving: saving ?? this.saving,
+      error: error ?? this.error,
+    );
   }
 }
 
 final editProfileProvider =
-    AsyncNotifierProvider.autoDispose<EditProfileNotifier, EditProfileUiState>(EditProfileNotifier.new);
+    AsyncNotifierProvider.autoDispose<EditProfileNotifier, EditProfileUiState>(
+      EditProfileNotifier.new,
+    );

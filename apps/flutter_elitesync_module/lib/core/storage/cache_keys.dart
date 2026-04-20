@@ -19,6 +19,8 @@ abstract final class CacheKeys {
   static const contentPreferredTagsMap = 'content_preferred_tags_map_v1';
   static const profileSummarySnapshot = 'profile_summary_snapshot_v1';
   static const profileDetailSnapshot = 'profile_detail_snapshot_v1';
+  static const questionnaireProfileSnapshot =
+      'questionnaire_profile_snapshot_v1';
   static const matchResultSnapshot = 'match_result_snapshot_v1';
   static const matchDetailSnapshot = 'match_detail_snapshot_v1';
   static const matchFeedbackHistory = 'match_feedback_history_v1';

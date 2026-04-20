@@ -104,7 +104,7 @@ class AstroAdvancedPreviewItem {
       title: '$title · 相位条目',
       summary: '$aspectCount 相位 · $modeLabel · $chartKind',
       detail:
-          '当前只展示条目化说明与权重表达，不把结果冒充为真值层；这层用于 3.9 的 first-pass explanation scaffold。',
+          '当前只展示条目化说明与权重表达，不把结果冒充为真值层；这层用于 3.9 的首轮解释预览。',
       badges: ['相位 $aspectCount', '图种 $chartKind', '路线 ${routeLabel}'],
     ),
     AstroExplainabilityEntry(
@@ -197,7 +197,7 @@ class AstroAdvancedPreviewBundle {
     '- 报告性质：derived-only / display-only / advanced-context',
     '- 当前路线：${_routeModeLabel(routeMode)}',
     if (offlineFallback) '- 说明：当前使用离线样例预览，服务端高级接口暂不可用。',
-    '- 说明：预览数据使用当前画像与 scaffold 对照主体生成，不回写 canonical truth。',
+    '- 说明：预览数据使用当前画像与对照样例生成，不回写 canonical truth。',
     '',
     ...timing.toMarkdownLines(),
     '',
@@ -635,7 +635,7 @@ AstroTimingFrameworkBundle buildAstroTimingFrameworkBundle(
                 : 0);
   final annualCycle = age == null ? null : ((age % 12) + 1);
   final formalSummary = hasBirthData
-      ? '以 $subject 的当前年龄${age == null ? '' : '（$age 岁）'}与当前年份 $generatedAt 生成年限视角，仅作为 display-only scaffold。'
+      ? '以 $subject 的当前年龄${age == null ? '' : '（$age 岁）'}与当前年份 $generatedAt 生成年限视角，仅作为展示预览。'
       : '缺少生日或出生时间锚点，当前仅保留年限容器与阅读占位，不生成强结论。';
   final formalSignal = AstroTimingSignal(
     mode: AstroTimingMode.annualProfectionLike,
@@ -685,7 +685,7 @@ AstroTimingFrameworkBundle buildAstroTimingFrameworkBundle(
     signals: [formalSignal.copyWith(degraded: true, basisLabel: '出生锚点不完整')],
     notes: [
       '如果生日或出生时间缺失，年限容器保留，但不继续放大解释结论。',
-      '边界说明优先于结果陈述，避免把 scaffold 冒充为真值。',
+    '边界说明优先于结果陈述，避免把预览内容冒充为真值。',
     ],
   );
   final denseCase = AstroTimingSampleCase(
@@ -700,12 +700,12 @@ AstroTimingFrameworkBundle buildAstroTimingFrameworkBundle(
     generatedAt: generatedAt,
     frameworkTitle: 'timing mode 容器 v1',
     frameworkSummary:
-        '先建立年限类正式能力，再保留法达类接入口，所有输出均保持 advanced-context / display-only 口径。',
+      '先建立年限类正式能力，再保留法达类接入口，所有输出都只用于展示与关联说明。',
     formalSignal: formalSignal,
     placeholderSignal: placeholderSignal,
     sampleCases: [baselineCase, edgeCase, denseCase],
     knownDeviations: [
-      '年度视角使用年龄锚点与当前年份生成 scaffold，不代表最终时法真值层。',
+    '年度视角使用年龄锚点与当前年份生成预览，不代表最终时法真值层。',
       '主时段视角当前仍是占位能力，后续正式接入前不得冒充为已完成算法。',
       '高级时法层只做挂接式扩展，不回写 profile/basic 或 natal canonical truth。',
     ],

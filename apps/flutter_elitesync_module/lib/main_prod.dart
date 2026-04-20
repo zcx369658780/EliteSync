@@ -1,17 +1,15 @@
-import 'dart:convert';
-
 import 'package:flutter/widgets.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_elitesync_module/app/bootstrap/app_bootstrap.dart';
 import 'package:flutter_elitesync_module/app/config/app_env.dart';
 import 'package:flutter_elitesync_module/app/config/app_flavor.dart';
-import 'package:flutter_elitesync_module/core/storage/cache_keys.dart';
-import 'package:flutter_elitesync_module/core/storage/secure_storage_service.dart';
 
 Future<Map<String, String>> _readHostBootstrap() async {
   try {
     const channel = MethodChannel('elitesync/bootstrap');
-    final payload = await channel.invokeMapMethod<dynamic, dynamic>('getBootstrap');
+    final payload = await channel.invokeMapMethod<dynamic, dynamic>(
+      'getBootstrap',
+    );
     if (payload == null) return const {};
     return payload.map(
       (key, value) => MapEntry(key.toString(), value?.toString() ?? ''),
@@ -29,10 +27,7 @@ String _firstNonEmpty(List<String> values) {
   return '';
 }
 
-String _resolveApiBaseUrl({
-  required bool hasDebugBootstrap,
-  required Map<String, String> hostBootstrap,
-}) {
+String _resolveApiBaseUrl({required Map<String, String> hostBootstrap}) {
   final hostOverride = _firstNonEmpty([hostBootstrap['apiBaseUrl'] ?? '']);
   if (hostOverride.isNotEmpty) {
     return hostOverride.endsWith('/') ? hostOverride : '$hostOverride/';
@@ -41,97 +36,40 @@ String _resolveApiBaseUrl({
   if (override.isNotEmpty) {
     return override.endsWith('/') ? override : '$override/';
   }
-  return hasDebugBootstrap
-      ? 'http://101.133.161.203/'
-      : 'https://slowdate.top/';
+  return 'http://101.133.161.203/';
 }
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   final hostBootstrap = await _readHostBootstrap();
-  final debugAccessTokenB64FromHost =
-      hostBootstrap['debugAccessTokenB64'] ?? '';
-  final debugAccessTokenB64 = String.fromEnvironment(
-    'ELITESYNC_DEBUG_ACCESS_TOKEN_B64',
-  ).trim();
-  final debugAccessTokenRaw = String.fromEnvironment(
-    'ELITESYNC_DEBUG_ACCESS_TOKEN',
-  ).trim();
-  final debugAccessTokenFromDefine = debugAccessTokenB64.isNotEmpty
-      ? utf8.decode(base64Decode(debugAccessTokenB64))
-      : debugAccessTokenRaw;
-  final debugAccessToken = _firstNonEmpty([
-    debugAccessTokenFromDefine,
-    debugAccessTokenB64FromHost.isNotEmpty
-        ? utf8.decode(base64Decode(debugAccessTokenB64FromHost))
-        : '',
-    hostBootstrap['debugAccessToken'] ?? '',
-  ]);
-  final debugRefreshToken = _firstNonEmpty([
-    String.fromEnvironment('ELITESYNC_DEBUG_REFRESH_TOKEN'),
-    hostBootstrap['debugRefreshToken'] ?? '',
-  ]);
-  final debugAutoLoginPhone = _firstNonEmpty([
-    String.fromEnvironment('ELITESYNC_DEBUG_AUTO_LOGIN_PHONE'),
-    hostBootstrap['debugAutoLoginPhone'] ?? '',
-  ]);
-  final debugAutoLoginPassword = _firstNonEmpty([
-    String.fromEnvironment('ELITESYNC_DEBUG_AUTO_LOGIN_PASSWORD'),
-    hostBootstrap['debugAutoLoginPassword'] ?? '',
-  ]);
-  final chatMockFromHost = (hostBootstrap['chatMock'] ?? '').toLowerCase() == 'true';
-  final chatMockFromDefine = const bool.fromEnvironment('ELITESYNC_CHAT_MOCK');
-  final adminMockFromHost = (hostBootstrap['adminMock'] ?? '').toLowerCase() == 'true';
-  final adminMockFromDefine = const bool.fromEnvironment('ELITESYNC_ADMIN_MOCK');
   final initialRoute = _firstNonEmpty([
     String.fromEnvironment('ELITESYNC_INITIAL_ROUTE'),
     hostBootstrap['initialRoute'] ?? '',
   ]);
-  final hasDebugBootstrap =
-      debugAccessToken.isNotEmpty ||
-      debugRefreshToken.isNotEmpty ||
-      debugAutoLoginPhone.isNotEmpty ||
-      debugAutoLoginPassword.isNotEmpty ||
-      initialRoute.isNotEmpty;
 
   // ignore: avoid_print
   print(
-    'MAIN_PROD_BOOTSTRAP token=${debugAccessToken.isNotEmpty} refresh=${debugRefreshToken.isNotEmpty} autoLogin=${debugAutoLoginPhone.isNotEmpty && debugAutoLoginPassword.isNotEmpty} initialRoute=${initialRoute.isNotEmpty ? initialRoute : "null"} flavor=${hasDebugBootstrap ? "dev" : "prod"}',
+    'MAIN_PROD_BOOTSTRAP initialRoute=${initialRoute.isNotEmpty ? initialRoute : "null"} flavor=prod',
   );
-
-  if (debugAccessToken.isNotEmpty) {
-    final secure = SecureStorageService();
-    await secure.write(CacheKeys.accessToken, debugAccessToken);
-    if (debugRefreshToken.isNotEmpty) {
-      await secure.write(CacheKeys.refreshToken, debugRefreshToken);
-    }
-  }
 
   runEliteSyncApp(
     AppEnv(
-      flavor: hasDebugBootstrap ? AppFlavor.dev : AppFlavor.prod,
-      appName: hasDebugBootstrap ? 'EliteSync Dev' : 'EliteSync',
+      flavor: AppFlavor.prod,
+      appName: 'EliteSync',
       // The Android host app embeds the Flutter release AAR, which always
       // boots through main.dart -> main_prod.dart. Keep prod pointed at the
       // verified direct backend entry until the public domain chain is stable.
-      apiBaseUrl: _resolveApiBaseUrl(
-        hasDebugBootstrap: hasDebugBootstrap,
-        hostBootstrap: hostBootstrap,
-      ),
+      apiBaseUrl: _resolveApiBaseUrl(hostBootstrap: hostBootstrap),
       useMockData: false,
       useMockAuth: false,
-      useMockQuestionnaire: hasDebugBootstrap,
+      useMockQuestionnaire: false,
       useMockHome: false,
-      useMockMatch: hasDebugBootstrap,
-      useMockChat: chatMockFromHost || chatMockFromDefine,
+      useMockMatch: false,
+      useMockChat: false,
       useMockProfile: false,
-      useMockAdmin: adminMockFromHost || adminMockFromDefine,
+      useMockAdmin: false,
       initialRoute: initialRoute.isEmpty ? null : initialRoute,
-      debugAccessToken: debugAccessToken,
-      debugRefreshToken: debugRefreshToken,
-      debugAutoLoginPhone: debugAutoLoginPhone,
-      debugAutoLoginPassword: debugAutoLoginPassword,
     ),
   );
 }

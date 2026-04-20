@@ -30,6 +30,14 @@ class AstroAdvancedExplanationLayerCard extends StatelessWidget {
               height: 1.45,
             ),
           ),
+          SizedBox(height: t.spacing.xs),
+          Text(
+            '每张卡片都按“证据 -> 解释 -> 提示”组织，方便单独截图、快速复核和归档。',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: t.textSecondary,
+              height: 1.45,
+            ),
+          ),
           SizedBox(height: t.spacing.sm),
           _LayerSection(
             title: '摘要层',

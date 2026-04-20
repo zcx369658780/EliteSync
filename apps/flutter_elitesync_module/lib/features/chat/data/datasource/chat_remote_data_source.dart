@@ -32,7 +32,9 @@ class ChatRemoteDataSource {
         _cachedSelfId = localId;
         return localId;
       }
-      final profile = await apiClient.get('/api/v1/profile/basic').timeout(_requestTimeout);
+      final profile = await apiClient
+          .get('/api/v1/profile/basic')
+          .timeout(_requestTimeout);
       if (profile is NetworkSuccess<Map<String, dynamic>>) {
         final id = (profile.data['id'] as num?)?.toInt() ?? 0;
         if (id > 0) {
@@ -48,15 +50,31 @@ class ChatRemoteDataSource {
     if (useMock) {
       return ChatMock.conversationsHappy.map(ConversationDto.fromJson).toList();
     }
-    // 1) Prefer current match.
-    final current = await apiClient.get('/api/v1/match/current').timeout(_requestTimeout);
+    final conversations = await apiClient
+        .get('/api/v1/conversations')
+        .timeout(_requestTimeout);
+    if (conversations is NetworkSuccess<Map<String, dynamic>>) {
+      final items = (conversations.data['items'] as List<dynamic>? ?? const []);
+      final parsed = items
+          .whereType<Map<String, dynamic>>()
+          .map(ConversationDto.fromJson)
+          .toList();
+      if (parsed.isNotEmpty) return parsed;
+    }
+
+    // 1) Prefer current match when the conversation domain is still empty.
+    final current = await apiClient
+        .get('/api/v1/match/current')
+        .timeout(_requestTimeout);
     if (current is NetworkSuccess<Map<String, dynamic>>) {
       final built = _conversationFromMatchPayload(current.data);
       if (built != null) return [built];
     }
 
     // 2) Fallback to latest history match.
-    final history = await apiClient.get('/api/v1/match/history').timeout(_requestTimeout);
+    final history = await apiClient
+        .get('/api/v1/match/history')
+        .timeout(_requestTimeout);
     if (history is NetworkSuccess<Map<String, dynamic>>) {
       final items = (history.data['items'] as List<dynamic>? ?? const []);
       for (final row in items) {
@@ -80,38 +98,45 @@ class ChatRemoteDataSource {
       throw Exception('invalid conversation id');
     }
     final selfId = await _selfId();
-    final result = await apiClient.get('/api/v1/messages', query: {'peer_id': peerId, 'limit': 100}).timeout(_requestTimeout);
+    final result = await apiClient
+        .get('/api/v1/messages', query: {'peer_id': peerId, 'limit': 100})
+        .timeout(_requestTimeout);
     if (result is NetworkSuccess<Map<String, dynamic>>) {
       final list = (result.data['items'] as List<dynamic>? ?? const []);
       return list.whereType<Map<String, dynamic>>().map((raw) {
         final senderId = (raw['sender_id'] as num?)?.toInt() ?? 0;
-        final text = (raw['content'] ?? '').toString();
-        final createdAt = (raw['created_at'] ?? '').toString();
-        return MessageDto(
-          id: (raw['id'] ?? '').toString(),
-          mine: selfId > 0 && senderId == selfId,
-          text: text,
-          time: createdAt,
-        );
+        return MessageDto.fromJson({
+          ...raw,
+          'mine': selfId > 0 && senderId == selfId,
+          'text': (raw['content'] ?? '').toString(),
+          'time': (raw['created_at'] ?? '').toString(),
+        });
       }).toList();
     }
     final failure = result as NetworkFailure<Map<String, dynamic>>;
     throw Exception(failure.message);
   }
 
-  Future<void> sendMessage(String conversationId, String text) async {
+  Future<void> sendMessage(
+    String conversationId,
+    String text, {
+    List<int> attachmentIds = const [],
+  }) async {
     if (useMock) return;
     final peerId = int.tryParse(conversationId);
     if (peerId == null || peerId <= 0) {
       throw Exception('invalid conversation id');
     }
-    final result = await apiClient.post(
-      '/api/v1/messages',
-      body: SendMessageRequestDto(
-        receiverId: peerId,
-        content: text,
-      ).toJson(),
-    ).timeout(_requestTimeout);
+    final result = await apiClient
+        .post(
+          '/api/v1/messages',
+          body: SendMessageRequestDto(
+            receiverId: peerId,
+            content: text,
+            attachmentIds: attachmentIds,
+          ).toJson(),
+        )
+        .timeout(_requestTimeout);
     if (result is NetworkFailure<Map<String, dynamic>>) {
       throw Exception(result.message);
     }
@@ -120,8 +145,12 @@ class ChatRemoteDataSource {
   ConversationDto? _conversationFromMatchPayload(Map<String, dynamic> payload) {
     final partnerId = (payload['partner_id'] as num?)?.toInt();
     if (partnerId == null || partnerId <= 0) return null;
-    final partnerNickname = (payload['partner_nickname'] ?? '').toString().trim();
-    final displayName = partnerNickname.isNotEmpty ? partnerNickname : '匹配对象 #$partnerId';
+    final partnerNickname = (payload['partner_nickname'] ?? '')
+        .toString()
+        .trim();
+    final displayName = partnerNickname.isNotEmpty
+        ? partnerNickname
+        : '匹配对象 #$partnerId';
     final score = (payload['final_score'] as num?)?.toInt();
     final highlights = (payload['highlights'] as String?) ?? '';
     return ConversationDto(

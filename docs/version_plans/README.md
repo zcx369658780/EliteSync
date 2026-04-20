@@ -1,16 +1,19 @@
 # 版本开发计划索引
 
-更新时间：2026-04-17
+更新时间：2026-04-19
 
-当前 3.9 已完成正式归档收口；截图证据、验收摘要与多 Agent 审查链已补齐，顾问已确认正式归档通过。当前发布版本已升级为 `0.03.09 / 30900`。
-3.9 开发计划已归档，后续以 0.03.09 发布基线继续维护。
+当前 3.9 已完成正式归档收口；截图证据、验收摘要与多 Agent 审查链已补齐，顾问已确认正式归档通过。当前 3.9a 收尾已完成，当前发布版本为 `0.04.04 / 40400`。4.x 方向重整版整体开发计划已接入，`4.0A` 到 `4.0E` 的基础能力骨架已完成并整理出总验收摘要；`4.1` 非官方四维人格问卷版本已正式通过并归档；`4.2` 图片消息正式接入版已正式通过并收口，walkthrough 证据包、验收摘要与 closeout 文档均已补齐；`4.3` 动态流基础版已正式通过并归档，walkthrough 证据包、验收摘要、handoff 与 closeout 已冻结；`4.4` 视频消息版已正式归档，归档口径为 `pass with observations`，成功态 walkthrough 已补齐并回读为 `视频消息` 语义，walkthrough 证据包、验收摘要、handoff 与 closeout 均已补齐；`4.4S` 媒体链稳定性修正版已完成 `public_url` 规范化修复，媒体读取链已恢复并进入正式归档态；当前 0.04.04 发版已同步把 4.3 / 4.4 / 4.4S 的更新内容纳入 app 更新历史。
 
 本目录仅保留当前活跃版本和当前发布相关材料。历史版本已迁移到 `docs/archive/legacy_2026-04/version_plans/`。
 
 ## 当前活跃
 
-- `0.03.09_UPDATE_BRIEF.md`：当前发布简报
-- `elite_sync_整体开发计划书_更新版_2026_04_11.md`：当前总控计划书
+- `0.04.04_UPDATE_BRIEF.md`：当前发布简报
+- `elite_sync_4_0_版本开发计划书_2026_04_18.md`：4.0 版本开发计划书
+- `elite_sync_4_1_版本开发计划书_2026_04_18.md`：4.1 版本开发计划书
+- `elite_sync_4_2_版本开发计划书_2026_04_18.md`：4.2 版本开发计划书
+- `elite_sync_整体开发计划书_4_x方向重整版_2026_04_17.md`：当前总控计划书
+- `elite_sync_整体开发计划书_更新版_2026_04_11.md`：历史总控计划书
 - `elite_sync_3_9_版本开发计划书_2026_04_17.md`：3.9 版本开发计划书
 - `elite_sync_3_8_版本开发计划书_2026_04_13.md`：3.8 版本开发计划书
 - `3.8_EXEC_PLAN.md`：3.8 执行计划
@@ -39,6 +42,64 @@
 - `3.9_FINAL_ARCHIVE_NOTE.md`：3.9 最终归档说明
 - `3.9_SCREENSHOT_EVIDENCE_INDEX.md`：3.9 截图证据索引
 - `3.9_SCREENSHOT_VERIFICATION_NOTE.md`：3.9 截图验收说明
+- `3.9A_EXECUTION_NOTE.md`：3.9a 执行记录
+- `3.9A_ACCEPTANCE_SUMMARY.md`：3.9a 验收摘要
+- `3.9A_ACCEPTANCE_CHECKLIST.md`：3.9a 验收核对清单
+- `3.9B_REGRESSION_EXECUTION.md`：3.9B 回归执行记录
+- `3.9C_BOUNDARY_NOTE.md`：3.9C 边界说明收口
+- `3.9C_BOUNDARY_BRIEF.md`：3.9C 边界总结短版
+- `4.0A_EXECUTION_NOTE.md`：4.0A 执行记录
+- `4.0A_DATA_SKELETON.md`：4.0A 数据骨架说明
+- `4.0B_MEDIA_BASELINE.md`：4.0B 媒体对象存储最小闭环
+- `4.0C_PIPELINE_NOTE.md`：4.0C 队列与缓存闭环说明
+- `4.0D_ATTACHMENT_SKELETON.md`：4.0D Flutter 附件上传状态骨架
+- `4.0E_OBSERVABILITY_NOTE.md`：4.0E 可观测性与限流说明
+- `4.0_ACCEPTANCE_SUMMARY.md`：4.0 总验收摘要
+- `4.0_ACCEPTANCE_REPORT.md`：4.0 验收报告
+- `4.0_MULTIAGENT_REVIEW_LOG.md`：4.0 多 Agent 审查日志
+- `4.0_PATCH_CLOSEOUT_NOTE.md`：4.0 收尾补丁说明
+- `4.1D_EXECUTION_NOTE.md`：4.1D 轻量联动与可观测性记录
+- `4.1_EXECUTION_NOTE.md`：4.1 执行记录
+- `4.1_ACCEPTANCE_SUMMARY.md`：4.1 验收摘要
+- `4.1_HANDOFF_NOTE.md`：4.1 交接说明
+- `4.1_GPT_ADVISOR_HANDOFF.md`：4.1 给 GPT 顾问的交接稿
+- `4.1_MULTIAGENT_REVIEW_LOG.md`：4.1 多 Agent 审查日志
+- `4.1_SCREENSHOT_EVIDENCE_INDEX.md`：4.1 截图证据索引
+- `4.1_SCREENSHOT_VERIFICATION_NOTE.md`：4.1 截图验收说明
+- `4.2_EXECUTION_NOTE.md`：4.2 执行记录
+- `4.2_ACCEPTANCE_SUMMARY.md`：4.2 验收摘要
+- `4.2_HANDOFF_NOTE.md`：4.2 交接说明
+- `4.2_GPT_ADVISOR_HANDOFF.md`：4.2 给 GPT 顾问的交接稿
+- `4.2_MULTIAGENT_REVIEW_LOG.md`：4.2 多 Agent 审查日志
+- `4.2_CLOSEOUT_NOTE.md`：4.2 收尾说明
+- `4.2_SCREENSHOT_EVIDENCE_INDEX.md`：4.2 截图证据索引
+- `4.2_SCREENSHOT_VERIFICATION_NOTE.md`：4.2 截图验收说明
+- `4.3_EXECUTION_NOTE.md`：4.3 执行记录
+- `4.3_ACCEPTANCE_SUMMARY.md`：4.3 验收摘要
+- `4.3_HANDOFF_NOTE.md`：4.3 交接说明
+- `4.3_GPT_ADVISOR_HANDOFF.md`：4.3 给 GPT 顾问的交接稿
+- `4.3_MULTIAGENT_REVIEW_LOG.md`：4.3 多 Agent 审查日志
+- `4.3_SCREENSHOT_EVIDENCE_INDEX.md`：4.3 截图证据索引
+- `4.3_SCREENSHOT_VERIFICATION_NOTE.md`：4.3 截图验收说明
+- `4.3_CLOSEOUT_NOTE.md`：4.3 收尾说明
+- `elite_sync_4_3_版本开发计划书_2026_04_19.md`：4.3 版本开发计划书
+- `elite_sync_4_4_版本开发计划书_2026_04_19.md`：4.4 版本开发计划书
+- `4.4_EXECUTION_NOTE.md`：4.4 执行记录
+- `4.4A_BOUNDARY_NOTE.md`：4.4A 边界冻结说明
+- `4.4_ACCEPTANCE_SUMMARY.md`：4.4 验收摘要
+- `4.4_HANDOFF_NOTE.md`：4.4 交接说明
+- `4.4_GPT_ADVISOR_HANDOFF.md`：4.4 给 GPT 顾问的交接稿
+- `4.4_SCREENSHOT_EVIDENCE_INDEX.md`：4.4 截图证据索引
+- `4.4_SCREENSHOT_VERIFICATION_NOTE.md`：4.4 截图验收说明
+- `4.4_CLOSEOUT_NOTE.md`：4.4 收尾说明
+- `4.4_MULTIAGENT_REVIEW_LOG.md`：4.4 多 Agent 审查日志
+- `elite_sync_4_4_s_版本开发计划书_2026_04_19.md`：4.4S 版本开发计划书
+- `4.4S_EXECUTION_NOTE.md`：4.4S 执行记录
+- `4.4S_ACCEPTANCE_SUMMARY.md`：4.4S 验收摘要
+- `4.4S_CLOSEOUT_NOTE.md`：4.4S 收尾说明
+- `4.4S_GPT_ADVISOR_HANDOFF.md`：4.4S 给 GPT 顾问的交接稿
+- `4.4S_SCREENSHOT_EVIDENCE_INDEX.md`：4.4S 截图证据索引
+- `elite_sync_4_1_版本开发计划书_2026_04_18.md`：4.1 版本开发计划书
 - `elite_sync_3_6_版本开发计划书_2026_04_12.md`：3.6 版本开发计划书
 - `elite_sync_3_7_版本开发计划书_2026_04_12.md`：3.7 版本开发计划书
 - `3.7_EXEC_PLAN.md`：3.7 执行计划

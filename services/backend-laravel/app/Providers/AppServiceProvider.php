@@ -84,5 +84,45 @@ class AppServiceProvider extends ServiceProvider
                 Limit::perMinute(120)->by('msg:ip:'.$ip),
             ];
         });
+
+        RateLimiter::for('conversations', function (Request $request) {
+            $uid = (string) optional($request->user())->id;
+            $ip = (string) $request->ip();
+
+            return [
+                Limit::perMinute(30)->by('conv:user:'.$uid),
+                Limit::perMinute(60)->by('conv:ip:'.$ip),
+            ];
+        });
+
+        RateLimiter::for('media', function (Request $request) {
+            $uid = (string) optional($request->user())->id;
+            $ip = (string) $request->ip();
+
+            return [
+                Limit::perMinute(20)->by('media:user:'.$uid),
+                Limit::perMinute(40)->by('media:ip:'.$ip),
+            ];
+        });
+
+        RateLimiter::for('relationships', function (Request $request) {
+            $uid = (string) optional($request->user())->id;
+            $ip = (string) $request->ip();
+
+            return [
+                Limit::perMinute(20)->by('rel:user:'.$uid),
+                Limit::perMinute(40)->by('rel:ip:'.$ip),
+            ];
+        });
+
+        RateLimiter::for('notifications', function (Request $request) {
+            $uid = (string) optional($request->user())->id;
+            $ip = (string) $request->ip();
+
+            return [
+                Limit::perMinute(60)->by('notify:user:'.$uid),
+                Limit::perMinute(120)->by('notify:ip:'.$ip),
+            ];
+        });
     }
 }

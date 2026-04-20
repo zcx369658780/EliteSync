@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\QuestionnaireAnswer;
+use App\Models\QuestionnaireAttempt;
 use App\Models\QuestionnaireQuestion;
 use App\Services\PersonalityProfileService;
 use Illuminate\Http\JsonResponse;
@@ -22,6 +23,39 @@ class QuestionnaireController extends Controller
     private function requiredAnswerCount(): int
     {
         return max(1, (int) config('questionnaire.required_answer_count', 10));
+    }
+
+    private function questionnaireVersion(): string
+    {
+        return (string) config('questionnaire.version', 'q_v2');
+    }
+
+    private function bankVersion(): string
+    {
+        return (string) config('questionnaire.bank_version', 'qb_v1');
+    }
+
+    private function attemptVersion(): string
+    {
+        return (string) config('questionnaire.attempt_version', 'qa_v1');
+    }
+
+    private function questionnaireLabel(): string
+    {
+        return (string) config('questionnaire.label', '非官方人格四维问卷');
+    }
+
+    private function nonOfficialNotice(): string
+    {
+        return (string) config(
+            'questionnaire.non_official_notice',
+            '仅用于产品内人格倾向参考，不代表官方 MBTI。'
+        );
+    }
+
+    private function estimatedMinutes(): int
+    {
+        return max(1, (int) config('questionnaire.estimated_minutes', 6));
     }
 
     private function sessionQuestionCount(): int
@@ -136,6 +170,8 @@ class QuestionnaireController extends Controller
                 'category' => $q->category,
                 'subtopic' => $q->subtopic,
                 'recommended_bank' => $q->recommended_bank,
+                'questionnaire_version' => $this->questionnaireVersion(),
+                'bank_version' => $this->bankVersion(),
                 'quality_tier' => $q->quality_tier,
                 'quality_tag' => $q->quality_tag,
                 'content' => $q->question_text_zh ?: $q->content,
@@ -167,12 +203,23 @@ class QuestionnaireController extends Controller
                     ];
                 })->values(),
                 'version' => $q->version ?? 1,
+                'question_version' => (int) ($q->version ?? 1),
             ];
         });
 
         $bankTotal = QuestionnaireQuestion::query()->where('enabled', true)->count();
 
         return response()->json([
+            'meta' => [
+                'version' => $this->questionnaireVersion(),
+                'bank_version' => $this->bankVersion(),
+                'attempt_version' => $this->attemptVersion(),
+                'label' => $this->questionnaireLabel(),
+                'non_official_notice' => $this->nonOfficialNotice(),
+                'estimated_minutes' => $this->estimatedMinutes(),
+                'required_answers' => $this->requiredAnswerCount(),
+                'session_questions' => $this->sessionQuestionCount(),
+            ],
             'items' => $questions,
             'total' => $questions->count(),
             'bank_total' => $bankTotal,
@@ -258,6 +305,8 @@ class QuestionnaireController extends Controller
             'category' => $next->category,
             'subtopic' => $next->subtopic,
             'recommended_bank' => $next->recommended_bank,
+            'questionnaire_version' => $this->questionnaireVersion(),
+            'bank_version' => $this->bankVersion(),
             'quality_tier' => $next->quality_tier,
             'quality_tag' => $next->quality_tag,
             'content' => $next->question_text_zh ?: $next->content,
@@ -287,10 +336,11 @@ class QuestionnaireController extends Controller
                 ];
             })->values(),
             'version' => $next->version ?? 1,
+            'question_version' => (int) ($next->version ?? 1),
         ]);
     }
 
-    public function submitAnswers(Request $request): JsonResponse
+    public function submitAnswers(Request $request, PersonalityProfileService $profiles): JsonResponse
     {
         $payload = $request->all();
         $payload['answers'] = $this->normalizeLegacyAnswersPayload($payload['answers'] ?? []);
@@ -310,6 +360,14 @@ class QuestionnaireController extends Controller
         ])->validate();
 
         $user = $request->user();
+        $questionIds = collect($data['answers'])
+            ->pluck('question_id')
+            ->map(fn ($id) => (int) $id)
+            ->all();
+        $questionMap = QuestionnaireQuestion::query()
+            ->whereIn('id', $questionIds)
+            ->get(['id', 'question_key', 'version'])
+            ->keyBy('id');
 
         foreach ($data['answers'] as $item) {
             $selected = $this->normalizeSelectedAnswer($item);
@@ -320,6 +378,8 @@ class QuestionnaireController extends Controller
             }
             $acceptable = $this->normalizeAcceptableAnswers($item, $selected);
             $importance = $this->normalizeImportance($item);
+            $question = $questionMap->get((int) $item['question_id']);
+            $questionVersion = (int) ($question->version ?? 1);
 
             QuestionnaireAnswer::updateOrCreate(
                 [
@@ -334,6 +394,11 @@ class QuestionnaireController extends Controller
                         'importance' => $importance,
                         'importance_weight' => self::IMPORTANCE_WEIGHT[$importance],
                         'version' => (int) ($item['version'] ?? 1),
+                        'question_key' => (string) ($question->question_key ?? ''),
+                        'question_version' => $questionVersion,
+                        'questionnaire_version' => $this->questionnaireVersion(),
+                        'bank_version' => $this->bankVersion(),
+                        'attempt_version' => $this->attemptVersion(),
                     ],
                     'selected_answer_json' => $selected,
                     'acceptable_answers_json' => $acceptable,
@@ -343,7 +408,59 @@ class QuestionnaireController extends Controller
             );
         }
 
-        return response()->json(['ok' => true]);
+        $profile = $profiles->buildForUser((int) $user->id);
+        $questionCount = QuestionnaireQuestion::query()->where('enabled', true)->count();
+        QuestionnaireAttempt::query()->create([
+            'user_id' => (int) $user->id,
+            'questionnaire_version' => $this->questionnaireVersion(),
+            'bank_version' => $this->bankVersion(),
+            'attempt_version' => $this->attemptVersion(),
+            'answers_count' => count($data['answers']),
+            'total_count' => $questionCount,
+            'answers_json' => array_values($data['answers']),
+            'profile_json' => $profile,
+            'summary_json' => (array) data_get($profile, 'summary', []),
+            'result_label' => (string) data_get($profile, 'summary.label', ''),
+            'result_highlights_json' => (array) data_get($profile, 'summary.highlights', []),
+            'completed_at' => now(),
+        ]);
+
+        return response()->json([
+            'ok' => true,
+            'questionnaire_version' => $this->questionnaireVersion(),
+            'bank_version' => $this->bankVersion(),
+            'attempt_version' => $this->attemptVersion(),
+            'profile' => $profile,
+        ]);
+    }
+
+    public function history(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        $items = QuestionnaireAttempt::query()
+            ->where('user_id', (int) $user->id)
+            ->orderByDesc('id')
+            ->limit(20)
+            ->get();
+
+        return response()->json([
+            'items' => $items->map(function (QuestionnaireAttempt $attempt): array {
+                return [
+                    'id' => $attempt->id,
+                    'questionnaire_version' => $attempt->questionnaire_version,
+                    'bank_version' => $attempt->bank_version,
+                    'attempt_version' => $attempt->attempt_version,
+                    'answers_count' => $attempt->answers_count,
+                    'total_count' => $attempt->total_count,
+                    'result_label' => $attempt->result_label,
+                    'result_highlights' => $attempt->result_highlights_json ?? [],
+                    'summary' => $attempt->summary_json ?? [],
+                    'profile_complete' => (bool) data_get($attempt->profile_json, 'complete', false),
+                    'completed_at' => optional($attempt->completed_at)->toIso8601String(),
+                ];
+            })->values(),
+            'total' => $items->count(),
+        ]);
     }
 
     public function saveDraftLegacy(Request $request): JsonResponse

@@ -1,9 +1,9 @@
 {
-    "generated_at": "2026-04-08T01:27:36+00:00",
+    "generated_at": "2026-04-17T23:16:18+00:00",
     "window": {
         "days": 60,
         "week_tag": "",
-        "since": "2026-02-07T01:27:36+00:00",
+        "since": "2026-02-16T23:16:18+00:00",
         "limit": 0,
         "include_calibration_injected": false
     },
@@ -23,7 +23,7 @@
     "detail": [
         {
             "match_id": 1,
-            "week_tag": "2026-W15",
+            "week_tag": "2026-W16",
             "user_a": 1,
             "user_b": 2,
             "mutual_like": true,

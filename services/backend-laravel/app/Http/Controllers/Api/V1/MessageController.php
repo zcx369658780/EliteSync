@@ -5,9 +5,12 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Models\ChatMessage;
 use App\Models\DatingMatch;
+use App\Models\MessageAttachment;
+use App\Models\MediaAsset;
 use App\Models\UserBlock;
 use App\Models\User;
 use App\Services\EventLogger;
+use App\Services\ConversationDomainService;
 use App\Services\MatchingDebugModeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -60,15 +63,94 @@ class MessageController extends Controller
             ->exists();
     }
 
-    public function send(Request $request, EventLogger $events): JsonResponse
+    /**
+     * @return array<string, mixed>
+     */
+    private function shapeAttachment(MessageAttachment $attachment): array
+    {
+        $asset = $attachment->mediaAsset;
+
+        return [
+            'id' => (int) $attachment->id,
+            'attachment_type' => (string) $attachment->attachment_type,
+            'sort_order' => (int) $attachment->sort_order,
+            'metadata' => $attachment->metadata ?? null,
+            'media_asset' => $asset ? [
+                'id' => (int) $asset->id,
+                'owner_user_id' => (int) $asset->owner_user_id,
+                'media_type' => (string) $asset->media_type,
+                'storage_provider' => (string) $asset->storage_provider,
+                'storage_disk' => (string) $asset->storage_disk,
+                'storage_key' => (string) $asset->storage_key,
+                'mime_type' => $asset->mime_type,
+                'size_bytes' => (int) $asset->size_bytes,
+                'width' => $asset->width,
+                'height' => $asset->height,
+                'duration_ms' => $asset->duration_ms,
+                'status' => (string) $asset->status,
+                'error_code' => $asset->error_code,
+                'error_message' => $asset->error_message,
+                'public_url' => $asset->public_url,
+                'metadata' => $asset->metadata ?? null,
+                'uploaded_at' => optional($asset->uploaded_at)?->toISOString(),
+                'processed_at' => optional($asset->processed_at)?->toISOString(),
+            ] : null,
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function shapeMessage(ChatMessage $message): array
+    {
+        $message->loadMissing(['attachments.mediaAsset']);
+
+        $attachments = $message->attachments
+            ->sortBy('sort_order')
+            ->values()
+            ->map(fn (MessageAttachment $attachment) => $this->shapeAttachment($attachment))
+            ->all();
+        $hasVideoAttachments = collect($attachments)->contains(function (array $attachment): bool {
+            $mediaType = (string) ($attachment['media_asset']['media_type'] ?? '');
+
+            return str_starts_with($mediaType, 'video') || $mediaType === 'video';
+        });
+        $hasImageAttachments = collect($attachments)->contains(function (array $attachment): bool {
+            $mediaType = (string) ($attachment['media_asset']['media_type'] ?? '');
+
+            return str_starts_with($mediaType, 'image') || $mediaType === 'image';
+        });
+
+        return [
+            'id' => (int) $message->id,
+            'room_id' => (string) $message->room_id,
+            'sender_id' => (int) $message->sender_id,
+            'receiver_id' => (int) $message->receiver_id,
+            'content' => (string) $message->content,
+            'is_read' => (bool) $message->is_read,
+            'read_at' => optional($message->read_at)?->toISOString(),
+            'created_at' => optional($message->created_at)?->toISOString(),
+            'message_type' => $hasVideoAttachments
+                ? 'video'
+                : ($hasImageAttachments ? 'image' : (!empty($attachments) ? 'media' : 'text')),
+            'has_attachments' => !empty($attachments),
+            'attachments' => $attachments,
+        ];
+    }
+
+    public function send(Request $request, EventLogger $events, ConversationDomainService $conversationService): JsonResponse
     {
         $data = $request->validate([
             'receiver_id' => ['required', 'integer', 'exists:users,id'],
-            'content' => ['required', 'string', 'max:5000'],
+            'content' => ['nullable', 'string', 'max:5000'],
+            'attachment_ids' => ['nullable', 'array'],
+            'attachment_ids.*' => ['integer', 'distinct'],
         ]);
 
         $user = $request->user();
         $receiverId = (int) $data['receiver_id'];
+        $content = trim((string) ($data['content'] ?? ''));
+        $attachmentIds = array_values(array_unique(array_map('intval', $data['attachment_ids'] ?? [])));
 
         if ($receiverId === (int) $user->id) {
             return response()->json(['message' => 'cannot message self'], 422);
@@ -82,12 +164,53 @@ class MessageController extends Controller
             return response()->json(['message' => 'chat not allowed before matching'], 403);
         }
 
+        if ($content === '' && empty($attachmentIds)) {
+            return response()->json([
+                'message' => 'content or attachment_ids is required',
+            ], 422);
+        }
+
         $message = ChatMessage::create([
             'room_id' => $this->roomId((int) $user->id, $receiverId),
             'sender_id' => $user->id,
             'receiver_id' => $receiverId,
-            'content' => trim($data['content']),
+            'content' => $content,
         ]);
+
+        if (!empty($attachmentIds)) {
+            /** @var \Illuminate\Support\Collection<int, MediaAsset> $assets */
+            $assets = MediaAsset::query()
+                ->where('owner_user_id', $user->id)
+                ->whereIn('id', $attachmentIds)
+                ->orderBy('id')
+                ->get();
+
+            if ($assets->count() !== count($attachmentIds)) {
+                $message->delete();
+
+                return response()->json([
+                    'message' => 'one or more attachments are invalid',
+                ], 422);
+            }
+
+            foreach ($assets->values() as $index => $asset) {
+                MessageAttachment::query()->create([
+                    'message_id' => $message->id,
+                    'media_asset_id' => $asset->id,
+                    'attachment_type' => str_starts_with((string) $asset->media_type, 'video') || (string) $asset->media_type === 'video'
+                        ? 'video'
+                        : (str_starts_with((string) $asset->media_type, 'image') || (string) $asset->media_type === 'image' ? 'image' : 'media'),
+                    'sort_order' => $index,
+                    'metadata' => [
+                        'media_type' => (string) $asset->media_type,
+                        'status' => (string) $asset->status,
+                    ],
+                ]);
+            }
+        }
+
+        $conversationService->syncFromMessage($message);
+        $message->loadMissing(['attachments.mediaAsset']);
 
         $events->log(
             eventName: 'message_sent',
@@ -95,6 +218,7 @@ class MessageController extends Controller
             targetUserId: $receiverId,
             payload: [
                 'message_id' => (int) $message->id,
+                'attachment_count' => count($attachmentIds),
                 'app_version' => (string) $request->header('X-App-Version', 'unknown'),
                 'source_page' => (string) $request->header('X-Source-Page', 'unknown'),
             ]
@@ -103,10 +227,11 @@ class MessageController extends Controller
         return response()->json([
             'id' => $message->id,
             'ok' => true,
+            'message' => $this->shapeMessage($message),
         ]);
     }
 
-    public function list(Request $request): JsonResponse
+    public function list(Request $request, ConversationDomainService $conversationService): JsonResponse
     {
         $data = $request->validate([
             'peer_id' => ['required', 'integer', 'exists:users,id'],
@@ -140,7 +265,16 @@ class MessageController extends Controller
                 'read_at' => now(),
             ]);
 
+        $lastMessage = ChatMessage::query()
+            ->where('room_id', $roomId)
+            ->orderByDesc('id')
+            ->first();
+        if ($lastMessage) {
+            $conversationService->markReadForPair((int) $user->id, $peerId, (int) $lastMessage->id);
+        }
+
         $items = ChatMessage::query()
+            ->with(['attachments.mediaAsset'])
             ->where('room_id', $roomId)
             ->where('id', '>', $afterId)
             ->orderBy('id')
@@ -148,7 +282,7 @@ class MessageController extends Controller
             ->get(['id', 'sender_id', 'receiver_id', 'content', 'is_read', 'created_at']);
 
         return response()->json([
-            'items' => $items,
+            'items' => $items->map(fn (ChatMessage $message) => $this->shapeMessage($message))->values(),
             'total' => $items->count(),
         ]);
     }

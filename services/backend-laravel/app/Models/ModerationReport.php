@@ -11,6 +11,7 @@ class ModerationReport extends Model
         'reporter_id',
         'target_user_id',
         'target_message_id',
+        'target_status_post_id',
         'category',
         'reason_code',
         'detail',
@@ -44,6 +45,11 @@ class ModerationReport extends Model
     public function targetMessage(): BelongsTo
     {
         return $this->belongsTo(ChatMessage::class, 'target_message_id');
+    }
+
+    public function targetStatusPost(): BelongsTo
+    {
+        return $this->belongsTo(StatusPost::class, 'target_status_post_id');
     }
 
     public function resolver(): BelongsTo

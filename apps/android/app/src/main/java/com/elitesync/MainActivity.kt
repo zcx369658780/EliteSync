@@ -30,26 +30,6 @@ class MainActivity : FlutterActivity() {
                         val fileBootstrap = readBootstrapFile()
                         result.success(
                             mapOf(
-                                "debugAccessToken" to firstNonBlank(
-                                    extras?.getString("elitesync_debug_access_token"),
-                                    fileBootstrap["elitesync_debug_access_token"],
-                                ),
-                                "debugAccessTokenB64" to firstNonBlank(
-                                    extras?.getString("elitesync_debug_access_token_b64"),
-                                    fileBootstrap["elitesync_debug_access_token_b64"],
-                                ),
-                                "debugRefreshToken" to firstNonBlank(
-                                    extras?.getString("elitesync_debug_refresh_token"),
-                                    fileBootstrap["elitesync_debug_refresh_token"],
-                                ),
-                                "debugAutoLoginPhone" to firstNonBlank(
-                                    extras?.getString("elitesync_debug_auto_login_phone"),
-                                    fileBootstrap["elitesync_debug_auto_login_phone"],
-                                ),
-                                "debugAutoLoginPassword" to firstNonBlank(
-                                    extras?.getString("elitesync_debug_auto_login_password"),
-                                    fileBootstrap["elitesync_debug_auto_login_password"],
-                                ),
                                 "apiBaseUrl" to firstNonBlank(
                                     extras?.getString("elitesync_api_base_url"),
                                     fileBootstrap["elitesync_api_base_url"],
@@ -58,8 +38,6 @@ class MainActivity : FlutterActivity() {
                                     extras?.getString("elitesync_ws_base_url"),
                                     fileBootstrap["elitesync_ws_base_url"],
                                 ),
-                                "chatMock" to readBootstrapBool("elitesync_chat_mock").toString(),
-                                "adminMock" to readBootstrapBool("elitesync_admin_mock").toString(),
                                 "initialRoute" to firstNonBlank(
                                     extras?.getString("elitesync_initial_route"),
                                     fileBootstrap["elitesync_initial_route"],
@@ -69,6 +47,11 @@ class MainActivity : FlutterActivity() {
                                 "debugBuild" to BuildConfig.DEBUG.toString(),
                             ),
                         )
+                    }
+
+                    "clearBootstrap" -> {
+                        clearBootstrapFile()
+                        result.success(true)
                     }
 
                     else -> result.notImplemented()
@@ -99,20 +82,16 @@ class MainActivity : FlutterActivity() {
         }.getOrDefault(emptyMap())
     }
 
+    private fun clearBootstrapFile() {
+        runCatching {
+            File(filesDir, "elitesync_bootstrap.json").delete()
+        }
+    }
+
     private fun firstNonBlank(first: String?, second: String?): String {
         val firstValue = first?.trim().orEmpty()
         if (firstValue.isNotEmpty()) return firstValue
         return second?.trim().orEmpty()
     }
 
-    private fun readBootstrapBool(name: String): Boolean {
-        val currentIntent = intent ?: return false
-        if (currentIntent.hasExtra(name)) {
-            val boolValue = currentIntent.getBooleanExtra(name, false)
-            if (boolValue || currentIntent.extras?.getString(name).isNullOrBlank()) {
-                return boolValue
-            }
-        }
-        return currentIntent.extras?.getString(name)?.toBooleanStrictOrNull() ?: false
-    }
 }

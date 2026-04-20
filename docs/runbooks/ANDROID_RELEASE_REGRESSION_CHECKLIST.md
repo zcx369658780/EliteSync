@@ -1,6 +1,6 @@
 # Android Release Regression Checklist
 
-Updated: 2026-03-24
+Updated: 2026-04-18
 
 Related:
 - `docs/runbooks/GITHUB_BRANCH_PROTECTION_SETUP.md`
@@ -18,8 +18,9 @@ Related:
 
 1. Update version in `apps/android/app/build.gradle.kts` (`versionName`, `versionCode`).
 2. Append release notes in `apps/android/app/src/main/assets/changelog_v0.txt`.
-3. Build passes: `:app:assembleDebug`.
-4. Smoke test:
+3. Sync `apps/flutter_elitesync_module/assets/config/about_update_0_xx.json`, `docs/CHANGELOG.md`, and `docs/devlogs/RELEASE_LOG.md` with the same released version.
+4. Build passes: `:app:assembleDebug`.
+5. Smoke test:
 - Login/Register
 - Basic profile save
 - Auto city location
@@ -29,8 +30,13 @@ Related:
 - Match reasons render module fields (weight/confidence/degraded)
 - Match reasons render standardized fields (`reason_short/reason_detail/risk_short/risk_detail/evidence_tags`)
 - Message send + list works after entering match
-- About -> Check update returns server latest version
-5. Server config sanity:
+- About / Version Center shows:
+  - Android host version
+  - versionCode
+  - Flutter module version
+  - service health
+- About -> Check update returns server latest version and downloadable APK
+6. Server config sanity:
 - `.env` `APP_KEY` is non-empty
 - DB host/user/password are valid for current deploy target
 - If testing synthetic matches, ensure `matching_debug_include_synthetic_users=true`
@@ -44,6 +50,7 @@ Verify during release:
 1. APK uploaded to `/opt/elitesync/services/backend-laravel/public/downloads/`.
 2. Version metadata updated in `.env` and `app_release_versions`.
 3. Keep only latest two APKs on server.
+4. Version center screenshot is refreshed from the newly installed APK if the device/emulator was previously on an older release.
 
 ## 3) Post-release (online)
 1. `GET /api/v1/app/version/check` returns:

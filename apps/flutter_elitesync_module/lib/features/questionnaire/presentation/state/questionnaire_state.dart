@@ -2,7 +2,11 @@ import 'package:flutter_elitesync_module/features/questionnaire/domain/entities/
 
 class QuestionnaireState {
   const QuestionnaireState({
-    this.version = 'q_v1',
+    this.version = 'q_v2',
+    this.bankVersion = 'qb_v1',
+    this.attemptVersion = 'qa_v1',
+    this.label = '非官方人格四维问卷',
+    this.nonOfficialNotice = '仅用于产品内人格倾向参考，不代表官方 MBTI。',
     this.total = 0,
     this.estimatedMinutes = 0,
     this.questions = const [],
@@ -13,9 +17,16 @@ class QuestionnaireState {
     this.errorMessage,
     this.feedbackMessage,
     this.submitted = false,
+    this.resultLabel,
+    this.resultHighlights = const [],
+    this.resultComplete = false,
   });
 
   final String version;
+  final String bankVersion;
+  final String attemptVersion;
+  final String label;
+  final String nonOfficialNotice;
   final int total;
   final int estimatedMinutes;
   final List<QuestionItem> questions;
@@ -26,6 +37,9 @@ class QuestionnaireState {
   final String? errorMessage;
   final String? feedbackMessage;
   final bool submitted;
+  final String? resultLabel;
+  final List<String> resultHighlights;
+  final bool resultComplete;
 
   bool get hasQuestions => questions.isNotEmpty;
   bool get isLast => currentIndex >= questions.length - 1;
@@ -48,6 +62,10 @@ class QuestionnaireState {
 
   QuestionnaireState copyWith({
     String? version,
+    String? bankVersion,
+    String? attemptVersion,
+    String? label,
+    String? nonOfficialNotice,
     int? total,
     int? estimatedMinutes,
     List<QuestionItem>? questions,
@@ -58,11 +76,18 @@ class QuestionnaireState {
     String? errorMessage,
     String? feedbackMessage,
     bool? submitted,
+    String? resultLabel,
+    List<String>? resultHighlights,
+    bool? resultComplete,
     bool clearError = false,
     bool clearFeedback = false,
   }) {
     return QuestionnaireState(
       version: version ?? this.version,
+      bankVersion: bankVersion ?? this.bankVersion,
+      attemptVersion: attemptVersion ?? this.attemptVersion,
+      label: label ?? this.label,
+      nonOfficialNotice: nonOfficialNotice ?? this.nonOfficialNotice,
       total: total ?? this.total,
       estimatedMinutes: estimatedMinutes ?? this.estimatedMinutes,
       questions: questions ?? this.questions,
@@ -75,6 +100,9 @@ class QuestionnaireState {
           ? null
           : (feedbackMessage ?? this.feedbackMessage),
       submitted: submitted ?? this.submitted,
+      resultLabel: resultLabel ?? this.resultLabel,
+      resultHighlights: resultHighlights ?? this.resultHighlights,
+      resultComplete: resultComplete ?? this.resultComplete,
     );
   }
 }

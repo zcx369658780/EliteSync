@@ -35,9 +35,11 @@ import 'package:flutter_elitesync_module/features/profile/presentation/pages/cha
 import 'package:flutter_elitesync_module/features/profile/presentation/pages/privacy_settings_page.dart';
 import 'package:flutter_elitesync_module/features/profile/presentation/pages/settings_page.dart';
 import 'package:flutter_elitesync_module/features/questionnaire/presentation/pages/questionnaire_page.dart';
+import 'package:flutter_elitesync_module/features/questionnaire/presentation/pages/questionnaire_history_page.dart';
 import 'package:flutter_elitesync_module/features/questionnaire/presentation/pages/questionnaire_result_page.dart';
 import 'package:flutter_elitesync_module/features/verification/presentation/pages/verification_status_page.dart';
 import 'package:flutter_elitesync_module/features/verification/presentation/pages/verification_submit_page.dart';
+import 'package:flutter_elitesync_module/features/status/presentation/pages/status_author_page.dart';
 import 'package:flutter_elitesync_module/features/status/presentation/pages/status_square_page.dart';
 import 'package:flutter_elitesync_module/shared/providers/navigation_guard_provider.dart';
 import 'package:flutter_elitesync_module/shared/providers/app_providers.dart';
@@ -106,6 +108,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             _fadeSlidePage(state, const QuestionnaireResultPage()),
       ),
       GoRoute(
+        path: AppRouteNames.questionnaireHistory,
+        pageBuilder: (context, state) =>
+            _fadeSlidePage(state, const QuestionnaireHistoryPage()),
+      ),
+      GoRoute(
         path: AppRouteNames.matchCountdown,
         pageBuilder: (context, state) =>
             _fadeSlidePage(state, const MatchCountdownPage()),
@@ -145,6 +152,18 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: AppRouteNames.statusSquare,
         pageBuilder: (context, state) =>
             _fadeSlidePage(state, const StatusSquarePage()),
+      ),
+      GoRoute(
+        path: '${AppRouteNames.statusAuthor}/:userId',
+        pageBuilder: (context, state) {
+          final userId =
+              int.tryParse(state.pathParameters['userId'] ?? '') ?? 0;
+          final name = state.uri.queryParameters['name'] ?? '用户资料';
+          return _fadeSlidePage(
+            state,
+            StatusAuthorPage(userId: userId, name: name),
+          );
+        },
       ),
       GoRoute(
         path: '${AppRouteNames.contentDetail}/:contentId',
@@ -334,4 +353,3 @@ CustomTransitionPage<void> _fadeSlidePage(GoRouterState state, Widget child) {
     },
   );
 }
-

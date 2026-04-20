@@ -24,7 +24,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   late final TextEditingController _phoneController;
   late final TextEditingController _passwordController;
   bool _performanceLiteMode = false;
-  bool _debugAutoLoginQueued = false;
 
   @override
   void initState() {
@@ -32,7 +31,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     _phoneController = TextEditingController();
     _passwordController = TextEditingController();
     _loadPerformanceMode();
-    _scheduleDebugAutoLogin();
   }
 
   Future<void> _loadPerformanceMode() async {
@@ -40,27 +38,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     final value = await local.getBool(CacheKeys.performanceLiteMode);
     if (!mounted) return;
     setState(() => _performanceLiteMode = value ?? false);
-  }
-
-  void _scheduleDebugAutoLogin() {
-    final env = ref.read(appEnvProvider);
-    final phone = env.debugAutoLoginPhone.trim();
-    final password = env.debugAutoLoginPassword.trim();
-    if (phone.isEmpty || password.isEmpty || _debugAutoLoginQueued) return;
-    // ignore: avoid_print
-    print('LOGIN_DEBUG_AUTOSUBMIT queued phone=${phone.isNotEmpty} pwd=${password.isNotEmpty}');
-    _debugAutoLoginQueued = true;
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (!mounted) return;
-      _phoneController.text = phone;
-      _passwordController.text = password;
-      ref.read(loginFormProvider.notifier).onPhoneChanged(phone);
-      ref.read(loginFormProvider.notifier).onPasswordChanged(password);
-      ref.read(loginFormProvider.notifier).onAgreementChanged(true);
-      await Future<void>.delayed(const Duration(milliseconds: 150));
-      if (!mounted) return;
-      await _submit();
-    });
   }
 
   @override

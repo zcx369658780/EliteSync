@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_elitesync_module/app/router/app_route_names.dart';
@@ -89,6 +90,10 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     );
     if (!confirmed) return;
     await ref.read(logoutUseCaseProvider).call();
+    try {
+      const channel = MethodChannel('elitesync/bootstrap');
+      await channel.invokeMethod<void>('clearBootstrap');
+    } catch (_) {}
     await ref.read(sessionProvider.notifier).setUnauthenticated();
     if (context.mounted) {
       context.go(AppRouteNames.login);

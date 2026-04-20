@@ -2,10 +2,14 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_elitesync_module/core/storage/cache_keys.dart';
+import 'package:flutter_elitesync_module/core/telemetry/frontend_telemetry.dart';
 import 'package:flutter_elitesync_module/shared/providers/app_providers.dart';
 import 'package:flutter_elitesync_module/features/questionnaire/data/datasource/questionnaire_remote_data_source.dart';
 import 'package:flutter_elitesync_module/features/questionnaire/data/repository/questionnaire_repository_impl.dart';
+import 'package:flutter_elitesync_module/features/questionnaire/domain/entities/questionnaire_attempt.dart';
+import 'package:flutter_elitesync_module/features/questionnaire/domain/entities/questionnaire_profile_snapshot.dart';
 import 'package:flutter_elitesync_module/features/questionnaire/domain/repository/questionnaire_repository.dart';
+import 'package:flutter_elitesync_module/features/questionnaire/domain/usecases/get_questionnaire_history_usecase.dart';
 import 'package:flutter_elitesync_module/features/questionnaire/domain/usecases/get_questionnaire_usecase.dart';
 import 'package:flutter_elitesync_module/features/questionnaire/domain/usecases/save_questionnaire_draft_usecase.dart';
 import 'package:flutter_elitesync_module/features/questionnaire/domain/usecases/submit_questionnaire_usecase.dart';
@@ -50,6 +54,32 @@ final submitQuestionnaireUseCaseProvider = Provider<SubmitQuestionnaireUseCase>(
   },
 );
 
+final getQuestionnaireHistoryUseCaseProvider =
+    Provider<GetQuestionnaireHistoryUseCase>((ref) {
+      return GetQuestionnaireHistoryUseCase(
+        ref.watch(questionnaireRepositoryProvider),
+      );
+    });
+
+final questionnaireHistoryProvider = FutureProvider<List<QuestionnaireAttempt>>(
+  (ref) async {
+    return ref.read(getQuestionnaireHistoryUseCaseProvider).call();
+  },
+);
+
+final questionnaireProfileSnapshotProvider =
+    FutureProvider<QuestionnaireProfileSnapshot?>((ref) async {
+      final local = ref.read(localStorageProvider);
+      final dynamic raw = await local.getJson(
+        CacheKeys.questionnaireProfileSnapshot,
+      );
+      if (raw is! Map) return null;
+      if (raw.isEmpty) return null;
+      return QuestionnaireProfileSnapshot.fromJson(
+        raw.map((key, value) => MapEntry(key.toString(), value)),
+      );
+    });
+
 class QuestionnaireNotifier extends AsyncNotifier<QuestionnaireState> {
   QuestionnaireState? get _current => state.asData?.value;
 
@@ -69,6 +99,8 @@ class QuestionnaireNotifier extends AsyncNotifier<QuestionnaireState> {
   Future<void> _persistLocalDraft(QuestionnaireState state) async {
     await ref.read(localStorageProvider).setJson(CacheKeys.questionnaireDraft, {
       'version': state.version,
+      'bank_version': state.bankVersion,
+      'attempt_version': state.attemptVersion,
       'current_index': state.currentIndex,
       'answers': state.answers.map((k, v) => MapEntry(k.toString(), v)),
       'updated_at': DateTime.now().toIso8601String(),
@@ -84,6 +116,10 @@ class QuestionnaireNotifier extends AsyncNotifier<QuestionnaireState> {
     final bundle = await ref.read(getQuestionnaireUseCaseProvider).call();
     var base = QuestionnaireState(
       version: bundle.version,
+      bankVersion: bundle.bankVersion,
+      attemptVersion: bundle.attemptVersion,
+      label: bundle.label,
+      nonOfficialNotice: bundle.nonOfficialNotice,
       total: bundle.total,
       estimatedMinutes: bundle.estimatedMinutes,
       questions: bundle.questions,
@@ -98,7 +134,12 @@ class QuestionnaireNotifier extends AsyncNotifier<QuestionnaireState> {
           int.tryParse((draft['current_index'] ?? 0).toString()) ?? 0;
       final maxIndex = (bundle.questions.length - 1).clamp(0, 1000000).toInt();
       final safeIndex = rawIndex.clamp(0, maxIndex).toInt();
-      base = base.copyWith(answers: answers, currentIndex: safeIndex);
+      final draftVersion = (draft['version'] ?? '').toString();
+      final draftBankVersion = (draft['bank_version'] ?? '').toString();
+      if (draftVersion == bundle.version &&
+          draftBankVersion == bundle.bankVersion) {
+        base = base.copyWith(answers: answers, currentIndex: safeIndex);
+      }
     }
 
     return base;
@@ -224,13 +265,40 @@ class QuestionnaireNotifier extends AsyncNotifier<QuestionnaireState> {
     );
 
     try {
-      await ref.read(submitQuestionnaireUseCaseProvider).call(current.answers);
+      final submission = await ref
+          .read(submitQuestionnaireUseCaseProvider)
+          .call(current.answers);
       final fresh = _current ?? current;
       await _clearLocalDraft();
+      await ref
+          .read(localStorageProvider)
+          .setJson(
+            CacheKeys.questionnaireProfileSnapshot,
+            QuestionnaireProfileSnapshot(
+              questionnaireVersion: submission.questionnaireVersion,
+              bankVersion: submission.bankVersion,
+              attemptVersion: submission.attemptVersion,
+              label: submission.profileLabel,
+              highlights: submission.profileHighlights,
+              complete: submission.profileComplete,
+              updatedAt: DateTime.now(),
+            ).toJson(),
+          );
+      ref
+          .read(frontendTelemetryProvider)
+          .questionnaireSubmitted(
+            sourcePage: 'questionnaire',
+            questionnaireVersion: submission.questionnaireVersion,
+            bankVersion: submission.bankVersion,
+            attemptVersion: submission.attemptVersion,
+          );
       state = AsyncData(
         fresh.copyWith(
           isSubmitting: false,
           submitted: true,
+          resultLabel: submission.profileLabel,
+          resultHighlights: submission.profileHighlights,
+          resultComplete: submission.profileComplete,
           feedbackMessage: '问卷提交成功',
         ),
       );
@@ -242,6 +310,26 @@ class QuestionnaireNotifier extends AsyncNotifier<QuestionnaireState> {
     }
   }
 
+  Future<void> debugAutofillAndSubmit({int optionIndex = 0}) async {
+    final current = _current;
+    if (current == null) return;
+    if (current.questions.isEmpty) return;
+
+    final selectedIndex = optionIndex.clamp(0, current.questions.first.options.length - 1);
+    final answers = <int, int>{
+      for (final question in current.questions) question.id: selectedIndex,
+    };
+    final filled = current.copyWith(
+      answers: answers,
+      currentIndex: current.questions.length - 1,
+      clearError: true,
+      clearFeedback: true,
+    );
+    state = AsyncData(filled);
+    await _persistLocalDraft(filled);
+    await submit();
+  }
+
   Future<void> restart() async {
     final current = _current;
     if (current == null) return;
@@ -251,6 +339,9 @@ class QuestionnaireNotifier extends AsyncNotifier<QuestionnaireState> {
         currentIndex: 0,
         answers: const {},
         submitted: false,
+        resultLabel: null,
+        resultHighlights: const [],
+        resultComplete: false,
         clearError: true,
         clearFeedback: true,
       ),

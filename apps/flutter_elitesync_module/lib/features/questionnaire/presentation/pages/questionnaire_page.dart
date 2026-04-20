@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_elitesync_module/app/router/app_route_names.dart';
+import 'package:flutter_elitesync_module/core/telemetry/frontend_telemetry.dart';
 import 'package:flutter_elitesync_module/design_system/components/bars/app_top_bar.dart';
 import 'package:flutter_elitesync_module/design_system/components/cards/app_card.dart';
 import 'package:flutter_elitesync_module/design_system/components/states/app_error_state.dart';
@@ -21,6 +23,8 @@ class QuestionnairePage extends ConsumerStatefulWidget {
 }
 
 class _QuestionnairePageState extends ConsumerState<QuestionnairePage> {
+  bool _entryOpenedTracked = false;
+
   @override
   Widget build(BuildContext context) {
     final t = context.appTokens;
@@ -34,8 +38,34 @@ class _QuestionnairePageState extends ConsumerState<QuestionnairePage> {
       }
     });
 
+    if (asyncState.hasValue && !_entryOpenedTracked) {
+      _entryOpenedTracked = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        ref
+            .read(frontendTelemetryProvider)
+            .questionnaireEntryOpened(sourcePage: 'questionnaire');
+      });
+    }
+
     return AppScaffold(
       appBar: const AppTopBar(title: '性格问卷', mode: AppTopBarMode.backTitle),
+      floatingActionButton: kDebugMode
+          ? FloatingActionButton.extended(
+              onPressed: asyncState.maybeWhen(
+                data: (state) => state.isSubmitting
+                    ? null
+                    : () async {
+                        await ref
+                            .read(questionnaireProvider.notifier)
+                            .debugAutofillAndSubmit(optionIndex: 0);
+                      },
+                orElse: () => null,
+              ),
+              icon: const Icon(Icons.bolt_rounded),
+              label: const Text('调试提交'),
+            )
+          : null,
       body: asyncState.when(
         loading: () => const AppLoadingSkeleton(lines: 8),
         error: (error, _) => AppErrorState(
@@ -59,8 +89,9 @@ class _QuestionnairePageState extends ConsumerState<QuestionnairePage> {
                   SizedBox(height: t.spacing.md),
                   SectionReveal(
                     child: PageTitleRail(
-                      title: '性格问卷',
-                      subtitle: '版本 ${state.version} · 预计 ${state.estimatedMinutes} 分钟',
+                      title: state.label,
+                      subtitle:
+                          '版本 ${state.version} · 题库 ${state.bankVersion} · 预计 ${state.estimatedMinutes} 分钟',
                       trailing: Text(
                         '${state.currentIndex + 1}/${state.questions.length}',
                         style: Theme.of(context).textTheme.labelLarge?.copyWith(
@@ -70,6 +101,23 @@ class _QuestionnairePageState extends ConsumerState<QuestionnairePage> {
                       ),
                     ),
                   ),
+                  if (kDebugMode) ...[
+                    SizedBox(height: t.spacing.sm),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: TextButton.icon(
+                        onPressed: state.isSubmitting
+                            ? null
+                            : () async {
+                                await ref
+                                    .read(questionnaireProvider.notifier)
+                                    .debugAutofillAndSubmit(optionIndex: 0);
+                              },
+                        icon: const Icon(Icons.bolt_rounded),
+                        label: const Text('调试填充并提交'),
+                      ),
+                    ),
+                  ],
                   SizedBox(height: t.spacing.sm),
                   LinearProgressIndicator(
                     value: state.progress,
@@ -80,7 +128,7 @@ class _QuestionnairePageState extends ConsumerState<QuestionnairePage> {
                   ),
                   SizedBox(height: t.spacing.xs),
                   Text(
-                    '进度 ${state.answeredCount}/${state.questions.length}',
+                    '进度 ${state.answeredCount}/${state.questions.length} · ${state.nonOfficialNotice}',
                     style: Theme.of(
                       context,
                     ).textTheme.bodySmall?.copyWith(color: t.textSecondary),

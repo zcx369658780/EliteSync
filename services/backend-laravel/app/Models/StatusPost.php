@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class StatusPost extends Model
 {
@@ -15,6 +16,7 @@ class StatusPost extends Model
      */
     protected $fillable = [
         'author_user_id',
+        'cover_media_asset_id',
         'title',
         'body',
         'location_name',
@@ -38,6 +40,19 @@ class StatusPost extends Model
     public function author(): BelongsTo
     {
         return $this->belongsTo(User::class, 'author_user_id');
+    }
+
+    public function coverMediaAsset(): BelongsTo
+    {
+        return $this->belongsTo(MediaAsset::class, 'cover_media_asset_id');
+    }
+
+    /**
+     * @return HasMany<StatusPostLike, $this>
+     */
+    public function likes(): HasMany
+    {
+        return $this->hasMany(StatusPostLike::class, 'status_post_id');
     }
 
     public function deletedBy(): BelongsTo
