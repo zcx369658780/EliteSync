@@ -9,6 +9,7 @@ use App\Models\StatusPost;
 use App\Models\StatusPostLike;
 use App\Models\User;
 use App\Services\EventLogger;
+use App\Services\NotificationService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -393,17 +394,23 @@ class StatusPostController extends Controller
         ], 201);
     }
 
-    public function like(Request $request, int $postId, EventLogger $events): JsonResponse
+    public function like(Request $request, int $postId, EventLogger $events, NotificationService $notifications): JsonResponse
     {
-        return $this->toggleLike($request, $postId, true, $events);
+        return $this->toggleLike($request, $postId, true, $events, $notifications);
     }
 
-    public function unlike(Request $request, int $postId, EventLogger $events): JsonResponse
+    public function unlike(Request $request, int $postId, EventLogger $events, NotificationService $notifications): JsonResponse
     {
-        return $this->toggleLike($request, $postId, false, $events);
+        return $this->toggleLike($request, $postId, false, $events, $notifications);
     }
 
-    private function toggleLike(Request $request, int $postId, bool $liked, EventLogger $events): JsonResponse
+    private function toggleLike(
+        Request $request,
+        int $postId,
+        bool $liked,
+        EventLogger $events,
+        NotificationService $notifications
+    ): JsonResponse
     {
         $user = $request->user();
         $viewerId = (int) $user->id;
@@ -435,6 +442,26 @@ class StatusPostController extends Controller
                 'source_page' => (string) $request->header('X-Source-Page', 'unknown'),
             ]
         );
+
+        if ($liked && (int) $post->author_user_id !== $viewerId) {
+            $actorName = trim((string) ($user->nickname ?? $user->name ?? $user->phone ?? '有人'));
+            $notifications->createForUser(
+                userId: (int) $post->author_user_id,
+                kind: 'status_like',
+                title: "{$actorName} 赞了你的动态",
+                body: trim((string) $post->title) !== '' ? mb_strimwidth(trim((string) $post->title), 0, 60, '…', 'UTF-8') : '你的动态获得了新的互动',
+                payload: [
+                    'route_name' => 'status_author',
+                    'route_args' => [
+                        'user_id' => (int) $post->author_user_id,
+                        'name' => trim((string) ($post->author->nickname ?? $post->author->name ?? $post->author->phone ?? '用户')),
+                    ],
+                    'status_post_id' => (int) $post->id,
+                    'actor_user_id' => $viewerId,
+                    'source' => 'status_like',
+                ]
+            );
+        }
 
         $fresh = $this->visibleStatusQueryForPost($postId, $viewerId, $user?->isAdminRole() ?? false)->firstOrFail();
 

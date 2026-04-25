@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\V1\ConversationController;
 use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\MessageController;
 use App\Http\Controllers\Api\V1\MediaController;
+use App\Http\Controllers\Api\V1\RtcController;
 use App\Http\Controllers\Api\V1\RelationshipController;
 use App\Http\Controllers\Api\V1\ProfileController;
 use App\Http\Controllers\Api\V1\StatusPostController;
@@ -114,9 +115,30 @@ Route::prefix('v1')->group(function () {
 
         Route::prefix('notifications')->group(function () {
             Route::get('', [NotificationController::class, 'index'])->middleware('throttle:notifications');
+            Route::get('/unread-count', [NotificationController::class, 'unreadCount'])->middleware('throttle:notifications');
+            Route::post('/read-all', [NotificationController::class, 'markAllRead'])->middleware('throttle:notifications');
             Route::post('/{notificationId}/read', [NotificationController::class, 'markRead'])
                 ->whereNumber('notificationId')
                 ->middleware('throttle:notifications');
+        });
+
+        Route::prefix('rtc')->group(function () {
+            Route::get('/calls', [RtcController::class, 'index']);
+            Route::post('/calls', [RtcController::class, 'store']);
+            Route::get('/calls/{callId}', [RtcController::class, 'show'])
+                ->whereNumber('callId');
+            Route::get('/calls/{callId}/livekit', [RtcController::class, 'livekit'])
+                ->whereNumber('callId');
+            Route::post('/calls/{callId}/accept', [RtcController::class, 'accept'])
+                ->whereNumber('callId');
+            Route::post('/calls/{callId}/connect', [RtcController::class, 'connect'])
+                ->whereNumber('callId');
+            Route::post('/calls/{callId}/heartbeat', [RtcController::class, 'heartbeat'])
+                ->whereNumber('callId');
+            Route::post('/calls/{callId}/reject', [RtcController::class, 'reject'])
+                ->whereNumber('callId');
+            Route::post('/calls/{callId}/end', [RtcController::class, 'end'])
+                ->whereNumber('callId');
         });
 
         // 兼容旧设计中的单数路径

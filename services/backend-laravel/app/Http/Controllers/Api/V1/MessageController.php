@@ -11,6 +11,7 @@ use App\Models\UserBlock;
 use App\Models\User;
 use App\Services\EventLogger;
 use App\Services\ConversationDomainService;
+use App\Services\NotificationService;
 use App\Services\MatchingDebugModeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -138,7 +139,45 @@ class MessageController extends Controller
         ];
     }
 
-    public function send(Request $request, EventLogger $events, ConversationDomainService $conversationService): JsonResponse
+    private function messageNotificationBody(ChatMessage $message): string
+    {
+        $message->loadMissing(['attachments.mediaAsset']);
+        $attachments = $message->attachments;
+        $hasVideoAttachments = $attachments->contains(function (MessageAttachment $attachment): bool {
+            $mediaType = (string) ($attachment->mediaAsset?->media_type ?? '');
+            return str_starts_with($mediaType, 'video') || $mediaType === 'video';
+        });
+        $hasImageAttachments = $attachments->contains(function (MessageAttachment $attachment): bool {
+            $mediaType = (string) ($attachment->mediaAsset?->media_type ?? '');
+            return str_starts_with($mediaType, 'image') || $mediaType === 'image';
+        });
+        $content = trim((string) $message->content);
+
+        if ($content !== '') {
+            return mb_strimwidth($content, 0, 90, '…', 'UTF-8');
+        }
+
+        if ($hasVideoAttachments) {
+            return '发送了一条视频消息';
+        }
+
+        if ($hasImageAttachments) {
+            return '发送了一条图片消息';
+        }
+
+        if ($attachments->isNotEmpty()) {
+            return '发送了一条多媒体消息';
+        }
+
+        return '发送了一条新消息';
+    }
+
+    public function send(
+        Request $request,
+        EventLogger $events,
+        ConversationDomainService $conversationService,
+        NotificationService $notifications
+    ): JsonResponse
     {
         $data = $request->validate([
             'receiver_id' => ['required', 'integer', 'exists:users,id'],
@@ -221,6 +260,24 @@ class MessageController extends Controller
                 'attachment_count' => count($attachmentIds),
                 'app_version' => (string) $request->header('X-App-Version', 'unknown'),
                 'source_page' => (string) $request->header('X-Source-Page', 'unknown'),
+            ]
+        );
+
+        $senderName = trim((string) ($user->nickname ?? $user->name ?? $user->phone ?? '有人'));
+        $notifications->createForUser(
+            userId: $receiverId,
+            kind: 'message',
+            title: "{$senderName} 发来一条消息",
+            body: $this->messageNotificationBody($message),
+            payload: [
+                'route_name' => 'chat_room',
+                'route_args' => [
+                    'conversation_id' => (string) $receiverId,
+                    'title' => $senderName,
+                ],
+                'message_id' => (int) $message->id,
+                'peer_user_id' => $receiverId,
+                'source' => 'message',
             ]
         );
 

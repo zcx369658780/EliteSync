@@ -14,6 +14,7 @@ abstract class AppRouteNames {
   static const home = '/home';
   static const discover = '/discover';
   static const contentDetail = '/content';
+  static const notificationCenter = '/notifications';
   static const match = '/match';
   static const messages = '/messages';
   static const profile = '/profile';
@@ -27,6 +28,10 @@ abstract class AppRouteNames {
   static const chatRoom = '/messages/chat';
   static const statusSquare = '/status/square';
   static const statusAuthor = '/status/author';
+  static const rtcCall = '/rtc/call';
+  static const rtcIncomingCall = '/rtc/incoming';
+  static const rtcCallResult = '/rtc/result';
+  static const rtcPermission = '/rtc/permission';
 
   static const editProfile = '/profile/edit';
   static const settings = '/profile/settings';

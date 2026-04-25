@@ -19,6 +19,7 @@ import 'package:flutter_elitesync_module/features/chat/domain/entities/conversat
 import 'package:flutter_elitesync_module/features/chat/domain/utils/conversation_snapshot_utils.dart';
 import 'package:flutter_elitesync_module/features/chat/presentation/providers/chat_providers.dart';
 import 'package:flutter_elitesync_module/features/chat/presentation/widgets/conversation_list_item.dart';
+import 'package:flutter_elitesync_module/features/notification/presentation/providers/notification_provider.dart';
 import 'package:flutter_elitesync_module/shared/providers/app_providers.dart';
 import 'package:flutter_elitesync_module/shared/providers/performance_mode_provider.dart';
 
@@ -218,6 +219,7 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage>
   Widget build(BuildContext context) {
     super.build(context);
     final async = ref.watch(conversationListProvider);
+    final notificationUnreadAsync = ref.watch(notificationUnreadCountProvider);
     return async.when(
       loading: () => const AppLoadingSkeleton(lines: 7),
       error: (e, _) => AppErrorState(
@@ -287,19 +289,37 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage>
                         : Icons.refresh_rounded,
                   ),
                   SizedBox(height: t.spacing.xs),
-                  Row(
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                        child: Text(
-                          '当前会话 ${filtered.length} 条',
-                          style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(color: t.textSecondary),
-                        ),
-                      ),
-                      AppChoiceChip(
-                        label: '去匹配',
-                        leading: const Icon(Icons.favorite_rounded),
-                        onTap: () => context.go(AppRouteNames.match),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              '当前会话 ${filtered.length} 条',
+                              style: Theme.of(context).textTheme.bodySmall
+                                  ?.copyWith(color: t.textSecondary),
+                            ),
+                          ),
+                          AppChoiceChip(
+                            label: '去匹配',
+                            leading: const Icon(Icons.favorite_rounded),
+                            onTap: () => context.go(AppRouteNames.match),
+                          ),
+                          SizedBox(width: t.spacing.xs),
+                          AppChoiceChip(
+                            label: notificationUnreadAsync.asData?.value == null
+                                ? '通知中心'
+                                : notificationUnreadAsync.asData!.value > 0
+                                    ? '通知 ${notificationUnreadAsync.asData!.value}'
+                                    : '通知中心',
+                            leading: const Icon(
+                              Icons.notifications_none_rounded,
+                            ),
+                            onTap: () =>
+                                context.push(AppRouteNames.notificationCenter),
+                          ),
+                        ],
                       ),
                     ],
                   ),

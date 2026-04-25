@@ -11,6 +11,7 @@ import 'package:flutter_elitesync_module/design_system/components/layout/section
 import 'package:flutter_elitesync_module/design_system/components/states/app_error_state.dart';
 import 'package:flutter_elitesync_module/design_system/components/states/app_loading_skeleton.dart';
 import 'package:flutter_elitesync_module/design_system/theme/app_theme_extensions.dart';
+import 'package:flutter_elitesync_module/features/notification/presentation/providers/notification_provider.dart';
 import 'package:flutter_elitesync_module/features/match/domain/entities/match_result_entity.dart';
 import 'package:flutter_elitesync_module/features/match/presentation/providers/match_providers.dart';
 import 'package:flutter_elitesync_module/features/match/presentation/state/match_countdown_ui_state.dart';
@@ -1181,6 +1182,7 @@ class MatchPortalPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final countdownAsync = ref.watch(matchCountdownProvider);
     final resultAsync = ref.watch(matchResultProvider);
+    final notificationUnreadAsync = ref.watch(notificationUnreadCountProvider);
     final t = context.appTokens;
 
     Future<void> refreshAll() async {
@@ -1203,12 +1205,22 @@ class MatchPortalPage extends ConsumerWidget {
                 color: t.textPrimary,
                 fontWeight: FontWeight.w800,
               ),
+          ),
+          const Spacer(),
+          IconButton(
+            onPressed: () => context.push(AppRouteNames.notificationCenter),
+            icon: Icon(
+              notificationUnreadAsync.asData?.value != null &&
+                      notificationUnreadAsync.asData!.value > 0
+                  ? Icons.notifications_active_rounded
+                  : Icons.notifications_none_rounded,
+              color: t.textSecondary,
             ),
-            const Spacer(),
-            IconButton(
-              onPressed: refreshAll,
-              icon: Icon(Icons.refresh_rounded, color: t.textSecondary),
-            ),
+          ),
+          IconButton(
+            onPressed: refreshAll,
+            icon: Icon(Icons.refresh_rounded, color: t.textSecondary),
+          ),
           ],
         ),
       ),

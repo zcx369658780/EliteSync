@@ -43,4 +43,7 @@ abstract final class CacheKeys {
   static const chatDraftPrefix = 'chat_draft_';
   static const messagesConversationSnapshot =
       'messages_conversation_snapshot_v1';
+  static const rtcAutoInviteHandledCallId = 'rtc_auto_invite_handled_call_id';
+  static const rtcAutoInviteHandledNotificationId =
+      'rtc_auto_invite_handled_notification_id';
 }

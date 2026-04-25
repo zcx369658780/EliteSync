@@ -15,6 +15,11 @@ import 'package:flutter_elitesync_module/features/auth/presentation/pages/regist
 import 'package:flutter_elitesync_module/features/chat/presentation/pages/chat_room_page.dart';
 import 'package:flutter_elitesync_module/features/home/domain/entities/home_feed_entity.dart';
 import 'package:flutter_elitesync_module/features/home/presentation/pages/content_detail_page.dart';
+import 'package:flutter_elitesync_module/features/notification/presentation/pages/notification_center_page.dart';
+import 'package:flutter_elitesync_module/features/rtc/presentation/pages/rtc_call_page.dart';
+import 'package:flutter_elitesync_module/features/rtc/presentation/pages/rtc_incoming_call_page.dart';
+import 'package:flutter_elitesync_module/features/rtc/presentation/pages/rtc_call_result_page.dart';
+import 'package:flutter_elitesync_module/features/rtc/presentation/pages/rtc_permission_page.dart';
 import 'package:flutter_elitesync_module/features/match/presentation/pages/match_countdown_page.dart';
 import 'package:flutter_elitesync_module/features/match/presentation/pages/match_detail_page.dart';
 import 'package:flutter_elitesync_module/features/match/presentation/pages/match_intention_page.dart';
@@ -152,6 +157,57 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: AppRouteNames.statusSquare,
         pageBuilder: (context, state) =>
             _fadeSlidePage(state, const StatusSquarePage()),
+      ),
+      GoRoute(
+        path: AppRouteNames.notificationCenter,
+        pageBuilder: (context, state) =>
+            _fadeSlidePage(state, const NotificationCenterPage()),
+      ),
+      GoRoute(
+        path: '${AppRouteNames.rtcCall}/:callId',
+        pageBuilder: (context, state) {
+          final callId =
+              int.tryParse(state.pathParameters['callId'] ?? '') ?? 0;
+          final title = (state.extra as String?) ?? '通话';
+          return _fadeSlidePage(
+            state,
+            RtcCallPage(callId: callId, title: title),
+          );
+        },
+      ),
+      GoRoute(
+        path: '${AppRouteNames.rtcIncomingCall}/:callId',
+        pageBuilder: (context, state) {
+          final callId =
+              int.tryParse(state.pathParameters['callId'] ?? '') ?? 0;
+          final title = (state.extra as String?) ?? '来电';
+          return _fadeSlidePage(
+            state,
+            RtcIncomingCallPage(callId: callId, title: title),
+          );
+        },
+      ),
+      GoRoute(
+        path: '${AppRouteNames.rtcCallResult}/:callId',
+        pageBuilder: (context, state) {
+          final callId =
+              int.tryParse(state.pathParameters['callId'] ?? '') ?? 0;
+          final title = (state.extra as String?) ?? '通话结果';
+          return _fadeSlidePage(
+            state,
+            RtcCallResultPage(callId: callId, title: title),
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRouteNames.rtcPermission,
+        pageBuilder: (context, state) {
+          final title = state.uri.queryParameters['title'] ?? '通话权限';
+          return _fadeSlidePage(
+            state,
+            RtcPermissionPage(title: title),
+          );
+        },
       ),
       GoRoute(
         path: '${AppRouteNames.statusAuthor}/:userId',

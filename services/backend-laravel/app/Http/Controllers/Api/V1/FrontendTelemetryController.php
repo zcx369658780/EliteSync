@@ -35,6 +35,8 @@ class FrontendTelemetryController extends Controller
                     'chat_video_upload_failed',
                     'chat_video_message_sent',
                     'chat_video_playback_opened',
+                    'rtc_call_entry_opened',
+                    'rtc_call_status_changed',
                 ]),
             ],
             'target_user_id' => ['nullable', 'integer', 'min:1'],

@@ -1,3 +1,5 @@
+// ignore_for_file: use_null_aware_elements
+
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,11 +22,9 @@ class FrontendTelemetry {
   }) async {
     final body = <String, dynamic>{
       'event_name': eventName,
-      ...?targetUserId == null
-          ? null
-          : <String, dynamic>{'target_user_id': targetUserId},
-      ...?matchId == null ? null : <String, dynamic>{'match_id': matchId},
-      ...?payload.isEmpty ? null : <String, dynamic>{'payload': payload},
+      if (targetUserId != null) 'target_user_id': targetUserId,
+      if (matchId != null) 'match_id': matchId,
+      if (payload.isNotEmpty) 'payload': payload,
     };
     try {
       final result = await telemetry.postEvent(
@@ -331,6 +331,42 @@ class FrontendTelemetry {
     );
   }
 
+  void rtcCallEntryOpened({
+    required String sourcePage,
+    int? callId,
+  }) {
+    unawaited(
+      _trackEvent(
+        '/api/v1/telemetry/events',
+        eventName: 'rtc_call_entry_opened',
+        sourcePage: sourcePage,
+        payload: <String, dynamic>{
+          'surface': 'rtc_call_entry',
+          if (callId != null) 'call_id': callId,
+        },
+      ),
+    );
+  }
+
+  void rtcCallStatusChanged({
+    required String sourcePage,
+    int? callId,
+    required String status,
+  }) {
+    unawaited(
+      _trackEvent(
+        '/api/v1/telemetry/events',
+        eventName: 'rtc_call_status_changed',
+        sourcePage: sourcePage,
+        payload: <String, dynamic>{
+          'surface': 'rtc_call_status',
+          'status': status,
+          if (callId != null) 'call_id': callId,
+        },
+      ),
+    );
+  }
+
   void chatVideoPlaybackOpened({required String sourcePage}) {
     unawaited(
       _trackEvent(
@@ -338,6 +374,48 @@ class FrontendTelemetry {
         eventName: 'chat_video_playback_opened',
         sourcePage: sourcePage,
         payload: const <String, dynamic>{'surface': 'chat_video_playback'},
+      ),
+    );
+  }
+
+  void notificationCenterOpened({required String sourcePage}) {
+    unawaited(
+      _trackEvent(
+        '/api/v1/telemetry/events',
+        eventName: 'notification_center_opened',
+        sourcePage: sourcePage,
+        payload: const <String, dynamic>{'surface': 'notification_center'},
+      ),
+    );
+  }
+
+  void notificationItemOpened({
+    required String sourcePage,
+    required String kind,
+  }) {
+    unawaited(
+      _trackEvent(
+        '/api/v1/telemetry/events',
+        eventName: 'notification_item_opened',
+        sourcePage: sourcePage,
+        payload: <String, dynamic>{
+          'surface': 'notification_center',
+          'kind': kind,
+        },
+      ),
+    );
+  }
+
+  void notificationAllRead({required String sourcePage, int? unreadCount}) {
+    unawaited(
+      _trackEvent(
+        '/api/v1/telemetry/events',
+        eventName: 'notification_all_read',
+        sourcePage: sourcePage,
+        payload: <String, dynamic>{
+          'surface': 'notification_center',
+          if (unreadCount != null) 'unread_count': unreadCount,
+        },
       ),
     );
   }

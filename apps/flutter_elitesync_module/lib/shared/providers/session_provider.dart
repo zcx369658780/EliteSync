@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_elitesync_module/core/storage/cache_keys.dart';
+import 'package:flutter_elitesync_module/app/router/rtc_invite_coordinator.dart';
 import 'package:flutter_elitesync_module/shared/enums/auth_status.dart';
 import 'package:flutter_elitesync_module/shared/models/user_summary.dart';
 import 'package:flutter_elitesync_module/shared/providers/app_providers.dart';
@@ -39,6 +40,9 @@ class SessionState {
 class SessionNotifier extends AsyncNotifier<SessionState> {
   @override
   Future<SessionState> build() async {
+    // ignore: avoid_print
+    print('SESSION_PROVIDER_RTC_WATCHER_ATTACHED');
+    startRtcInviteWatcher(ref);
     final secure = ref.read(secureStorageProvider);
     final local = ref.read(localStorageProvider);
 

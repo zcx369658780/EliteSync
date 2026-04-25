@@ -11,6 +11,50 @@
 - `docs/version_plans/elite_sync_4_0_版本开发计划书_2026_04_18.md`：4.0 版本开发计划书
 - `docs/version_plans/elite_sync_4_1_版本开发计划书_2026_04_18.md`：4.1 版本开发计划书
 - `docs/version_plans/elite_sync_4_2_版本开发计划书_2026_04_18.md`：4.2 版本开发计划书
+- `docs/version_plans/elite_sync_4_5_版本开发计划书_2026_04_21.md`：4.5 版本开发计划书
+- `docs/version_plans/elite_sync_4_6_版本开发计划书_2026_04_21.md`：4.6 版本开发计划书
+- `docs/version_plans/elite_sync_4_6_p_版本开发计划书_2026_04_24.md`：4.6P 音频播放链定向修正版
+- `docs/version_plans/4.6P_EXECUTION_NOTE.md`：4.6P 执行记录
+- `docs/version_plans/4.6A_EXECUTION_NOTE.md`：4.6A 执行记录
+- `docs/version_plans/4.6A_BOUNDARY_AND_PLAN.md`：4.6A 边界与执行计划
+- `docs/version_plans/4.6A_DEPENDENCY_MAP.md`：4.6A 依赖链与受影响面
+- `docs/version_plans/4.6A_RISK_REVIEW.md`：4.6A 风险评审
+- `docs/version_plans/4.6A_TEST_PLAN.md`：4.6A 测试计划
+- `docs/version_plans/4.6B_EXECUTION_NOTE.md`：4.6B 执行记录
+- `docs/version_plans/4.6B_ACCEPTANCE_SUMMARY.md`：4.6B 验收摘要
+- `docs/version_plans/4.6B_HANDOFF_NOTE.md`：4.6B 交接说明
+- `docs/version_plans/4.6B_GPT_ADVISOR_HANDOFF.md`：4.6B 给 GPT 顾问的交接稿
+- `docs/version_plans/4.6C_EXECUTION_NOTE.md`：4.6C 执行记录
+- `docs/version_plans/4.6C_ACCEPTANCE_SUMMARY.md`：4.6C 验收摘要
+- `docs/version_plans/4.6C_HANDOFF_NOTE.md`：4.6C 交接说明
+- `docs/version_plans/4.6C_GPT_ADVISOR_HANDOFF.md`：4.6C 给 GPT 顾问的交接稿
+- `docs/version_plans/4.6D_EXECUTION_NOTE.md`：4.6D 执行记录
+- `docs/version_plans/4.6D_ACCEPTANCE_SUMMARY.md`：4.6D 验收摘要
+- `docs/version_plans/4.6D_HANDOFF_NOTE.md`：4.6D 交接说明
+- `docs/version_plans/4.6D_GPT_ADVISOR_HANDOFF.md`：4.6D 给 GPT 顾问的交接稿
+- `docs/version_plans/4.6F_BOUNDARY_AND_PLAN.md`：4.6F LiveKit 语音接入边界与执行计划
+- `docs/version_plans/4.6F_EXECUTION_NOTE.md`：4.6F 执行记录
+- `docs/version_plans/4.6F_ACCEPTANCE_SUMMARY.md`：4.6F 验收摘要
+- `docs/version_plans/4.6F_HANDOFF_NOTE.md`：4.6F 交接说明
+- `docs/version_plans/4.6F_DEPENDENCY_MAP.md`：4.6F 依赖链与受影响面
+- `docs/version_plans/4.6F_RISK_REVIEW.md`：4.6F 风险评审
+- `docs/version_plans/4.6F_TEST_PLAN.md`：4.6F 测试计划
+- `docs/version_plans/4.6F_LIVEKIT_LIVE_TEST_RUNBOOK.md`：4.6F LiveKit 真语音联测 Runbook
+- `docs/version_plans/4.6F_SCREENSHOT_EVIDENCE_INDEX.md`：4.6F 截图证据索引
+- `docs/version_plans/4.6F_SCREENSHOT_VERIFICATION_NOTE.md`：4.6F 截图验收说明
+- `docs/version_plans/4.6F_GPT_ADVISOR_HANDOFF.md`：4.6F 给 GPT 顾问的交接稿
+- `docs/version_plans/4.6F_CLOSEOUT_NOTE.md`：4.6F 收尾说明
+- `docs/version_plans/4.6P_BOUNDARY_AND_PLAN.md`：4.6P 边界与执行计划
+- `docs/version_plans/4.6P_DEPENDENCY_MAP.md`：4.6P 依赖链与受影响面
+- `docs/version_plans/4.6P_RISK_REVIEW.md`：4.6P 风险评审
+- `docs/version_plans/4.6P_TEST_PLAN.md`：4.6P 测试计划
+- `docs/version_plans/4.6P_EXECUTION_NOTE.md`：4.6P 执行记录
+- `docs/version_plans/4.6P_ACCEPTANCE_SUMMARY.md`：4.6P 验收摘要
+- `docs/version_plans/4.6P_HANDOFF_NOTE.md`：4.6P 交接说明
+- `docs/version_plans/4.6P_GPT_ADVISOR_HANDOFF.md`：4.6P 给 GPT 顾问的交接稿
+- `docs/version_plans/4.6P_CLOSEOUT_NOTE.md`：4.6P 收尾说明
+- `docs/version_plans/4.6P_SCREENSHOT_EVIDENCE_INDEX.md`：4.6P 截图证据索引
+- `docs/version_plans/4.6P_SCREENSHOT_VERIFICATION_NOTE.md`：4.6P 截图验收说明
 - `docs/version_plans/elite_sync_4_3_版本开发计划书_2026_04_19.md`：4.3 版本开发计划书
 - `docs/version_plans/elite_sync_4_4_版本开发计划书_2026_04_19.md`：4.4 版本开发计划书
 - `docs/version_plans/4.4_EXECUTION_NOTE.md`：4.4 执行记录
@@ -28,11 +72,21 @@
 - `docs/version_plans/4.4S_CLOSEOUT_NOTE.md`：4.4S 收尾说明
 - `docs/version_plans/4.4S_GPT_ADVISOR_HANDOFF.md`：4.4S 给 GPT 顾问的交接稿
 - `docs/version_plans/4.4S_SCREENSHOT_EVIDENCE_INDEX.md`：4.4S 截图证据索引
+- `docs/version_plans/4.5A_BOUNDARY_AND_PLAN.md`：4.5A 边界与执行计划
+- `docs/version_plans/4.5A_EXECUTION_NOTE.md`：4.5A 执行记录
+- `docs/version_plans/4.5A_ACCEPTANCE_SUMMARY.md`：4.5A 阶段性验收摘要
+- `docs/version_plans/4.5B_D_EXECUTION_NOTE.md`：4.5B-D 执行记录
+- `docs/version_plans/4.5E_EXECUTION_NOTE.md`：4.5E 执行记录
+- `docs/version_plans/4.5E_ACCEPTANCE_SUMMARY.md`：4.5E 阶段性验收摘要
+- `docs/version_plans/4.5E_SCREENSHOT_EVIDENCE_INDEX.md`：4.5E 截图证据索引
+- `docs/version_plans/4.5E_SCREENSHOT_VERIFICATION_NOTE.md`：4.5E 截图验收说明
+- `docs/version_plans/4.5E_GPT_ADVISOR_HANDOFF.md`：4.5E 给 GPT 顾问的交接稿
+- `docs/version_plans/4.5E_CLOSEOUT_NOTE.md`：4.5E 收尾说明
 - `docs/version_plans/4.1_GPT_ADVISOR_HANDOFF.md`：4.1 给 GPT 顾问的交接稿
 - `docs/version_plans/elite_sync_整体开发计划书_4_x方向重整版_2026_04_17.md`：4.x 方向重整版整体开发计划书
 - `docs/archive/legacy_2026-04/DEVELOPMENT_PLAN_2_0_AND_EARLIER_ARCHIVE.md`：2.0 及更早版本开发计划归档
-- `docs/CHANGELOG.md`：0.04.04 版本变更记录（当前发布）
-- `docs/version_plans/0.04.04_UPDATE_BRIEF.md`：0.04.04 更新简报
+- `docs/CHANGELOG.md`：0.04.06 版本变更记录（当前发布）
+- `docs/version_plans/0.04.06_UPDATE_BRIEF.md`：0.04.06 更新简报
 - `docs/version_plans/elite_sync_3_9_版本开发计划书_2026_04_17.md`：3.9 版本开发计划书
 - `docs/runbooks/README.md`：运行手册索引
 - `LICENSE_DEPENDENCY_STATUS.md`：依赖许可证状态总表（长期维护）
@@ -138,7 +192,7 @@
 ## 版本计划（docs/version_plans）
 - `docs/version_plans/README.md`：版本计划总索引
 - `docs/HANDOFF_3X_CLOSEOUT_20260417.md`
-- `docs/version_plans/0.04.04_UPDATE_BRIEF.md`
+- `docs/version_plans/0.04.06_UPDATE_BRIEF.md`
 - `docs/version_plans/elite_sync_整体开发计划书_更新版_2026_04_11.md`
 - `docs/version_plans/elite_sync_3_8_版本开发计划书_2026_04_13.md`
 - `docs/version_plans/3.8_EXEC_PLAN.md`

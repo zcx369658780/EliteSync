@@ -5,10 +5,12 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter_elitesync_module/core/storage/local_storage_service.dart';
 import 'package:flutter_elitesync_module/core/storage/cache_keys.dart';
 import 'package:flutter_elitesync_module/core/network/network_result.dart';
 import 'package:flutter_elitesync_module/core/telemetry/frontend_telemetry.dart';
+import 'package:flutter_elitesync_module/app/router/app_route_names.dart';
 import 'package:flutter_elitesync_module/design_system/components/bars/app_top_bar.dart';
 import 'package:flutter_elitesync_module/design_system/components/buttons/app_secondary_button.dart';
 import 'package:flutter_elitesync_module/design_system/components/feedback/app_feedback.dart';
@@ -27,6 +29,8 @@ import 'package:flutter_elitesync_module/features/chat/presentation/widgets/mess
 import 'package:flutter_elitesync_module/features/chat/presentation/widgets/message_input_bar.dart';
 import 'package:flutter_elitesync_module/features/moderation/presentation/providers/moderation_provider.dart';
 import 'package:flutter_elitesync_module/features/moderation/presentation/widgets/report_block_sheet.dart';
+import 'package:flutter_elitesync_module/features/rtc/domain/services/rtc_permission_service.dart';
+import 'package:flutter_elitesync_module/features/rtc/presentation/providers/rtc_providers.dart';
 import 'package:flutter_elitesync_module/shared/providers/app_providers.dart';
 import 'package:flutter_elitesync_module/shared/providers/performance_mode_provider.dart';
 
@@ -335,6 +339,64 @@ class _ChatRoomPageState extends ConsumerState<ChatRoomPage> {
         );
       },
     );
+  }
+
+  Future<void> _startVoiceCall() async {
+    final peerId = _peerId;
+    if (peerId == null || peerId <= 0) {
+      AppFeedback.showError(context, '当前会话无法发起通话');
+      return;
+    }
+    final router = GoRouter.of(context);
+
+    final permissionService = ref.read(rtcPermissionServiceProvider);
+    if (!await permissionService.hasVoiceCallPermission()) {
+      final granted = await router.push<bool>(
+            '${AppRouteNames.rtcPermission}?title=${Uri.encodeComponent('通话权限')}',
+          ) ??
+          false;
+      if (!granted && !await permissionService.hasVoiceCallPermission()) {
+        return;
+      }
+    }
+
+    final telemetry = ref.read(frontendTelemetryProvider);
+    telemetry.rtcCallEntryOpened(sourcePage: 'chat_room');
+
+    try {
+      final session = await ref.read(rtcRemoteDataSourceProvider).createCall(
+            peerUserId: peerId,
+            mode: 'voice',
+          );
+      telemetry.rtcCallStatusChanged(
+        sourcePage: 'chat_room',
+        callId: session.id,
+        status: session.status,
+      );
+      if (!mounted) return;
+      final target = session.isTerminal
+          ? '${AppRouteNames.rtcCallResult}/${session.id}'
+          : '${AppRouteNames.rtcCall}/${session.id}';
+      router.push(
+        target,
+        extra: session.title.isNotEmpty ? session.title : widget.title,
+      );
+    } catch (e) {
+      final message = e.toString().toLowerCase();
+        if (message.contains('permission') || message.contains('授权') || message.contains('权限')) {
+          if (!mounted) return;
+          final granted = await router.push<bool>(
+                '${AppRouteNames.rtcPermission}?title=${Uri.encodeComponent('通话权限')}',
+              ) ??
+              false;
+        if (granted || await permissionService.hasVoiceCallPermission()) {
+          await _startVoiceCall();
+          return;
+        }
+      }
+      if (!mounted) return;
+      AppFeedback.showError(context, e.toString());
+    }
   }
 
   Future<void> _pickAndUploadMedia(ChatAttachmentKind kind) async {
@@ -677,6 +739,11 @@ class _ChatRoomPageState extends ConsumerState<ChatRoomPage> {
             onPressed: () =>
                 ref.invalidate(chatRoomMessagesProvider(widget.conversationId)),
             icon: const Icon(Icons.refresh_rounded),
+          ),
+          IconButton(
+            tooltip: '语音通话',
+            onPressed: _startVoiceCall,
+            icon: const Icon(Icons.call_outlined),
           ),
           PopupMenuButton<String>(
             tooltip: '安全',
