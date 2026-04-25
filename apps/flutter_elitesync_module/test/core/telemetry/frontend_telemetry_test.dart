@@ -76,8 +76,17 @@ void main() {
     );
     telemetry.chatVideoMessageSent(sourcePage: 'chat_room', attachmentCount: 1);
     telemetry.chatVideoPlaybackOpened(sourcePage: 'chat_room');
+    telemetry.notificationCenterOpened(sourcePage: 'notification_center');
+    telemetry.notificationItemOpened(
+      sourcePage: 'notification_center',
+      kind: 'message',
+    );
+    telemetry.notificationAllRead(
+      sourcePage: 'notification_center',
+      unreadCount: 3,
+    );
 
-    expect(service.calls, hasLength(21));
+    expect(service.calls, hasLength(24));
     expect(
       service.calls.map((row) => row['path']).whereType<String>().toSet(),
       <String>{
@@ -114,6 +123,9 @@ void main() {
         'chat_video_upload_failed',
         'chat_video_message_sent',
         'chat_video_playback_opened',
+        'notification_center_opened',
+        'notification_item_opened',
+        'notification_all_read',
         'match_explanation_preview_opened',
         'match_first_chat_entry',
         'match_feedback_submitted',

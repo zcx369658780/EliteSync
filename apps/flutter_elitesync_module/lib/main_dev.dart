@@ -50,6 +50,7 @@ Future<void> main() async {
       appName: 'EliteSync Dev',
       apiBaseUrl: _resolveApiBaseUrl(),
       useMockData: false,
+      useLiveKitRtc: true,
       useMockAuth: false,
       useMockQuestionnaire: false,
       useMockHome: false,

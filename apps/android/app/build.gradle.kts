@@ -80,7 +80,7 @@ android {
     defaultConfig {
         applicationId = "com.elitesync"
         minSdk = 26
-        targetSdk = 36
+        targetSdk = 35
         // Versioning rule: major.minor.patch[alpha suffix]
         // versionCode uses an expanded numeric form to keep suffix releases ordered.
         versionCode = 40400

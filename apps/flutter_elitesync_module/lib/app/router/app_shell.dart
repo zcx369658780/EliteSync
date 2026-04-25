@@ -1,24 +1,67 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_elitesync_module/app/router/app_route_names.dart';
+import 'package:flutter_elitesync_module/app/router/rtc_invite_coordinator.dart';
+import 'package:flutter_elitesync_module/core/storage/cache_keys.dart';
 import 'package:flutter_elitesync_module/design_system/components/bars/app_bottom_nav_bar.dart';
 import 'package:flutter_elitesync_module/design_system/components/brand/floating_dock_bottom_bar.dart';
 import 'package:flutter_elitesync_module/features/discover/presentation/pages/discover_page.dart';
 import 'package:flutter_elitesync_module/features/home/presentation/pages/home_page.dart';
 import 'package:flutter_elitesync_module/features/match/presentation/pages/match_portal_page.dart';
 import 'package:flutter_elitesync_module/features/chat/presentation/pages/conversation_list_page.dart';
+import 'package:flutter_elitesync_module/features/notification/domain/entities/notification_item_entity.dart';
+import 'package:flutter_elitesync_module/features/rtc/domain/entities/rtc_session_entity.dart';
 import 'package:flutter_elitesync_module/features/profile/presentation/pages/profile_page.dart';
 import 'package:flutter_elitesync_module/features/status/presentation/providers/status_posts_provider.dart';
 import 'package:flutter_elitesync_module/features/chat/presentation/providers/chat_providers.dart';
 import 'package:flutter_elitesync_module/features/home/presentation/providers/home_provider.dart';
 import 'package:flutter_elitesync_module/features/match/presentation/providers/match_providers.dart';
 import 'package:flutter_elitesync_module/features/profile/presentation/providers/profile_providers.dart';
-import 'package:flutter_elitesync_module/core/storage/cache_keys.dart';
 import 'package:flutter_elitesync_module/shared/enums/questionnaire_status.dart';
 import 'package:flutter_elitesync_module/shared/enums/verification_status.dart';
 import 'package:flutter_elitesync_module/shared/providers/navigation_guard_provider.dart';
 import 'package:flutter_elitesync_module/shared/providers/app_providers.dart';
+
+NotificationItemEntity? selectLatestRtcInvite(
+  List<NotificationItemEntity> notifications,
+) {
+  for (final item in notifications) {
+    if (!isRtcInviteNotification(item)) continue;
+    return item;
+  }
+  return null;
+}
+
+bool isRtcInviteNotification(NotificationItemEntity item) {
+  if (item.kind != 'rtc_call_invite' || item.isRead) return false;
+  final callId =
+      (item.routeArgs['call_id'] as num?)?.toInt() ??
+      (item.payload['call_id'] as num?)?.toInt() ??
+      0;
+  if (callId <= 0) return false;
+  final routeName = item.routeName.trim();
+  if (routeName.isNotEmpty && routeName != 'rtc_call') {
+    return false;
+  }
+  return true;
+}
+
+RtcSessionEntity? selectLatestIncomingRtcCall(
+  List<RtcSessionEntity> calls,
+  int currentUserId,
+) {
+  for (final call in calls) {
+    if (call.peerUserId != currentUserId) continue;
+    if (!call.isIncoming) continue;
+    if (!['calling', 'ringing'].contains(call.status)) continue;
+    if (call.isTerminal) continue;
+    return call;
+  }
+  return null;
+}
 
 class AppShell extends ConsumerStatefulWidget {
   const AppShell({super.key, required this.navigationShell});
@@ -35,9 +78,17 @@ class _AppShellState extends ConsumerState<AppShell> {
   @override
   void initState() {
     super.initState();
+    // ignore: avoid_print
+    print('APP_SHELL_INIT');
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      startRtcInviteWatcher(ref);
       _warmupProviders();
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   Future<void> _warmupProviders() async {
@@ -87,6 +138,8 @@ class _AppShellState extends ConsumerState<AppShell> {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: avoid_print
+    print('APP_SHELL_BUILD index=${widget.navigationShell.currentIndex}');
     return Scaffold(
       body: widget.navigationShell,
       extendBody: true,

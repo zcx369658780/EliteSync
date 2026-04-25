@@ -74,5 +74,43 @@ class FrontendTelemetryApiTest extends TestCase
         $this->assertSame('match_first_chat_entry', $event->payload['client_event'] ?? null);
         $this->assertSame('match_result', $event->payload['client_payload']['entry_point'] ?? null);
     }
+
+    public function test_frontend_telemetry_logs_rtc_events(): void
+    {
+        $user = User::create([
+            'phone' => '13800003110',
+            'name' => 'RtcUser',
+            'password' => 'secret123',
+            'gender' => 'male',
+            'city' => '南阳',
+            'relationship_goal' => 'dating',
+        ]);
+
+        Sanctum::actingAs($user);
+
+        $this->postJson('/api/v1/telemetry/events', [
+            'event_name' => 'rtc_call_entry_opened',
+            'source_page' => 'chat_room',
+            'payload' => [
+                'surface' => 'rtc_call_entry',
+                'call_id' => 66,
+            ],
+        ], [
+            'X-App-Version' => '0.04.04',
+            'X-Source-Page' => 'chat_room',
+        ])
+            ->assertOk()
+            ->assertJsonPath('ok', true);
+
+        $this->assertDatabaseHas('app_events', [
+            'event_name' => 'rtc_call_entry_opened',
+            'actor_user_id' => $user->id,
+        ]);
+
+        $event = AppEvent::query()->where('event_name', 'rtc_call_entry_opened')->firstOrFail();
+        $this->assertSame('chat_room', $event->payload['source_page'] ?? null);
+        $this->assertSame('rtc_call_entry_opened', $event->payload['client_event'] ?? null);
+        $this->assertSame(66, $event->payload['client_payload']['call_id'] ?? null);
+    }
 }
 

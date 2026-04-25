@@ -6,6 +6,7 @@ class AppEnv {
     required this.appName,
     required this.apiBaseUrl,
     required this.useMockData,
+    this.useLiveKitRtc = false,
     this.useMockAuth = false,
     this.useMockQuestionnaire = false,
     this.useMockHome = false,
@@ -20,6 +21,7 @@ class AppEnv {
   final String appName;
   final String apiBaseUrl;
   final bool useMockData;
+  final bool useLiveKitRtc;
   final bool useMockAuth;
   final bool useMockQuestionnaire;
   final bool useMockHome;

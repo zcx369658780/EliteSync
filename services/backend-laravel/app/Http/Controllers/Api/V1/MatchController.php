@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Support\EvidenceTagMapper;
 use App\Support\ExplanationComposer;
 use App\Services\EventLogger;
+use App\Services\NotificationService;
 use App\Services\MatchingDebugModeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -696,7 +697,7 @@ class MatchController extends Controller
         ]);
     }
 
-    public function confirm(Request $request, EventLogger $events): JsonResponse
+    public function confirm(Request $request, EventLogger $events, NotificationService $notifications): JsonResponse
     {
         $data = $request->validate([
             'match_id' => ['required', 'integer', 'exists:dating_matches,id'],
@@ -714,6 +715,7 @@ class MatchController extends Controller
             return response()->json(['message' => 'not in match'], 403);
         }
 
+        $wasMutual = (bool) $match->like_a && (bool) $match->like_b;
         $match->save();
         $match->refresh();
         $partnerId = (int) ($user->id == $match->user_a ? $match->user_b : $match->user_a);
@@ -728,6 +730,68 @@ class MatchController extends Controller
                 'source_page' => (string) $request->header('X-Source-Page', 'unknown'),
             ]
         );
+
+        if ((bool) $data['like']) {
+            $partner = User::query()->select($this->userIdentityColumns())->find($partnerId);
+            $actorName = trim((string) ($user->nickname ?? $user->name ?? $user->phone ?? '有人'));
+            $partnerName = trim((string) ($partner?->nickname ?? $partner?->name ?? $partner?->phone ?? '对方'));
+            $notifications->createForUser(
+                userId: $partnerId,
+                kind: 'match_like',
+                title: "{$actorName} 喜欢了你",
+                body: '可以查看匹配解释或继续互动',
+                payload: [
+                    'route_name' => 'match_detail',
+                    'route_args' => [
+                        'match_id' => (int) $match->id,
+                    ],
+                    'match_id' => (int) $match->id,
+                    'actor_user_id' => (int) $user->id,
+                    'partner_user_id' => $partnerId,
+                    'partner_name' => $partnerName,
+                    'source' => 'match_like',
+                ]
+            );
+        }
+
+        $isMutual = (bool) $match->like_a && (bool) $match->like_b;
+        if ($isMutual && !$wasMutual) {
+            $actorName = trim((string) ($user->nickname ?? $user->name ?? $user->phone ?? '有人'));
+            $partner = User::query()->select($this->userIdentityColumns())->find($partnerId);
+            $partnerName = trim((string) ($partner?->nickname ?? $partner?->name ?? $partner?->phone ?? '对方'));
+            $notifications->createForUser(
+                userId: (int) $user->id,
+                kind: 'match_success',
+                title: '你们已经互相喜欢了',
+                body: '现在可以开始聊天了',
+                payload: [
+                    'route_name' => 'chat_room',
+                    'route_args' => [
+                        'conversation_id' => (string) $partnerId,
+                        'title' => $partnerName,
+                    ],
+                    'match_id' => (int) $match->id,
+                    'partner_user_id' => $partnerId,
+                    'source' => 'match_success',
+                ]
+            );
+            $notifications->createForUser(
+                userId: $partnerId,
+                kind: 'match_success',
+                title: '你们已经互相喜欢了',
+                body: '现在可以开始聊天了',
+                payload: [
+                    'route_name' => 'chat_room',
+                    'route_args' => [
+                        'conversation_id' => (string) $user->id,
+                        'title' => $actorName,
+                    ],
+                    'match_id' => (int) $match->id,
+                    'partner_user_id' => (int) $user->id,
+                    'source' => 'match_success',
+                ]
+            );
+        }
 
         return response()->json([
             'mutual' => (bool) $match->like_a && (bool) $match->like_b,

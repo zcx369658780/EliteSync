@@ -2,7 +2,7 @@
 
 更新时间：2026-04-19
 
-当前 3.9 已完成正式归档收口；截图证据、验收摘要与多 Agent 审查链已补齐，顾问已确认正式归档通过。当前 3.9a 收尾已完成，当前发布版本为 `0.04.04 / 40400`。4.x 方向重整版整体开发计划已接入，`4.0A` 到 `4.0E` 的基础能力骨架已完成并整理出总验收摘要；`4.1` 非官方四维人格问卷版本已正式通过并归档；`4.2` 图片消息正式接入版已正式通过并收口，walkthrough 证据包、验收摘要与 closeout 文档均已补齐；`4.3` 动态流基础版已正式通过并归档，walkthrough 证据包、验收摘要、handoff 与 closeout 已冻结；`4.4` 视频消息版已正式归档，归档口径为 `pass with observations`，成功态 walkthrough 已补齐并回读为 `视频消息` 语义，walkthrough 证据包、验收摘要、handoff 与 closeout 均已补齐；`4.4S` 媒体链稳定性修正版已完成 `public_url` 规范化修复，媒体读取链已恢复并进入正式归档态；当前 0.04.04 发版已同步把 4.3 / 4.4 / 4.4S 的更新内容纳入 app 更新历史。
+当前 3.9 已完成正式归档收口；截图证据、验收摘要与多 Agent 审查链已补齐，顾问已确认正式归档通过。当前 3.9a 收尾已完成，当前发布版本为 `0.04.04 / 40400`。4.x 方向重整版整体开发计划已接入，`4.0A` 到 `4.0E` 的基础能力骨架已完成并整理出总验收摘要；`4.1` 非官方四维人格问卷版本已正式通过并归档；`4.2` 图片消息正式接入版已正式通过并收口，walkthrough 证据包、验收摘要与 closeout 文档均已补齐；`4.3` 动态流基础版已正式通过并归档，walkthrough 证据包、验收摘要、handoff 与 closeout 已冻结；`4.4` 视频消息版已正式归档，归档口径为 `pass with observations`，成功态 walkthrough 已补齐并回读为 `视频消息` 语义，walkthrough 证据包、验收摘要、handoff 与 closeout 均已补齐；`4.4S` 媒体链稳定性修正版已完成 `public_url` 规范化修复，媒体读取链已恢复并进入正式归档态；`4.5` 通知与社交转化增强版已正式归档，`4.5E` live notification-center screenshot 已补齐；`4.6` RTC / 通话基础设施版（语音优先）已完成 `4.6B` 最小闭环实现，当前进入收口阶段；`4.6P` 音频播放链定向修正版已完成真语音可听闭环，当前建议按 `pass with observations` 收口并补齐最终验收材料；当前 0.04.04 发版已同步把 4.3 / 4.4 / 4.4S 的更新内容纳入 app 更新历史。
 
 本目录仅保留当前活跃版本和当前发布相关材料。历史版本已迁移到 `docs/archive/legacy_2026-04/version_plans/`。
 
@@ -12,6 +12,49 @@
 - `elite_sync_4_0_版本开发计划书_2026_04_18.md`：4.0 版本开发计划书
 - `elite_sync_4_1_版本开发计划书_2026_04_18.md`：4.1 版本开发计划书
 - `elite_sync_4_2_版本开发计划书_2026_04_18.md`：4.2 版本开发计划书
+- `elite_sync_4_5_版本开发计划书_2026_04_21.md`：4.5 版本开发计划书
+- `elite_sync_4_6_版本开发计划书_2026_04_21.md`：4.6 版本开发计划书
+- `4.6A_EXECUTION_NOTE.md`：4.6A 执行记录
+- `4.6A_BOUNDARY_AND_PLAN.md`：4.6A 边界与执行计划
+- `4.6A_DEPENDENCY_MAP.md`：4.6A 依赖链与受影响面
+- `4.6A_RISK_REVIEW.md`：4.6A 风险评审
+- `4.6A_TEST_PLAN.md`：4.6A 测试计划
+- `4.6B_EXECUTION_NOTE.md`：4.6B 执行记录
+- `4.6B_ACCEPTANCE_SUMMARY.md`：4.6B 验收摘要
+- `4.6B_HANDOFF_NOTE.md`：4.6B 交接说明
+- `4.6B_GPT_ADVISOR_HANDOFF.md`：4.6B 给 GPT 顾问的交接稿
+- `4.6C_EXECUTION_NOTE.md`：4.6C 执行记录
+- `4.6C_ACCEPTANCE_SUMMARY.md`：4.6C 验收摘要
+- `4.6C_HANDOFF_NOTE.md`：4.6C 交接说明
+- `4.6C_GPT_ADVISOR_HANDOFF.md`：4.6C 给 GPT 顾问的交接稿
+- `4.6D_EXECUTION_NOTE.md`：4.6D 执行记录
+- `4.6D_ACCEPTANCE_SUMMARY.md`：4.6D 验收摘要
+- `4.6D_HANDOFF_NOTE.md`：4.6D 交接说明
+- `4.6D_GPT_ADVISOR_HANDOFF.md`：4.6D 给 GPT 顾问的交接稿
+- `4.6F_BOUNDARY_AND_PLAN.md`：4.6F LiveKit 语音接入边界与执行计划
+- `4.6F_EXECUTION_NOTE.md`：4.6F 执行记录
+- `4.6F_ACCEPTANCE_SUMMARY.md`：4.6F 验收摘要
+- `4.6F_HANDOFF_NOTE.md`：4.6F 交接说明
+- `4.6F_DEPENDENCY_MAP.md`：4.6F 依赖链与受影响面
+- `4.6F_RISK_REVIEW.md`：4.6F 风险评审
+- `4.6F_TEST_PLAN.md`：4.6F 测试计划
+- `4.6F_LIVEKIT_LIVE_TEST_RUNBOOK.md`：4.6F LiveKit 真语音联测 Runbook
+- `4.6F_SCREENSHOT_EVIDENCE_INDEX.md`：4.6F 截图证据索引
+- `4.6F_SCREENSHOT_VERIFICATION_NOTE.md`：4.6F 截图验收说明
+- `4.6F_GPT_ADVISOR_HANDOFF.md`：4.6F 给 GPT 顾问的交接稿
+- `4.6F_CLOSEOUT_NOTE.md`：4.6F 收尾说明
+- `elite_sync_4_6_p_版本开发计划书_2026_04_24.md`：4.6P 音频播放链定向修正版
+- `4.6P_BOUNDARY_AND_PLAN.md`：4.6P 边界与执行计划
+- `4.6P_EXECUTION_NOTE.md`：4.6P 执行记录
+- `4.6P_ACCEPTANCE_SUMMARY.md`：4.6P 验收摘要
+- `4.6P_HANDOFF_NOTE.md`：4.6P 交接说明
+- `4.6P_GPT_ADVISOR_HANDOFF.md`：4.6P 给 GPT 顾问的交接稿
+- `4.6P_CLOSEOUT_NOTE.md`：4.6P 收尾说明
+- `4.6P_SCREENSHOT_EVIDENCE_INDEX.md`：4.6P 截图证据索引
+- `4.6P_SCREENSHOT_VERIFICATION_NOTE.md`：4.6P 截图验收说明
+- `4.6P_DEPENDENCY_MAP.md`：4.6P 依赖链与受影响面
+- `4.6P_RISK_REVIEW.md`：4.6P 风险评审
+- `4.6P_TEST_PLAN.md`：4.6P 测试计划
 - `elite_sync_整体开发计划书_4_x方向重整版_2026_04_17.md`：当前总控计划书
 - `elite_sync_整体开发计划书_更新版_2026_04_11.md`：历史总控计划书
 - `elite_sync_3_9_版本开发计划书_2026_04_17.md`：3.9 版本开发计划书
@@ -99,6 +142,16 @@
 - `4.4S_CLOSEOUT_NOTE.md`：4.4S 收尾说明
 - `4.4S_GPT_ADVISOR_HANDOFF.md`：4.4S 给 GPT 顾问的交接稿
 - `4.4S_SCREENSHOT_EVIDENCE_INDEX.md`：4.4S 截图证据索引
+- `4.5A_BOUNDARY_AND_PLAN.md`：4.5A 边界与执行计划
+- `4.5A_EXECUTION_NOTE.md`：4.5A 执行记录
+- `4.5A_ACCEPTANCE_SUMMARY.md`：4.5A 阶段性验收摘要
+- `4.5B_D_EXECUTION_NOTE.md`：4.5B-D 执行记录
+- `4.5E_EXECUTION_NOTE.md`：4.5E 执行记录
+- `4.5E_ACCEPTANCE_SUMMARY.md`：4.5E 阶段性验收摘要
+- `4.5E_SCREENSHOT_EVIDENCE_INDEX.md`：4.5E 截图证据索引
+- `4.5E_SCREENSHOT_VERIFICATION_NOTE.md`：4.5E 截图验收说明
+- `4.5E_GPT_ADVISOR_HANDOFF.md`：4.5E 给 GPT 顾问的交接稿
+- `4.5E_CLOSEOUT_NOTE.md`：4.5E 收尾说明
 - `elite_sync_4_1_版本开发计划书_2026_04_18.md`：4.1 版本开发计划书
 - `elite_sync_3_6_版本开发计划书_2026_04_12.md`：3.6 版本开发计划书
 - `elite_sync_3_7_版本开发计划书_2026_04_12.md`：3.7 版本开发计划书

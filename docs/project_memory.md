@@ -38,6 +38,16 @@
 - `3.9B` 回归执行记录已补齐，当前回归材料已从保护面说明升级为执行记录，见 `docs/version_plans/3.9B_REGRESSION_EXECUTION.md`
 - `3.9C` 当前只做边界说明收口，不改运行时契约；边界说明见 `docs/version_plans/3.9C_BOUNDARY_NOTE.md`
 - `3.9C` 顾问短版已补齐，便于直接口头汇报与快速复查；见 `docs/version_plans/3.9C_BOUNDARY_BRIEF.md`
+
+## 远端 SSH 执行约定
+
+- 远端命令必须优先使用显式 `C:\WINDOWS\System32\OpenSSH\ssh.exe`，不要依赖 PowerShell 别名或不透明包装。
+- PowerShell 中调用 `ssh` 时，必须使用参数数组或显式 `--%` 原样透传，避免 `-o`、`-i` 等参数被 PowerShell 误解析。
+- 推荐稳定模板：
+  - 先把远端命令写成单独的 here-string
+  - 再组装成 `$sshArgs = @('-o','BatchMode=yes','-o','StrictHostKeyChecking=no','-i',$KeyPath,'user@host',$remote)`
+  - 最后调用 `& $env:WINDIR\System32\OpenSSH\ssh.exe @sshArgs`
+- 以后凡是需要检查服务器端、抓日志、执行远端命令，默认都用这个模板，避免重复踩 PowerShell 参数解析坑。
 - `4.0` 基础能力基建版已启动；`4.0A` 领域边界与数据骨架已开始落地，执行记录见 `docs/version_plans/4.0A_EXECUTION_NOTE.md`
 - `4.0B` 媒体基础线已形成：媒体配置、状态机与上传策略说明见 `docs/version_plans/4.0B_MEDIA_BASELINE.md`
 - `4.0C` 队列与缓存最小闭环已落地：HTTP 触发 -> job -> 状态回写 -> cache 形成了可验证链路，见 `docs/version_plans/4.0C_PIPELINE_NOTE.md`
@@ -55,13 +65,25 @@
 - `4.3` 动态流基础版已正式归档：`status_posts`、`status_post_likes`、`moderation_reports.target_status_post_id`、动态作者页和首页轻量联动已落地，walkthrough 证据包、验收摘要、handoff 与 closeout 已冻结，不要扩成视频 / 社区 / 推荐平台
 - `4.4` 视频消息版已正式归档；归档口径为 `pass with observations`，walkthrough 成功态证据包、验收摘要、handoff、closeout 与多 Agent 审查日志均已补齐，会话列表摘要已稳定回读为 `视频消息`，禁止把它扩写成视频动态、RTC、通话或媒体平台化版本
 - `4.4S` 媒体链稳定性修正版已完成：后端 `MediaAsset.public_url` 与 Flutter 媒体渲染层都已加上 URL 规范化兜底，旧数据里的 `localhost` / 相对路径会统一改写成当前可访问地址，目标是彻底修复图片 / 视频加载失败
+- `4.5A` 通知与社交转化增强版已进入边界冻结与最小骨架阶段：通知中心、未读数、已读 / 全部已读、消息 / 动态 / 匹配 / 问卷历史 / 设置回流入口已建立，但不做厂商推送平台化、RTC、在线状态或消息 / 动态 / 匹配主链重构；`4.5E` 已补齐稳定的 live notification-center page screenshot，并完成归档收口
+- `4.6` RTC / 通话基础设施版（语音优先）已进入 `4.6A` 边界冻结与依赖拆解阶段：当前只做 1v1 实时通话最小闭环的范围、风险、测试计划与可复用依赖整理，不做多人通话、直播、在线状态或推送平台化；本地环境继续只做前端开发、UI 联调与文档整理，后端写库统一在阿里云端执行
+- `4.6B` 已完成 RTC 最小闭环实现：后端 RTC 会话域 / 事件域 / 状态机已落地，Flutter 通话入口页与通话页骨架已落地，通知中心已可回流到通话页；当前建议验收口径为 `pass with observations`
+- `4.6C` 已补齐来电页与通话结果页壳层，通知中心可按 rtc_call 的 kind 分流到来电页 / 通话页 / 结果页；当前仍保持 1v1 语音优先骨架，不扩多人 / 直播 / 在线状态
+- `4.6D` 已补齐通话前麦克风权限提示与异常恢复壳层：发起通话前会先校验权限，未授权时会引导到权限页或系统设置；依然只做 1v1 语音优先，不扩多人 / 直播 / 在线状态
 - 2026-04-19 已恢复两条稳定烟测账号到生产后端：`17094346566` / `SmokeUser` 与 `13772423130` / `test1`。当前口令分别为 `1234567aa` 与 `zcx658023`；同时已把问卷题库、答题历史与当前周匹配记录恢复到可读状态，本次登录/匹配异常的直接原因是生产库状态缺失，而非 app 登录链本身损坏
+- 2026-04-21 用户再次确认两条稳定烟测账号的当前口令：`17094346566` / `SmokeUser` 对应 `1234567aa`，`13772423130` / `test1` 对应 `zcx658023`；后续 smoke / regression / 联调优先复用这两个账号，不再沿用旧密码口径
 - 版本号、检查更新和发版脚本必须绑定成同一条链：`apps/android/app/build.gradle.kts` 的 `versionName/versionCode` 是宿主真值，`/api/v1/app/version/check` 和 `scripts/release_android_update_aliyun.ps1` 必须与其同步；`PackageInfo` 读取到的 Flutter 模块版本只用于辅助展示，不得覆盖宿主版本。
 - 发版时必须同步更新 `apps/android/app/src/main/assets/changelog_v0.txt`、`apps/flutter_elitesync_module/assets/config/about_update_0_xx.json`、`docs/CHANGELOG.md` 和 `docs/devlogs/RELEASE_LOG.md`，并在模拟器 / 真机上重新安装最新宿主包后再采集版本中心截图，避免旧包导致截图显示滞后。
 - 禁止在正式运行时反馈 mock / 虚假信息 / 伪成功 / 伪错误状态；一旦发现任何会误导用户、掩盖真实错误或让退出/登录/消息/上传/恢复流程失真的 mock 反馈，必须优先清理并恢复真实链路。
 - 不要把本地 SQLite / 临时数据库当成正式运行源；仓库中的 `*.db` / `*.sqlite` 只保留迁移、种子、备份和证据类文件，正式联调一律以远端服务端数据库为准。涉及任何数据库恢复、回填、重建或修复前，先确认不会覆盖生产数据。
 - 任何数据库变更都必须先区分“本地开发库 / 远端生产库 / 备份快照”，默认不得在未确认的情况下修改远端数据库内容；如果需要恢复账号、题库或匹配，只能走显式恢复脚本或人工确认后的最小写入，不允许模糊覆盖。
 - 本地环境默认只做前端开发、UI 联调与文档整理；后端开发、数据库迁移、备份、恢复和任何会写数据库的操作统一在阿里云端执行，避免本地更新误污染生产后端数据库。
+- `4.6` 继续严守“本地前端-only、云端后端-only”的边界；RTC / 通话状态机、写库、迁移、备份、恢复和排障都必须优先在云端完成。
+- `4.6F` 是 4.6 的 LiveKit 真语音接入子任务：保留现有 RTC 状态机，仅新增语音媒体层、join info 接口和 Flutter 连接壳层；不要把它扩成多人 / 直播 / 在线状态平台。当前真语音仍未闭合，通话可连但音频频谱仍在等待远端音轨，后续应把材料交给 GPT 顾问裁决，不要继续盲修主链。
+- `4.6P` 已下发为音频播放链定向修正版：只盯“听到声音”这一 blocker，不再继续扩 UI 或重写 RTC 主链；当前已完成真语音可听闭环，建议按 `pass with observations` 收口，并保留模拟器反向发言链的最终复测作为观察项。
+- 阿里云端已拉起 LiveKit 自托管容器并写入 `LIVEKIT_*` 环境变量，`GET /api/v1/rtc/calls/{callId}/livekit` 已能返回可用 join-info；后续若继续，只能基于顾问裁决做最小收口，不要回头重写 RTC 状态机。
+- RTC 断连收口采用“双方心跳 + 10 秒失联自动结束”机制：后端新增 `POST /api/v1/rtc/calls/{callId}/heartbeat`，并通过 `initiator_last_seen_at` / `peer_last_seen_at` 记录双方最后活跃时间；当 `connecting` / `in_call` 会话任一方失联超过 10 秒时，后端自动结束通话，避免 busy 残留。
+- 2026-04-21 当前快照：发布基线已统一到 `0.04.04 / 40400`，`4.4S` 媒体链稳定性修正版已归档，`4.5E` 通知中心 live walkthrough 也已完成；CI 的 `AppVersionApiTest` 失败根因是 `.env.example` 仍停留在旧版本默认值，已修正为 `0.04.04 / 40400`。根目录临时截图 / 视频样本只保留归档需要的正式证据，不再作为长期记忆输入。
 
 ## 星盘与资料链路
 
@@ -74,11 +96,12 @@
 
 - Android 宿主启动 Flutter 时必须注入 `elitesync_api_base_url` 和 `elitesync_ws_base_url`
 - Gemini CLI 默认模型改为 `gemini-3-flash-preview`，落点在 `~/.gemini/settings.json` 的 `model.name`
+- 本机 Claude 已配置可调用 Deepseek V4；用户反馈其官方表现接近 Opus 4.6。后续涉及 Claude 的默认理解应按“本地 Claude 入口 + Deepseek V4 模型”处理，除非用户另行指定
 - 直接在 PowerShell 中调用 CLI 的默认方式是：
   - `claude -p "<prompt>" --output-format text --tools ""`
 - `gemini -p "<prompt>" --output-format text --approval-mode plan`
 - 如果需要结构化输出，可用：
-  - `gemini -p "<prompt>" --output-format json --approval-mode plan`
+- `gemini -p "<prompt>" --output-format json --approval-mode plan`
 - `claude` 默认命令应命中 `C:\Users\zcxve\.local\bin\claude.exe`
 - `Get-Command claude` / `Get-Command gemini` 可用于确认当前直连入口
 - 当前不再把 Claude-mcp / Codex-mcp 作为默认工作流入口
@@ -86,6 +109,7 @@
 - 若 Claude 因报错、预算、配额或不可用而无法执行其职责，或 Gemini 因额度不足、配额、不可用而无法执行其职责，应启用已授权的 subagent 代为承担相应的审查、验收或归档辅助职责，避免任务停摆。
 - 对 4.0 及后续版本，同样适用上述 subagent 容错规则：Claude/Gemini 失效时，立即切换已授权 subagent 承担对应职责，不要让基础设施任务停摆。
 - `4.4` 起必须优先冻结视频消息边界，复用既有媒体 / 消息主链，不得新造视频平行平台；当前 `4.4` 已正式归档且视频摘要语义已回读正确，后续只可在新版本计划书里继续扩展。
+- `4.6P` 执行时若需要 Claude 参与评审，默认按本机已配置的 Deepseek V4 入口理解，而不是旧的 Claude / Opus 口径。
 
 ## 维护原则
 

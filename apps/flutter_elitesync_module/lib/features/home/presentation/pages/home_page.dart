@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_elitesync_module/app/router/app_route_names.dart';
+import 'package:flutter_elitesync_module/app/router/rtc_invite_coordinator.dart';
 import 'package:flutter_elitesync_module/core/storage/cache_keys.dart';
 import 'package:flutter_elitesync_module/core/telemetry/frontend_telemetry.dart';
 import 'package:flutter_elitesync_module/design_system/components/brand/browse_top_search_bar.dart';
@@ -23,6 +24,7 @@ import 'package:flutter_elitesync_module/features/home/presentation/providers/ho
 import 'package:flutter_elitesync_module/features/home/presentation/widgets/media_feed_card.dart';
 import 'package:flutter_elitesync_module/features/questionnaire/presentation/providers/questionnaire_provider.dart';
 import 'package:flutter_elitesync_module/features/questionnaire/presentation/widgets/questionnaire_profile_summary_card.dart';
+import 'package:flutter_elitesync_module/features/notification/presentation/providers/notification_provider.dart';
 import 'package:flutter_elitesync_module/features/status/domain/entities/status_post_entity.dart';
 import 'package:flutter_elitesync_module/features/status/presentation/providers/status_posts_provider.dart';
 import 'package:flutter_elitesync_module/features/status/presentation/widgets/status_post_card.dart';
@@ -58,6 +60,7 @@ class _HomePageState extends ConsumerState<HomePage>
   @override
   void initState() {
     super.initState();
+    startRtcInviteWatcher(ref);
     _searchController = TextEditingController();
     _searchFocusNode = FocusNode()
       ..addListener(() {
@@ -163,6 +166,7 @@ class _HomePageState extends ConsumerState<HomePage>
     final asyncState = ref.watch(homeProvider);
     final statusAsync = ref.watch(statusPostsProvider);
     final questionnaireAsync = ref.watch(questionnaireProfileSnapshotProvider);
+    final notificationUnreadAsync = ref.watch(notificationUnreadCountProvider);
 
     return asyncState.when(
       loading: () => const AppLoadingSkeleton(lines: 8),
@@ -333,6 +337,52 @@ class _HomePageState extends ConsumerState<HomePage>
                       ),
                     if (questionnaireSummary != null)
                       SizedBox(height: t.spacing.sm),
+                    AppInfoSectionCard(
+                      title: '通知中心',
+                      subtitle: '消息、动态、匹配的关键提醒会在这里收口',
+                      leadingIcon: Icons.notifications_active_outlined,
+                      child: notificationUnreadAsync.when(
+                        loading: () => const SizedBox(
+                          height: 20,
+                          child: LinearProgressIndicator(minHeight: 2),
+                        ),
+                        error: (_, __) => Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                '通知状态暂不可用，稍后可从消息页重试。',
+                                style: Theme.of(context).textTheme.bodyMedium
+                                    ?.copyWith(color: t.textSecondary),
+                              ),
+                            ),
+                            AppChoiceChip(
+                              label: '查看通知',
+                              leading: const Icon(Icons.notifications_none),
+                              onTap: () => context.push(AppRouteNames.notificationCenter),
+                            ),
+                          ],
+                        ),
+                        data: (unread) => Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                unread > 0
+                                    ? '你有 $unread 条未读提醒，点开可以继续回应。'
+                                    : '当前没有未读提醒，新的互动会在这里提醒你。',
+                                style: Theme.of(context).textTheme.bodyMedium
+                                    ?.copyWith(color: t.textSecondary),
+                              ),
+                            ),
+                            AppChoiceChip(
+                              label: unread > 0 ? '去看看' : '查看通知',
+                              leading: const Icon(Icons.notifications_none),
+                              onTap: () => context.push(AppRouteNames.notificationCenter),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: t.spacing.sm),
                     _StatusPreviewSection(
                       statusAsync: statusAsync,
                       onTapMore: () => context.push(AppRouteNames.statusSquare),

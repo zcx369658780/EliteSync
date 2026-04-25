@@ -62,6 +62,7 @@ Future<void> main() async {
       // verified direct backend entry until the public domain chain is stable.
       apiBaseUrl: _resolveApiBaseUrl(hostBootstrap: hostBootstrap),
       useMockData: false,
+      useLiveKitRtc: true,
       useMockAuth: false,
       useMockQuestionnaire: false,
       useMockHome: false,
