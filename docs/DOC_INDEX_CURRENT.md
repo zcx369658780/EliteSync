@@ -85,8 +85,8 @@
 - `docs/version_plans/4.1_GPT_ADVISOR_HANDOFF.md`：4.1 给 GPT 顾问的交接稿
 - `docs/version_plans/elite_sync_整体开发计划书_4_x方向重整版_2026_04_17.md`：4.x 方向重整版整体开发计划书
 - `docs/archive/legacy_2026-04/DEVELOPMENT_PLAN_2_0_AND_EARLIER_ARCHIVE.md`：2.0 及更早版本开发计划归档
-- `docs/CHANGELOG.md`：0.04.04 版本变更记录（当前发布）
-- `docs/version_plans/0.04.04_UPDATE_BRIEF.md`：0.04.04 更新简报
+- `docs/CHANGELOG.md`：0.04.06 版本变更记录（当前发布）
+- `docs/version_plans/0.04.06_UPDATE_BRIEF.md`：0.04.06 更新简报
 - `docs/version_plans/elite_sync_3_9_版本开发计划书_2026_04_17.md`：3.9 版本开发计划书
 - `docs/runbooks/README.md`：运行手册索引
 - `LICENSE_DEPENDENCY_STATUS.md`：依赖许可证状态总表（长期维护）
@@ -192,7 +192,7 @@
 ## 版本计划（docs/version_plans）
 - `docs/version_plans/README.md`：版本计划总索引
 - `docs/HANDOFF_3X_CLOSEOUT_20260417.md`
-- `docs/version_plans/0.04.04_UPDATE_BRIEF.md`
+- `docs/version_plans/0.04.06_UPDATE_BRIEF.md`
 - `docs/version_plans/elite_sync_整体开发计划书_更新版_2026_04_11.md`
 - `docs/version_plans/elite_sync_3_8_版本开发计划书_2026_04_13.md`
 - `docs/version_plans/3.8_EXEC_PLAN.md`
