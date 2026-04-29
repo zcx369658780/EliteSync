@@ -25,7 +25,7 @@ class FakeAppTelemetryService extends AppTelemetryService {
           apiClient: ApiClient(
             dio: Dio(BaseOptions(baseUrl: 'http://127.0.0.1')),
           ),
-          appVersionProvider: () async => '0.04.04',
+          appVersionProvider: () async => '0.04.06',
         );
 
   @override

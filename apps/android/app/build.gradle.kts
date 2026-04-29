@@ -1,4 +1,4 @@
-﻿import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.io.File
 import java.util.Properties
 
@@ -83,8 +83,8 @@ android {
         targetSdk = 35
         // Versioning rule: major.minor.patch[alpha suffix]
         // versionCode uses an expanded numeric form to keep suffix releases ordered.
-        versionCode = 40400
-        versionName = "0.04.04"
+        versionCode = 40600
+        versionName = "0.04.06"
         ndk {
             // Google Play 16KB page-size compliance: avoid x86_64 native libs from third-party SDKs.
             // Keep ARM ABIs for real-device testing and release publishing.
@@ -185,6 +185,7 @@ configurations.all {
         force("androidx.browser:browser:1.8.0")
     }
 }
+
 
 
 

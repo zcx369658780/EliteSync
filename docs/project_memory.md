@@ -23,7 +23,7 @@
 
 ## 当前基线
 
-- 对外发布版本：`0.04.04 / 40400`
+- 对外发布版本：`0.04.06 / 40600`
 - 当前阶段结论：`3.5` 已正式验收通过并归档
 - `3.6` 已进入计划执行阶段，stage 0、stage 1 与 stage 2 已完成
 - `3.6` stage 3 也已完成：路线解释层已落地为轻量阅读卡，设置页补齐路线差异报告，本命盘详情页保留 compact 解释卡
@@ -97,7 +97,7 @@
 - `4.7` 已切换为测试前稳定化与质量门禁版：UI protected surfaces、rollback policy、baseline evidence 和 release gate 是硬门禁，任何构建 / 后端 / RTC / 媒体恢复都不得默认覆盖现代 UI。
 - 阿里云端已拉起 LiveKit 自托管容器并写入 `LIVEKIT_*` 环境变量，`GET /api/v1/rtc/calls/{callId}/livekit` 已能返回可用 join-info；后续若继续，只能基于顾问裁决做最小收口，不要回头重写 RTC 状态机。
 - RTC 断连收口采用“双方心跳 + 10 秒失联自动结束”机制：后端新增 `POST /api/v1/rtc/calls/{callId}/heartbeat`，并通过 `initiator_last_seen_at` / `peer_last_seen_at` 记录双方最后活跃时间；当 `connecting` / `in_call` 会话任一方失联超过 10 秒时，后端自动结束通话，避免 busy 残留。
-- 2026-04-21 当前快照：发布基线已统一到 `0.04.04 / 40400`，`4.4S` 媒体链稳定性修正版已归档，`4.5E` 通知中心 live walkthrough 也已完成；CI 的 `AppVersionApiTest` 失败根因是 `.env.example` 仍停留在旧版本默认值，已修正为 `0.04.04 / 40400`。根目录临时截图 / 视频样本只保留归档需要的正式证据，不再作为长期记忆输入。
+- 2026-04-25 当前快照：发布基线已统一到 `0.04.06 / 40600`，`4.6P` 音频播放链定向修正版已收口并完成真语音可听闭环；4.3 / 4.4 / 4.4S / 4.5E 的归档材料继续保留，CI 的 `AppVersionApiTest` 版本默认值已同步为 `0.04.06 / 40600`，根目录临时截图 / 视频样本只保留归档需要的正式证据，不再作为长期记忆输入。
 - 2026-04-26 4.7 UI 回退事故后，仓库新增 `docs/PROTECTED_UI_SURFACES.md` 与 `docs/runbooks/ROLLBACK_AND_RECOVERY_POLICY.md`：恢复动作默认只能做路径级、文件级、最小范围；现代 UI（主导航、首页、消息页、聊天页、通知中心、匹配页、资料页、问卷页、版本中心、starry background / modern card / spacing）视为 protected surface，任何触碰都必须先 checkpoint 再恢复。
 
 ## 星盘与资料链路
