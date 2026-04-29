@@ -15,6 +15,12 @@ use Illuminate\Http\Request;
 
 class ProfileController extends Controller
 {
+    private function normalizeBirthPlace(mixed $value): ?string
+    {
+        $candidate = trim((string) $value);
+        return $candidate !== '' ? $candidate : null;
+    }
+
     private function normalizeBirthTime(mixed $value): ?string
     {
         $candidate = trim((string) $value);
@@ -42,10 +48,12 @@ class ProfileController extends Controller
             ?? $this->normalizeBirthTime($existingProfile->birth_time)
             ?? $this->normalizeBirthTime(data_get($user, 'private_natal_chart.true_solar_time'))
             ?? '12:00';
+        $resolvedBirthPlace = $this->normalizeBirthPlace($user->private_birth_place)
+            ?? $this->normalizeBirthPlace($existingProfile->birth_place);
         $locationContext = $locationResolver->resolve([
             'birthday' => $user->birthday ? optional($user->birthday)->format('Y-m-d') : '',
             'birth_time' => $derivedBirthTime,
-            'birth_place' => $user->private_birth_place ?? $existingProfile->birth_place ?? '',
+            'birth_place' => $resolvedBirthPlace ?? '',
             'birth_lat' => $user->private_birth_lat ?? $existingProfile->birth_lat,
             'birth_lng' => $user->private_birth_lng ?? $existingProfile->birth_lng,
         ]);
@@ -55,7 +63,7 @@ class ProfileController extends Controller
             'gender' => (string) ($user->gender ?? ''),
             'birth_time' => $derivedBirthTime,
             'true_solar_time' => $locationContext['true_solar_time'] ?: $derivedBirthTime,
-            'birth_place' => (string) ($user->private_birth_place ?? $existingProfile->birth_place ?? ''),
+            'birth_place' => $resolvedBirthPlace ?? '',
             'birth_lat' => $user->private_birth_lat ?? $existingProfile->birth_lat,
             'birth_lng' => $user->private_birth_lng ?? $existingProfile->birth_lng,
             'location_shift_minutes' => (int) ($locationContext['location_shift_minutes'] ?? 0),
@@ -167,7 +175,8 @@ class ProfileController extends Controller
             'gender' => $user->gender,
             'city' => $user->city,
             'relationship_goal' => $user->relationship_goal,
-            'birth_place' => $user->private_birth_place,
+            'birth_place' => $this->normalizeBirthPlace($user->private_birth_place)
+                ?? $this->normalizeBirthPlace($profile?->birth_place),
             'birth_lat' => $user->private_birth_lat,
             'birth_lng' => $user->private_birth_lng,
             'moderation_status' => $user->moderation_status ?? 'normal',
@@ -209,7 +218,7 @@ class ProfileController extends Controller
         $user->gender = $data['gender'];
         $user->city = $data['city'];
         $user->relationship_goal = $data['relationship_goal'];
-        $user->private_birth_place = $data['birth_place'] ?? null;
+        $user->private_birth_place = $this->normalizeBirthPlace($data['birth_place'] ?? null);
         $user->private_birth_lat = $data['birth_lat'] ?? null;
         $user->private_birth_lng = $data['birth_lng'] ?? null;
         $user->save();
@@ -240,7 +249,7 @@ class ProfileController extends Controller
                 'gender' => $user->gender,
                 'city' => $user->city,
                 'relationship_goal' => $user->relationship_goal,
-                'birth_place' => $user->private_birth_place,
+                'birth_place' => $this->normalizeBirthPlace($user->private_birth_place),
                 'birth_lat' => $user->private_birth_lat,
                 'birth_lng' => $user->private_birth_lng,
                 'moderation_status' => $user->moderation_status ?? 'normal',

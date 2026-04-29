@@ -1,6 +1,6 @@
 # 文档索引（当前有效）
 
-更新时间：2026-04-19
+更新时间：2026-04-29
 
 ## 根目录
 - `README.md`：项目总览
@@ -8,6 +8,9 @@
 - `docs/HANDOFF_3X_CLOSEOUT_20260417.md`：3.x 收口与下一阶段交接稿
 - `docs/HANDOFF_NEW_SESSION_20260417.md`：新会话交接摘要
 - `docs/DEVELOPMENT_PLAN_CURRENT.md`：当前整体开发计划书
+- `docs/PROTECTED_UI_SURFACES.md`：4.7 UI 保护面清单
+- `docs/4.7_UI_REVERSION_REPORT.md`：4.7 UI 回退事故报告
+- `docs/runbooks/ROLLBACK_AND_RECOVERY_POLICY.md`：回滚与恢复政策
 - `docs/version_plans/elite_sync_4_0_版本开发计划书_2026_04_18.md`：4.0 版本开发计划书
 - `docs/version_plans/elite_sync_4_1_版本开发计划书_2026_04_18.md`：4.1 版本开发计划书
 - `docs/version_plans/elite_sync_4_2_版本开发计划书_2026_04_18.md`：4.2 版本开发计划书
@@ -55,6 +58,57 @@
 - `docs/version_plans/4.6P_CLOSEOUT_NOTE.md`：4.6P 收尾说明
 - `docs/version_plans/4.6P_SCREENSHOT_EVIDENCE_INDEX.md`：4.6P 截图证据索引
 - `docs/version_plans/4.6P_SCREENSHOT_VERIFICATION_NOTE.md`：4.6P 截图验收说明
+- `docs/version_plans/elite_sync_4_7_版本开发计划书_2026_04_26.md`：4.7 测试前稳定化与质量门禁版
+- `docs/version_plans/4.7_EXECUTION_NOTE.md`：4.7 执行记录
+- `docs/version_plans/4.7_ACCEPTANCE_SUMMARY.md`：4.7 验收摘要
+- `docs/version_plans/4.7_HANDOFF_NOTE.md`：4.7 交接说明
+- `docs/version_plans/4.7_GPT_ADVISOR_HANDOFF.md`：4.7 给 GPT 顾问的交接稿
+- `docs/version_plans/4.7_CLOSEOUT_NOTE.md`：4.7 收尾说明
+- `docs/version_plans/4.7_SCREENSHOT_VERIFICATION_NOTE.md`：4.7 截图验收说明
+- `docs/version_plans/4.7_UI_BASELINE_GUARD.md`：4.7 UI 基线门禁
+- `docs/version_plans/4.7_UI_BASELINE_EVIDENCE_INDEX.md`：4.7 UI 基线证据索引
+- `docs/version_plans/4.7_UI_REVERSION_FIX_NOTE.md`：4.7 UI 回退修复说明
+- `docs/version_plans/elite_sync_4_8_版本开发计划书_2026_04_28.md`：4.8 Alpha Smoke 与测试前真实路径复验版
+- `docs/version_plans/4.8_BASELINE_START_NOTE.md`：4.8 基线起点说明
+- `docs/version_plans/4.8_ALPHA_SMOKE_MATRIX.md`：4.8 Alpha Smoke 矩阵
+- `docs/version_plans/4.8_RELEASE_GATE_CHECKLIST.md`：4.8 Release Gate 清单
+- `docs/version_plans/4.8_SMOKE_EXECUTION_NOTE.md`：4.8 Smoke 执行笔记
+- `docs/version_plans/4.8_ACCEPTANCE_SUMMARY.md`：4.8 验收摘要
+- `docs/version_plans/4.8_HANDOFF_NOTE.md`：4.8 交接说明
+- `docs/version_plans/4.8_CLOSEOUT_NOTE.md`：4.8 收尾说明
+- `docs/version_plans/4.8_SCREENSHOT_VERIFICATION_NOTE.md`：4.8 截图验收说明
+- `docs/version_plans/4.8_UI_BASELINE_EVIDENCE_INDEX.md`：4.8 UI 基线证据索引
+- `docs/version_plans/elite_sync_4_9_版本开发计划书_2026_04_28.md`：4.9 测试前治理、限流、监控、发布链强化版
+- `docs/version_plans/4.9_BASELINE_START_NOTE.md`：4.9 基线起点说明
+- `docs/version_plans/4.9_SCOPE_AND_NON_GOALS.md`：4.9 范围与非目标
+- `docs/version_plans/4.9_NOTIFICATION_DENOISE_NOTE.md`：4.9 通知中心工程 slug 降噪说明
+- `docs/version_plans/4.9_NOTIFICATION_DENOISE_EVIDENCE.md`：4.9 通知中心降噪证据
+- `docs/version_plans/4.9_SMOKE_MATRIX.md`：4.9 Smoke 矩阵
+- `docs/version_plans/4.9_SMOKE_EXECUTION_NOTE.md`：4.9 Smoke 执行记录
+- `docs/version_plans/4.9_EXECUTION_NOTE.md`：4.9 执行记录
+- `docs/version_plans/4.9_RELEASE_GATE_CHECKLIST.md`：4.9 发布门禁清单
+- `docs/version_plans/4.9_RELEASE_GATE_VERIFICATION_NOTE.md`：4.9 发布门禁验证说明
+- `docs/version_plans/4.9_DATABASE_SAFETY_NOTE.md`：4.9 数据库安全说明
+- `docs/version_plans/4.9_ALPHA_READINESS_DASHBOARD.md`：4.9 Alpha 就绪看板
+- `docs/version_plans/4.9_LOG_EVIDENCE_INDEX.md`：4.9 日志证据索引
+- `docs/version_plans/4.9_HEALTH_CHECK_NOTE.md`：4.9 健康检查说明
+- `docs/version_plans/4.9_UI_BASELINE_REGRESSION.md`：4.9 UI 基线回归
+- `docs/version_plans/4.9_UI_BASELINE_EVIDENCE_INDEX.md`：4.9 UI 基线证据索引
+- `docs/version_plans/4.9_SCREENSHOT_VERIFICATION_NOTE.md`：4.9 截图验收说明
+- `docs/version_plans/4.9_ACCEPTANCE_SUMMARY.md`：4.9 验收摘要
+- `docs/version_plans/4.9_HANDOFF_NOTE.md`：4.9 交接说明
+- `docs/version_plans/4.9_HANDOFF_MASTER.md`：4.9 主交接文件（推荐上传单文件）
+- `docs/version_plans/4.9_HANDOFF_PACKAGE_INDEX.md`：4.9 交接包索引
+- `docs/version_plans/4.9_CLOSEOUT_NOTE.md`：4.9 收尾说明
+- `docs/version_plans/4.9_MULTIAGENT_REVIEW_LOG.md`：4.9 多 agent 评审日志
+- `docs/version_plans/4.9_MEDIA_OBSERVABILITY_NOTE.md`：4.9 媒体 / 队列 / Worker 可观测性说明
+- `docs/CODEX_CURRENT_SESSION_SUMMARY.md`：当前会话短摘要
+- `docs/archive/legacy_2026-04/reports/CODEX_SESSION_HISTORY_2026_04_29.md`：当前会话历史记录
+- docs/version_plans/4.9_HANDOFF_NOTE.md：4.9 交接说明
+- docs/version_plans/4.9_CLOSEOUT_NOTE.md：4.9 收尾说明
+- docs/version_plans/4.9_MULTIAGENT_REVIEW_LOG.md：4.9 多 agent 评审日志
+- `docs/version_plans/4.9_MEDIA_OBSERVABILITY_NOTE.md`：4.9 媒体 / 队列 / Worker 可观测性说明
+- `docs/version_plans/4.7_REGRESSION_CHECKLIST.md`：4.7 回归清单
 - `docs/version_plans/elite_sync_4_3_版本开发计划书_2026_04_19.md`：4.3 版本开发计划书
 - `docs/version_plans/elite_sync_4_4_版本开发计划书_2026_04_19.md`：4.4 版本开发计划书
 - `docs/version_plans/4.4_EXECUTION_NOTE.md`：4.4 执行记录

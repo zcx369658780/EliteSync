@@ -14,6 +14,12 @@ use Illuminate\Validation\Rules\Password;
 
 class AuthController extends Controller
 {
+    private function normalizeBirthPlace(mixed $value): ?string
+    {
+        $candidate = trim((string) $value);
+        return $candidate !== '' ? $candidate : null;
+    }
+
     private function resolveBirthTime(User $user): ?string
     {
         $profile = UserAstroProfile::query()
@@ -21,6 +27,40 @@ class AuthController extends Controller
             ->first();
 
         return $profile?->birth_time;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function userPayload(User $user): array
+    {
+        $profile = UserAstroProfile::query()
+            ->where('user_id', (int) $user->id)
+            ->first();
+
+        $birthPlace = $this->normalizeBirthPlace($user->private_birth_place)
+            ?? $this->normalizeBirthPlace($profile?->birth_place);
+        $birthLat = $user->private_birth_lat ?? $profile?->birth_lat;
+        $birthLng = $user->private_birth_lng ?? $profile?->birth_lng;
+
+        return [
+            'id' => $user->id,
+            'phone' => $user->phone,
+            'name' => $user->name,
+            'birthday' => optional($user->birthday)->format('Y-m-d'),
+            'birth_time' => $this->resolveBirthTime($user),
+            'zodiac_animal' => $user->zodiac_animal,
+            'gender' => $user->gender,
+            'city' => $user->city,
+            'relationship_goal' => $user->relationship_goal,
+            'birth_place' => $birthPlace,
+            'private_birth_place' => $birthPlace,
+            'birth_lat' => $birthLat,
+            'private_birth_lat' => $birthLat,
+            'birth_lng' => $birthLng,
+            'private_birth_lng' => $birthLng,
+            'realname_verified' => (bool) $user->realname_verified,
+        ];
     }
 
     public function register(Request $request, ChineseZodiacService $zodiacService): JsonResponse
@@ -45,18 +85,7 @@ class AuthController extends Controller
         $token = $user->createToken('mobile-access')->plainTextToken;
 
         return response()->json([
-            'user' => [
-                'id' => $user->id,
-                'phone' => $user->phone,
-                'name' => $user->name,
-                'birthday' => optional($user->birthday)->format('Y-m-d'),
-                'birth_time' => $this->resolveBirthTime($user),
-                'zodiac_animal' => $user->zodiac_animal,
-                'gender' => $user->gender,
-                'city' => $user->city,
-                'relationship_goal' => $user->relationship_goal,
-                'realname_verified' => (bool) $user->realname_verified,
-            ],
+            'user' => $this->userPayload($user),
             'access_token' => $token,
             'token_type' => 'Bearer',
         ], 201);
@@ -82,18 +111,7 @@ class AuthController extends Controller
         $token = $user->createToken('mobile-access')->plainTextToken;
 
         return response()->json([
-            'user' => [
-                'id' => $user->id,
-                'phone' => $user->phone,
-                'name' => $user->name,
-                'birthday' => optional($user->birthday)->format('Y-m-d'),
-                'birth_time' => $this->resolveBirthTime($user),
-                'zodiac_animal' => $user->zodiac_animal,
-                'gender' => $user->gender,
-                'city' => $user->city,
-                'relationship_goal' => $user->relationship_goal,
-                'realname_verified' => (bool) $user->realname_verified,
-            ],
+            'user' => $this->userPayload($user),
             'access_token' => $token,
             'token_type' => 'Bearer',
         ]);
@@ -106,18 +124,7 @@ class AuthController extends Controller
         $token = $user->createToken('mobile-access')->plainTextToken;
 
         return response()->json([
-            'user' => [
-                'id' => $user->id,
-                'phone' => $user->phone,
-                'name' => $user->name,
-                'birthday' => optional($user->birthday)->format('Y-m-d'),
-                'birth_time' => $this->resolveBirthTime($user),
-                'zodiac_animal' => $user->zodiac_animal,
-                'gender' => $user->gender,
-                'city' => $user->city,
-                'relationship_goal' => $user->relationship_goal,
-                'realname_verified' => (bool) $user->realname_verified,
-            ],
+            'user' => $this->userPayload($user),
             'access_token' => $token,
             'token_type' => 'Bearer',
         ]);
