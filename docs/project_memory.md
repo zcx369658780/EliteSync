@@ -8,6 +8,19 @@
 - 3.x 收口与后续计划交接稿：`docs/HANDOFF_3X_CLOSEOUT_20260417.md`
 - 历史材料统一进入 `docs/archive/legacy_2026-04/`
 
+## 交接材料规范
+
+- 同一版本的交接材料必须收敛为一个主交接文件，优先命名为 `*_HANDOFF_MASTER.md`。
+- 其他验收、收尾、截图、门禁、执行、说明类文档可以继续保留为索引或引用，但对外上传 / 交接时默认只发送主交接文件。
+- 若主交接文件不存在，先补主交接文件，再逐步把零散交接内容迁入其中，避免单次上传超过数量上限。
+- 版本交接优先采用“1 个主文件 + 若干索引文件”的结构，不再默认拆成大量独立交接稿。
+
+## 会话压缩规范
+
+- 当前活动对话只保留一份短摘要文件，优先命名为 `CODEX_CURRENT_SESSION_SUMMARY.md`。
+- 详细历史内容应迁入 `docs/archive/legacy_YYYY_MM/` 下的历史记录文件，避免当前工作树与上下文继续膨胀。
+- 当前会话续接时，只需要读取短摘要文件 + 当前主交接文件 + 当前活跃版本索引即可，不再默认重读所有历史长文档。
+
 ## 当前基线
 
 - 对外发布版本：`0.04.04 / 40400`
@@ -81,9 +94,11 @@
 - `4.6` 继续严守“本地前端-only、云端后端-only”的边界；RTC / 通话状态机、写库、迁移、备份、恢复和排障都必须优先在云端完成。
 - `4.6F` 是 4.6 的 LiveKit 真语音接入子任务：保留现有 RTC 状态机，仅新增语音媒体层、join info 接口和 Flutter 连接壳层；不要把它扩成多人 / 直播 / 在线状态平台。当前真语音仍未闭合，通话可连但音频频谱仍在等待远端音轨，后续应把材料交给 GPT 顾问裁决，不要继续盲修主链。
 - `4.6P` 已下发为音频播放链定向修正版：只盯“听到声音”这一 blocker，不再继续扩 UI 或重写 RTC 主链；当前已完成真语音可听闭环，建议按 `pass with observations` 收口，并保留模拟器反向发言链的最终复测作为观察项。
+- `4.7` 已切换为测试前稳定化与质量门禁版：UI protected surfaces、rollback policy、baseline evidence 和 release gate 是硬门禁，任何构建 / 后端 / RTC / 媒体恢复都不得默认覆盖现代 UI。
 - 阿里云端已拉起 LiveKit 自托管容器并写入 `LIVEKIT_*` 环境变量，`GET /api/v1/rtc/calls/{callId}/livekit` 已能返回可用 join-info；后续若继续，只能基于顾问裁决做最小收口，不要回头重写 RTC 状态机。
 - RTC 断连收口采用“双方心跳 + 10 秒失联自动结束”机制：后端新增 `POST /api/v1/rtc/calls/{callId}/heartbeat`，并通过 `initiator_last_seen_at` / `peer_last_seen_at` 记录双方最后活跃时间；当 `connecting` / `in_call` 会话任一方失联超过 10 秒时，后端自动结束通话，避免 busy 残留。
 - 2026-04-21 当前快照：发布基线已统一到 `0.04.04 / 40400`，`4.4S` 媒体链稳定性修正版已归档，`4.5E` 通知中心 live walkthrough 也已完成；CI 的 `AppVersionApiTest` 失败根因是 `.env.example` 仍停留在旧版本默认值，已修正为 `0.04.04 / 40400`。根目录临时截图 / 视频样本只保留归档需要的正式证据，不再作为长期记忆输入。
+- 2026-04-26 4.7 UI 回退事故后，仓库新增 `docs/PROTECTED_UI_SURFACES.md` 与 `docs/runbooks/ROLLBACK_AND_RECOVERY_POLICY.md`：恢复动作默认只能做路径级、文件级、最小范围；现代 UI（主导航、首页、消息页、聊天页、通知中心、匹配页、资料页、问卷页、版本中心、starry background / modern card / spacing）视为 protected surface，任何触碰都必须先 checkpoint 再恢复。
 
 ## 星盘与资料链路
 

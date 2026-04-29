@@ -23,6 +23,22 @@ class NotificationCenterPage extends ConsumerStatefulWidget {
 
 class _NotificationCenterPageState
     extends ConsumerState<NotificationCenterPage> {
+  String _kindLabel(String kind) {
+    return switch (kind) {
+      'message' => '新消息',
+      'status_like' => '动态被喜欢',
+      'status_comment' => '动态有新回复',
+      'match_like' => '新提示',
+      'match_success' => '新匹配',
+      'rtc_call_invite' => '语音来电',
+      'rtc_call_accepted' => '通话已接听',
+      'rtc_call_rejected' => '通话已拒绝',
+      'rtc_call_missed' => '未接来电',
+      'rtc_call_ended' => '通话已结束',
+      _ => '新通知',
+    };
+  }
+
   @override
   void initState() {
     super.initState();
@@ -251,7 +267,7 @@ class _NotificationCenterPageState
                     SizedBox(height: t.spacing.xs),
                     Row(
                       children: [
-                        AppChoiceChip(label: item.kind, onTap: null),
+                        AppChoiceChip(label: _kindLabel(item.kind), onTap: null),
                         SizedBox(width: t.spacing.xs),
                         Text(
                           _formatTime(item.createdAt),

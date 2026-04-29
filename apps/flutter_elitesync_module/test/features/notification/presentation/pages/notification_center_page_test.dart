@@ -96,7 +96,8 @@ void main() {
     expect(find.textContaining('未读 1 条'), findsOneWidget);
     expect(find.text('test1 发来一条消息'), findsOneWidget);
     expect(find.text('图片消息'), findsOneWidget);
-    expect(find.text('message'), findsOneWidget);
+    expect(find.text('新消息'), findsWidgets);
+    expect(find.text('message'), findsNothing);
     expect(
       telemetry.calls.any(
         (row) =>

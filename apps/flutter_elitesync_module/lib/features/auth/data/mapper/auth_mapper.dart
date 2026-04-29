@@ -5,6 +5,15 @@ import 'package:flutter_elitesync_module/features/auth/domain/entities/auth_user
 class AuthMapper {
   const AuthMapper();
 
+  double? _asDouble(dynamic value) {
+    if (value is num) return value.toDouble();
+    if (value is String) {
+      final parsed = double.tryParse(value.trim());
+      if (parsed != null) return parsed;
+    }
+    return null;
+  }
+
   AuthSession toSession(LoginResponseDto dto) {
     final userJson = dto.user ?? const <String, dynamic>{};
 
@@ -21,8 +30,8 @@ class AuthMapper {
           (userJson['relationship_goal'] as String?) ??
           (userJson['target'] as String?),
       birthPlace: (userJson['birth_place'] as String?) ?? (userJson['private_birth_place'] as String?),
-      birthLat: (userJson['birth_lat'] as num?)?.toDouble() ?? (userJson['private_birth_lat'] as num?)?.toDouble(),
-      birthLng: (userJson['birth_lng'] as num?)?.toDouble() ?? (userJson['private_birth_lng'] as num?)?.toDouble(),
+      birthLat: _asDouble(userJson['birth_lat']) ?? _asDouble(userJson['private_birth_lat']),
+      birthLng: _asDouble(userJson['birth_lng']) ?? _asDouble(userJson['private_birth_lng']),
       avatarUrl: userJson['avatar_url'] as String?,
       verified:
           (userJson['verified'] as bool?) ??

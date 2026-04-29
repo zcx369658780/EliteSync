@@ -33,6 +33,15 @@ class UserSummary {
   final String moderationStatus;
   final String? moderationNote;
 
+  static double? _asDouble(dynamic value) {
+    if (value is num) return value.toDouble();
+    if (value is String) {
+      final parsed = double.tryParse(value.trim());
+      if (parsed != null) return parsed;
+    }
+    return null;
+  }
+
   factory UserSummary.fromJson(Map<String, dynamic> json) {
     return UserSummary(
       id: (json['id'] as num?)?.toInt() ?? 0,
@@ -46,8 +55,8 @@ class UserSummary {
           (json['relationship_goal'] as String?) ??
           (json['target'] as String?),
       birthPlace: (json['birth_place'] as String?) ?? (json['private_birth_place'] as String?),
-      birthLat: (json['birth_lat'] as num?)?.toDouble() ?? (json['private_birth_lat'] as num?)?.toDouble(),
-      birthLng: (json['birth_lng'] as num?)?.toDouble() ?? (json['private_birth_lng'] as num?)?.toDouble(),
+      birthLat: _asDouble(json['birth_lat']) ?? _asDouble(json['private_birth_lat']),
+      birthLng: _asDouble(json['birth_lng']) ?? _asDouble(json['private_birth_lng']),
       avatarUrl: json['avatar_url'] as String?,
       verified: (json['verified'] as bool?) ?? (json['realname_verified'] as bool?) ?? false,
       moderationStatus: (json['moderation_status'] ?? 'normal').toString(),
