@@ -181,6 +181,15 @@ class _StatusSquarePageState extends ConsumerState<StatusSquarePage> {
     );
   }
 
+  void _savePostForLater(StatusPostEntity post) {
+    AppFeedback.showSuccess(context, '已作为稍后再聊提示保留在本页，不写入服务端队列');
+  }
+
+  Future<void> _openLowPressureChatPath(StatusPostEntity post) async {
+    AppFeedback.showInfo(context, '先看看公开资料；只有匹配关系成立后才会进入真实聊天');
+    await _openAuthor(post);
+  }
+
   Future<void> _pickAndUploadCoverImage() async {
     if (_submitting || _coverStage == _CoverUploadStage.uploading) return;
     ref
@@ -301,7 +310,7 @@ class _StatusSquarePageState extends ConsumerState<StatusSquarePage> {
                 child: Image.file(
                   File(_coverImagePath!),
                   fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(
+                  errorBuilder: (context, error, stackTrace) => Container(
                     color: t.surface,
                     alignment: Alignment.center,
                     child: const Text('图片预览失败'),
@@ -534,6 +543,11 @@ class _StatusSquarePageState extends ConsumerState<StatusSquarePage> {
                           child: StatusPostCard(
                             post: post,
                             onTapAuthor: () => _openAuthor(post),
+                            onContinueUnderstand: () => _openAuthor(post),
+                            onViewProfile: () => _openAuthor(post),
+                            onSaveForLater: () => _savePostForLater(post),
+                            onLowPressureChat: () =>
+                                _openLowPressureChatPath(post),
                             onLikeToggle: () => _toggleLike(post),
                             onReport: post.canDelete
                                 ? null

@@ -7,6 +7,7 @@ import 'package:flutter_elitesync_module/core/network/network_result.dart';
 import 'package:flutter_elitesync_module/core/telemetry/app_telemetry_service.dart';
 import 'package:flutter_elitesync_module/core/telemetry/frontend_telemetry.dart';
 import 'package:flutter_elitesync_module/design_system/theme/app_theme.dart';
+import 'package:flutter_elitesync_module/features/notification/data/datasource/notification_remote_data_source.dart';
 import 'package:flutter_elitesync_module/features/notification/domain/entities/notification_item_entity.dart';
 import 'package:flutter_elitesync_module/features/notification/presentation/pages/notification_center_page.dart';
 import 'package:flutter_elitesync_module/features/notification/presentation/providers/notification_provider.dart';
@@ -17,7 +18,7 @@ class FakeAppTelemetryService extends AppTelemetryService {
         apiClient: ApiClient(
           dio: Dio(BaseOptions(baseUrl: 'http://127.0.0.1')),
         ),
-        appVersionProvider: () async => '0.04.06',
+        appVersionProvider: () async => '0.04.09',
       );
 
   final List<Map<String, Object?>> calls = <Map<String, Object?>>[];
@@ -33,6 +34,23 @@ class FakeAppTelemetryService extends AppTelemetryService {
   }
 }
 
+class FakeNotificationRemoteDataSource extends NotificationRemoteDataSource {
+  FakeNotificationRemoteDataSource()
+    : super(
+        apiClient: ApiClient(
+          dio: Dio(BaseOptions(baseUrl: 'http://127.0.0.1')),
+        ),
+        useMock: false,
+      );
+
+  final List<int> markedReadIds = <int>[];
+
+  @override
+  Future<void> markRead(int notificationId) async {
+    markedReadIds.add(notificationId);
+  }
+}
+
 Widget _wrap(Widget child, {List<dynamic> overrides = const []}) {
   return ProviderScope(
     overrides: overrides.cast(),
@@ -40,9 +58,7 @@ Widget _wrap(Widget child, {List<dynamic> overrides = const []}) {
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       themeMode: ThemeMode.light,
-      home: Material(
-        child: child,
-      ),
+      home: Scaffold(body: Material(child: child)),
     ),
   );
 }
@@ -69,10 +85,7 @@ void main() {
                 body: '图片消息',
                 payload: const {
                   'route_name': 'chat_room',
-                  'route_args': {
-                    'conversation_id': 'chat-1',
-                    'title': 'test1',
-                  },
+                  'route_args': {'conversation_id': 'chat-1', 'title': 'test1'},
                 },
                 routeName: 'chat_room',
                 routeArgs: const {
@@ -97,6 +110,11 @@ void main() {
     expect(find.text('test1 发来一条消息'), findsOneWidget);
     expect(find.text('图片消息'), findsOneWidget);
     expect(find.text('新消息'), findsWidgets);
+    expect(find.text('消息回流'), findsOneWidget);
+    expect(find.text('继续回复'), findsOneWidget);
+    expect(find.text('稍后处理'), findsOneWidget);
+    expect(find.text('标记已读'), findsOneWidget);
+    expect(find.text('将回到对应聊天页。'), findsOneWidget);
     expect(find.text('message'), findsNothing);
     expect(
       telemetry.calls.any(
@@ -108,4 +126,194 @@ void main() {
       isTrue,
     );
   });
+
+  testWidgets(
+    'primary action marks unread notification when route is missing',
+    (tester) async {
+      final telemetry = FakeAppTelemetryService();
+      final notifications = FakeNotificationRemoteDataSource();
+
+      await tester.pumpWidget(
+        _wrap(
+          const NotificationCenterPage(),
+          overrides: [
+            frontendTelemetryProvider.overrideWithValue(
+              FrontendTelemetry(telemetry: telemetry),
+            ),
+            notificationRemoteDataSourceProvider.overrideWithValue(
+              notifications,
+            ),
+            notificationListProvider.overrideWith(
+              (ref) async => [
+                NotificationItemEntity(
+                  id: 2,
+                  kind: 'system',
+                  title: '资料完整度提醒',
+                  body: '可以稍后处理',
+                  payload: const {},
+                  routeName: '',
+                  routeArgs: const {},
+                  isRead: false,
+                  createdAt: '2026-04-21T12:00:00Z',
+                ),
+              ],
+            ),
+            notificationUnreadCountProvider.overrideWith((ref) async => 1),
+          ],
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      expect(find.text('低噪声提醒'), findsOneWidget);
+      expect(find.text('仅标记已读'), findsOneWidget);
+
+      await tester.tap(find.widgetWithText(OutlinedButton, '仅标记已读'));
+      await tester.pumpAndSettle();
+
+      expect(notifications.markedReadIds, <int>[2]);
+    },
+  );
+
+  testWidgets('known kind with missing route still uses mark read action', (
+    tester,
+  ) async {
+    final telemetry = FakeAppTelemetryService();
+    final notifications = FakeNotificationRemoteDataSource();
+
+    await tester.pumpWidget(
+      _wrap(
+        const NotificationCenterPage(),
+        overrides: [
+          frontendTelemetryProvider.overrideWithValue(
+            FrontendTelemetry(telemetry: telemetry),
+          ),
+          notificationRemoteDataSourceProvider.overrideWithValue(notifications),
+          notificationListProvider.overrideWith(
+            (ref) async => [
+              NotificationItemEntity(
+                id: 4,
+                kind: 'message',
+                title: '消息提醒缺少跳转目标',
+                body: '需要保留为低噪声处理',
+                payload: const {},
+                routeName: '',
+                routeArgs: const {},
+                isRead: false,
+                createdAt: '2026-04-21T12:00:00Z',
+              ),
+            ],
+          ),
+          notificationUnreadCountProvider.overrideWith((ref) async => 1),
+        ],
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    expect(find.text('消息回流'), findsOneWidget);
+    expect(find.text('仅标记已读'), findsOneWidget);
+    expect(find.text('继续回复'), findsNothing);
+
+    await tester.tap(find.widgetWithText(OutlinedButton, '仅标记已读'));
+    await tester.pumpAndSettle();
+
+    expect(notifications.markedReadIds, <int>[4]);
+  });
+
+  testWidgets('unsupported route does not mark unread notification as read', (
+    tester,
+  ) async {
+    final telemetry = FakeAppTelemetryService();
+    final notifications = FakeNotificationRemoteDataSource();
+
+    await tester.pumpWidget(
+      _wrap(
+        const NotificationCenterPage(),
+        overrides: [
+          frontendTelemetryProvider.overrideWithValue(
+            FrontendTelemetry(telemetry: telemetry),
+          ),
+          notificationRemoteDataSourceProvider.overrideWithValue(notifications),
+          notificationListProvider.overrideWith(
+            (ref) async => [
+              NotificationItemEntity(
+                id: 3,
+                kind: 'system',
+                title: '未知跳转提醒',
+                body: '暂不支持打开',
+                payload: const {
+                  'route_name': 'legacy_unknown',
+                  'route_args': <String, Object?>{},
+                },
+                routeName: 'legacy_unknown',
+                routeArgs: const {},
+                isRead: false,
+                createdAt: '2026-04-21T12:00:00Z',
+              ),
+            ],
+          ),
+          notificationUnreadCountProvider.overrideWith((ref) async => 1),
+        ],
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    expect(find.text('暂不支持该跳转目标。'), findsOneWidget);
+    expect(find.text('打开'), findsOneWidget);
+
+    await tester.tap(find.widgetWithText(OutlinedButton, '打开'));
+    await tester.pumpAndSettle();
+
+    expect(notifications.markedReadIds, isEmpty);
+  });
+
+  testWidgets(
+    'card tap on unsupported route does not mark notification as read',
+    (tester) async {
+      final telemetry = FakeAppTelemetryService();
+      final notifications = FakeNotificationRemoteDataSource();
+
+      await tester.pumpWidget(
+        _wrap(
+          const NotificationCenterPage(),
+          overrides: [
+            frontendTelemetryProvider.overrideWithValue(
+              FrontendTelemetry(telemetry: telemetry),
+            ),
+            notificationRemoteDataSourceProvider.overrideWithValue(
+              notifications,
+            ),
+            notificationListProvider.overrideWith(
+              (ref) async => [
+                NotificationItemEntity(
+                  id: 5,
+                  kind: 'system',
+                  title: '未知跳转卡片',
+                  body: '点击卡片也不应标记已读',
+                  payload: const {
+                    'route_name': 'legacy_unknown',
+                    'route_args': <String, Object?>{},
+                  },
+                  routeName: 'legacy_unknown',
+                  routeArgs: const {},
+                  isRead: false,
+                  createdAt: '2026-04-21T12:00:00Z',
+                ),
+              ],
+            ),
+            notificationUnreadCountProvider.overrideWith((ref) async => 1),
+          ],
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('未知跳转卡片'));
+      await tester.pumpAndSettle();
+
+      expect(notifications.markedReadIds, isEmpty);
+    },
+  );
 }

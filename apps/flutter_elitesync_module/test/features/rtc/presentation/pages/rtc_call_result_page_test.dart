@@ -17,12 +17,12 @@ import 'package:flutter_elitesync_module/shared/providers/app_providers.dart';
 
 class FakeAppTelemetryService extends AppTelemetryService {
   FakeAppTelemetryService()
-      : super(
-          apiClient: ApiClient(
-            dio: Dio(BaseOptions(baseUrl: 'http://127.0.0.1')),
-          ),
-          appVersionProvider: () async => '0.04.06',
-        );
+    : super(
+        apiClient: ApiClient(
+          dio: Dio(BaseOptions(baseUrl: 'http://127.0.0.1')),
+        ),
+        appVersionProvider: () async => '0.04.09',
+      );
 
   final List<Map<String, Object?>> calls = <Map<String, Object?>>[];
 
@@ -39,13 +39,13 @@ class FakeAppTelemetryService extends AppTelemetryService {
 
 class FakeRtcRemoteDataSource extends RtcRemoteDataSource {
   FakeRtcRemoteDataSource(this._session)
-      : super(
-          apiClient: ApiClient(
-            dio: Dio(BaseOptions(baseUrl: 'http://127.0.0.1')),
-          ),
-        );
+    : super(
+        apiClient: ApiClient(
+          dio: Dio(BaseOptions(baseUrl: 'http://127.0.0.1')),
+        ),
+      );
 
-  RtcSessionEntity _session;
+  final RtcSessionEntity _session;
 
   @override
   Future<RtcSessionEntity> fetchCall(int callId) async => _session;
@@ -137,10 +137,7 @@ void main() {
     final rtc = FakeRtcRemoteDataSource(session);
 
     await tester.pumpWidget(
-      _wrap(
-        const RtcCallResultPage(callId: 3, title: '通话结果'),
-        rtc: rtc,
-      ),
+      _wrap(const RtcCallResultPage(callId: 3, title: '通话结果'), rtc: rtc),
     );
 
     await tester.pumpAndSettle();
@@ -148,6 +145,19 @@ void main() {
     expect(find.text('通话结果'), findsWidgets);
     expect(find.text('Callee'), findsOneWidget);
     expect(find.text('已拒绝'), findsOneWidget);
+    expect(find.text('未接通后的回聊建议'), findsOneWidget);
+    expect(find.textContaining('不把拒接解释成负面信号'), findsOneWidget);
+    expect(find.textContaining('刚刚语音可能不太方便'), findsOneWidget);
+    expect(find.text('回到文字'), findsOneWidget);
+    expect(find.text('低压接续'), findsOneWidget);
+    expect(find.text('稍后再聊'), findsOneWidget);
+
+    await tester.scrollUntilVisible(
+      find.text('返回上一页'),
+      240,
+      scrollable: find.byType(Scrollable),
+    );
+
     expect(find.text('返回上一页'), findsWidgets);
   });
 }

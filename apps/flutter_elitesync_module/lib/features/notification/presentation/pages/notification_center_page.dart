@@ -23,6 +23,20 @@ class NotificationCenterPage extends ConsumerStatefulWidget {
 
 class _NotificationCenterPageState
     extends ConsumerState<NotificationCenterPage> {
+  String _categoryLabel(String kind) {
+    return switch (kind) {
+      'message' => '消息回流',
+      'status_like' || 'status_comment' => '动态互动',
+      'match_like' || 'match_success' => '匹配推进',
+      'rtc_call_invite' ||
+      'rtc_call_accepted' ||
+      'rtc_call_rejected' ||
+      'rtc_call_missed' ||
+      'rtc_call_ended' => '语音邀请',
+      _ => '低噪声提醒',
+    };
+  }
+
   String _kindLabel(String kind) {
     return switch (kind) {
       'message' => '新消息',
@@ -36,6 +50,55 @@ class _NotificationCenterPageState
       'rtc_call_missed' => '未接来电',
       'rtc_call_ended' => '通话已结束',
       _ => '新通知',
+    };
+  }
+
+  String _actionLabel(NotificationItemEntity item) {
+    if (item.routeName.trim().isEmpty) return '仅标记已读';
+    return switch (item.kind) {
+      'message' => '继续回复',
+      'status_like' || 'status_comment' => '去看看',
+      'match_like' || 'match_success' => '查看匹配',
+      'rtc_call_invite' => '处理语音',
+      'rtc_call_missed' || 'rtc_call_rejected' || 'rtc_call_ended' => '查看结果',
+      _ => '打开',
+    };
+  }
+
+  int _intRouteArg(String key, NotificationItemEntity item) {
+    final value = item.routeArgs[key];
+    if (value is num) return value.toInt();
+    return int.tryParse(value?.toString() ?? '') ?? 0;
+  }
+
+  String _routeHint(NotificationItemEntity item) {
+    final routeName = item.routeName.trim();
+    if (routeName.isEmpty) return '无跳转目标，可先标记已读。';
+    return switch (routeName) {
+      'chat_room' => '将回到对应聊天页。',
+      'status_author' => '将回到动态作者公开页。',
+      'match_detail' || 'match_result' || 'match_intention' => '将回到匹配推进页。',
+      'questionnaire_history' => '将回到问卷历史。',
+      'content_detail' => '将回到内容详情。',
+      'rtc_call' => '将回到语音通话相关页面。',
+      'settings' => '将回到设置页。',
+      _ => '暂不支持该跳转目标。',
+    };
+  }
+
+  IconData _iconOf(String kind) {
+    return switch (kind) {
+      'message' => Icons.chat_bubble_outline,
+      'status_like' => Icons.favorite_border,
+      'status_comment' => Icons.mode_comment_outlined,
+      'match_like' => Icons.waving_hand_outlined,
+      'match_success' => Icons.favorite_rounded,
+      'rtc_call_invite' => Icons.call_outlined,
+      'rtc_call_accepted' => Icons.call,
+      'rtc_call_rejected' => Icons.call_end,
+      'rtc_call_missed' => Icons.phone_missed_outlined,
+      'rtc_call_ended' => Icons.call_end_outlined,
+      _ => Icons.notifications_outlined,
     };
   }
 
@@ -81,53 +144,62 @@ class _NotificationCenterPageState
     ref.invalidate(notificationUnreadCountProvider);
   }
 
-  void _openNotification(NotificationItemEntity item) {
+  bool _openNotification(NotificationItemEntity item) {
     final routeName = item.routeName.trim();
-    if (routeName.isEmpty) return;
+    if (routeName.isEmpty) {
+      AppFeedback.showInfo(context, '这条通知没有可打开页面，可先标记已读');
+      return false;
+    }
     if (routeName == 'chat_room') {
       final conversationId = (item.routeArgs['conversation_id'] ?? '')
           .toString();
       final title = (item.routeArgs['title'] ?? '聊天').toString();
       if (conversationId.isNotEmpty) {
         context.push('${AppRouteNames.chatRoom}/$conversationId', extra: title);
+        return true;
       }
-      return;
+      AppFeedback.showInfo(context, '聊天目标缺失，暂无法打开');
+      return false;
     }
     if (routeName == 'status_author') {
-      final userId = (item.routeArgs['user_id'] as num?)?.toInt() ?? 0;
+      final userId = _intRouteArg('user_id', item);
       final name = (item.routeArgs['name'] ?? '用户资料').toString();
       if (userId > 0) {
         context.push(
           '${AppRouteNames.statusAuthor}/$userId?name=${Uri.encodeComponent(name)}',
         );
+        return true;
       }
-      return;
+      AppFeedback.showInfo(context, '动态作者信息缺失，暂无法打开');
+      return false;
     }
     if (routeName == 'match_detail') {
       context.go(AppRouteNames.matchDetail);
-      return;
+      return true;
     }
     if (routeName == 'match_result') {
       context.go(AppRouteNames.matchResult);
-      return;
+      return true;
     }
     if (routeName == 'match_intention') {
       context.go(AppRouteNames.matchIntention);
-      return;
+      return true;
     }
     if (routeName == 'questionnaire_history') {
       context.go(AppRouteNames.questionnaireHistory);
-      return;
+      return true;
     }
     if (routeName == 'content_detail') {
       final contentId = (item.routeArgs['content_id'] ?? '').toString();
       if (contentId.isNotEmpty) {
         context.push('${AppRouteNames.contentDetail}/$contentId');
+        return true;
       }
-      return;
+      AppFeedback.showInfo(context, '内容目标缺失，暂无法打开');
+      return false;
     }
     if (routeName == 'rtc_call') {
-      final callId = (item.routeArgs['call_id'] as num?)?.toInt() ?? 0;
+      final callId = _intRouteArg('call_id', item);
       final title = (item.routeArgs['title'] ?? item.title).toString();
       if (callId > 0) {
         switch (item.kind) {
@@ -136,7 +208,7 @@ class _NotificationCenterPageState
               '${AppRouteNames.rtcIncomingCall}/$callId',
               extra: title,
             );
-            return;
+            return true;
           case 'rtc_call_rejected':
           case 'rtc_call_missed':
           case 'rtc_call_ended':
@@ -144,19 +216,45 @@ class _NotificationCenterPageState
               '${AppRouteNames.rtcCallResult}/$callId',
               extra: title,
             );
-            return;
+            return true;
           default:
             context.push('${AppRouteNames.rtcCall}/$callId', extra: title);
-            return;
+            return true;
         }
       }
-      return;
+      AppFeedback.showInfo(context, '通话目标缺失，暂无法打开');
+      return false;
     }
     if (routeName == 'settings') {
       context.go(AppRouteNames.settings);
-      return;
+      return true;
     }
     AppFeedback.showInfo(context, '暂无法打开该通知');
+    return false;
+  }
+
+  Future<void> _openAndMarkRead(NotificationItemEntity item) async {
+    final opened = _openNotification(item);
+    if (!opened || !mounted) return;
+    await _markRead(item);
+  }
+
+  Future<void> _markReadOnly(NotificationItemEntity item) async {
+    await _markRead(item);
+    if (!mounted) return;
+    AppFeedback.showInfo(context, '已标记为已读');
+  }
+
+  Future<void> _handlePrimaryAction(NotificationItemEntity item) async {
+    if (item.routeName.trim().isEmpty) {
+      await _markReadOnly(item);
+      return;
+    }
+    await _openAndMarkRead(item);
+  }
+
+  void _handleLater(NotificationItemEntity item) {
+    AppFeedback.showInfo(context, '已保留在通知中心，稍后可继续处理');
   }
 
   String _formatTime(String raw) {
@@ -175,11 +273,7 @@ class _NotificationCenterPageState
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: () async {
-          await _markRead(item);
-          if (!mounted) return;
-          _openNotification(item);
-        },
+        onTap: () => _openAndMarkRead(item),
         child: Container(
           decoration: BoxDecoration(
             color: t.browseSurface,
@@ -204,17 +298,7 @@ class _NotificationCenterPageState
                   borderRadius: BorderRadius.circular(t.radius.md),
                 ),
                 child: Icon(
-                  switch (item.kind) {
-                    'message' => Icons.chat_bubble_outline,
-                    'status_like' => Icons.favorite_border,
-                    'match_like' => Icons.waving_hand_outlined,
-                    'match_success' => Icons.favorite_rounded,
-                    'rtc_call_invite' => Icons.call_outlined,
-                    'rtc_call_accepted' => Icons.call,
-                    'rtc_call_rejected' => Icons.call_end,
-                    'rtc_call_missed' => Icons.phone_missed_outlined,
-                    _ => Icons.notifications_outlined,
-                  },
+                  _iconOf(item.kind),
                   size: 18,
                   color: item.isRead ? t.textSecondary : t.brandPrimary,
                 ),
@@ -267,13 +351,53 @@ class _NotificationCenterPageState
                     SizedBox(height: t.spacing.xs),
                     Row(
                       children: [
-                        AppChoiceChip(label: _kindLabel(item.kind), onTap: null),
+                        AppChoiceChip(
+                          label: _categoryLabel(item.kind),
+                          selected: !item.isRead,
+                          onTap: null,
+                        ),
+                        SizedBox(width: t.spacing.xs),
+                        AppChoiceChip(
+                          label: _kindLabel(item.kind),
+                          onTap: null,
+                        ),
                         SizedBox(width: t.spacing.xs),
                         Text(
                           _formatTime(item.createdAt),
                           style: Theme.of(context).textTheme.bodySmall
                               ?.copyWith(color: t.textSecondary),
                         ),
+                      ],
+                    ),
+                    SizedBox(height: t.spacing.xs),
+                    Text(
+                      _routeHint(item),
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: t.textSecondary,
+                        height: 1.3,
+                      ),
+                    ),
+                    SizedBox(height: t.spacing.xs),
+                    Wrap(
+                      spacing: t.spacing.xs,
+                      runSpacing: t.spacing.xs,
+                      children: [
+                        OutlinedButton.icon(
+                          onPressed: () => _handlePrimaryAction(item),
+                          icon: Icon(_iconOf(item.kind)),
+                          label: Text(_actionLabel(item)),
+                        ),
+                        OutlinedButton.icon(
+                          onPressed: () => _handleLater(item),
+                          icon: const Icon(Icons.schedule_outlined),
+                          label: const Text('稍后处理'),
+                        ),
+                        if (!item.isRead)
+                          OutlinedButton.icon(
+                            onPressed: () => _markReadOnly(item),
+                            icon: const Icon(Icons.done_rounded),
+                            label: const Text('标记已读'),
+                          ),
                       ],
                     ),
                   ],

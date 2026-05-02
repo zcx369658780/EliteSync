@@ -15,6 +15,10 @@ class StatusPostCard extends ConsumerWidget {
     this.onLikeToggle,
     this.onReport,
     this.onDelete,
+    this.onContinueUnderstand,
+    this.onViewProfile,
+    this.onSaveForLater,
+    this.onLowPressureChat,
     this.compact = false,
   });
 
@@ -23,6 +27,10 @@ class StatusPostCard extends ConsumerWidget {
   final VoidCallback? onLikeToggle;
   final VoidCallback? onReport;
   final VoidCallback? onDelete;
+  final VoidCallback? onContinueUnderstand;
+  final VoidCallback? onViewProfile;
+  final VoidCallback? onSaveForLater;
+  final VoidCallback? onLowPressureChat;
   final bool compact;
 
   @override
@@ -33,6 +41,11 @@ class StatusPostCard extends ConsumerWidget {
     ).formatShortDate(post.createdAt);
     final showActions =
         onLikeToggle != null || onReport != null || onDelete != null;
+    final showReturnflowActions =
+        onContinueUnderstand != null ||
+        onViewProfile != null ||
+        onSaveForLater != null ||
+        onLowPressureChat != null;
     final apiBaseUrl = ref.watch(appEnvProvider).apiBaseUrl;
     final coverMediaUrl = post.hasMedia
         ? resolveMediaUrl(post.coverMediaUrl!, apiBaseUrl: apiBaseUrl)
@@ -111,6 +124,69 @@ class StatusPostCard extends ConsumerWidget {
                 ).textTheme.labelSmall?.copyWith(color: t.textSecondary),
               ),
             ],
+            if (showReturnflowActions) ...[
+              SizedBox(height: t.spacing.sm),
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.all(t.spacing.sm),
+                decoration: BoxDecoration(
+                  color: t.secondarySurface.withValues(alpha: 0.54),
+                  borderRadius: BorderRadius.circular(t.radius.md),
+                  border: Border.all(color: t.overlay.withValues(alpha: 0.42)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '低压关系动作',
+                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        color: t.textPrimary,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '先了解、再决定是否聊天；这些动作不会自动发送消息。',
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: t.textSecondary,
+                        height: 1.35,
+                      ),
+                    ),
+                    SizedBox(height: t.spacing.xs),
+                    Wrap(
+                      spacing: t.spacing.xs,
+                      runSpacing: t.spacing.xs,
+                      children: [
+                        if (onContinueUnderstand != null)
+                          OutlinedButton.icon(
+                            onPressed: onContinueUnderstand,
+                            icon: const Icon(Icons.explore_outlined),
+                            label: const Text('继续了解'),
+                          ),
+                        if (onViewProfile != null)
+                          OutlinedButton.icon(
+                            onPressed: onViewProfile,
+                            icon: const Icon(Icons.person_search_outlined),
+                            label: const Text('看看资料'),
+                          ),
+                        if (onSaveForLater != null)
+                          OutlinedButton.icon(
+                            onPressed: onSaveForLater,
+                            icon: const Icon(Icons.bookmark_border_rounded),
+                            label: const Text('稍后再聊'),
+                          ),
+                        if (onLowPressureChat != null)
+                          OutlinedButton.icon(
+                            onPressed: onLowPressureChat,
+                            icon: const Icon(Icons.chat_bubble_outline_rounded),
+                            label: const Text('低压私聊'),
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
             if (showActions) ...[
               SizedBox(height: t.spacing.sm),
               Wrap(
@@ -166,7 +242,7 @@ class _StatusPostImage extends StatelessWidget {
           child: Image.network(
             url,
             fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) => Center(
+            errorBuilder: (context, error, stackTrace) => Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [

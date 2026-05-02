@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:flutter_elitesync_module/app/router/app_route_names.dart';
+import 'package:flutter_elitesync_module/core/storage/cache_keys.dart';
+import 'package:flutter_elitesync_module/design_system/components/buttons/app_secondary_button.dart';
+import 'package:flutter_elitesync_module/design_system/components/feedback/app_feedback.dart';
 import 'package:flutter_elitesync_module/design_system/components/bars/app_top_bar.dart';
 import 'package:flutter_elitesync_module/design_system/components/layout/app_scaffold.dart';
 import 'package:flutter_elitesync_module/design_system/components/layout/page_title_rail.dart';
 import 'package:flutter_elitesync_module/design_system/components/layout/section_reveal.dart';
 import 'package:flutter_elitesync_module/design_system/components/states/app_error_state.dart';
 import 'package:flutter_elitesync_module/design_system/components/states/app_loading_skeleton.dart';
+import 'package:flutter_elitesync_module/design_system/components/tags/app_choice_chip.dart';
 import 'package:flutter_elitesync_module/design_system/theme/app_theme_extensions.dart';
+import 'package:flutter_elitesync_module/features/match/domain/entities/match_detail_entity.dart';
 import 'package:flutter_elitesync_module/features/match/presentation/providers/match_providers.dart';
 import 'package:flutter_elitesync_module/features/match/presentation/widgets/match_glossary_card.dart';
 import 'package:flutter_elitesync_module/features/match/presentation/widgets/match_evidence_reference_card.dart';
@@ -15,6 +22,18 @@ import 'package:flutter_elitesync_module/features/match/presentation/widgets/mat
 import 'package:flutter_elitesync_module/features/match/presentation/widgets/match_reason_card.dart';
 import 'package:flutter_elitesync_module/features/match/presentation/widgets/match_weight_breakdown.dart';
 import 'package:flutter_elitesync_module/shared/providers/app_providers.dart';
+
+class _DetailChatSuggestion {
+  const _DetailChatSuggestion({
+    required this.label,
+    required this.prompt,
+    required this.source,
+  });
+
+  final String label;
+  final String prompt;
+  final String source;
+}
 
 class MatchDetailPage extends ConsumerStatefulWidget {
   const MatchDetailPage({super.key});
@@ -31,6 +50,196 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
   bool _showDevMetrics = false;
   final Map<String, GlobalKey> _moduleAnchorKeys = <String, GlobalKey>{};
   String _focusedModuleLabel = '';
+
+  List<_DetailChatSuggestion> _detailChatSuggestions(MatchDetailEntity data) {
+    final suggestions = <_DetailChatSuggestion>[];
+    final firstReason = data.reasons
+        .map((e) => e.trim())
+        .firstWhere((e) => e.isNotEmpty, orElse: () => '');
+    if (firstReason.isNotEmpty) {
+      suggestions.add(
+        _DetailChatSuggestion(
+          label: '带着解释去聊',
+          source: '完整匹配解释',
+          prompt: '我刚看完我们的匹配解释，里面有一点我挺想继续聊：$firstReason 你怎么看？',
+        ),
+      );
+    }
+
+    final firstModule = data.moduleExplanations
+        .map((e) => (e['label'] ?? '').toString().trim())
+        .firstWhere((e) => e.isNotEmpty, orElse: () => '');
+    if (firstModule.isNotEmpty) {
+      suggestions.add(
+        _DetailChatSuggestion(
+          label: '从共同点追问',
+          source: '模块解释 / 共同点',
+          prompt: '解释里提到「$firstModule」，我想听听你自己的感受：这个点在你的关系里重要吗？',
+        ),
+      );
+    }
+
+    final firstAdvice = data.explanationBlocks
+        .expand((e) => (e['advice'] as List<dynamic>? ?? const []))
+        .map((e) => e.toString().trim())
+        .firstWhere((e) => e.isNotEmpty, orElse: () => '');
+    if (firstAdvice.isNotEmpty) {
+      suggestions.add(
+        _DetailChatSuggestion(
+          label: '把建议变成问题',
+          source: '行动建议',
+          prompt: '解释里有个建议我觉得可以慢慢试：$firstAdvice 你会希望我们先从哪一步开始？',
+        ),
+      );
+    }
+
+    suggestions.addAll(const [
+      _DetailChatSuggestion(
+        label: '低压开场',
+        source: '关系节奏',
+        prompt: '我不想把聊天推进得太快，先从一个轻松的问题开始：你最近最放松的一刻是什么？',
+      ),
+      _DetailChatSuggestion(
+        label: '稍后再聊',
+        source: '稍后再回队列',
+        prompt: '我想晚一点再认真回你。先留一个问题：你觉得两个人慢慢熟起来，最重要的是什么？',
+      ),
+    ]);
+
+    final unique = <String, _DetailChatSuggestion>{};
+    for (final item in suggestions) {
+      unique[item.prompt] = item;
+    }
+    return unique.values.take(3).toList();
+  }
+
+  Future<void> _openChatWithDetailDraft(
+    BuildContext context,
+    _DetailChatSuggestion suggestion,
+  ) async {
+    try {
+      final result = await ref.read(matchResultProvider.future);
+      final data = result.data;
+      final peerId = data?.partnerId;
+      if (peerId == null || peerId <= 0) {
+        if (!context.mounted) return;
+        AppFeedback.showError(context, '当前匹配对象无效，暂时无法打开聊天');
+        return;
+      }
+      final title = (data?.partnerNickname ?? '').trim().isNotEmpty
+          ? data!.partnerNickname!.trim()
+          : '聊天';
+      final storage = ref.read(localStorageProvider);
+      final draftKey = '${CacheKeys.chatDraftPrefix}$peerId';
+      final existingDraft = (await storage.getString(draftKey))?.trim() ?? '';
+      var draftToWrite = suggestion.prompt;
+      if (existingDraft.isNotEmpty && existingDraft != suggestion.prompt) {
+        if (!context.mounted) return;
+        final choice = await showDialog<String>(
+          context: context,
+          builder: (dialogContext) => AlertDialog(
+            title: const Text('已有未发送草稿'),
+            content: const Text('要保留现有内容并追加这句建议，还是替换成新的建议？'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop('cancel'),
+                child: const Text('取消'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop('replace'),
+                child: const Text('替换'),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.of(dialogContext).pop('append'),
+                child: const Text('追加'),
+              ),
+            ],
+          ),
+        );
+        if (choice == null || choice == 'cancel') return;
+        if (choice == 'append') {
+          draftToWrite = '$existingDraft\n\n${suggestion.prompt}';
+        }
+      }
+      await storage.setString(draftKey, draftToWrite);
+      if (!context.mounted) return;
+      AppFeedback.showSuccess(context, '已写入聊天草稿，不会自动发送');
+      if (!context.mounted) return;
+      context.push('${AppRouteNames.chatRoom}/$peerId', extra: title);
+    } catch (e) {
+      if (!context.mounted) return;
+      AppFeedback.showError(context, '暂时无法打开聊天：$e');
+    }
+  }
+
+  Widget _relationshipActionCard(BuildContext context, MatchDetailEntity data) {
+    final t = context.appTokens;
+    final suggestions = _detailChatSuggestions(data);
+    return Container(
+      width: double.infinity,
+      margin: EdgeInsets.only(bottom: t.spacing.sm),
+      padding: EdgeInsets.all(t.spacing.cardPadding),
+      decoration: BoxDecoration(
+        color: t.browseSurface,
+        borderRadius: BorderRadius.circular(t.radius.lg),
+        border: Border.all(color: t.browseBorder),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.move_up_rounded, size: 18, color: t.brandPrimary),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  '解释到聊天',
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    color: t.textPrimary,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+              const AppChoiceChip(label: '可编辑草稿', selected: true),
+            ],
+          ),
+          SizedBox(height: t.spacing.xs),
+          Text(
+            '把完整解释里的共同点转成一句可编辑的话。点击只写入聊天草稿，不会自动发送。',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: t.textSecondary,
+              height: 1.45,
+            ),
+          ),
+          SizedBox(height: t.spacing.sm),
+          Wrap(
+            spacing: t.spacing.xs,
+            runSpacing: t.spacing.xs,
+            children: suggestions
+                .map(
+                  (item) => AppSecondaryButton(
+                    label: item.label,
+                    onPressed: () => _openChatWithDetailDraft(context, item),
+                  ),
+                )
+                .toList(),
+          ),
+          SizedBox(height: t.spacing.xs),
+          ...suggestions
+              .take(1)
+              .map(
+                (item) => Text(
+                  '示例：${item.prompt}\n来源：${item.source}',
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: t.textSecondary,
+                    height: 1.35,
+                  ),
+                ),
+              ),
+        ],
+      ),
+    );
+  }
 
   GlobalKey? _resolveModuleAnchorKey(String moduleLabel) {
     final exact = _moduleAnchorKeys[moduleLabel];
@@ -220,9 +429,7 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
 
   Map<String, String> _asStringMap(dynamic raw) {
     if (raw is Map) {
-      return raw.map(
-        (k, v) => MapEntry(k.toString(), v.toString()),
-      );
+      return raw.map((k, v) => MapEntry(k.toString(), v.toString()));
     }
     return const <String, String>{};
   }
@@ -1199,7 +1406,8 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
       if (dataQuality.isNotEmpty) 'data_quality=$dataQuality',
       if (precisionLevel.isNotEmpty) 'precision=$precisionLevel',
       if (confidenceReasons.isNotEmpty) 'confidence_reason=$confidenceReasons',
-      if (guard.isNotEmpty) 'guard(HC/SE/PW)=${hc ? 1 : 0}/${se ? 1 : 0}/${pw ? 1 : 0}',
+      if (guard.isNotEmpty)
+        'guard(HC/SE/PW)=${hc ? 1 : 0}/${se ? 1 : 0}/${pw ? 1 : 0}',
       'degraded=$degraded',
       if (reason.isNotEmpty) 'reason=$reason',
     ].join(' | ');
@@ -1238,18 +1446,16 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
           final visibleInsights = data.moduleInsights
               .take(maxInsightCount)
               .toList();
-          final explanationBlocksAll = data.explanationBlocks
-              .where((e) {
-                final summary = (e['summary'] ?? '').toString().trim();
-                final process = (e['process'] as List<dynamic>? ?? const []);
-                final risks = (e['risks'] as List<dynamic>? ?? const []);
-                final advice = (e['advice'] as List<dynamic>? ?? const []);
-                return summary.isNotEmpty ||
-                    process.isNotEmpty ||
-                    risks.isNotEmpty ||
-                    advice.isNotEmpty;
-              })
-              .toList();
+          final explanationBlocksAll = data.explanationBlocks.where((e) {
+            final summary = (e['summary'] ?? '').toString().trim();
+            final process = (e['process'] as List<dynamic>? ?? const []);
+            final risks = (e['risks'] as List<dynamic>? ?? const []);
+            final advice = (e['advice'] as List<dynamic>? ?? const []);
+            return summary.isNotEmpty ||
+                process.isNotEmpty ||
+                risks.isNotEmpty ||
+                advice.isNotEmpty;
+          }).toList();
           final visibleExplanationBlocks = explanationBlocksAll
               .take(maxInsightCount)
               .toList();
@@ -1347,10 +1553,14 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
           final summaryRows = <String>[
             if (data.reasons.isNotEmpty) '原因数: ${data.reasons.length}',
             if (data.weights.isNotEmpty) '权重项: ${data.weights.length}',
-            if (data.moduleScores.isNotEmpty) '分项数: ${data.moduleScores.length}',
-            if (data.moduleInsights.isNotEmpty) '模块说明: ${data.moduleInsights.length}',
-            if (data.moduleExplanations.isNotEmpty) '解释项: ${data.moduleExplanations.length}',
-            if (data.explanationBlocks.isNotEmpty) '解释块: ${data.explanationBlocks.length}',
+            if (data.moduleScores.isNotEmpty)
+              '分项数: ${data.moduleScores.length}',
+            if (data.moduleInsights.isNotEmpty)
+              '模块说明: ${data.moduleInsights.length}',
+            if (data.moduleExplanations.isNotEmpty)
+              '解释项: ${data.moduleExplanations.length}',
+            if (data.explanationBlocks.isNotEmpty)
+              '解释块: ${data.explanationBlocks.length}',
           ];
           final mergedGlossary = <String, String>{
             ..._termGlossary,
@@ -1360,17 +1570,22 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
             for (final b in visibleExplanationBlocks)
               (b['summary'] ?? '').toString(),
             for (final b in visibleExplanationBlocks)
-              ...((b['process'] as List<dynamic>? ?? const [])
-                  .map((e) => e.toString())),
+              ...((b['process'] as List<dynamic>? ?? const []).map(
+                (e) => e.toString(),
+              )),
             for (final b in visibleExplanationBlocks)
-              ...((b['risks'] as List<dynamic>? ?? const [])
-                  .map((e) => e.toString())),
+              ...((b['risks'] as List<dynamic>? ?? const []).map(
+                (e) => e.toString(),
+              )),
             for (final b in visibleExplanationBlocks)
-              ...((b['advice'] as List<dynamic>? ?? const [])
-                  .map((e) => e.toString())),
+              ...((b['advice'] as List<dynamic>? ?? const []).map(
+                (e) => e.toString(),
+              )),
           ];
           final glossaryEntries = _collectGlossary(
-            hasExplanationBlocks ? blockTexts : [...data.reasons, ...visibleInsights],
+            hasExplanationBlocks
+                ? blockTexts
+                : [...data.reasons, ...visibleInsights],
             serverGlossary: data.reasonGlossary,
           );
           return ListView(
@@ -1380,6 +1595,10 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
                 child: PageTitleRail(title: '匹配解释', subtitle: '先看关系解释，再看参数补充'),
               ),
               SizedBox(height: t.spacing.md),
+              SectionReveal(
+                delay: const Duration(milliseconds: 12),
+                child: _relationshipActionCard(context, data),
+              ),
               SectionReveal(
                 delay: const Duration(milliseconds: 20),
                 child: Container(
@@ -1405,10 +1624,8 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
                       if (summaryRows.isEmpty)
                         Text(
                           '当前结果已返回，但摘要暂未解析出结构化内容。请向下继续查看原始说明。',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: t.textSecondary,
-                            height: 1.45,
-                          ),
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(color: t.textSecondary, height: 1.45),
                         )
                       else
                         ...summaryRows.map(
@@ -1416,10 +1633,11 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
                             padding: const EdgeInsets.only(bottom: 6),
                             child: Text(
                               line,
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: t.textSecondary,
-                                height: 1.45,
-                              ),
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(
+                                    color: t.textSecondary,
+                                    height: 1.45,
+                                  ),
                             ),
                           ),
                         ),
@@ -1443,10 +1661,11 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
                       children: [
                         Text(
                           '基础匹配说明',
-                          style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                            color: t.textPrimary,
-                            fontWeight: FontWeight.w700,
-                          ),
+                          style: Theme.of(context).textTheme.titleSmall
+                              ?.copyWith(
+                                color: t.textPrimary,
+                                fontWeight: FontWeight.w700,
+                              ),
                         ),
                         const SizedBox(height: 8),
                         ...data.reasons.map(
@@ -1454,10 +1673,11 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
                             padding: const EdgeInsets.only(bottom: 6),
                             child: Text(
                               line,
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: t.textSecondary,
-                                height: 1.45,
-                              ),
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(
+                                    color: t.textSecondary,
+                                    height: 1.45,
+                                  ),
                             ),
                           ),
                         ),
@@ -1482,18 +1702,17 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
                       children: [
                         Text(
                           '当前解释暂不可展开',
-                          style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                            color: t.textPrimary,
-                            fontWeight: FontWeight.w700,
-                          ),
+                          style: Theme.of(context).textTheme.titleSmall
+                              ?.copyWith(
+                                color: t.textPrimary,
+                                fontWeight: FontWeight.w700,
+                              ),
                         ),
                         const SizedBox(height: 6),
                         Text(
                           '当前版本已收到了匹配结果，但解释块尚未完整返回。你可以先查看基础原因与分项解释，后续再刷新重试。',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: t.textSecondary,
-                            height: 1.45,
-                          ),
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(color: t.textSecondary, height: 1.45),
                         ),
                       ],
                     ),
@@ -1542,10 +1761,7 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
                   child: Column(
                     children: visibleExplanationBlocks
                         .map(
-                          (row) => _explanationBlockCard(
-                            context,
-                            block: row,
-                          ),
+                          (row) => _explanationBlockCard(context, block: row),
                         )
                         .toList(),
                   ),
@@ -1575,7 +1791,7 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
                         SizedBox(height: t.spacing.xs),
                         ...compatibilitySections.map((entry) {
                           final rows = entry.value;
-                final avg = rows.isEmpty
+                          final avg = rows.isEmpty
                               ? 0
                               : (rows
                                             .map(
@@ -1842,16 +2058,16 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
                                 final engineMode = (row['engine_mode'] ?? '')
                                     .toString()
                                     .trim();
-                                final dataQuality =
-                                    (row['data_quality'] ?? '')
-                                        .toString()
-                                        .trim();
+                                final dataQuality = (row['data_quality'] ?? '')
+                                    .toString()
+                                    .trim();
                                 final precisionLevel =
                                     (row['precision_level'] ?? '')
                                         .toString()
                                         .trim();
-                                final confidenceReasons =
-                                    _asStringList(row['confidence_reason']);
+                                final confidenceReasons = _asStringList(
+                                  row['confidence_reason'],
+                                );
                                 final displayGuard = _asDynamicMap(
                                   row['display_guard'],
                                 );
@@ -1871,7 +2087,9 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
                                     .trim();
                                 final riskLevel = _normalizeRiskLevel(row);
                                 final tags = _asStringList(row['tags']);
-                                final coreTags = _asStringList(row['core_tags']);
+                                final coreTags = _asStringList(
+                                  row['core_tags'],
+                                );
                                 final auxTags = _asStringList(row['aux_tags']);
                                 final coreTagExplains = _asStringMap(
                                   row['core_tag_explains'],
@@ -2018,9 +2236,7 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
                               children: [
                                 Text(
                                   '解释已加载',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyMedium
+                                  style: Theme.of(context).textTheme.bodyMedium
                                       ?.copyWith(
                                         color: t.textPrimary,
                                         fontWeight: FontWeight.w700,
@@ -2029,9 +2245,7 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
                                 SizedBox(height: t.spacing.xxs),
                                 Text(
                                   '当前结果已返回说明内容，但本次筛选条件下没有可直接展开的模块卡。你可以点“展开全部”查看完整内容。',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodySmall
+                                  style: Theme.of(context).textTheme.bodySmall
                                       ?.copyWith(
                                         color: t.textSecondary,
                                         height: 1.4,

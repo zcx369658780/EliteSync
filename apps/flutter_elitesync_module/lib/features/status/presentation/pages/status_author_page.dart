@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:flutter_elitesync_module/app/router/app_route_names.dart';
 import 'package:flutter_elitesync_module/design_system/components/bars/app_top_bar.dart';
 import 'package:flutter_elitesync_module/design_system/components/cards/app_info_section_card.dart';
+import 'package:flutter_elitesync_module/design_system/components/feedback/app_feedback.dart';
 import 'package:flutter_elitesync_module/design_system/components/layout/app_scaffold.dart';
 import 'package:flutter_elitesync_module/design_system/components/states/app_empty_state.dart';
 import 'package:flutter_elitesync_module/design_system/components/states/app_error_state.dart';
@@ -138,6 +141,44 @@ class StatusAuthorPage extends ConsumerWidget {
               ),
               SizedBox(height: t.spacing.md),
               AppInfoSectionCard(
+                title: '低压回流',
+                subtitle: '先从公开资料和动态继续了解',
+                leadingIcon: Icons.move_up_outlined,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '如果想继续认识，可以先回到消息列表查看是否已有匹配会话；没有匹配关系时，不会伪造私聊入口。',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: t.textSecondary,
+                        height: 1.45,
+                      ),
+                    ),
+                    SizedBox(height: t.spacing.sm),
+                    Wrap(
+                      spacing: t.spacing.xs,
+                      runSpacing: t.spacing.xs,
+                      children: [
+                        OutlinedButton.icon(
+                          onPressed: () => context.push(AppRouteNames.messages),
+                          icon: const Icon(Icons.chat_bubble_outline_rounded),
+                          label: const Text('回到消息'),
+                        ),
+                        OutlinedButton.icon(
+                          onPressed: () => AppFeedback.showSuccess(
+                            context,
+                            '已作为稍后再聊提示保留在本页，不写入服务端队列',
+                          ),
+                          icon: const Icon(Icons.bookmark_border_rounded),
+                          label: const Text('稍后再聊'),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: t.spacing.md),
+              AppInfoSectionCard(
                 title: '最近状态',
                 subtitle: '作者发布过的动态',
                 leadingIcon: Icons.dynamic_feed_rounded,
@@ -154,6 +195,15 @@ class StatusAuthorPage extends ConsumerWidget {
                               child: StatusPostCard(
                                 post: post,
                                 compact: true,
+                                onContinueUnderstand: () =>
+                                    AppFeedback.showInfo(
+                                      context,
+                                      '正在查看该作者的公开动态，可继续从消息列表确认是否已有会话',
+                                    ),
+                                onSaveForLater: () => AppFeedback.showSuccess(
+                                  context,
+                                  '已作为稍后再聊提示保留在本页，不写入服务端队列',
+                                ),
                                 onReport: () async {
                                   final remote = ref.read(
                                     statusRemoteDataSourceProvider,
