@@ -1,316 +1,94 @@
 # 文档索引（当前有效）
 
-更新时间：2026-04-29
+更新时间：2026-05-02
 
-## 根目录
-- `README.md`：项目总览
-- `docs/HANDOFF_MASTER_CURRENT.md`：当前项目总交接稿
-- `docs/HANDOFF_3X_CLOSEOUT_20260417.md`：3.x 收口与下一阶段交接稿
-- `docs/HANDOFF_NEW_SESSION_20260417.md`：新会话交接摘要
-- `docs/DEVELOPMENT_PLAN_CURRENT.md`：当前整体开发计划书
-- `docs/PROTECTED_UI_SURFACES.md`：4.7 UI 保护面清单
-- `docs/4.7_UI_REVERSION_REPORT.md`：4.7 UI 回退事故报告
-- `docs/runbooks/ROLLBACK_AND_RECOVERY_POLICY.md`：回滚与恢复政策
-- `docs/version_plans/elite_sync_4_0_版本开发计划书_2026_04_18.md`：4.0 版本开发计划书
-- `docs/version_plans/elite_sync_4_1_版本开发计划书_2026_04_18.md`：4.1 版本开发计划书
-- `docs/version_plans/elite_sync_4_2_版本开发计划书_2026_04_18.md`：4.2 版本开发计划书
-- `docs/version_plans/elite_sync_4_5_版本开发计划书_2026_04_21.md`：4.5 版本开发计划书
-- `docs/version_plans/elite_sync_4_6_版本开发计划书_2026_04_21.md`：4.6 版本开发计划书
-- `docs/version_plans/elite_sync_4_6_p_版本开发计划书_2026_04_24.md`：4.6P 音频播放链定向修正版
-- `docs/version_plans/4.6P_EXECUTION_NOTE.md`：4.6P 执行记录
-- `docs/version_plans/4.6A_EXECUTION_NOTE.md`：4.6A 执行记录
-- `docs/version_plans/4.6A_BOUNDARY_AND_PLAN.md`：4.6A 边界与执行计划
-- `docs/version_plans/4.6A_DEPENDENCY_MAP.md`：4.6A 依赖链与受影响面
-- `docs/version_plans/4.6A_RISK_REVIEW.md`：4.6A 风险评审
-- `docs/version_plans/4.6A_TEST_PLAN.md`：4.6A 测试计划
-- `docs/version_plans/4.6B_EXECUTION_NOTE.md`：4.6B 执行记录
-- `docs/version_plans/4.6B_ACCEPTANCE_SUMMARY.md`：4.6B 验收摘要
-- `docs/version_plans/4.6B_HANDOFF_NOTE.md`：4.6B 交接说明
-- `docs/version_plans/4.6B_GPT_ADVISOR_HANDOFF.md`：4.6B 给 GPT 顾问的交接稿
-- `docs/version_plans/4.6C_EXECUTION_NOTE.md`：4.6C 执行记录
-- `docs/version_plans/4.6C_ACCEPTANCE_SUMMARY.md`：4.6C 验收摘要
-- `docs/version_plans/4.6C_HANDOFF_NOTE.md`：4.6C 交接说明
-- `docs/version_plans/4.6C_GPT_ADVISOR_HANDOFF.md`：4.6C 给 GPT 顾问的交接稿
-- `docs/version_plans/4.6D_EXECUTION_NOTE.md`：4.6D 执行记录
-- `docs/version_plans/4.6D_ACCEPTANCE_SUMMARY.md`：4.6D 验收摘要
-- `docs/version_plans/4.6D_HANDOFF_NOTE.md`：4.6D 交接说明
-- `docs/version_plans/4.6D_GPT_ADVISOR_HANDOFF.md`：4.6D 给 GPT 顾问的交接稿
-- `docs/version_plans/4.6F_BOUNDARY_AND_PLAN.md`：4.6F LiveKit 语音接入边界与执行计划
-- `docs/version_plans/4.6F_EXECUTION_NOTE.md`：4.6F 执行记录
-- `docs/version_plans/4.6F_ACCEPTANCE_SUMMARY.md`：4.6F 验收摘要
-- `docs/version_plans/4.6F_HANDOFF_NOTE.md`：4.6F 交接说明
-- `docs/version_plans/4.6F_DEPENDENCY_MAP.md`：4.6F 依赖链与受影响面
-- `docs/version_plans/4.6F_RISK_REVIEW.md`：4.6F 风险评审
-- `docs/version_plans/4.6F_TEST_PLAN.md`：4.6F 测试计划
-- `docs/version_plans/4.6F_LIVEKIT_LIVE_TEST_RUNBOOK.md`：4.6F LiveKit 真语音联测 Runbook
-- `docs/version_plans/4.6F_SCREENSHOT_EVIDENCE_INDEX.md`：4.6F 截图证据索引
-- `docs/version_plans/4.6F_SCREENSHOT_VERIFICATION_NOTE.md`：4.6F 截图验收说明
-- `docs/version_plans/4.6F_GPT_ADVISOR_HANDOFF.md`：4.6F 给 GPT 顾问的交接稿
-- `docs/version_plans/4.6F_CLOSEOUT_NOTE.md`：4.6F 收尾说明
-- `docs/version_plans/4.6P_BOUNDARY_AND_PLAN.md`：4.6P 边界与执行计划
-- `docs/version_plans/4.6P_DEPENDENCY_MAP.md`：4.6P 依赖链与受影响面
-- `docs/version_plans/4.6P_RISK_REVIEW.md`：4.6P 风险评审
-- `docs/version_plans/4.6P_TEST_PLAN.md`：4.6P 测试计划
-- `docs/version_plans/4.6P_EXECUTION_NOTE.md`：4.6P 执行记录
-- `docs/version_plans/4.6P_ACCEPTANCE_SUMMARY.md`：4.6P 验收摘要
-- `docs/version_plans/4.6P_HANDOFF_NOTE.md`：4.6P 交接说明
-- `docs/version_plans/4.6P_GPT_ADVISOR_HANDOFF.md`：4.6P 给 GPT 顾问的交接稿
-- `docs/version_plans/4.6P_CLOSEOUT_NOTE.md`：4.6P 收尾说明
-- `docs/version_plans/4.6P_SCREENSHOT_EVIDENCE_INDEX.md`：4.6P 截图证据索引
-- `docs/version_plans/4.6P_SCREENSHOT_VERIFICATION_NOTE.md`：4.6P 截图验收说明
-- `docs/version_plans/elite_sync_4_7_版本开发计划书_2026_04_26.md`：4.7 测试前稳定化与质量门禁版
-- `docs/version_plans/4.7_EXECUTION_NOTE.md`：4.7 执行记录
-- `docs/version_plans/4.7_ACCEPTANCE_SUMMARY.md`：4.7 验收摘要
-- `docs/version_plans/4.7_HANDOFF_NOTE.md`：4.7 交接说明
-- `docs/version_plans/4.7_GPT_ADVISOR_HANDOFF.md`：4.7 给 GPT 顾问的交接稿
-- `docs/version_plans/4.7_CLOSEOUT_NOTE.md`：4.7 收尾说明
-- `docs/version_plans/4.7_SCREENSHOT_VERIFICATION_NOTE.md`：4.7 截图验收说明
-- `docs/version_plans/4.7_UI_BASELINE_GUARD.md`：4.7 UI 基线门禁
-- `docs/version_plans/4.7_UI_BASELINE_EVIDENCE_INDEX.md`：4.7 UI 基线证据索引
-- `docs/version_plans/4.7_UI_REVERSION_FIX_NOTE.md`：4.7 UI 回退修复说明
-- `docs/version_plans/elite_sync_4_8_版本开发计划书_2026_04_28.md`：4.8 Alpha Smoke 与测试前真实路径复验版
-- `docs/version_plans/4.8_BASELINE_START_NOTE.md`：4.8 基线起点说明
-- `docs/version_plans/4.8_ALPHA_SMOKE_MATRIX.md`：4.8 Alpha Smoke 矩阵
-- `docs/version_plans/4.8_RELEASE_GATE_CHECKLIST.md`：4.8 Release Gate 清单
-- `docs/version_plans/4.8_SMOKE_EXECUTION_NOTE.md`：4.8 Smoke 执行笔记
-- `docs/version_plans/4.8_ACCEPTANCE_SUMMARY.md`：4.8 验收摘要
-- `docs/version_plans/4.8_HANDOFF_NOTE.md`：4.8 交接说明
-- `docs/version_plans/4.8_CLOSEOUT_NOTE.md`：4.8 收尾说明
-- `docs/version_plans/4.8_SCREENSHOT_VERIFICATION_NOTE.md`：4.8 截图验收说明
-- `docs/version_plans/4.8_UI_BASELINE_EVIDENCE_INDEX.md`：4.8 UI 基线证据索引
-- `docs/version_plans/elite_sync_4_9_版本开发计划书_2026_04_28.md`：4.9 测试前治理、限流、监控、发布链强化版
-- `docs/version_plans/4.9_BASELINE_START_NOTE.md`：4.9 基线起点说明
-- `docs/version_plans/4.9_SCOPE_AND_NON_GOALS.md`：4.9 范围与非目标
-- `docs/version_plans/4.9_NOTIFICATION_DENOISE_NOTE.md`：4.9 通知中心工程 slug 降噪说明
-- `docs/version_plans/4.9_NOTIFICATION_DENOISE_EVIDENCE.md`：4.9 通知中心降噪证据
-- `docs/version_plans/4.9_SMOKE_MATRIX.md`：4.9 Smoke 矩阵
-- `docs/version_plans/4.9_SMOKE_EXECUTION_NOTE.md`：4.9 Smoke 执行记录
-- `docs/version_plans/4.9_EXECUTION_NOTE.md`：4.9 执行记录
-- `docs/version_plans/4.9_RELEASE_GATE_CHECKLIST.md`：4.9 发布门禁清单
-- `docs/version_plans/4.9_RELEASE_GATE_VERIFICATION_NOTE.md`：4.9 发布门禁验证说明
-- `docs/version_plans/4.9_DATABASE_SAFETY_NOTE.md`：4.9 数据库安全说明
-- `docs/version_plans/4.9_ALPHA_READINESS_DASHBOARD.md`：4.9 Alpha 就绪看板
-- `docs/version_plans/4.9_LOG_EVIDENCE_INDEX.md`：4.9 日志证据索引
-- `docs/version_plans/4.9_HEALTH_CHECK_NOTE.md`：4.9 健康检查说明
-- `docs/version_plans/4.9_UI_BASELINE_REGRESSION.md`：4.9 UI 基线回归
-- `docs/version_plans/4.9_UI_BASELINE_EVIDENCE_INDEX.md`：4.9 UI 基线证据索引
-- `docs/version_plans/4.9_SCREENSHOT_VERIFICATION_NOTE.md`：4.9 截图验收说明
-- `docs/version_plans/4.9_ACCEPTANCE_SUMMARY.md`：4.9 验收摘要
-- `docs/version_plans/4.9_HANDOFF_NOTE.md`：4.9 交接说明
-- `docs/version_plans/4.9_HANDOFF_MASTER.md`：4.9 主交接文件（推荐上传单文件）
-- `docs/version_plans/4.9_HANDOFF_PACKAGE_INDEX.md`：4.9 交接包索引
-- `docs/version_plans/4.9_CLOSEOUT_NOTE.md`：4.9 收尾说明
-- `docs/version_plans/4.9_MULTIAGENT_REVIEW_LOG.md`：4.9 多 agent 评审日志
-- `docs/version_plans/4.9_MEDIA_OBSERVABILITY_NOTE.md`：4.9 媒体 / 队列 / Worker 可观测性说明
-- `docs/CODEX_CURRENT_SESSION_SUMMARY.md`：当前会话短摘要
-- `docs/archive/legacy_2026-04/reports/CODEX_SESSION_HISTORY_2026_04_29.md`：当前会话历史记录
-- docs/version_plans/4.9_HANDOFF_NOTE.md：4.9 交接说明
-- docs/version_plans/4.9_CLOSEOUT_NOTE.md：4.9 收尾说明
-- docs/version_plans/4.9_MULTIAGENT_REVIEW_LOG.md：4.9 多 agent 评审日志
-- `docs/version_plans/4.9_MEDIA_OBSERVABILITY_NOTE.md`：4.9 媒体 / 队列 / Worker 可观测性说明
-- `docs/version_plans/4.7_REGRESSION_CHECKLIST.md`：4.7 回归清单
-- `docs/version_plans/elite_sync_4_3_版本开发计划书_2026_04_19.md`：4.3 版本开发计划书
-- `docs/version_plans/elite_sync_4_4_版本开发计划书_2026_04_19.md`：4.4 版本开发计划书
-- `docs/version_plans/4.4_EXECUTION_NOTE.md`：4.4 执行记录
-- `docs/version_plans/4.4_ACCEPTANCE_SUMMARY.md`：4.4 验收摘要
-- `docs/version_plans/4.4_HANDOFF_NOTE.md`：4.4 交接说明
-- `docs/version_plans/4.4_GPT_ADVISOR_HANDOFF.md`：4.4 给 GPT 顾问的交接稿
-- `docs/version_plans/4.4_SCREENSHOT_EVIDENCE_INDEX.md`：4.4 截图证据索引
-- `docs/version_plans/4.4_SCREENSHOT_VERIFICATION_NOTE.md`：4.4 截图验收说明
-- `docs/version_plans/4.4_CLOSEOUT_NOTE.md`：4.4 收尾说明
-- `docs/version_plans/4.4_MULTIAGENT_REVIEW_LOG.md`：4.4 多 Agent 审查日志
-- `docs/version_plans/4.4A_BOUNDARY_NOTE.md`：4.4A 边界冻结说明
-- `docs/version_plans/elite_sync_4_4_s_版本开发计划书_2026_04_19.md`：4.4S 版本开发计划书
-- `docs/version_plans/4.4S_EXECUTION_NOTE.md`：4.4S 执行记录
-- `docs/version_plans/4.4S_ACCEPTANCE_SUMMARY.md`：4.4S 验收摘要
-- `docs/version_plans/4.4S_CLOSEOUT_NOTE.md`：4.4S 收尾说明
-- `docs/version_plans/4.4S_GPT_ADVISOR_HANDOFF.md`：4.4S 给 GPT 顾问的交接稿
-- `docs/version_plans/4.4S_SCREENSHOT_EVIDENCE_INDEX.md`：4.4S 截图证据索引
-- `docs/version_plans/4.5A_BOUNDARY_AND_PLAN.md`：4.5A 边界与执行计划
-- `docs/version_plans/4.5A_EXECUTION_NOTE.md`：4.5A 执行记录
-- `docs/version_plans/4.5A_ACCEPTANCE_SUMMARY.md`：4.5A 阶段性验收摘要
-- `docs/version_plans/4.5B_D_EXECUTION_NOTE.md`：4.5B-D 执行记录
-- `docs/version_plans/4.5E_EXECUTION_NOTE.md`：4.5E 执行记录
-- `docs/version_plans/4.5E_ACCEPTANCE_SUMMARY.md`：4.5E 阶段性验收摘要
-- `docs/version_plans/4.5E_SCREENSHOT_EVIDENCE_INDEX.md`：4.5E 截图证据索引
-- `docs/version_plans/4.5E_SCREENSHOT_VERIFICATION_NOTE.md`：4.5E 截图验收说明
-- `docs/version_plans/4.5E_GPT_ADVISOR_HANDOFF.md`：4.5E 给 GPT 顾问的交接稿
-- `docs/version_plans/4.5E_CLOSEOUT_NOTE.md`：4.5E 收尾说明
-- `docs/version_plans/4.1_GPT_ADVISOR_HANDOFF.md`：4.1 给 GPT 顾问的交接稿
-- `docs/version_plans/elite_sync_整体开发计划书_4_x方向重整版_2026_04_17.md`：4.x 方向重整版整体开发计划书
-- `docs/archive/legacy_2026-04/DEVELOPMENT_PLAN_2_0_AND_EARLIER_ARCHIVE.md`：2.0 及更早版本开发计划归档
-- `docs/CHANGELOG.md`：0.04.06 版本变更记录（当前发布）
-- `docs/version_plans/0.04.06_UPDATE_BRIEF.md`：0.04.06 更新简报
-- `docs/version_plans/elite_sync_3_9_版本开发计划书_2026_04_17.md`：3.9 版本开发计划书
-- `docs/runbooks/README.md`：运行手册索引
-- `LICENSE_DEPENDENCY_STATUS.md`：依赖许可证状态总表（长期维护）
-- `docs/version_plans/README.md`：版本开发计划索引（主入口）
-- `docs/version_plans/elite_sync_整体开发计划书_4_x方向重整版_2026_04_17.md`
-- `docs/version_plans/elite_sync_3_8_版本开发计划书_2026_04_13.md`：3.8 版本开发计划书
-- `docs/version_plans/3.8_EXEC_PLAN.md`：3.8 执行计划
-- `docs/version_plans/3.8_RISK_REVIEW.md`：3.8 风险评审
-- `docs/version_plans/3.8_SCOPE_MATRIX.md`：3.8 范围矩阵
-- `docs/version_plans/3.8_GAP_MATRIX.md`：3.8 缺口矩阵
-- `docs/version_plans/3.8_CALIBRATION_REPORT.md`：3.8 校准报告
-- `docs/version_plans/3.8_KNOWN_DEVIATIONS.md`：3.8 已知偏差
-- `docs/version_plans/3.8_BETA_REGRESSION_CHECKLIST.md`：3.8 Beta 回归清单
-- `docs/version_plans/3.8_ACCEPTANCE_REPORT.md`：3.8 验收报告
-- `docs/version_plans/3.8_HANDOFF_FINAL_20260416.md`：3.8 最终交接稿
-- `docs/version_plans/3.8_SCREENSHOT_EVIDENCE_INDEX.md`：3.8 截图证据索引
-- `docs/version_plans/3.8_SCREENSHOT_VERIFICATION_NOTE.md`：3.8 截图验收说明
-- `docs/version_plans/3.8_MULTIAGENT_REVIEW_LOG.md`：3.8 多 Agent 审查日志
-- `docs/version_plans/3.8_SECOND_ACCEPTANCE_PACK.md`：3.8 第二次验收材料包
-- `docs/version_plans/3.9_SCOPE.md`：3.9 范围与边界说明
-- `docs/version_plans/3.9_SCHEMA_NOTES.md`：3.9 时法 Schema 说明
-- `docs/version_plans/3.9_UI_INFORMATION_ARCHITECTURE.md`：3.9 UI 信息架构说明
-- `docs/version_plans/3.9_SAMPLE_MATRIX.md`：3.9 样例矩阵
-- `docs/version_plans/3.9_CALIBRATION_REPORT.md`：3.9 校准报告
-- `docs/version_plans/3.9_DIFF_REPORT.md`：3.9 差异报告
-- `docs/version_plans/3.9_KNOWN_DEVIATIONS.md`：3.9 已知偏差
-- `docs/version_plans/3.9_REGRESSION_REPORT.md`：3.9 回归报告
-- `docs/version_plans/3.9_ACCEPTANCE_SUMMARY.md`：3.9 验收摘要
-- `docs/version_plans/3.9_MULTIAGENT_REVIEW_LOG.md`：3.9 多 Agent 审查日志
-- `docs/version_plans/3.9_FINAL_ARCHIVE_NOTE.md`：3.9 最终归档说明
-- `docs/version_plans/3.9_SCREENSHOT_EVIDENCE_INDEX.md`：3.9 截图证据索引
-- `docs/version_plans/3.9_SCREENSHOT_VERIFICATION_NOTE.md`：3.9 截图验收说明
-- `docs/version_plans/3.9A_EXECUTION_NOTE.md`：3.9a 执行记录
-- `docs/version_plans/3.9A_ACCEPTANCE_SUMMARY.md`：3.9a 验收摘要
-- `docs/version_plans/3.9A_ACCEPTANCE_CHECKLIST.md`：3.9a 验收核对清单
-- `docs/version_plans/3.9B_REGRESSION_EXECUTION.md`：3.9B 回归执行记录
-- `docs/version_plans/3.9C_BOUNDARY_NOTE.md`：3.9C 边界说明收口
-- `docs/version_plans/3.9C_BOUNDARY_BRIEF.md`：3.9C 边界总结短版
-- `docs/version_plans/4.0A_EXECUTION_NOTE.md`：4.0A 执行记录
-- `docs/version_plans/4.0A_DATA_SKELETON.md`：4.0A 数据骨架说明
-- `docs/version_plans/4.0B_MEDIA_BASELINE.md`：4.0B 媒体对象存储最小闭环
-- `docs/version_plans/4.0C_PIPELINE_NOTE.md`：4.0C 队列与缓存闭环说明
-- `docs/version_plans/4.0D_ATTACHMENT_SKELETON.md`：4.0D Flutter 附件上传状态骨架
-- `docs/version_plans/4.0E_OBSERVABILITY_NOTE.md`：4.0E 可观测性与限流说明
-- `docs/version_plans/4.0_ACCEPTANCE_SUMMARY.md`：4.0 总验收摘要
-- `docs/version_plans/4.0_ACCEPTANCE_REPORT.md`：4.0 验收报告
-- `docs/version_plans/4.0_MULTIAGENT_REVIEW_LOG.md`：4.0 多 Agent 审查日志
-- `docs/version_plans/4.0_PATCH_CLOSEOUT_NOTE.md`：4.0 收尾补丁说明
-- `docs/version_plans/4.1D_EXECUTION_NOTE.md`：4.1D 轻量联动与可观测性记录
-- `docs/version_plans/4.1_EXECUTION_NOTE.md`：4.1 执行记录
-- `docs/version_plans/4.1_ACCEPTANCE_SUMMARY.md`：4.1 验收摘要
-- `docs/version_plans/4.1_HANDOFF_NOTE.md`：4.1 交接说明
-- `docs/version_plans/4.1_MULTIAGENT_REVIEW_LOG.md`：4.1 多 Agent 审查日志
-- `docs/version_plans/4.1_SCREENSHOT_EVIDENCE_INDEX.md`：4.1 截图证据索引
-- `docs/version_plans/4.1_SCREENSHOT_VERIFICATION_NOTE.md`：4.1 截图验收说明
-- `docs/version_plans/4.2_EXECUTION_NOTE.md`：4.2 执行记录
-- `docs/version_plans/4.2_ACCEPTANCE_SUMMARY.md`：4.2 验收摘要
-- `docs/version_plans/4.2_HANDOFF_NOTE.md`：4.2 交接说明
-- `docs/version_plans/4.2_GPT_ADVISOR_HANDOFF.md`：4.2 给 GPT 顾问的交接稿
-- `docs/version_plans/4.2_MULTIAGENT_REVIEW_LOG.md`：4.2 多 Agent 审查日志
-- `docs/version_plans/4.2_CLOSEOUT_NOTE.md`：4.2 收尾说明
-- `docs/version_plans/4.2_SCREENSHOT_EVIDENCE_INDEX.md`：4.2 截图证据索引
-- `docs/version_plans/4.2_SCREENSHOT_VERIFICATION_NOTE.md`：4.2 截图验收说明
-- `docs/version_plans/4.3_EXECUTION_NOTE.md`：4.3 执行记录
-- `docs/version_plans/4.3_ACCEPTANCE_SUMMARY.md`：4.3 验收摘要
-- `docs/version_plans/4.3_HANDOFF_NOTE.md`：4.3 交接说明
-- `docs/version_plans/4.3_GPT_ADVISOR_HANDOFF.md`：4.3 给 GPT 顾问的交接稿
-- `docs/version_plans/4.3_MULTIAGENT_REVIEW_LOG.md`：4.3 多 Agent 审查日志
-- `docs/version_plans/4.3_SCREENSHOT_EVIDENCE_INDEX.md`：4.3 截图证据索引
-- `docs/version_plans/4.3_SCREENSHOT_VERIFICATION_NOTE.md`：4.3 截图验收说明
-- `docs/version_plans/4.3_CLOSEOUT_NOTE.md`：4.3 收尾说明
-- `docs/version_plans/elite_sync_3_6_版本开发计划书_2026_04_12.md`：3.6 版本开发计划书
-- `docs/version_plans/elite_sync_3_7_版本开发计划书_2026_04_12.md`：3.7 版本开发计划书
-- `docs/version_plans/3.7_EXEC_PLAN.md`：3.7 执行计划
-- `docs/version_plans/3.7_RISK_REVIEW.md`：3.7 风险评审
-- `docs/version_plans/3.7_SCOPE_MATRIX.md`：3.7 范围矩阵
-- `docs/version_plans/3.7_ADVANCED_CAPABILITY_MATRIX.md`：3.7 高级能力矩阵
-- `docs/version_plans/3.7_SCHEMA_BOUNDARY.md`：3.7 高级 Schema 与边界说明
-- `docs/version_plans/3.7_MULTIAGENT_REVIEW_LOG.md`：3.7 多 Agent 审查日志
-- `docs/version_plans/3.7_ACCEPTANCE_REPORT.md`：3.7 最终验收报告
-- `docs/version_plans/3.7_HANDOFF_FINAL_20260412.md`：3.7 最终交接稿
-- `docs/version_plans/3.7_SCREENSHOT_EVIDENCE_INDEX.md`：3.7 截图证据索引
-- `docs/version_plans/3.6_EXEC_PLAN.md`：3.6 执行计划
-- `docs/version_plans/3.6_RISK_REVIEW.md`：3.6 风险评审
-- `docs/version_plans/3.6_BETA_REGRESSION_CHECKLIST.md`：3.6 Beta 回归清单
-- `docs/version_plans/3.6_SCOPE_MATRIX.md`：3.6 范围矩阵
-- `docs/version_plans/3.6_ROUTE_CAPABILITY_MATRIX.md`：3.6 路线能力矩阵
-- `docs/version_plans/3.6_ROUTE_PARITY_REPORT.md`：3.6 路线差异报告
-- `docs/version_plans/3.6_MULTI_ROUTE_SAMPLE_SET.md`：3.6 多路线样例集
-- `docs/version_plans/3.6_KNOWN_DEVIATIONS.md`：3.6 已知偏差
-- `docs/version_plans/3.6_MULTIAGENT_REVIEW_LOG.md`：3.6 多 Agent 审查日志
-- `docs/version_plans/3.6_ACCEPTANCE_REPORT.md`：3.6 最终验收报告
-- `docs/version_plans/3.6_HANDOFF_FINAL_20260412.md`：3.6 最终交接稿
-- `docs/version_plans/3.6_SCREENSHOT_EVIDENCE_INDEX.md`：3.6 截图证据索引
-- `docs/version_plans/3.6_MULTIAGENT_EVIDENCE_SUPPLEMENT.md`：3.6 多 Agent 证据补充
-- `docs/ROLLBACK_PLAN.md`：回滚计划
-- `docs/RELEASE_SMOKE_CHECKLIST.md`：发布烟测清单
-- `AGENTS.md`：仓库级多 subagent 安全开发工作流
-- `docs/devlogs/README.md`：devlogs 目录说明（活跃运行数据）
-- `docs/reference/README.md`：长期参考资料索引
-- `docs/licenses/README.md`：第三方许可证索引
+## 当前主入口
 
-## 版本计划（docs/version_plans）
-- `docs/version_plans/README.md`：版本计划总索引
-- `docs/HANDOFF_3X_CLOSEOUT_20260417.md`
-- `docs/version_plans/0.04.06_UPDATE_BRIEF.md`
-- `docs/version_plans/elite_sync_整体开发计划书_更新版_2026_04_11.md`
-- `docs/version_plans/elite_sync_3_8_版本开发计划书_2026_04_13.md`
-- `docs/version_plans/3.8_EXEC_PLAN.md`
-- `docs/version_plans/3.8_RISK_REVIEW.md`
-- `docs/version_plans/3.8_SCOPE_MATRIX.md`
-- `docs/version_plans/3.8_GAP_MATRIX.md`
-- `docs/version_plans/3.8_CALIBRATION_REPORT.md`
-- `docs/version_plans/3.8_KNOWN_DEVIATIONS.md`
-- `docs/version_plans/3.8_BETA_REGRESSION_CHECKLIST.md`
-- `docs/version_plans/3.8_ACCEPTANCE_REPORT.md`
-- `docs/version_plans/3.8_HANDOFF_FINAL_20260416.md`
-- `docs/version_plans/3.8_SCREENSHOT_EVIDENCE_INDEX.md`
-- `docs/version_plans/3.8_SCREENSHOT_VERIFICATION_NOTE.md`
-- `docs/version_plans/3.8_MULTIAGENT_REVIEW_LOG.md`
-- `docs/version_plans/3.8_SECOND_ACCEPTANCE_PACK.md`
-- `docs/version_plans/elite_sync_3_6_版本开发计划书_2026_04_12.md`
-- `docs/version_plans/3.6_EXEC_PLAN.md`
-- `docs/version_plans/3.6_RISK_REVIEW.md`
-- `docs/version_plans/3.6_SCOPE_MATRIX.md`
-- `docs/version_plans/3.6_ROUTE_CAPABILITY_MATRIX.md`
-- `docs/version_plans/3.6_ROUTE_PARITY_REPORT.md`
-- `docs/version_plans/3.6_MULTI_ROUTE_SAMPLE_SET.md`
-- `docs/version_plans/3.6_KNOWN_DEVIATIONS.md`
-- `docs/version_plans/3.6_MULTIAGENT_REVIEW_LOG.md`
-- `docs/version_plans/3.6_ACCEPTANCE_REPORT.md`
-- `docs/version_plans/3.6_HANDOFF_FINAL_20260412.md`
-- `docs/version_plans/3.6_SCREENSHOT_EVIDENCE_INDEX.md`
-- `docs/version_plans/3.6_MULTIAGENT_EVIDENCE_SUPPLEMENT.md`
-- `docs/version_plans/elite_sync_3_5_版本开发计划书_2026_04_11.md`
-- `docs/version_plans/3.5_EXEC_PLAN.md`
-- `docs/version_plans/3.5_RISK_REVIEW.md`
-- `docs/version_plans/3.5_PROTECTED_SURFACES.md`
-- `docs/version_plans/3.5_BETA_REGRESSION_CHECKLIST.md`
-- `docs/version_plans/3.5_DIFF_REPORT.md`
-- `docs/version_plans/3.5_SCOPE_MATRIX.md`
-- `docs/version_plans/3.5_ACCEPTANCE_REPORT.md`
-- `docs/version_plans/3.5_HANDOFF_FINAL_20260411.md`
-- `docs/version_plans/3.5_SCREENSHOT_EVIDENCE_INDEX.md`
-- `docs/version_plans/3.5_MULTIAGENT_REVIEW_LOG.md`
-- `docs/version_plans/elite_sync_3_4_版本开发计划书_2026_04_11.md`
-- `docs/version_plans/3.4_EXEC_PLAN.md`
-- `docs/version_plans/3.4_RISK_REVIEW.md`
-- `docs/version_plans/3.4_PROTECTED_SURFACES.md`
-- `docs/version_plans/3.4_BETA_REGRESSION_CHECKLIST.md`
-- `docs/version_plans/3.4_ACCEPTANCE_REPORT.md`
-- `docs/version_plans/3.4_HANDOFF_FINAL_20260411.md`
-- `docs/version_plans/3.4_SCREENSHOT_EVIDENCE_INDEX.md`
-- `docs/archive/legacy_2026-04/version_plans/README.md`：历史版本计划归档索引
-
-## docs
-- `docs/EXEC_PLAN_TEMPLATE.md`：需求执行计划模板
-- `docs/REGRESSION_CHECKLIST.md`：修改后回归验收清单
-- `docs/PROTECTED_SURFACES.md`：高风险模块保护清单
-- `docs/REQUIREMENT_RISK_REVIEW.md`：需求评审与风险拆解规范
-- `docs/POST_CHANGE_ACCEPTANCE.md`：修改后验收评估规范
-- `docs/planning/README.md`：历史规划索引
-- `docs/reference/README.md`：长期参考资料索引
+- `docs/DEVELOPMENT_PLAN_CURRENT.md`：当前整体开发计划入口
 - `docs/project_memory.md`：项目长期记忆
-- `docs/archive/legacy_2026-04/reports/CALIBRATION_CYCLE_LOG.md`：校准周期日志（归档）
-- `docs/archive/legacy_2026-04/reports/CALIBRATION_WEEKLY_REPORT_2026W13_AUTO.md`：自动周报（归档）
-- `docs/archive/legacy_2026-04/reports/CALIBRATION_WECHAT_BRIEF_2026W13.txt`：微信群简报（归档）
-- `docs/archive/legacy_2026-04/reports/ASTRO_SHADOW_COMPARE.md`：对拍结果（归档）
-- `docs/archive/legacy_2026-04/reports/PAIR_OUTCOME_METRICS.md`：行为漏斗汇总（归档）
-- `docs/runbooks/MATCHING_ALGO_P1_RUNBOOK_20260324.md`：运行手册
-- 其余 `runbooks/`、`reference/` 保留为长期工程文档
-- `docs/archive/legacy_2026-04/reports/README.md`：历史报告归档索引
-- `docs/devlogs/README.md`：devlogs 目录说明（活跃运行数据）
+- `ELITESYNC_CURRENT_HANDOFF_2026_05_01.md`：当前根目录总交接文档
+- `docs/PROTECTED_UI_SURFACES.md`：UI protected surfaces
+- `docs/runbooks/ROLLBACK_AND_RECOVERY_POLICY.md`：回滚与恢复政策
+- `docs/version_plans/README.md`：版本计划总索引
+
+## 当前版本与交接基线
+
+- `docs/version_plans/elite_sync_整体开发计划书_5_x方向重排版_2026_05_01.md`：5.x 整体开发计划书（当前主计划）
+- `docs/version_plans/elite_sync_未来版本开发路线图草案_2026_05_01.md`：5.x 路线图草案
+- `docs/version_plans/5.0_BASELINE_START_NOTE.md`：5.0 基线起点说明
+- `docs/version_plans/5.0_SCOPE_AND_NON_GOALS.md`：5.0 范围与非目标
+- `docs/version_plans/5.0_DISCOVER_PRODUCTIZATION_NOTE.md`：5.0B Discover 产品化说明
+- `docs/version_plans/5.0_DISCOVER_EXECUTION_NOTE.md`：5.0B Discover 执行记录
+- `docs/version_plans/5.0_DISCOVER_ACCEPTANCE_SUMMARY.md`：5.0B Discover 验收摘要
+- `docs/version_plans/5.0_DISCOVER_UI_EVIDENCE_INDEX.md`：5.0B Discover UI 证据索引
+- `docs/version_plans/5.0_CHAT_RELATIONSHIP_NOTE.md`：5.0C Chat 关系推进说明
+- `docs/version_plans/5.0_CHAT_EXECUTION_NOTE.md`：5.0C Chat 执行记录
+- `docs/version_plans/5.0_CHAT_ACCEPTANCE_SUMMARY.md`：5.0C Chat 验收摘要
+- `docs/version_plans/5.0_CHAT_UI_EVIDENCE_INDEX.md`：5.0C Chat UI 证据索引
+- `docs/version_plans/5.0_ME_OPERATING_HUB_NOTE.md`：5.0D Me 个人经营页说明
+- `docs/version_plans/5.0_ME_EXECUTION_NOTE.md`：5.0D Me 执行记录
+- `docs/version_plans/5.0_ME_ACCEPTANCE_SUMMARY.md`：5.0D Me 验收摘要
+- `docs/version_plans/5.0_ME_UI_EVIDENCE_INDEX.md`：5.0D Me UI 证据索引
+- `docs/version_plans/5.0_UI_BASELINE_EVIDENCE_INDEX.md`：5.0 UI 基线证据索引
+- `docs/version_plans/5.0_ACCEPTANCE_SUMMARY.md`：5.0 验收摘要
+- `docs/version_plans/5.0_HANDOFF_MASTER.md`：5.0 单文件主交接
+- `docs/version_plans/5.1_HANDOFF_MASTER.md`：5.1 单文件主交接（当前最新验收主入口）
+- `docs/version_plans/5.1_ACCEPTANCE_SUMMARY.md`：5.1 验收摘要，状态为 `pass with observations`
+- `docs/version_plans/5.1_BASELINE_START_NOTE.md`：5.1 基线起点说明
+- `docs/version_plans/5.1_SCOPE_AND_NON_GOALS.md`：5.1 范围与非目标
+- `docs/version_plans/5.1_CHAT_QUEUE_NOTE.md`：5.1B Chat 队列说明
+- `docs/version_plans/5.1_RELATIONSHIP_LINKAGE_NOTE.md`：5.1C 匹配解释到聊天联动说明
+- `docs/version_plans/5.1_CONTENT_TO_CHAT_NOTE.md`：5.1D 内容到聊天低压转化说明
+- `docs/version_plans/5.1_NOTIFICATION_RETURNFLOW_NOTE.md`：5.1E 通知中心回流说明
+- `docs/version_plans/5.1_VOICE_RHYTHM_NOTE.md`：5.1F 语音节奏说明
+- `docs/version_plans/5.1_CHAT_QUEUE_EVIDENCE_INDEX.md`：5.1B Chat 证据索引
+- `docs/version_plans/5.1_RELATIONSHIP_UI_EVIDENCE_INDEX.md`：5.1C 证据索引
+- `docs/version_plans/5.1_CONTENT_TO_CHAT_EVIDENCE_INDEX.md`：5.1D 证据索引
+- `docs/version_plans/5.1_NOTIFICATION_EVIDENCE_INDEX.md`：5.1E 证据索引
+- `docs/version_plans/5.1_VOICE_RHYTHM_EVIDENCE_INDEX.md`：5.1F 证据索引
+- `docs/version_plans/4.9_HANDOFF_MASTER.md`：4.9 单文件主交接
+- `docs/archive/legacy_2026-04/version_plans/4.9_ACCEPTANCE_SUMMARY.md`：4.9 验收摘要归档
+- `docs/archive/legacy_2026-04/version_plans/4.9_RELEASE_GATE_CHECKLIST.md`：4.9 发布门禁清单归档
+- `docs/archive/legacy_2026-04/version_plans/4.9_UI_BASELINE_EVIDENCE_INDEX.md`：4.9 UI 基线证据索引归档
+- `docs/archive/legacy_2026-04/version_plans/4.9_HANDOFF_PACKAGE_INDEX.md`：4.9 交接包索引归档
+
+## 当前产品化关注点
+
+- `docs/reference/SOUL_HOME_MODULE_REPORT.md`
+- `docs/reference/SOUL_ME_MODULE_REPORT.md`
+- `docs/reference/SOUL_SETTINGS_MODULE_REPORT.md`
+- `docs/reference/SOUL_CHAT_MODULE_REPORT.md`
+- `docs/reference/SOUL_DISCOVER_MODULE_REPORT.md`
+
+## 当前稳定化 / 门禁规则
+
+- `docs/4.7_UI_REVERSION_REPORT.md`
+- `docs/PROTECTED_UI_SURFACES.md`
+- `docs/runbooks/ANDROID_DEBUG_BRIDGE_MCP_USAGE.md`
+- `docs/runbooks/RTC_LIVEKIT_TROUBLESHOOTING.md`
+
+## 当前发布与版本
+
+- `docs/CHANGELOG.md`
+- `docs/version_plans/0.04.09_UPDATE_BRIEF.md`
+- `docs/version_plans/README.md`
+
+## 当前归档入口
+
+- `docs/archive/legacy_2026-04/`
+- `docs/archive/legacy_2026-04/version_plans/`
+- `docs/archive/legacy_2026-04/reports/`
+
+## 使用口径
+
+- 新会话先读：
+1. `docs/DEVELOPMENT_PLAN_CURRENT.md`
+2. `docs/project_memory.md`
+3. `ELITESYNC_CURRENT_HANDOFF_2026_05_01.md`
+4. `docs/version_plans/README.md`
+5. `docs/version_plans/5.1_HANDOFF_MASTER.md`
+6. `docs/version_plans/5.0_HANDOFF_MASTER.md`
+- 4.9 已冻结为 `pass with observations`
+- 5.0 已冻结为 `pass with observations`
+- 5.1 已验收通过，状态为 `pass with observations`
+- 5.x 当前主线是产品化补强，不再回头重开 4.x 已归档主链
