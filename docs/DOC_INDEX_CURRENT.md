@@ -32,7 +32,7 @@
 - `docs/version_plans/5.0_UI_BASELINE_EVIDENCE_INDEX.md`：5.0 UI 基线证据索引
 - `docs/version_plans/5.0_ACCEPTANCE_SUMMARY.md`：5.0 验收摘要
 - `docs/version_plans/5.0_HANDOFF_MASTER.md`：5.0 单文件主交接
-- `docs/version_plans/5.1_HANDOFF_MASTER.md`：5.1 单文件主交接（当前最新验收主入口）
+- `docs/version_plans/5.1_HANDOFF_MASTER.md`：5.1 单文件主交接
 - `docs/version_plans/5.1_ACCEPTANCE_SUMMARY.md`：5.1 验收摘要，状态为 `pass with observations`
 - `docs/version_plans/5.1_BASELINE_START_NOTE.md`：5.1 基线起点说明
 - `docs/version_plans/5.1_SCOPE_AND_NON_GOALS.md`：5.1 范围与非目标
@@ -46,6 +46,12 @@
 - `docs/version_plans/5.1_CONTENT_TO_CHAT_EVIDENCE_INDEX.md`：5.1D 证据索引
 - `docs/version_plans/5.1_NOTIFICATION_EVIDENCE_INDEX.md`：5.1E 证据索引
 - `docs/version_plans/5.1_VOICE_RHYTHM_EVIDENCE_INDEX.md`：5.1F 证据索引
+- `docs/version_plans/5.2_HANDOFF_MASTER.md`：5.2 单文件主交接（历史已验收主入口），状态为 `pass with observations`
+- `docs/version_plans/5.2_REGRESSION_CHECKLIST.md`：5.2 回归清单
+- `docs/version_plans/5.2_UI_BASELINE_EVIDENCE_INDEX.md`：5.2 UI 基线证据索引
+- `docs/version_plans/5.3_HANDOFF_MASTER.md`：5.3 单文件主交接（当前最新验收主入口），状态为 `pass with observations`
+- `docs/version_plans/5.3_REGRESSION_CHECKLIST.md`：5.3 回归清单
+- `docs/version_plans/5.3_UI_BASELINE_EVIDENCE_INDEX.md`：5.3 UI 基线证据索引
 - `docs/version_plans/4.9_HANDOFF_MASTER.md`：4.9 单文件主交接
 - `docs/archive/legacy_2026-04/version_plans/4.9_ACCEPTANCE_SUMMARY.md`：4.9 验收摘要归档
 - `docs/archive/legacy_2026-04/version_plans/4.9_RELEASE_GATE_CHECKLIST.md`：4.9 发布门禁清单归档
@@ -59,6 +65,7 @@
 - `docs/reference/SOUL_SETTINGS_MODULE_REPORT.md`
 - `docs/reference/SOUL_CHAT_MODULE_REPORT.md`
 - `docs/reference/SOUL_DISCOVER_MODULE_REPORT.md`
+- `docs/reference/SOUL_STAGE2_MASTER_CONSOLIDATED_REPORT.md`
 
 ## 当前稳定化 / 门禁规则
 
@@ -86,9 +93,12 @@
 2. `docs/project_memory.md`
 3. `ELITESYNC_CURRENT_HANDOFF_2026_05_01.md`
 4. `docs/version_plans/README.md`
-5. `docs/version_plans/5.1_HANDOFF_MASTER.md`
-6. `docs/version_plans/5.0_HANDOFF_MASTER.md`
+5. `docs/version_plans/5.2_HANDOFF_MASTER.md`
+6. `docs/version_plans/5.1_HANDOFF_MASTER.md`
+7. `docs/version_plans/5.0_HANDOFF_MASTER.md`
 - 4.9 已冻结为 `pass with observations`
 - 5.0 已冻结为 `pass with observations`
 - 5.1 已验收通过，状态为 `pass with observations`
-- 5.x 当前主线是产品化补强，不再回头重开 4.x 已归档主链
+- 5.2 已验收通过，状态为 `pass with observations`
+- 5.3 已验收通过，状态为 `pass with observations`
+- 5.x 当前主线是高价值主链功能覆盖优先，不再回头重开 4.x 已归档主链

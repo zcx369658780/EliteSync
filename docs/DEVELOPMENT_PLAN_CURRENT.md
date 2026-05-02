@@ -6,10 +6,26 @@
 
 当前说明：
 - 4.9 已作为测试前治理、限流、监控、发布链强化版收口，并作为 5.x 的稳定门禁基线。
-- 5.0 已作为 Alpha 测试候选版 / 产品化补强最小集收口，状态为 `pass with observations`。
+- 5.0 已作为最小产品化覆盖集收口，状态为 `pass with observations`。
 - 5.1 已作为关系转化与内容回流增强版收口，状态为 `pass with observations`；主交接入口为 `docs/version_plans/5.1_HANDOFF_MASTER.md`。
-- 5.2 将承接 5.1 observations 中适合继续做的小项，重点应放在个人经营页与表达层增强、证据补采集、真实通知跳转方向复核等可拆分工作，不重复建设 5.1 已完成的关系推进、通知回流和语音节奏能力。
-- 5.x 当前主线已从“基础能力补全”转为“产品化补强”：重点围绕 Discover / Chat / Me、关系推进、内容回流、个人经营、同城 / 搜索 / 轻治理动作，以及云端治理便利性提升。
+- 5.2 已作为个人经营页与表达层增强版收口，状态为 `pass with observations`；主交接入口为 `docs/version_plans/5.2_HANDOFF_MASTER.md`。
+- 5.3 已作为功能覆盖收尾版收口，状态为 `pass with observations`；主交接入口为 `docs/version_plans/5.3_HANDOFF_MASTER.md`。
+- 5.3 已完成 Discover / Chat / Me / Settings 的第二轮补齐与保护面回归证据，正式 evidence package 已收敛到 `docs/version_plans/5.3_UI_BASELINE_EVIDENCE_INDEX.md`。
+- 5.3 observations 保留为后续小项：`稍后再聊`、`冷场恢复`、`AI 续话`、`个人空间外观` 仍保持轻量候选 / 预览语义，不作为后端持久化系统。
+- 5.x 当前主线已经切换为“高价值主链功能覆盖优先”：在运营资质申请成功前，先让 EliteSync 的高价值主链尽量与 Soul 对齐，遵循“先覆盖、再优化、再治理”的顺序。
+- 当前版本顺序统一为：
+  - `5.0` 最小产品化覆盖集
+  - `5.1` 关系推进与内容转化补齐版
+  - `5.2` 个人经营中枢与表达层覆盖版
+  - `5.3` 功能覆盖收尾版
+  - `5.4` 测试运营准备与云端治理增强版
+  - `5.5` 真实小样本反馈吸收版
+- 5.x 当前重点功能覆盖域为：
+  - Discover：分栏、搜索、同城、轻治理、低压私聊入口
+  - Chat：首聊 / 回聊 / 稍后再聊、关系摘要、AI 续话、关系节奏化语音入口
+  - Me：个人经营区、标签体系、AI 助理、AI 草稿助手、展示标识、外观层
+  - Settings / Appearance：真设置中心与外观层分离、权限前解释
+- Soul Stage2 综合主报告已成为 5.x 新路线的默认竞品主参考入口：`docs/reference/SOUL_STAGE2_MASTER_CONSOLIDATED_REPORT.md`
 - 本地环境默认只做前端开发、UI 联调与文档整理；后端开发、数据库迁移、备份、恢复和任何会写数据库的操作统一在阿里云端执行，避免本地更新误污染生产后端数据库。
 
 本文件只保留为当前计划入口，不作为计划正文。  

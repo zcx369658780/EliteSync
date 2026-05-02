@@ -1,6 +1,6 @@
 # 架构与边界
 
-更新时间：2026-04-19
+更新时间：2026-05-01
 
 ## 真值链路
 
@@ -9,6 +9,7 @@
 - `chat_messages` 是消息主链真值表。
 - `app_release_versions` 是发布真值表。
 - `questionnaire_attempts`、`questionnaire_answers`、`questionnaire_questions` 是问卷真值表。
+- `rtc_calls` / `rtc_sessions` / heartbeat 相关记录是 RTC 真实状态链。
 
 ## 资料 / 画像 / 星盘 / 匹配边界
 
@@ -17,53 +18,44 @@
 - 星盘：服务端负责计算，Flutter 负责绘制与展示。
 - 匹配：解释层可以展示分项与证据，但不能把派生结果写成 canonical truth。
 
-## 4.0 媒体基础设施边界
+## 4.0~4.4S 基础能力边界
 
 - 4.0 建立的是媒体基础设施，不是完整媒体平台。
-- 当前有效对象面：
-  - `media_assets`
-  - `media_processing_jobs`
-  - `message_attachments`
-- 当前有效能力：
-  - 对象存储适配层
-  - 上传状态机
-  - 队列处理
-  - 缓存回读
-  - 结构化日志
-- 明确不做：
-  - 分片上传
-  - 断点续传
-  - 工业化签名 URL 协议
-  - 视频转码平台化
+- 4.1 是非官方四维人格问卷，不是官方 MBTI。
+- 4.2 图片消息是聊天主链扩展，不是独立媒体平台。
+- 4.3 动态流是轻内容分发，不是重社区平台。
+- 4.4 / 4.4S 视频消息与媒体链是消息主链扩展，不是短视频平台。
 
-## 4.1 人格模块边界
+## 4.6P 真语音边界
 
-- 模块定位：`非官方四维人格问卷`
-- 不能写成官方 MBTI
-- `mbti_attempts` 保留兼容层语义，但对外主口径应是问卷 / 人格倾向
-- 结果只能表示“当前倾向”，不能表示人格真值或专业诊断
-- 联动只做轻量摘要卡，不改变匹配总分主线
+- 4.6P 解决的是 1v1 真语音闭环。
+- RTC 只承担关系推进和真实联通，不承担多人直播 / 群聊 / 重娱乐扩展。
+- `Room.connect()`、join-info、heartbeat、播放链与路由都属于 RTC 保护面。
 
-## 4.2 图片消息边界
+## 4.7~4.9 稳定化边界
 
-- 图片消息通过 `attachment_ids` 绑定到 `chat_messages`
-- 图片消息是聊天主链的扩展，不是独立媒体平台
-- 只保留：
-  - 发送
-  - 接收
-  - 气泡展示
-  - 预览
-  - 失败重试
-  - 会话摘要回读
-- 明确不做：
-  - 视频消息正式版
-  - 动态流
-  - 音视频通话
-  - 大型相册/图库产品
+- 4.7 把现代 UI 定义为 protected surfaces。
+- 4.8 作为 Alpha smoke 与真实路径复验，不能回滚到旧 UI 或旧入口形态。
+- 4.9 把通知降噪、可观测性、数据库正式演练、release gate 收口为门禁基线。
+- 这三版之后，任何恢复都必须分层、路径级、最小范围。
+
+## 5.x 增量边界
+
+- 5.x 只做高价值主链功能覆盖优先，不重写已归档主链。
+- 5.x 可补：
+  - 发现页分栏 / 搜索 / 同城 / 轻治理 / 低压私聊入口
+  - 聊天首聊 / 回聊 / 稍后再聊 / 关系摘要 / AI 续话 / 关系节奏化语音入口
+  - 个人经营中枢 / AI 助理 / AI 草稿助手 / 标签表达 / 外观层
+- 5.x 不做：
+  - 重商业化商城
+  - 微服务大拆分
+  - 多人 RTC
+  - 重娱乐化玩法平台
 
 ## 保护面接口
 
 - `POST /api/v1/profile/basic`
+- `GET /api/v1/profile/basic`
 - `GET /api/v1/profile/astro/summary`
 - `GET /api/v1/profile/astro/chart`
 - `GET /api/v1/app/health`
@@ -73,6 +65,9 @@
 - `POST /api/v1/media`
 - `GET /api/v1/questionnaire/history`
 - `POST /api/v1/questionnaire/answers`
+- `POST /api/v1/rtc/calls`
+- `GET /api/v1/rtc/calls/{callId}/livekit`
+- `POST /api/v1/rtc/calls/{callId}/heartbeat`
 
 ## 不能被误改的口径
 
@@ -81,3 +76,5 @@
 - 版本检查必须与宿主 APK 绑定
 - 版本中心展示的主版本必须和宿主 APK 一致
 - 图片 URL 的 `public_url` 不能写回 localhost
+- UI protected surfaces 不能被“顺手恢复旧 commit”覆盖
+- 任何跨层 blocker 必须先写 blocker report，再做最小修复
