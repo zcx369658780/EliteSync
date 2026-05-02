@@ -111,6 +111,62 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     AppFeedback.showSuccess(context, '内容缓存已清理，下次进入将拉取最新内容');
   }
 
+  Future<void> _showAppearancePreviewSheet() async {
+    final t = context.appTokens;
+    await showModalBottomSheet<void>(
+      context: context,
+      useSafeArea: true,
+      showDragHandle: true,
+      builder: (sheetContext) {
+        return Padding(
+          padding: EdgeInsets.fromLTRB(
+            t.spacing.pageHorizontal,
+            0,
+            t.spacing.pageHorizontal,
+            t.spacing.lg,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '个人空间外观仍是预览层',
+                style: Theme.of(sheetContext).textTheme.titleMedium?.copyWith(
+                  color: t.textPrimary,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              SizedBox(height: t.spacing.xs),
+              Text(
+                '这里只负责主页被怎样看见，不会改写资料真值，也不会进入商城、币体系或真正的设置中心。若后续需要图片背景或相册类入口，会先解释权限再继续。',
+                style: Theme.of(sheetContext).textTheme.bodyMedium?.copyWith(
+                  color: t.textSecondary,
+                  height: 1.45,
+                ),
+              ),
+              SizedBox(height: t.spacing.sm),
+              Text(
+                '如果后续进入图片背景或相册类入口，应先提示所需权限，再继续操作；真正的隐私、账号和安全设置仍留在设置中心。',
+                style: Theme.of(sheetContext).textTheme.bodySmall?.copyWith(
+                  color: t.textSecondary,
+                  height: 1.4,
+                ),
+              ),
+              SizedBox(height: t.spacing.md),
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () => Navigator.of(sheetContext).pop(),
+                  child: const Text('知道了'),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   Future<void> _resetContentPreference() async {
     final local = ref.read(localStorageProvider);
     await local.remove(CacheKeys.contentPreferredTag);
@@ -200,6 +256,13 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   subtitle: '星盘元素、预设档位与恢复默认',
                   icon: Icons.auto_awesome_outlined,
                   onTap: () => context.push(AppRouteNames.astroChartSettings),
+                ),
+                Divider(height: 1, color: t.overlay.withValues(alpha: 0.35)),
+                SettingsItemTile(
+                  title: '个人空间外观',
+                  subtitle: '主页装扮、图片背景与权限前解释',
+                  icon: Icons.palette_outlined,
+                  onTap: _showAppearancePreviewSheet,
                 ),
               ],
             ),
@@ -335,7 +398,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   Divider(height: 1, color: t.overlay.withValues(alpha: 0.35)),
                   SettingsItemTile(
                     title: '认证审核',
-                    subtitle: '人工审核队列与状态处理',
+                    subtitle: '人工审核列表与状态处理',
                     icon: Icons.verified_user_outlined,
                     onTap: () => context.push(AppRouteNames.adminVerification),
                   ),
