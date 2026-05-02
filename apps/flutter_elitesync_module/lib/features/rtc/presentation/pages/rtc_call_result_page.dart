@@ -60,6 +60,34 @@ class _RtcCallResultPageState extends ConsumerState<RtcCallResultPage> {
     };
   }
 
+  String _rhythmTitle(RtcSessionEntity session) {
+    return switch (session.status) {
+      'ended' || 'in_call' => '通话后的继续建议',
+      'missed' || 'rejected' || 'busy' || 'failed' => '未接通后的回聊建议',
+      _ => '语音后的关系回流',
+    };
+  }
+
+  String _rhythmBody(RtcSessionEntity session) {
+    return switch (session.status) {
+      'ended' || 'in_call' => '如果刚刚聊得顺，可以回到文字里接住一个具体细节，不急着追问下一次安排。',
+      'missed' => '未接通时先别连续打扰，可以发一句低压说明，给对方留出稍后回复空间。',
+      'rejected' => '对方暂时没有接起时，建议回到文字里轻轻接一句，不把拒接解释成负面信号。',
+      'busy' => '对方忙线时适合稍后再聊，先保留关系节奏，不需要立刻再次呼叫。',
+      'failed' => '通话失败更像技术中断，建议回到文字说明情况，再决定是否稍后重试。',
+      _ => '语音只是关系推进的一步，结束后仍建议回到聊天里继续低压确认。',
+    };
+  }
+
+  String _followupPrompt(RtcSessionEntity session) {
+    return switch (session.status) {
+      'ended' || 'in_call' => '刚刚聊到的那个点我还挺想继续听你说，我们可以先用文字慢慢接上。',
+      'missed' || 'rejected' || 'busy' => '刚刚语音可能不太方便，没关系。你有空的时候我们再用文字慢慢聊就好。',
+      'failed' => '刚才语音好像没有连上，先不急，我们可以继续用文字聊。',
+      _ => '如果你愿意，我们可以先回到文字里继续刚才的节奏。',
+    };
+  }
+
   Widget _buildContent(RtcSessionEntity session, dynamic t) {
     final peerName = session.isInitiator
         ? session.peerName
@@ -148,6 +176,62 @@ class _RtcCallResultPageState extends ConsumerState<RtcCallResultPage> {
                   color: t.textSecondary,
                   height: 1.35,
                 ),
+              ),
+            ],
+          ),
+        ),
+        SizedBox(height: t.spacing.md),
+        AppInfoSectionCard(
+          title: _rhythmTitle(session),
+          subtitle: '从语音回到文字，不制造回复压力',
+          leadingIcon: Icons.forum_outlined,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                _rhythmBody(session),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: t.textSecondary,
+                  height: 1.45,
+                ),
+              ),
+              SizedBox(height: t.spacing.sm),
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.all(t.spacing.sm),
+                decoration: BoxDecoration(
+                  color: t.secondarySurface,
+                  borderRadius: BorderRadius.circular(t.radius.md),
+                ),
+                child: Text(
+                  _followupPrompt(session),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: t.textPrimary,
+                    height: 1.4,
+                  ),
+                ),
+              ),
+              SizedBox(height: t.spacing.sm),
+              Wrap(
+                spacing: t.spacing.xs,
+                runSpacing: t.spacing.xs,
+                children: [
+                  AppChoiceChip(
+                    label: '回到文字',
+                    selected: true,
+                    leading: const Icon(Icons.chat_bubble_outline_rounded),
+                  ),
+                  AppChoiceChip(
+                    label: '低压接续',
+                    selected: true,
+                    leading: const Icon(Icons.spa_outlined),
+                  ),
+                  AppChoiceChip(
+                    label: '稍后再聊',
+                    selected: true,
+                    leading: const Icon(Icons.schedule_rounded),
+                  ),
+                ],
               ),
             ],
           ),

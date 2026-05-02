@@ -3,10 +3,21 @@ import 'package:flutter_elitesync_module/design_system/components/tags/app_choic
 import 'package:flutter_elitesync_module/design_system/theme/app_theme_extensions.dart';
 
 class IcebreakerSuggestion {
-  const IcebreakerSuggestion({required this.label, required this.prompt});
+  const IcebreakerSuggestion({
+    required this.label,
+    required this.prompt,
+    this.lane = '首聊',
+    this.source = '关系摘要',
+    this.description = '',
+    this.icon = Icons.auto_awesome_rounded,
+  });
 
   final String label;
   final String prompt;
+  final String lane;
+  final String source;
+  final String description;
+  final IconData icon;
 }
 
 class IcebreakerCard extends StatelessWidget {
@@ -45,14 +56,11 @@ class IcebreakerCard extends StatelessWidget {
             ),
             if (suggestions.isNotEmpty) ...[
               const SizedBox(height: 10),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
+              Column(
                 children: suggestions
                     .map(
-                      (item) => AppChoiceChip(
-                        label: item.label,
-                        leading: const Icon(Icons.auto_awesome_rounded),
+                      (item) => _SuggestionRow(
+                        item: item,
                         onTap: onSuggestionTap == null
                             ? null
                             : () => onSuggestionTap!(item.prompt),
@@ -62,6 +70,82 @@ class IcebreakerCard extends StatelessWidget {
               ),
             ],
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SuggestionRow extends StatelessWidget {
+  const _SuggestionRow({required this.item, this.onTap});
+
+  final IcebreakerSuggestion item;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.appTokens;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(t.radius.md),
+        onTap: onTap,
+        child: Container(
+          width: double.infinity,
+          padding: EdgeInsets.all(t.spacing.sm),
+          decoration: BoxDecoration(
+            color: t.secondarySurface.withValues(alpha: 0.62),
+            borderRadius: BorderRadius.circular(t.radius.md),
+            border: Border.all(color: t.overlay.withValues(alpha: 0.55)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(item.icon, size: 16, color: t.brandPrimary),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      item.label,
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        color: t.textPrimary,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  AppChoiceChip(label: item.lane, selected: true),
+                ],
+              ),
+              if (item.description.trim().isNotEmpty) ...[
+                const SizedBox(height: 4),
+                Text(
+                  item.description,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: t.textSecondary,
+                    height: 1.35,
+                  ),
+                ),
+              ],
+              const SizedBox(height: 6),
+              Text(
+                item.prompt,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: t.textPrimary,
+                  height: 1.35,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                '来源：${item.source}。点击只写入草稿，不会自动发送。',
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: t.textSecondary,
+                  height: 1.25,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

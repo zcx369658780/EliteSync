@@ -16,7 +16,9 @@ import 'package:flutter_elitesync_module/design_system/components/buttons/app_se
 import 'package:flutter_elitesync_module/design_system/components/feedback/app_feedback.dart';
 import 'package:flutter_elitesync_module/design_system/components/layout/page_title_rail.dart';
 import 'package:flutter_elitesync_module/design_system/components/layout/section_reveal.dart';
+import 'package:flutter_elitesync_module/design_system/components/tags/app_choice_chip.dart';
 import 'package:flutter_elitesync_module/design_system/components/states/app_empty_state.dart';
+import 'package:flutter_elitesync_module/design_system/components/cards/app_info_section_card.dart';
 import 'package:flutter_elitesync_module/design_system/theme/app_theme_extensions.dart';
 import 'package:flutter_elitesync_module/features/chat/domain/entities/message_entity.dart';
 import 'package:flutter_elitesync_module/features/chat/domain/entities/message_attachment_entity.dart';
@@ -348,10 +350,13 @@ class _ChatRoomPageState extends ConsumerState<ChatRoomPage> {
       return;
     }
     final router = GoRouter.of(context);
+    final confirmed = await _confirmVoiceRhythm();
+    if (!confirmed) return;
 
     final permissionService = ref.read(rtcPermissionServiceProvider);
     if (!await permissionService.hasVoiceCallPermission()) {
-      final granted = await router.push<bool>(
+      final granted =
+          await router.push<bool>(
             '${AppRouteNames.rtcPermission}?title=${Uri.encodeComponent('通话权限')}',
           ) ??
           false;
@@ -364,10 +369,9 @@ class _ChatRoomPageState extends ConsumerState<ChatRoomPage> {
     telemetry.rtcCallEntryOpened(sourcePage: 'chat_room');
 
     try {
-      final session = await ref.read(rtcRemoteDataSourceProvider).createCall(
-            peerUserId: peerId,
-            mode: 'voice',
-          );
+      final session = await ref
+          .read(rtcRemoteDataSourceProvider)
+          .createCall(peerUserId: peerId, mode: 'voice');
       telemetry.rtcCallStatusChanged(
         sourcePage: 'chat_room',
         callId: session.id,
@@ -383,12 +387,15 @@ class _ChatRoomPageState extends ConsumerState<ChatRoomPage> {
       );
     } catch (e) {
       final message = e.toString().toLowerCase();
-        if (message.contains('permission') || message.contains('授权') || message.contains('权限')) {
-          if (!mounted) return;
-          final granted = await router.push<bool>(
-                '${AppRouteNames.rtcPermission}?title=${Uri.encodeComponent('通话权限')}',
-              ) ??
-              false;
+      if (message.contains('permission') ||
+          message.contains('授权') ||
+          message.contains('权限')) {
+        if (!mounted) return;
+        final granted =
+            await router.push<bool>(
+              '${AppRouteNames.rtcPermission}?title=${Uri.encodeComponent('通话权限')}',
+            ) ??
+            false;
         if (granted || await permissionService.hasVoiceCallPermission()) {
           await _startVoiceCall();
           return;
@@ -397,6 +404,52 @@ class _ChatRoomPageState extends ConsumerState<ChatRoomPage> {
       if (!mounted) return;
       AppFeedback.showError(context, e.toString());
     }
+  }
+
+  Future<bool> _confirmVoiceRhythm() async {
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        final t = dialogContext.appTokens;
+        return AlertDialog(
+          title: const Text('语音前先确认节奏'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _VoiceRhythmLine(
+                icon: Icons.chat_bubble_outline_rounded,
+                text: '如果刚开始认识，先用文字接住对方回应会更低压。',
+                color: t.brandPrimary,
+              ),
+              SizedBox(height: t.spacing.xs),
+              _VoiceRhythmLine(
+                icon: Icons.favorite_outline_rounded,
+                text: '当你们已经围绕共同点聊开，再切到语音会更自然。',
+                color: t.brandPrimary,
+              ),
+              SizedBox(height: t.spacing.xs),
+              _VoiceRhythmLine(
+                icon: Icons.call_outlined,
+                text: '现在发起语音邀请，不会自动发送文字消息。',
+                color: t.brandPrimary,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: const Text('继续文字'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: const Text('现在语音'),
+            ),
+          ],
+        );
+      },
+    );
+    return result ?? false;
   }
 
   Future<void> _pickAndUploadMedia(ChatAttachmentKind kind) async {
@@ -682,11 +735,214 @@ class _ChatRoomPageState extends ConsumerState<ChatRoomPage> {
   List<IcebreakerSuggestion> _icebreakerSuggestions() {
     return const [
       IcebreakerSuggestion(
-        label: '从周末聊起',
+        label: '继续聊：从周末聊起',
+        lane: '继续聊',
+        source: '关系摘要 / 共同点',
+        description: '适合刚有回应时继续放轻节奏，不抢结论。',
+        icon: Icons.forum_outlined,
         prompt: '先从最近一次让你放松的周末安排聊起，你通常会怎么度过？',
       ),
-      IcebreakerSuggestion(label: '问最近状态', prompt: '你最近最想投入的一件事是什么？'),
-      IcebreakerSuggestion(label: '接住话题', prompt: '你刚刚提到的那个点挺有意思，能多说一点吗？'),
+      IcebreakerSuggestion(
+        label: '继续聊：问最近状态',
+        lane: '继续聊',
+        source: '最近互动',
+        description: '适合把聊天从问候推进到真实近况。',
+        icon: Icons.waving_hand_outlined,
+        prompt: '你最近最想投入的一件事是什么？',
+      ),
+      IcebreakerSuggestion(
+        label: '回聊：接住话题',
+        lane: '回聊',
+        source: '最近互动',
+        description: '适合对方已经给出信息时，先接住再追问。',
+        icon: Icons.reply_rounded,
+        prompt: '你刚刚提到的那个点挺有意思，能多说一点吗？',
+      ),
+      IcebreakerSuggestion(
+        label: '回聊：从共同点延展',
+        lane: '回聊',
+        source: '匹配解释 / 共同点',
+        description: '适合把匹配解释里的共同点转成自然追问。',
+        icon: Icons.join_inner_rounded,
+        prompt: '我们好像有个相近的地方：都更重视相处里的真实感。你会怎么理解这种感觉？',
+      ),
+      IcebreakerSuggestion(
+        label: '稍后再回：低压回归',
+        lane: '稍后再回',
+        source: '稍后再回队列',
+        description: '适合隔了一段时间后重新接起，不制造压力。',
+        icon: Icons.schedule_rounded,
+        prompt: '刚刚那段我想了一下，还是挺想听听你的看法。如果你愿意，我们可以从一个轻松的问题重新聊起。',
+      ),
+      IcebreakerSuggestion(
+        label: '冷场恢复：共鸣接起',
+        lane: '冷场恢复',
+        source: '冷场恢复队列',
+        description: '适合聊天中断后，先表达理解，再轻轻追问。',
+        icon: Icons.volunteer_activism_outlined,
+        prompt: '我刚刚想到你说的那句话，其实挺能理解。你当时最在意的是哪一部分？',
+      ),
+      IcebreakerSuggestion(
+        label: '冷场恢复：周末安排',
+        lane: '冷场恢复',
+        source: '状态内容 / 生活节奏',
+        description: '适合话题停住时，用低压生活问题重新打开。',
+        icon: Icons.weekend_outlined,
+        prompt: '这个周末你更想安静待着，还是想出去走走？我有点好奇你的放松方式。',
+      ),
+    ];
+  }
+
+  Widget _buildVoiceRhythmInline(dynamic t) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: t.secondarySurface,
+        borderRadius: BorderRadius.circular(t.radius.md),
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(t.spacing.sm),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(Icons.call_outlined, color: t.brandPrimary, size: 20),
+            SizedBox(width: t.spacing.xs),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '语音节奏',
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      color: t.textPrimary,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  SizedBox(height: t.spacing.xxs),
+                  Text(
+                    '已有连续回聊、共同点被接住时，再发起语音更自然；首聊阶段建议先文字铺垫。',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: t.textSecondary,
+                      height: 1.35,
+                    ),
+                  ),
+                  SizedBox(height: t.spacing.xs),
+                  AppSecondaryButton(
+                    label: '查看语音前提示',
+                    onPressed: _confirmVoiceRhythm,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  List<Widget> _buildConversationHeader(dynamic t) {
+    return [
+      Padding(
+        padding: EdgeInsets.fromLTRB(
+          t.spacing.pageHorizontal,
+          t.spacing.sm,
+          t.spacing.pageHorizontal,
+          t.spacing.sm,
+        ),
+        child: const SectionReveal(
+          child: PageTitleRail(title: '慢慢聊', subtitle: '先发一条轻问候，再围绕对方回应继续展开'),
+        ),
+      ),
+      Padding(
+        padding: EdgeInsets.symmetric(horizontal: t.spacing.pageHorizontal),
+        child: AppInfoSectionCard(
+          title: '关系摘要',
+          subtitle: '首聊 / 回聊 / 关系推进的当前提示',
+          leadingIcon: Icons.favorite_outline_rounded,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '当前会话适合慢聊推进：先接住对方回应，再围绕共同点、近况和周末安排继续展开；如果节奏合适，也可以再切到语音联动。',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: t.textSecondary,
+                  height: 1.5,
+                ),
+              ),
+              SizedBox(height: t.spacing.sm),
+              Wrap(
+                spacing: t.spacing.xs,
+                runSpacing: t.spacing.xs,
+                children: [
+                  AppChoiceChip(
+                    label: '首聊',
+                    selected: true,
+                    leading: const Icon(Icons.chat_bubble_outline_rounded),
+                  ),
+                  AppChoiceChip(
+                    label: '回聊',
+                    selected: true,
+                    leading: const Icon(Icons.refresh_rounded),
+                  ),
+                  AppChoiceChip(
+                    label: '关系摘要',
+                    selected: true,
+                    leading: const Icon(Icons.view_quilt_outlined),
+                  ),
+                  AppChoiceChip(
+                    label: '语音联动',
+                    selected: true,
+                    leading: const Icon(Icons.call_outlined),
+                  ),
+                ],
+              ),
+              SizedBox(height: t.spacing.sm),
+              _buildVoiceRhythmInline(t),
+            ],
+          ),
+        ),
+      ),
+      SizedBox(height: t.spacing.xs),
+      Padding(
+        padding: EdgeInsets.symmetric(horizontal: t.spacing.pageHorizontal),
+        child: IcebreakerCard(
+          suggestions: _icebreakerSuggestions(),
+          onSuggestionTap: _applyIcebreakerSuggestion,
+        ),
+      ),
+      Padding(
+        padding: EdgeInsets.fromLTRB(
+          t.spacing.pageHorizontal,
+          t.spacing.xs,
+          t.spacing.pageHorizontal,
+          t.spacing.xs,
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                '图片/视频附件入口已接入，可直接选择并上传。',
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: t.textSecondary),
+              ),
+            ),
+            const SizedBox(width: 8),
+            AppSecondaryButton(
+              label: '选择图片 / 视频',
+              onPressed: _openAttachmentPicker,
+            ),
+          ],
+        ),
+      ),
+      Padding(
+        padding: EdgeInsets.fromLTRB(
+          t.spacing.pageHorizontal,
+          t.spacing.xs,
+          t.spacing.pageHorizontal,
+          t.spacing.xs,
+        ),
+        child: _buildAttachmentDraftCard(),
+      ),
     ];
   }
 
@@ -768,61 +1024,6 @@ class _ChatRoomPageState extends ConsumerState<ChatRoomPage> {
       body: Column(
         children: [
           ConnectionStatusBanner(status: connection),
-          Padding(
-            padding: EdgeInsets.fromLTRB(
-              t.spacing.pageHorizontal,
-              t.spacing.sm,
-              t.spacing.pageHorizontal,
-              t.spacing.sm,
-            ),
-            child: const SectionReveal(
-              child: PageTitleRail(
-                title: '慢慢聊',
-                subtitle: '先发一条轻问候，再围绕对方回应继续展开',
-              ),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: t.spacing.pageHorizontal),
-            child: IcebreakerCard(
-              suggestions: _icebreakerSuggestions(),
-              onSuggestionTap: _applyIcebreakerSuggestion,
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.fromLTRB(
-              t.spacing.pageHorizontal,
-              t.spacing.xs,
-              t.spacing.pageHorizontal,
-              t.spacing.xs,
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    '图片/视频附件入口已接入，可直接选择并上传。',
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodySmall?.copyWith(color: t.textSecondary),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                AppSecondaryButton(
-                  label: '选择图片 / 视频',
-                  onPressed: _openAttachmentPicker,
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.fromLTRB(
-              t.spacing.pageHorizontal,
-              t.spacing.xs,
-              t.spacing.pageHorizontal,
-              t.spacing.xs,
-            ),
-            child: _buildAttachmentDraftCard(),
-          ),
           Expanded(
             child: async.when(
               loading: () => const Center(child: CircularProgressIndicator()),
@@ -883,16 +1084,19 @@ class _ChatRoomPageState extends ConsumerState<ChatRoomPage> {
                 final merged = [...initialMessages, ...localPending];
                 if (merged.isEmpty) {
                   return ListView(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: t.spacing.pageHorizontal,
-                      vertical: t.spacing.lg,
-                    ),
                     children: [
-                      AppEmptyState(
-                        title: '还没有消息',
-                        description: '先发一条轻问候，聊聊今天的状态或最近一次放松时刻。',
-                        actionLabel: '返回会话列表',
-                        onAction: () => Navigator.of(context).maybePop(),
+                      ..._buildConversationHeader(t),
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: t.spacing.pageHorizontal,
+                          vertical: t.spacing.lg,
+                        ),
+                        child: AppEmptyState(
+                          title: '还没有消息',
+                          description: '先发一条轻问候，聊聊今天的状态或最近一次放松时刻。',
+                          actionLabel: '返回会话列表',
+                          onAction: () => Navigator.of(context).maybePop(),
+                        ),
                       ),
                     ],
                   );
@@ -910,16 +1114,22 @@ class _ChatRoomPageState extends ConsumerState<ChatRoomPage> {
                       chatRoomMessagesProvider(widget.conversationId).future,
                     );
                   },
-                  child: ListView.builder(
+                  child: ListView(
                     controller: _listController,
-                    padding: EdgeInsets.symmetric(
-                      horizontal: t.spacing.pageHorizontal,
-                      vertical: t.spacing.sm,
-                    ),
-                    itemCount: merged.length,
-                    itemBuilder: (context, index) => RepaintBoundary(
-                      child: MessageBubble(message: merged[index]),
-                    ),
+                    padding: EdgeInsets.only(bottom: t.spacing.sm),
+                    children: [
+                      ..._buildConversationHeader(t),
+                      ...merged.map(
+                        (message) => Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: t.spacing.pageHorizontal,
+                          ),
+                          child: RepaintBoundary(
+                            child: MessageBubble(message: message),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 );
               },
@@ -948,6 +1158,30 @@ class _ChatRoomPageState extends ConsumerState<ChatRoomPage> {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _VoiceRhythmLine extends StatelessWidget {
+  const _VoiceRhythmLine({
+    required this.icon,
+    required this.text,
+    required this.color,
+  });
+
+  final IconData icon;
+  final String text;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, size: 18, color: color),
+        const SizedBox(width: 8),
+        Expanded(child: Text(text)),
+      ],
     );
   }
 }

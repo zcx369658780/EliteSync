@@ -23,7 +23,23 @@
 
 ## 当前基线
 
-- 对外发布版本：`0.04.06 / 40600`
+- 对外发布版本：`0.04.09 / 40900`
+- 当前稳定阶段：`4.9`、`5.0`、`5.1` 均已按 `pass with observations` 收口；`4.9` 仍作为 `5.x` 的稳定门禁基线，`5.1` 是当前最新已验收版本。
+- 当前主计划入口：`docs/DEVELOPMENT_PLAN_CURRENT.md`
+- 当前 5.x 主计划：`docs/version_plans/elite_sync_整体开发计划书_5_x方向重排版_2026_05_01.md`
+- 当前 5.x 路线图草案：`docs/version_plans/elite_sync_未来版本开发路线图草案_2026_05_01.md`
+- 当前 4.9 主交接文件：`docs/version_plans/4.9_HANDOFF_MASTER.md`
+- 当前 4.9 关键验收材料除 `4.9_HANDOFF_MASTER.md` 外已归档到 `docs/archive/legacy_2026-04/version_plans/`
+- 4.9 的核心收口已经完成：现代 UI baseline、rollback / recovery policy、数据库正式演练、release gate、health、RTC / LiveKit 可观测性、通知降噪都已固化为门禁基线
+- 4.9 的保留 observations 主要是：手机侧通知中心独立页仍可继续复测、版本中心 / 下载 / version check 的版本链可在后续再做一次彻底统一、可观测性深度可在 5.0 前继续加厚
+- 5.x 当前主线已经从“基础能力补全”转为“产品化补强”：重点围绕 Discover / Chat / Me 的产品结构增强、AI 辅助层、首聊 / 回聊、关系推进、同城 / 搜索 / 轻治理动作，以及云端治理便利性提升。
+- 5.0B 已开始进入 Discover 发现页产品化最小增强阶段，当前已补齐 Discover 默认态、搜索聚焦态、同城内容态与对应 UI 证据索引，作为后续产品化补强的当前落点。
+- 5.0B Discover 已补齐执行记录与验收摘要，当前口径是：Discover 具备复合入口层雏形，但仍不应被扩成重推荐平台或重社区；后续实现应继续保持分栏、搜索、同城、轻治理的 additive 承接。
+- 5.0C 已开始进入 Chat 关系推进最小增强阶段，当前已补齐会话列表、首聊 / 恢复建议、语音通话入口、附件入口与返回路径证据，作为后续首聊 / 回聊 / 关系摘要 / AI 轻按钮承接的当前落点。
+- 5.0D 已开始进入 Me 个人经营页最小增强阶段，当前已补齐顶级身份区、账号状态、基础资料、资料完整度与资料同步提示证据，作为后续标签表达、内容经营、AI 建议与轻语音表达承接的当前落点。
+- 5.0E 已形成 5.0 的统一验收与单文件交接材料，当前主交接入口切换为 `5.0_HANDOFF_MASTER.md`，并配套 `5.0_UI_BASELINE_EVIDENCE_INDEX.md` 与 `5.0_ACCEPTANCE_SUMMARY.md` 作为交接证据和收口摘要；顾问当前验收口径已提升为 `pass with observations`，后续保留的观察项仅为少量产品化细节；Me follow-up 证据已独立核验，覆盖 AI 助理 / 展示建议入口、内容标签区、资料真值链路与玄学入口，Chat 的关系摘要层也已形成用户面证据。
+- 5.1 已形成统一验收与单文件交接材料，当前主交接入口为 `docs/version_plans/5.1_HANDOFF_MASTER.md`，验收口径为 `pass with observations`。5.1 已完成首聊 / 回聊 / 冷场恢复队列、匹配解释到聊天草稿联动、状态 / 动态低压回流、通知中心回流产品化、语音节奏和 RTC 未接通后回聊建议。保留 observations：Chat / Match / Status / Notification 证据仍需补齐，RTC success result 正式截图仍待补，`conversation_id / peer_user_id` 真实通知 payload 跳转方向仍待核验，`match_detail_page_test.dart` 可后续补测；这些观察项可拆给 5.2 或后续证据补采集，不阻断 5.1 收口。
+- 5.x 验收提交经验补充：验收不能只看文档自报，必须让截图文件名、截图内容和页面实际内容三者一致；若证据链出现错绑 / 错传，必须先修正证据文件再谈升档，避免把 Chat 页证据误当成 Me 页证据。
 - 当前阶段结论：`3.5` 已正式验收通过并归档
 - `3.6` 已进入计划执行阶段，stage 0、stage 1 与 stage 2 已完成
 - `3.6` stage 3 也已完成：路线解释层已落地为轻量阅读卡，设置页补齐路线差异报告，本命盘详情页保留 compact 解释卡
@@ -95,10 +111,12 @@
 - `4.6F` 是 4.6 的 LiveKit 真语音接入子任务：保留现有 RTC 状态机，仅新增语音媒体层、join info 接口和 Flutter 连接壳层；不要把它扩成多人 / 直播 / 在线状态平台。当前真语音仍未闭合，通话可连但音频频谱仍在等待远端音轨，后续应把材料交给 GPT 顾问裁决，不要继续盲修主链。
 - `4.6P` 已下发为音频播放链定向修正版：只盯“听到声音”这一 blocker，不再继续扩 UI 或重写 RTC 主链；当前已完成真语音可听闭环，建议按 `pass with observations` 收口，并保留模拟器反向发言链的最终复测作为观察项。
 - `4.7` 已切换为测试前稳定化与质量门禁版：UI protected surfaces、rollback policy、baseline evidence 和 release gate 是硬门禁，任何构建 / 后端 / RTC / 媒体恢复都不得默认覆盖现代 UI。
+- Android 模拟器 / 设备 UI 自动化优先使用 `Android-Debug-Bridge-MCP`（ADB native）；后续 Soul 拆解或类似竞品 UI 分析默认先复用这一 MCP，不与重叠的自动化方案同时并行安装，只有在该方案不稳定或不兼容时才评估 `mobile-next/mobile-mcp`。
 - 阿里云端已拉起 LiveKit 自托管容器并写入 `LIVEKIT_*` 环境变量，`GET /api/v1/rtc/calls/{callId}/livekit` 已能返回可用 join-info；后续若继续，只能基于顾问裁决做最小收口，不要回头重写 RTC 状态机。
 - RTC 断连收口采用“双方心跳 + 10 秒失联自动结束”机制：后端新增 `POST /api/v1/rtc/calls/{callId}/heartbeat`，并通过 `initiator_last_seen_at` / `peer_last_seen_at` 记录双方最后活跃时间；当 `connecting` / `in_call` 会话任一方失联超过 10 秒时，后端自动结束通话，避免 busy 残留。
-- 2026-04-25 当前快照：发布基线已统一到 `0.04.06 / 40600`，`4.6P` 音频播放链定向修正版已收口并完成真语音可听闭环；4.3 / 4.4 / 4.4S / 4.5E 的归档材料继续保留，CI 的 `AppVersionApiTest` 版本默认值已同步为 `0.04.06 / 40600`，根目录临时截图 / 视频样本只保留归档需要的正式证据，不再作为长期记忆输入。
+- 2026-04-29 当前快照：发布基线已统一到 `0.04.09 / 40900`，4.9 测试前治理、限流、监控与发布链强化版已完成并按 `pass with observations` 收口；4.6P 真语音闭环、4.7 UI 保护面、4.8 Alpha smoke 与 4.9 release gate 的归档材料继续保留，CI 的 `AppVersionApiTest` 版本默认值已同步为 `0.04.09 / 40900`，根目录临时截图 / 视频样本只保留归档需要的正式证据，不再作为长期记忆输入。
 - 2026-04-26 4.7 UI 回退事故后，仓库新增 `docs/PROTECTED_UI_SURFACES.md` 与 `docs/runbooks/ROLLBACK_AND_RECOVERY_POLICY.md`：恢复动作默认只能做路径级、文件级、最小范围；现代 UI（主导航、首页、消息页、聊天页、通知中心、匹配页、资料页、问卷页、版本中心、starry background / modern card / spacing）视为 protected surface，任何触碰都必须先 checkpoint 再恢复。
+- 模拟器 / 设备联网排障时，不要通过修改 DNS 来“硬修”应用问题；优先做外部连通性检查、模拟器重启 / 冷启动 / 重建、以及系统网络恢复。DNS 只作为网络栈诊断对象，不作为常规修复手段或默认改动项。
 
 ## 星盘与资料链路
 
@@ -131,3 +149,10 @@
 - 新版本规划先更新当前索引，再补版本计划与交接稿
 - 历史版本只保留归档，不再作为当前执行基线
 - 资料、出生地、坐标、八字、紫微、星盘等字段以服务端真源为准，前端缓存只做兜底
+- 4.9 之后的交接材料默认只保留一个主交接文件（优先 `*_HANDOFF_MASTER.md`），对外上传 / 交接时默认只发主交接文件 + 必要索引，不再默认拆成大量独立交接稿
+- 当前 Soul 拆解已完成首页、个人页、设置、聊天、发现模块的竞品分析；其中最值得 EliteSync 参考的方向是：
+  - 发现页：推荐 / 同城 / 搜索 / 分享 / moderation 的复合入口层
+  - 聊天页：首聊 / 回聊队列、关系摘要、AI 破冰、输入区轻集成
+  - 个人页：资料展示 + AI 助理 + 内容经营 + 功能中心的综合中枢
+  - 设置页：个人空间外观 / 主页背景 / 装扮面板与真实设置中心分层
+  - 这些结论应作为 5.x 产品化补强的直接输入，而不是原样照搬 Soul 的商业化入口
