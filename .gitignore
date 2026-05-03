@@ -39,3 +39,8 @@ docs/同事建议/.tmp_*/
 docs/同事建议/
 .gradle-home/
 tmp_emulator_screen*.png
+
+# Local-only Soul stage2 teardown artifacts
+docs/reference/SOUL_*STAGE2*.md
+docs/reference/SOUL_STAGE2_*.md
+docs/reference/soul_*_stage2/
