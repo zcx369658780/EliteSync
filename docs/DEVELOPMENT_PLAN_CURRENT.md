@@ -12,6 +12,9 @@
 - 5.3 已作为功能覆盖收尾版收口，状态为 `pass with observations`；主交接入口为 `docs/version_plans/5.3_HANDOFF_MASTER.md`。
 - 5.3 已完成 Discover / Chat / Me / Settings 的第二轮补齐与保护面回归证据，正式 evidence package 已收敛到 `docs/version_plans/5.3_UI_BASELINE_EVIDENCE_INDEX.md`。
 - 5.3 observations 保留为后续小项：`稍后再聊`、`冷场恢复`、`AI 续话`、`个人空间外观` 仍保持轻量候选 / 预览语义，不作为后端持久化系统。
+- 5.4 已作为测试运营准备与云端治理增强版收口，状态为 `pass with observations`；主交接入口为 `docs/version_plans/5.4_HANDOFF_MASTER.md`。
+- 5.4 已完成只读运营准备入口、观测入口、Smoke / Regression Matrix、5.4 Runbook Library、synthetic / smoke 账号治理提示、备份 / 恢复 / migration readiness 与保护面证据补齐；正式 evidence package 已收敛到 `docs/version_plans/5.4_OBSERVABILITY_EVIDENCE_INDEX.md`。
+- 5.4 observations 保留为后续真实环境核验项：Cloud DB read-only audit、backup existence、restore drill、migration-level checks、queue / logs、RTC success evidence 仍需真实环境证据，不写成已通过。
 - 5.x 当前主线已经切换为“高价值主链功能覆盖优先”：在运营资质申请成功前，先让 EliteSync 的高价值主链尽量与 Soul 对齐，遵循“先覆盖、再优化、再治理”的顺序。
 - 当前版本顺序统一为：
   - `5.0` 最小产品化覆盖集

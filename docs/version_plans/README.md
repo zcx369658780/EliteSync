@@ -2,7 +2,7 @@
 
 Current active handoff entry:
 
-- [5.3_HANDOFF_MASTER.md](./5.3_HANDOFF_MASTER.md)
+- [5.4_HANDOFF_MASTER.md](./5.4_HANDOFF_MASTER.md)
 
 Current active plan:
 
@@ -49,6 +49,15 @@ Current 5.3 status:
 - [5.3_UI_BASELINE_EVIDENCE_INDEX.md](./5.3_UI_BASELINE_EVIDENCE_INDEX.md)
 - [assets/5.3/](./assets/5.3/)
 
+Current 5.4 status:
+
+- status: `pass with observations`
+- [5.4_HANDOFF_MASTER.md](./5.4_HANDOFF_MASTER.md)
+- [5.4_REGRESSION_CHECKLIST.md](./5.4_REGRESSION_CHECKLIST.md)
+- [5.4_OBSERVABILITY_EVIDENCE_INDEX.md](./5.4_OBSERVABILITY_EVIDENCE_INDEX.md)
+- [assets/5.4/](./assets/5.4/)
+- 5.4 observations: Cloud DB read-only audit, backup existence, restore drill, migration-level checks, queue / logs, and RTC success evidence require real environment evidence before they can be marked as passed.
+
 Current 5.x route:
 
 - 5.0: 最小产品化覆盖集
@@ -57,7 +66,7 @@ Current 5.x route:
 - 5.3: 功能覆盖收尾版
 - 5.4: 测试运营准备与云端治理增强版
 - 5.5: 真实小样本反馈吸收版
-- 在运营资质申请成功前，5.x 的最高优先级是高价值主链功能覆盖优先；治理与云端便利性后移到 5.4 / 5.5。
+- 在运营资质申请成功前，5.x 的最高优先级是高价值主链功能覆盖优先；5.4 已完成测试运营准备与治理入口收口，后续主线进入 5.5 真实小样本反馈吸收版。
 - Soul Stage2 综合主报告是当前默认竞品主参考入口：`docs/reference/SOUL_STAGE2_MASTER_CONSOLIDATED_REPORT.md`
 
 Current 5.0 baseline:

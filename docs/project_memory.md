@@ -8,6 +8,29 @@
 - 3.x 收口与后续计划交接稿：`docs/HANDOFF_3X_CLOSEOUT_20260417.md`
 - 历史材料统一进入 `docs/archive/legacy_2026-04/`
 
+## EliteSync App Studio
+
+- 当前 repo-local 工作流入口：`plugins/elitesync-app-studio/`
+- 当前工作流总说明：`docs/ELITESYNC_APP_STUDIO_WORKFLOW.md`
+- 当前技能审核稿：`docs/ELITESYNC_APP_STUDIO_SKILL_AUDIT.md`
+- 当前第一批已启用 skill：
+  - `elitesync-version-start`
+  - `elitesync-runtime-slice`
+  - `elitesync-evidence-closeout`
+  - `elitesync-dirty-worktree`
+  - `elitesync-cross-layer-blocker`
+- 默认调用顺序：
+  - 新版本启动 -> `elitesync-version-start`
+  - 运行时实现切片 -> `elitesync-runtime-slice`
+  - 证据与交接收口 -> `elitesync-evidence-closeout`
+  - 脏工作区清理 / 单主题提交 -> `elitesync-dirty-worktree`
+  - 跨层 blocker / 越界风险 -> `elitesync-cross-layer-blocker`
+- 第二批暂留规划：
+  - `elitesync-current-entry-sync`
+  - `elitesync-historical-archive`
+- 第三批仅保留为预留能力：
+  - `elitesync-release-readiness`
+
 ## 交接材料规范
 
 - 同一版本的交接材料必须收敛为一个主交接文件，优先命名为 `*_HANDOFF_MASTER.md`。
@@ -92,7 +115,7 @@
 ## 当前基线
 
 - 对外发布版本：`0.04.09 / 40900`
-- 当前稳定阶段：`4.9`、`5.0`、`5.1`、`5.2`、`5.3` 均已按 `pass with observations` 收口；`4.9` 仍作为 `5.x` 的稳定门禁基线，`5.3` 是当前最新已验收版本。
+- 当前稳定阶段：`4.9`、`5.0`、`5.1`、`5.2`、`5.3`、`5.4` 均已按 `pass with observations` 收口；`4.9` 仍作为 `5.x` 的稳定门禁基线，`5.4` 是当前最新已验收版本。
 - 当前主计划入口：`docs/DEVELOPMENT_PLAN_CURRENT.md`
 - 当前 5.x 主计划：`docs/version_plans/elite_sync_整体开发计划书_5_x方向重排版_2026_05_01.md`
 - 当前 5.x 路线图草案：`docs/version_plans/elite_sync_未来版本开发路线图草案_2026_05_01.md`
@@ -110,6 +133,7 @@
 - 2026-05-02 已核对 5.1 功能实现分支完成 PR、merge 与 regression：GitHub Actions `regression-full-manual #34` 在 `main` 分支 commit `f4b0419` 上成功，run URL 为 `https://github.com/zcx369658780/EliteSync/actions/runs/25242898302`，总耗时 `15m 19s`，产物为 `regression-full-logs`。该记录只固化 5.1 已合入并通过回归，不重开 5.1 主链。
 - 5.2 已形成统一验收与单文件交接材料，当前主交接入口为 `docs/version_plans/5.2_HANDOFF_MASTER.md`，验收口径为 `pass with observations`。5.2 已完成个人经营区、标签表达体系、AI 展示建议、AI 草稿助手、轻语音表达候选位和个人空间外观层；保护面回归覆盖设置页、版本中心、消息页、聊天页、编辑资料页、版本号 `0.04.09 / 40900` 与资料真值链口径。保留 observations：AI 草稿 bottom sheet 场景下全局浮层 `发布状态` CTA 可能遮挡文案，轻语音仍是候选位而非录制闭环，AI 草稿仍是本地建议不持久化，个人空间外观仍是预览层而非持久化装扮系统；这些观察项只作为后续小 UI polish 或产品 contract 任务，不重开 5.2 主链。
 - 5.3 已形成统一验收与单文件交接材料，当前主交接入口为 `docs/version_plans/5.3_HANDOFF_MASTER.md`，验收口径为 `pass with observations`。5.3 已完成 Discover / Chat / Me / Settings 的第二轮补齐与护栏回归，正式证据已收敛为 `docs/version_plans/5.3_UI_BASELINE_EVIDENCE_INDEX.md`，并用 `docs/version_plans/5.3_REGRESSION_CHECKLIST.md` 固化回归清单；保留 observations：全局 `发布状态` 浮层在部分 sheet 场景下仍会遮挡底部内容，轻语音 dialog 仍残留少量 5.2 旧文案，`稍后再聊`、`冷场恢复`、`AI 续话`、`个人空间外观` 仍是轻量候选 / 预览语义，不作为后端持久化系统，也不重开 5.3 主链。
+- 5.4 已形成统一验收与单文件交接材料，当前主交接入口为 `docs/version_plans/5.4_HANDOFF_MASTER.md`，验收口径为 `pass with observations`。5.4 已完成测试运营准备与云端治理增强：只读运营准备入口、观测入口、Smoke / Regression Matrix、5.4 Runbook Library、synthetic / smoke 账号治理提示、备份 / 恢复 / migration readiness 与保护面证据，正式证据已收敛为 `docs/version_plans/5.4_OBSERVABILITY_EVIDENCE_INDEX.md`，并用 `docs/version_plans/5.4_REGRESSION_CHECKLIST.md` 固化回归清单；保留 observations：Cloud DB read-only audit、backup existence、restore drill、migration-level checks、queue / logs、RTC success evidence 仍需真实环境证据，不写成已通过，也不重开 5.4 主链。后续主线进入 `5.5` 真实小样本反馈吸收版。
 - 5.x 验收提交经验补充：验收不能只看文档自报，必须让截图文件名、截图内容和页面实际内容三者一致；若证据链出现错绑 / 错传，必须先修正证据文件再谈升档，避免把 Chat 页证据误当成 Me 页证据。
 - 当前阶段结论：`3.5` 已正式验收通过并归档
 - `3.6` 已进入计划执行阶段，stage 0、stage 1 与 stage 2 已完成

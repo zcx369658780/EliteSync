@@ -1,6 +1,6 @@
 # 文档索引（当前有效）
 
-更新时间：2026-05-02
+更新时间：2026-05-06
 
 ## 当前主入口
 
@@ -49,9 +49,13 @@
 - `docs/version_plans/5.2_HANDOFF_MASTER.md`：5.2 单文件主交接（历史已验收主入口），状态为 `pass with observations`
 - `docs/version_plans/5.2_REGRESSION_CHECKLIST.md`：5.2 回归清单
 - `docs/version_plans/5.2_UI_BASELINE_EVIDENCE_INDEX.md`：5.2 UI 基线证据索引
-- `docs/version_plans/5.3_HANDOFF_MASTER.md`：5.3 单文件主交接（当前最新验收主入口），状态为 `pass with observations`
+- `docs/version_plans/5.3_HANDOFF_MASTER.md`：5.3 单文件主交接（历史已验收主入口），状态为 `pass with observations`
 - `docs/version_plans/5.3_REGRESSION_CHECKLIST.md`：5.3 回归清单
 - `docs/version_plans/5.3_UI_BASELINE_EVIDENCE_INDEX.md`：5.3 UI 基线证据索引
+- `docs/version_plans/5.4_HANDOFF_MASTER.md`：5.4 单文件主交接（当前最新验收主入口），状态为 `pass with observations`
+- `docs/version_plans/5.4_REGRESSION_CHECKLIST.md`：5.4 回归清单
+- `docs/version_plans/5.4_OBSERVABILITY_EVIDENCE_INDEX.md`：5.4 观测与证据索引
+- `docs/version_plans/assets/5.4/`：5.4 正式截图与 XML 证据目录
 - `docs/version_plans/4.9_HANDOFF_MASTER.md`：4.9 单文件主交接
 - `docs/archive/legacy_2026-04/version_plans/4.9_ACCEPTANCE_SUMMARY.md`：4.9 验收摘要归档
 - `docs/archive/legacy_2026-04/version_plans/4.9_RELEASE_GATE_CHECKLIST.md`：4.9 发布门禁清单归档
@@ -93,12 +97,15 @@
 2. `docs/project_memory.md`
 3. `ELITESYNC_CURRENT_HANDOFF_2026_05_01.md`
 4. `docs/version_plans/README.md`
-5. `docs/version_plans/5.2_HANDOFF_MASTER.md`
-6. `docs/version_plans/5.1_HANDOFF_MASTER.md`
-7. `docs/version_plans/5.0_HANDOFF_MASTER.md`
+5. `docs/version_plans/5.4_HANDOFF_MASTER.md`
+6. `docs/version_plans/5.3_HANDOFF_MASTER.md`
+7. `docs/version_plans/5.2_HANDOFF_MASTER.md`
+8. `docs/version_plans/5.1_HANDOFF_MASTER.md`
+9. `docs/version_plans/5.0_HANDOFF_MASTER.md`
 - 4.9 已冻结为 `pass with observations`
 - 5.0 已冻结为 `pass with observations`
 - 5.1 已验收通过，状态为 `pass with observations`
 - 5.2 已验收通过，状态为 `pass with observations`
 - 5.3 已验收通过，状态为 `pass with observations`
+- 5.4 已验收通过，状态为 `pass with observations`
 - 5.x 当前主线是高价值主链功能覆盖优先，不再回头重开 4.x 已归档主链

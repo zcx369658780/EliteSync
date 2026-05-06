@@ -1,16 +1,14 @@
 # 当前计划与下一步
 
-更新时间：2026-05-02
+更新时间：2026-05-06
 
 ## 当前最建议继续推进的方向
 
 - 当前已经不是 4.x 的基础能力补全阶段。
 - 当前主线应从 `4.9` 稳定门禁直接切入 `5.x` 高价值主链功能覆盖优先。
-- `5.0`、`5.1` 与 `5.2` 已按 `pass with observations` 收口。
+- `5.0`、`5.1`、`5.2`、`5.3` 与 `5.4` 已按 `pass with observations` 收口。
 - 如果继续按当前产品线推进，优先级应为：
-  1. `5.3` 功能覆盖收尾版
-  2. `5.4` 测试运营准备与云端治理增强版
-  3. `5.5` 真实小样本反馈吸收版
+  1. `5.5` 真实小样本反馈吸收版
 
 ## 为什么这样排
 
@@ -35,6 +33,12 @@
 - 5.2 已完成个人经营中枢与表达层覆盖，后续不再作为当前主线继续展开。
 - 5.2 的 observations 仅作为后续 5.3 及更后续版本的补证据或小项承接，不回头重开主链。
 
+## 5.4 收口说明
+
+- `5.4` 已正式收口，状态为 `pass with observations`。
+- 5.4 已完成测试运营准备与云端治理增强：只读运营准备入口、观测入口、Smoke / Regression Matrix、5.4 Runbook Library、synthetic / smoke 账号治理提示、备份 / 恢复 / migration readiness 与保护面证据。
+- 5.4 observations 只作为真实环境核验项承接：Cloud DB read-only audit、backup existence、restore drill、migration-level checks、queue / logs、RTC success evidence 仍需真实环境证据，不回头重开 5.4 主链。
+
 ## 不能跳过的前置条件
 
 - 不能跳过 `profile/basic`、`profile/astro/summary`、`profile/astro/chart` 真值链
@@ -46,5 +50,5 @@
 
 ## 当前建议
 
-- 继续做新版本前，确认 5.2 主交接 `docs/version_plans/5.2_HANDOFF_MASTER.md` 已作为当前最新验收入口。
+- 继续做新版本前，确认 5.4 主交接 `docs/version_plans/5.4_HANDOFF_MASTER.md` 已作为当前最新验收入口。
 - 任何新版本都必须从当前稳定基线承接，不要回头重做已归档版本或 5.1 已通过能力。
