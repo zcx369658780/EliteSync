@@ -1,0 +1,48 @@
+{
+  "name": "elitesync-app-studio",
+  "version": "0.1.0",
+  "description": "Repo-local workflow studio for EliteSync version starts, runtime slices, evidence closeout, dirty worktree handling, and blocker control.",
+  "author": {
+    "name": "EliteSync",
+    "email": "dev@elitesync.local",
+    "url": "https://github.com/zcx369658780/EliteSync"
+  },
+  "homepage": "https://github.com/zcx369658780/EliteSync",
+  "repository": "https://github.com/zcx369658780/EliteSync",
+  "license": "UNLICENSED",
+  "keywords": [
+    "EliteSync",
+    "workflow"
+  ],
+  "skills": "./skills/",
+  "hooks": "[TODO: ./hooks.json]",
+  "mcpServers": "[TODO: ./.mcp.json]",
+  "apps": "[TODO: ./.app.json]",
+  "interface": {
+    "displayName": "EliteSync App Studio",
+    "shortDescription": "Workflow skills for EliteSync development",
+    "longDescription": "Repo-local workflow studio for version start, runtime slices, evidence closeout, dirty worktree handling, and cross-layer blocker control.",
+    "developerName": "EliteSync",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/zcx369658780/EliteSync",
+    "privacyPolicyURL": "https://github.com/zcx369658780/EliteSync",
+    "termsOfServiceURL": "https://github.com/zcx369658780/EliteSync",
+    "defaultPrompt": [
+      "Start a new EliteSync version and lock the scope.",
+      "Collect evidence and close out a version cleanly.",
+      "Review a dirty worktree and prepare a single-theme commit."
+    ],
+    "brandColor": "#0EA5E9",
+    "composerIcon": "[TODO: ./assets/icon.png]",
+    "logo": "[TODO: ./assets/logo.png]",
+    "screenshots": [
+      "[TODO: ./assets/screenshot1.png]",
+      "[TODO: ./assets/screenshot2.png]",
+      "[TODO: ./assets/screenshot3.png]"
+    ]
+  }
+}
