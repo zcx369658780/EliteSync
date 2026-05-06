@@ -96,7 +96,7 @@ class FrontendTelemetryApiTest extends TestCase
                 'call_id' => 66,
             ],
         ], [
-            'X-App-Version' => '0.04.06',
+            'X-App-Version' => '0.04.09',
             'X-Source-Page' => 'chat_room',
         ])
             ->assertOk()
@@ -113,4 +113,3 @@ class FrontendTelemetryApiTest extends TestCase
         $this->assertSame(66, $event->payload['client_payload']['call_id'] ?? null);
     }
 }
-

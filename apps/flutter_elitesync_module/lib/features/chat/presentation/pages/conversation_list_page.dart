@@ -8,6 +8,7 @@ import 'package:flutter_elitesync_module/app/router/app_route_names.dart';
 import 'package:flutter_elitesync_module/core/storage/cache_keys.dart';
 import 'package:flutter_elitesync_module/design_system/components/brand/browse_top_search_bar.dart';
 import 'package:flutter_elitesync_module/design_system/components/brand/category_tab_strip.dart';
+import 'package:flutter_elitesync_module/design_system/components/cards/app_info_section_card.dart';
 import 'package:flutter_elitesync_module/design_system/components/feedback/app_feedback.dart';
 import 'package:flutter_elitesync_module/design_system/components/layout/browse_scaffold.dart';
 import 'package:flutter_elitesync_module/design_system/components/states/app_empty_state.dart';
@@ -215,6 +216,90 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage>
     }
   }
 
+  Future<void> _showChatFlowSheet() async {
+    final t = context.appTokens;
+    await showModalBottomSheet<void>(
+      context: context,
+      useSafeArea: true,
+      showDragHandle: true,
+      builder: (sheetContext) {
+        return Padding(
+          padding: EdgeInsets.fromLTRB(
+            t.spacing.pageHorizontal,
+            0,
+            t.spacing.pageHorizontal,
+            t.spacing.lg,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '聊天节奏建议',
+                style: Theme.of(sheetContext).textTheme.titleMedium?.copyWith(
+                  color: t.textPrimary,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              SizedBox(height: t.spacing.xs),
+              Text(
+                '这里不做真正的持久化回聊能力，只提示你先回哪类会话更自然。未读优先、最近互动优先、通知回流优先，都还是本地筛选和路由提示。',
+                style: Theme.of(sheetContext).textTheme.bodyMedium?.copyWith(
+                  color: t.textSecondary,
+                  height: 1.45,
+                ),
+              ),
+              SizedBox(height: t.spacing.sm),
+              Text(
+                '如果你暂时不想立刻回聊，可以先看未读、再回到匹配，或者去通知中心把需要处理的消息收一轮。',
+                style: Theme.of(sheetContext).textTheme.bodySmall?.copyWith(
+                  color: t.textSecondary,
+                  height: 1.4,
+                ),
+              ),
+              SizedBox(height: t.spacing.md),
+              Wrap(
+                spacing: t.spacing.xs,
+                runSpacing: t.spacing.xs,
+                children: [
+                  AppChoiceChip(
+                    label: '仅看未读',
+                    selected: true,
+                    onTap: () {
+                      Navigator.of(sheetContext).pop();
+                      if (!_quickUnreadOnly) {
+                        setState(() => _quickUnreadOnly = true);
+                        _saveUiPrefs();
+                      }
+                    },
+                  ),
+                  AppChoiceChip(
+                    label: '去匹配',
+                    onTap: () {
+                      Navigator.of(sheetContext).pop();
+                      context.go(AppRouteNames.match);
+                    },
+                  ),
+                  AppChoiceChip(
+                    label: '通知中心',
+                    onTap: () {
+                      Navigator.of(sheetContext).pop();
+                      context.push(AppRouteNames.notificationCenter);
+                    },
+                  ),
+                  AppChoiceChip(
+                    label: '收起提示',
+                    onTap: () => Navigator.of(sheetContext).pop(),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -311,17 +396,65 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage>
                             label: notificationUnreadAsync.asData?.value == null
                                 ? '通知中心'
                                 : notificationUnreadAsync.asData!.value > 0
-                                    ? '通知 ${notificationUnreadAsync.asData!.value}'
-                                    : '通知中心',
+                                ? '通知 ${notificationUnreadAsync.asData!.value}'
+                                : '通知中心',
                             leading: const Icon(
                               Icons.notifications_none_rounded,
                             ),
                             onTap: () =>
                                 context.push(AppRouteNames.notificationCenter),
                           ),
+                          SizedBox(width: t.spacing.xs),
+                          AppChoiceChip(
+                            label: '聊天节奏',
+                            leading: const Icon(Icons.schedule_rounded),
+                            onTap: _showChatFlowSheet,
+                          ),
                         ],
                       ),
                     ],
+                  ),
+                  SizedBox(height: t.spacing.xs),
+                  AppInfoSectionCard(
+                    title: '回聊 / 稍后再聊',
+                    subtitle: '先回最需要处理的会话，再回到匹配或通知流',
+                    leadingIcon: Icons.sync_alt_rounded,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '这里不做真正的持久化回聊能力，只把当前更自然的处理顺序说清楚：未读优先、最近互动优先、需要整理的会话可以先收进筛选里。',
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(color: t.textSecondary, height: 1.45),
+                        ),
+                        SizedBox(height: t.spacing.sm),
+                        Wrap(
+                          spacing: t.spacing.xs,
+                          runSpacing: t.spacing.xs,
+                          children: [
+                            AppChoiceChip(
+                              label: '看未读',
+                              selected: _quickUnreadOnly,
+                              onTap: () {
+                                final v = !_quickUnreadOnly;
+                                setState(() => _quickUnreadOnly = v);
+                                _saveUiPrefs();
+                              },
+                            ),
+                            AppChoiceChip(
+                              label: '去匹配',
+                              onTap: () => context.go(AppRouteNames.match),
+                            ),
+                            AppChoiceChip(
+                              label: '通知回流',
+                              onTap: () => context.push(
+                                AppRouteNames.notificationCenter,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                   AnimatedSize(
                     duration: liteMode ? t.motionFast : t.motionNormal,

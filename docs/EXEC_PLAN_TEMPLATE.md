@@ -2,6 +2,16 @@
 
 > 适用于所有非微小改动。任何涉及数据库、定位、权限、路由、状态、SDK、备份恢复的任务，必须先填完此模板，再允许进入实现。
 
+## 0. EliteSync App Studio 默认入口
+
+- 如果任务匹配以下任一工作流，优先先进入对应 skill，再写计划：
+  - 新版本启动 -> `elitesync-version-start`
+  - 运行时实现切片 -> `elitesync-runtime-slice`
+  - 证据 / handoff 收口 -> `elitesync-evidence-closeout`
+  - 脏工作区清理 / 单主题提交 -> `elitesync-dirty-worktree`
+  - 跨层 blocker / 越界风险 -> `elitesync-cross-layer-blocker`
+- 这套 skill 是 EliteSync 的默认 repo-local 工作流入口，不替代计划模板，但应优先于临时长 prompt。
+
 ## 1. 基本信息
 
 - 需求名称：

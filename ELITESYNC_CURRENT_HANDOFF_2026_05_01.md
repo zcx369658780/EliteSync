@@ -12,7 +12,7 @@
 - `4.9` 已冻结为 `pass with observations`
 - `5.0` 已冻结为 `pass with observations`
 - `5.1` 已验收通过，状态：`pass with observations`
-- 当前下一阶段承接方向：`5.2`，基于 5.1 observations 做小单承接与个人经营页 / 表达层增强
+- 当前下一阶段承接方向：`5.4`，基于 5.3 observations 做测试运营准备与云端治理增强
 - 当前主线已经从“基础能力补全”切换到“产品化补强 + 关系推进 + 回流链增强 + 个人经营增强”
 
 ---
@@ -51,7 +51,7 @@
 
 ### 3.3 当前最新版本计划
 
-- [`docs/version_plans/v_5_1_关系转化与内容回流增强版_开发计划书_2026_05_01.md`](docs/version_plans/v_5_1_关系转化与内容回流增强版_开发计划书_2026_05_01.md)
+- [`docs/version_plans/v_5_3_功能覆盖收尾版_开发计划书_2026_05_02.md`](docs/version_plans/v_5_3_功能覆盖收尾版_开发计划书_2026_05_02.md)
 
 ---
 
@@ -155,11 +155,11 @@
 - 已完成语音联动节奏增强
 - 当前验收口径：`pass with observations`
 
-### 6.4 5.2 承接方向
+### 6.4 5.4 承接方向
 
-- 不重复建设 5.1 已完成的关系推进、通知回流和语音节奏能力
-- 承接适合继续做的小项：证据补采集、真实通知 payload 跳转方向复核、Match Detail 测试补强
-- 更适合推进个人经营页与表达层增强
+- 不重复建设 5.3 已完成的 Discover / Chat / Me / Settings 覆盖和保护面回归证据
+- 承接适合继续做的小项：测试运营准备、云端治理增强、回归门禁加厚、版本链与可观测性整理
+- 更适合推进治理增强与运营准备，而不是重开 5.3 主链
 
 ---
 
@@ -209,7 +209,7 @@
 3. 再看 [`docs/version_plans/5.1_HANDOFF_MASTER.md`](docs/version_plans/5.1_HANDOFF_MASTER.md)；
 4. 再看 [`docs/version_plans/5.0_HANDOFF_MASTER.md`](docs/version_plans/5.0_HANDOFF_MASTER.md)；
 5. 确认当前基线为 `0.04.09 / 40900`；
-6. 按 5.2 承接方向拆小单，不回头重开 4.x / 5.1 已通过主链；
+6. 按 5.4 承接方向拆小单，不回头重开 4.x / 5.1 / 5.2 / 5.3 已通过主链；
 7. 任何跨层 blocker 先写 blocker report，再找 Claude 做根因缩层。
 
 ---

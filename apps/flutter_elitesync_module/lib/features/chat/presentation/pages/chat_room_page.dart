@@ -452,6 +452,31 @@ class _ChatRoomPageState extends ConsumerState<ChatRoomPage> {
     return result ?? false;
   }
 
+  Future<void> _showLowPressureContinuationHint() async {
+    final t = context.appTokens;
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('续话提示'),
+          content: Text(
+            '这里仍然只是本地草稿提示，不会自动发送，也不会替你写入任何长期记录。你可以先接住上一句，再慢慢往共同点、近况或周末方向延展。',
+            style: Theme.of(dialogContext).textTheme.bodyMedium?.copyWith(
+              color: t.textSecondary,
+              height: 1.45,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('知道了'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Future<void> _pickAndUploadMedia(ChatAttachmentKind kind) async {
     if (_sending || _attachmentStage == AttachmentUploadStage.uploading) return;
     final telemetry = ref.read(frontendTelemetryProvider);
@@ -767,9 +792,9 @@ class _ChatRoomPageState extends ConsumerState<ChatRoomPage> {
         prompt: '我们好像有个相近的地方：都更重视相处里的真实感。你会怎么理解这种感觉？',
       ),
       IcebreakerSuggestion(
-        label: '稍后再回：低压回归',
-        lane: '稍后再回',
-        source: '稍后再回队列',
+        label: '稍后再聊：低压回归',
+        lane: '稍后再聊',
+        source: '稍后再聊候选位',
         description: '适合隔了一段时间后重新接起，不制造压力。',
         icon: Icons.schedule_rounded,
         prompt: '刚刚那段我想了一下，还是挺想听听你的看法。如果你愿意，我们可以从一个轻松的问题重新聊起。',
@@ -777,7 +802,7 @@ class _ChatRoomPageState extends ConsumerState<ChatRoomPage> {
       IcebreakerSuggestion(
         label: '冷场恢复：共鸣接起',
         lane: '冷场恢复',
-        source: '冷场恢复队列',
+        source: '冷场恢复候选位',
         description: '适合聊天中断后，先表达理解，再轻轻追问。',
         icon: Icons.volunteer_activism_outlined,
         prompt: '我刚刚想到你说的那句话，其实挺能理解。你当时最在意的是哪一部分？',
@@ -856,7 +881,7 @@ class _ChatRoomPageState extends ConsumerState<ChatRoomPage> {
         padding: EdgeInsets.symmetric(horizontal: t.spacing.pageHorizontal),
         child: AppInfoSectionCard(
           title: '关系摘要',
-          subtitle: '首聊 / 回聊 / 关系推进的当前提示',
+          subtitle: '首聊 / 回聊 / 稍后再聊 / 关系推进的当前提示',
           leadingIcon: Icons.favorite_outline_rounded,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -884,6 +909,11 @@ class _ChatRoomPageState extends ConsumerState<ChatRoomPage> {
                     leading: const Icon(Icons.refresh_rounded),
                   ),
                   AppChoiceChip(
+                    label: '稍后再聊',
+                    selected: true,
+                    leading: const Icon(Icons.schedule_rounded),
+                  ),
+                  AppChoiceChip(
                     label: '关系摘要',
                     selected: true,
                     leading: const Icon(Icons.view_quilt_outlined),
@@ -907,6 +937,121 @@ class _ChatRoomPageState extends ConsumerState<ChatRoomPage> {
         child: IcebreakerCard(
           suggestions: _icebreakerSuggestions(),
           onSuggestionTap: _applyIcebreakerSuggestion,
+        ),
+      ),
+      Padding(
+        padding: EdgeInsets.fromLTRB(
+          t.spacing.pageHorizontal,
+          t.spacing.xs,
+          t.spacing.pageHorizontal,
+          t.spacing.xs,
+        ),
+        child: AppInfoSectionCard(
+          title: 'AI 续话 / 低压建议',
+          subtitle: '把上一句轻轻接住，再继续往下聊',
+          leadingIcon: Icons.auto_awesome_outlined,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '这里不做真正的 AI 生成服务，只提供几句更轻的续聊草稿：你可以把上一句接住、把共同点延展，或者把周末 / 近况 / 兴趣再往前推一点。',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: t.textSecondary,
+                  height: 1.45,
+                ),
+              ),
+              SizedBox(height: t.spacing.sm),
+              Wrap(
+                spacing: t.spacing.xs,
+                runSpacing: t.spacing.xs,
+                children: [
+                  AppChoiceChip(
+                    label: '接住上一句',
+                    selected: true,
+                    onTap: () =>
+                        _applyIcebreakerSuggestion('你刚刚提到的那个点挺有意思，能多说一点吗？'),
+                  ),
+                  AppChoiceChip(
+                    label: '延展共同点',
+                    onTap: () => _applyIcebreakerSuggestion(
+                      '我们好像有个相近的地方：都更重视相处里的真实感。你会怎么理解这种感觉？',
+                    ),
+                  ),
+                  AppChoiceChip(
+                    label: '问最近状态',
+                    onTap: () => _applyIcebreakerSuggestion('你最近最想投入的一件事是什么？'),
+                  ),
+                  AppChoiceChip(
+                    label: '重新开口',
+                    onTap: () => _applyIcebreakerSuggestion(
+                      '刚刚那段我想了一下，还是挺想听听你的看法。如果你愿意，我们可以从一个轻松的问题重新聊起。',
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: t.spacing.sm),
+              AppSecondaryButton(
+                label: '查看续话提示',
+                onPressed: _showLowPressureContinuationHint,
+              ),
+            ],
+          ),
+        ),
+      ),
+      Padding(
+        padding: EdgeInsets.fromLTRB(
+          t.spacing.pageHorizontal,
+          t.spacing.xs,
+          t.spacing.pageHorizontal,
+          t.spacing.xs,
+        ),
+        child: AppInfoSectionCard(
+          title: '冷场恢复',
+          subtitle: '如果前面停住了，先用低压话题重新接起',
+          leadingIcon: Icons.volunteer_activism_outlined,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '这里不做“强行回聊”的自动动作，只提供几个更轻的重新开口方向：先接住上一句、回到共同点，或者从周末 / 状态慢慢再聊。',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: t.textSecondary,
+                  height: 1.45,
+                ),
+              ),
+              SizedBox(height: t.spacing.sm),
+              Wrap(
+                spacing: t.spacing.xs,
+                runSpacing: t.spacing.xs,
+                children: [
+                  AppChoiceChip(
+                    label: '先接住',
+                    selected: true,
+                    onTap: () =>
+                        _applyIcebreakerSuggestion('你刚刚提到的那个点挺有意思，能多说一点吗？'),
+                  ),
+                  AppChoiceChip(
+                    label: '回到共同点',
+                    onTap: () => _applyIcebreakerSuggestion(
+                      '我们好像有个相近的地方：都更重视相处里的真实感。你会怎么理解这种感觉？',
+                    ),
+                  ),
+                  AppChoiceChip(
+                    label: '从周末再聊',
+                    onTap: () => _applyIcebreakerSuggestion(
+                      '先从最近一次让你放松的周末安排聊起，你通常会怎么度过？',
+                    ),
+                  ),
+                  AppChoiceChip(
+                    label: '稍后再聊',
+                    onTap: () => _applyIcebreakerSuggestion(
+                      '刚刚那段我想了一下，还是挺想听听你的看法。如果你愿意，我们可以从一个轻松的问题重新聊起。',
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
       Padding(

@@ -1,6 +1,6 @@
 # 数据与 API 面
 
-更新时间：2026-04-19
+更新时间：2026-05-01
 
 ## 核心表
 
@@ -35,9 +35,17 @@
 - `moderation_reports`
 - `user_blocks`
 - `status_posts`
-- `app_events`
-- `user_relationship_events`
+- `status_post_likes`
 - `notifications`
+- `user_relationship_events`
+- `app_events`
+
+### RTC / 通话
+
+- `rtc_calls`
+- `rtc_sessions`
+- `rtc_session_heartbeats`
+- `rtc_call_events`（如有）
 
 ## 核心接口
 
@@ -79,7 +87,7 @@
 - `GET /api/v1/media/{assetId}`
 - `GET /api/v1/media/{assetId}/content`
 
-### 治理与首页
+### 治理、发现、互动
 
 - `GET /api/v1/home/banner`
 - `GET /api/v1/home/shortcuts`
@@ -90,9 +98,16 @@
 - `POST /api/v1/moderation/blocks`
 - `DELETE /api/v1/moderation/blocks/{blockedUserId}`
 
+### RTC / LiveKit
+
+- `POST /api/v1/rtc/calls`
+- `GET /api/v1/rtc/calls/{callId}/livekit`
+- `POST /api/v1/rtc/calls/{callId}/heartbeat`
+
 ## 保护面接口
 
 - `POST /api/v1/profile/basic`
+- `GET /api/v1/profile/basic`
 - `GET /api/v1/profile/astro/summary`
 - `GET /api/v1/profile/astro/chart`
 - `GET /api/v1/app/health`
@@ -100,6 +115,9 @@
 - `GET /api/v1/messages`
 - `POST /api/v1/messages`
 - `POST /api/v1/media`
+- `POST /api/v1/rtc/calls`
+- `GET /api/v1/rtc/calls/{callId}/livekit`
+- `POST /api/v1/rtc/calls/{callId}/heartbeat`
 
 ## 媒体关键字段
 
@@ -118,6 +136,27 @@
 - `status_posts.cover_media_asset_id`
 - `status_post_likes`
 - `moderation_reports.target_status_post_id`
+
+## RTC / 可观测性关键字段
+
+- `rtc_calls.status`
+- `rtc_calls.room_name`
+- `rtc_calls.initiator_user_id`
+- `rtc_calls.responder_user_id`
+- `rtc_sessions.call_id`
+- `rtc_sessions.heartbeat_at`
+- `rtc_sessions.last_seen_at`
+- `rtc_sessions.disconnect_reason`
+
+## 5.x 新增关注域
+
+- `status_feed`
+- `discovery`
+- `rtc_signal`
+- `call_state`
+- `search_terms`
+- `relationship_progress`
+- 以上关注域应服务于高价值主链功能覆盖优先，不应被重新解释为单纯治理便利性字段。
 
 ## 发版绑定
 

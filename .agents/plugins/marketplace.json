@@ -1,0 +1,20 @@
+{
+  "name": "elitesync-local-repo",
+  "interface": {
+    "displayName": "EliteSync Local Studio"
+  },
+  "plugins": [
+    {
+      "name": "elitesync-app-studio",
+      "source": {
+        "source": "local",
+        "path": "./plugins/elitesync-app-studio"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

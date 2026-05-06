@@ -91,7 +91,9 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
   }
 
   Future<void> _saveUiPrefs() async {
-    await ref.read(localStorageProvider).setInt(CacheKeys.discoverSelectedTab, _tab);
+    await ref
+        .read(localStorageProvider)
+        .setInt(CacheKeys.discoverSelectedTab, _tab);
   }
 
   Future<void> _loadSearchHistory() async {
@@ -102,7 +104,11 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
       final decoded = jsonDecode(raw);
       if (decoded is List) {
         setState(() {
-          _recentSearches = decoded.map((e) => e.toString()).where((e) => e.isNotEmpty).take(8).toList();
+          _recentSearches = decoded
+              .map((e) => e.toString())
+              .where((e) => e.isNotEmpty)
+              .take(8)
+              .toList();
         });
       }
     } catch (_) {}
@@ -111,9 +117,14 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
   Future<void> _addSearchHistory(String term) async {
     final t = term.trim();
     if (t.isEmpty) return;
-    final next = [t, ..._recentSearches.where((e) => e.toLowerCase() != t.toLowerCase())].take(8).toList();
+    final next = [
+      t,
+      ..._recentSearches.where((e) => e.toLowerCase() != t.toLowerCase()),
+    ].take(8).toList();
     setState(() => _recentSearches = next);
-    await ref.read(localStorageProvider).setString(CacheKeys.discoverSearchHistory, jsonEncode(next));
+    await ref
+        .read(localStorageProvider)
+        .setString(CacheKeys.discoverSearchHistory, jsonEncode(next));
   }
 
   void _onSearchChanged(String value) {
@@ -182,7 +193,9 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
               summary: (e['summary'] ?? '').toString(),
               author: (e['author'] ?? '').toString(),
               likes: (e['likes'] as num?)?.toInt() ?? 0,
-              body: (e['body'] ?? '').toString().isEmpty ? null : (e['body'] ?? '').toString(),
+              body: (e['body'] ?? '').toString().isEmpty
+                  ? null
+                  : (e['body'] ?? '').toString(),
               media: ((e['media'] as List?) ?? const [])
                   .map((v) => v.toString())
                   .where((v) => v.isNotEmpty)
@@ -200,7 +213,9 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
         isLoading: false,
         isLoadingMore: false,
         hasMore: (decoded['hasMore'] as bool?) ?? false,
-        nextCursor: (decoded['nextCursor'] ?? '').toString().isEmpty ? null : (decoded['nextCursor'] ?? '').toString(),
+        nextCursor: (decoded['nextCursor'] ?? '').toString().isEmpty
+            ? null
+            : (decoded['nextCursor'] ?? '').toString(),
       );
       // Only hydrate from snapshot before first remote init to avoid stale overwrite.
       if (_controller.state.isLoading) {
@@ -233,7 +248,9 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
           )
           .toList(),
     };
-    await ref.read(localStorageProvider).setString(CacheKeys.discoverFeedSnapshot, jsonEncode(payload));
+    await ref
+        .read(localStorageProvider)
+        .setString(CacheKeys.discoverFeedSnapshot, jsonEncode(payload));
   }
 
   void _onScroll() {
@@ -259,10 +276,130 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
     }
   }
 
+  Future<void> _showDiscoverActionSheet({
+    required HomeFeedEntity item,
+    required String tab,
+  }) async {
+    final t = context.appTokens;
+    final reason = _discoverReason(tab, item);
+    final keywords = _discoverKeywords(item);
+    await showModalBottomSheet<void>(
+      context: context,
+      useSafeArea: true,
+      showDragHandle: true,
+      builder: (sheetContext) {
+        return Padding(
+          padding: EdgeInsets.fromLTRB(
+            t.spacing.pageHorizontal,
+            0,
+            t.spacing.pageHorizontal,
+            t.spacing.lg,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '推荐理由',
+                style: Theme.of(sheetContext).textTheme.labelLarge?.copyWith(
+                  color: t.textSecondary,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              SizedBox(height: t.spacing.xxs),
+              Text(
+                item.title,
+                style: Theme.of(sheetContext).textTheme.titleMedium?.copyWith(
+                  color: t.textPrimary,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              SizedBox(height: t.spacing.xs),
+              Text(
+                reason,
+                style: Theme.of(sheetContext).textTheme.bodyMedium?.copyWith(
+                  color: t.textSecondary,
+                  height: 1.45,
+                ),
+              ),
+              if (keywords.isNotEmpty) ...[
+                SizedBox(height: t.spacing.sm),
+                Text(
+                  '可继续从这些线索进入：${keywords.join('、')}',
+                  style: Theme.of(sheetContext).textTheme.bodySmall?.copyWith(
+                    color: t.textSecondary,
+                    height: 1.35,
+                  ),
+                ),
+              ],
+              SizedBox(height: t.spacing.sm),
+              Text(
+                '这是本地推荐说明，不会写回服务端真值。',
+                style: Theme.of(
+                  sheetContext,
+                ).textTheme.bodySmall?.copyWith(color: t.textSecondary),
+              ),
+              SizedBox(height: t.spacing.md),
+              Wrap(
+                spacing: t.spacing.xs,
+                runSpacing: t.spacing.xs,
+                children: [
+                  AppChoiceChip(
+                    label: '继续看详情',
+                    selected: true,
+                    onTap: () {
+                      Navigator.of(sheetContext).pop();
+                      _rememberPreferredTag(item);
+                      context.push(
+                        '${AppRouteNames.contentDetail}/${item.id}',
+                        extra: item,
+                      );
+                    },
+                  ),
+                  AppChoiceChip(
+                    label: '稍后再看',
+                    onTap: () {
+                      Navigator.of(sheetContext).pop();
+                      AppFeedback.showInfo(context, '已先收起这条内容，回头再看也行');
+                    },
+                  ),
+                  if (keywords.isNotEmpty)
+                    AppChoiceChip(
+                      label: '继续搜标签',
+                      onTap: () {
+                        final tag = keywords.first;
+                        Navigator.of(sheetContext).pop();
+                        _searchController.text = tag;
+                        _searchController.selection = TextSelection.collapsed(
+                          offset: tag.length,
+                        );
+                        _onSearchChanged(tag);
+                      },
+                    ),
+                  AppChoiceChip(
+                    label: '记住偏好',
+                    onTap: () async {
+                      Navigator.of(sheetContext).pop();
+                      await _rememberPreferredTag(item);
+                      if (!mounted) return;
+                      AppFeedback.showSuccess(context, '已记住这条内容的偏好线索');
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   Future<void> _rememberPreferredTag(HomeFeedEntity item) async {
     if (item.tags.isEmpty) return;
     final local = ref.read(localStorageProvider);
-    final map = await local.getJson(CacheKeys.contentPreferredTagsMap) ?? <String, dynamic>{};
+    final map =
+        await local.getJson(CacheKeys.contentPreferredTagsMap) ??
+        <String, dynamic>{};
     final next = <String, int>{};
     for (final e in map.entries) {
       final k = e.key.trim();
@@ -276,18 +413,52 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
       if (tag.isEmpty) continue;
       next[tag] = (next[tag] ?? 0) + 5;
     }
-    final ranked = next.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
+    final ranked = next.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
     final top = ranked.take(8).toList();
-    await local.setJson(CacheKeys.contentPreferredTagsMap, {for (final e in top) e.key: e.value});
+    await local.setJson(CacheKeys.contentPreferredTagsMap, {
+      for (final e in top) e.key: e.value,
+    });
     if (top.isNotEmpty) {
       await local.setString(CacheKeys.contentPreferredTag, top.first.key);
     }
   }
 
+  List<String> _discoverKeywords(HomeFeedEntity item) {
+    final keywords = <String>[
+      ...item.tags.map((e) => e.trim()).where((e) => e.isNotEmpty).take(3),
+    ];
+    if (keywords.isEmpty && item.title.trim().isNotEmpty) {
+      keywords.add(item.title.trim());
+    }
+    return keywords;
+  }
+
+  String _discoverReason(String tab, HomeFeedEntity item) {
+    final keywords = _discoverKeywords(item);
+    final keywordText = keywords.isEmpty
+        ? ''
+        : '，可以从 ${keywords.take(2).join('、')} 继续进入';
+    if (tab.contains('同城')) {
+      return '你正在看同城分区，这条内容更适合先从距离感、当下场景和是否方便继续接近来判断$keywordText。';
+    }
+    if (tab.contains('活动')) {
+      return '你正在看活动分区，先把主题、时间、参与门槛和是否适合加入看清，再决定要不要继续$keywordText。';
+    }
+    if (tab.contains('话题')) {
+      return '你正在看话题分区，适合先从共同兴趣、讨论氛围和能否顺势接话慢慢切入$keywordText。';
+    }
+    if (tab.contains('直播')) {
+      return '你正在看直播分区，适合先听说明、看节奏和互动方式，再决定要不要进入$keywordText。';
+    }
+    return '这条内容适合先看摘要、作者和标签，再决定是否继续深入$keywordText。';
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final liteMode = ref.watch(performanceLiteModeProvider).asData?.value ?? false;
+    final liteMode =
+        ref.watch(performanceLiteModeProvider).asData?.value ?? false;
     final state = _controller.state;
     return ValueListenableBuilder<String>(
       valueListenable: _searchQueryNotifier,
@@ -307,7 +478,9 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
                 onSubmitted: (v) => _onSearchSubmitted(v),
                 onClear: _clearSearch,
                 onRightActionTap: _quickRefresh,
-                rightIcon: _quickRefreshing ? Icons.hourglass_top_rounded : Icons.refresh_rounded,
+                rightIcon: _quickRefreshing
+                    ? Icons.hourglass_top_rounded
+                    : Icons.refresh_rounded,
               ),
               AnimatedSize(
                 duration: liteMode ? t.motionFast : t.motionNormal,
@@ -321,7 +494,8 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
                               Expanded(
                                 child: Text(
                                   '已筛选关键词: $searchQuery（找到 ${filteredItems.length} 条）',
-                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(color: t.textSecondary),
+                                  style: Theme.of(context).textTheme.bodySmall
+                                      ?.copyWith(color: t.textSecondary),
                                 ),
                               ),
                               AppChoiceChip(
@@ -334,32 +508,36 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
                         ],
                       )
                     : (showRecentChips && _recentSearches.isNotEmpty)
-                        ? Column(
-                            children: [
-                              SizedBox(height: t.spacing.xs),
-                              SizedBox(
-                                height: 32,
-                                child: ListView.separated(
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount: _recentSearches.length,
-                                  separatorBuilder: (_, index) => SizedBox(width: t.spacing.xs),
-                                  itemBuilder: (context, index) {
-                                    final term = _recentSearches[index];
-                                    return AppChoiceChip(
-                                      label: term,
-                                      onTap: () {
-                                        _searchController.text = term;
-                                        _searchController.selection = TextSelection.collapsed(offset: term.length);
-                                        _onSearchChanged(term);
-                                        _searchFocusNode.unfocus();
-                                      },
-                                    );
+                    ? Column(
+                        children: [
+                          SizedBox(height: t.spacing.xs),
+                          SizedBox(
+                            height: 32,
+                            child: ListView.separated(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: _recentSearches.length,
+                              separatorBuilder: (_, index) =>
+                                  SizedBox(width: t.spacing.xs),
+                              itemBuilder: (context, index) {
+                                final term = _recentSearches[index];
+                                return AppChoiceChip(
+                                  label: term,
+                                  onTap: () {
+                                    _searchController.text = term;
+                                    _searchController.selection =
+                                        TextSelection.collapsed(
+                                          offset: term.length,
+                                        );
+                                    _onSearchChanged(term);
+                                    _searchFocusNode.unfocus();
                                   },
-                                ),
-                              ),
-                            ],
-                          )
-                        : const SizedBox.shrink(),
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      )
+                    : const SizedBox.shrink(),
               ),
               SizedBox(height: t.spacing.sm),
               CategoryTabStrip(
@@ -394,90 +572,124 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
             switchInCurve: Curves.easeOutCubic,
             switchOutCurve: Curves.easeInCubic,
             child: state.isLoading
-                ? const AppLoadingSkeleton(key: ValueKey('discover-loading'), lines: 8)
+                ? const AppLoadingSkeleton(
+                    key: ValueKey('discover-loading'),
+                    lines: 8,
+                  )
                 : state.error != null
-                    ? AppErrorState(
-                        key: const ValueKey('discover-error'),
-                        title: '发现加载失败',
-                        description: state.error!,
-                        retryLabel: '重新加载',
-                        onRetry: _controller.loadInitial,
-                      )
-                    : RefreshIndicator(
-                        key: ValueKey('discover-data-$_tab-${searchQuery.isEmpty ? "none" : "query"}'),
-                        onRefresh: _controller.loadInitial,
-                        child: state.items.isEmpty
-                            ? ListView(
-                                children: [
-                                  const SizedBox(height: 72),
-                                  AppEmptyState(
-                                    title: '暂无发现内容',
-                                    description: '当前分类暂时没有可展示内容，稍后再试。',
-                                    actionLabel: '重新加载',
-                                    onAction: _controller.loadInitial,
-                                  ),
-                                ],
-                              )
-                            : ListView(
-                                controller: _scrollController,
-                                cacheExtent: liteMode ? 480 : 1200,
-                                padding: EdgeInsets.only(top: t.spacing.xs, bottom: t.spacing.huge),
-                                children: [
-                                  if (filteredItems.isEmpty) ...[
-                                    const SizedBox(height: 72),
-                                    AppEmptyState(
-                                      title: '没有匹配内容',
-                                      description: '换个关键词试试',
-                                      actionLabel: '清除筛选',
-                                      onAction: _clearSearch,
-                                    ),
-                                  ] else ...[
-                                    _SceneEntryRow(
-                                      onTap: (label) {
-                                        _searchController.text = label;
-                                        _searchController.selection = TextSelection.collapsed(offset: label.length);
-                                        _onSearchChanged(label);
-                                      },
-                                    ),
-                                    SizedBox(height: t.spacing.sm),
-                                    _SectionTitle(title: '${_tabs[_tab]}发现'),
-                                    SizedBox(height: t.spacing.sm),
-                                    ...List.generate(filteredItems.length, (index) {
-                                      final item = filteredItems[index];
-                                      final scene = _sceneOf(_tabs[_tab], item, index);
-                                      return Padding(
-                                        padding: EdgeInsets.only(bottom: t.spacing.sm),
-                                        child: RepaintBoundary(
-                                          child: _DiscoverCard(
-                                            title: item.title,
-                                            subtitle: item.summary,
-                                            highlightQuery: searchQuery,
-                                            accent: scene.accent,
-                                            icon: scene.icon,
-                                            cta: scene.cta,
-                                            onTap: () {
-                                              _rememberPreferredTag(item);
-                                              context.push(
-                                                '${AppRouteNames.contentDetail}/${item.id}',
-                                                extra: item,
-                                              );
-                                            },
-                                          ),
-                                        ),
-                                      );
-                                    }),
-                                    SizedBox(height: t.spacing.md),
-                                    _SectionTitle(title: '你可能喜欢'),
-                                    SizedBox(height: t.spacing.sm),
-                                    _DiscoverGrid(feed: filteredItems, highlightQuery: searchQuery),
-                                  ],
-                                  if (state.isLoadingMore) ...[
-                                    SizedBox(height: t.spacing.sm),
-                                    const Center(child: CircularProgressIndicator(strokeWidth: 2)),
-                                  ],
-                                ],
+                ? AppErrorState(
+                    key: const ValueKey('discover-error'),
+                    title: '发现加载失败',
+                    description: state.error!,
+                    retryLabel: '重新加载',
+                    onRetry: _controller.loadInitial,
+                  )
+                : RefreshIndicator(
+                    key: ValueKey(
+                      'discover-data-$_tab-${searchQuery.isEmpty ? "none" : "query"}',
+                    ),
+                    onRefresh: _controller.loadInitial,
+                    child: state.items.isEmpty
+                        ? ListView(
+                            children: [
+                              const SizedBox(height: 72),
+                              AppEmptyState(
+                                title: '暂无发现内容',
+                                description: '当前分类暂时没有可展示内容，稍后再试。',
+                                actionLabel: '重新加载',
+                                onAction: _controller.loadInitial,
                               ),
-                      ),
+                            ],
+                          )
+                        : ListView(
+                            controller: _scrollController,
+                            cacheExtent: liteMode ? 480 : 1200,
+                            padding: EdgeInsets.only(
+                              top: t.spacing.xs,
+                              bottom: t.spacing.huge,
+                            ),
+                            children: [
+                              if (filteredItems.isEmpty) ...[
+                                const SizedBox(height: 72),
+                                AppEmptyState(
+                                  title: '没有匹配内容',
+                                  description: '换个关键词试试',
+                                  actionLabel: '清除筛选',
+                                  onAction: _clearSearch,
+                                ),
+                              ] else ...[
+                                _SceneEntryRow(
+                                  onTap: (label) {
+                                    _searchController.text = label;
+                                    _searchController.selection =
+                                        TextSelection.collapsed(
+                                          offset: label.length,
+                                        );
+                                    _onSearchChanged(label);
+                                  },
+                                ),
+                                SizedBox(height: t.spacing.sm),
+                                _SectionTitle(title: '${_tabs[_tab]}发现'),
+                                SizedBox(height: t.spacing.sm),
+                                ...List.generate(filteredItems.length, (index) {
+                                  final item = filteredItems[index];
+                                  final scene = _sceneOf(
+                                    _tabs[_tab],
+                                    item,
+                                    index,
+                                  );
+                                  return Padding(
+                                    padding: EdgeInsets.only(
+                                      bottom: t.spacing.sm,
+                                    ),
+                                    child: RepaintBoundary(
+                                      child: _DiscoverCard(
+                                        title: item.title,
+                                        subtitle: item.summary,
+                                        highlightQuery: searchQuery,
+                                        accent: scene.accent,
+                                        icon: scene.icon,
+                                        cta: scene.cta,
+                                        onTap: () {
+                                          _rememberPreferredTag(item);
+                                          context.push(
+                                            '${AppRouteNames.contentDetail}/${item.id}',
+                                            extra: item,
+                                          );
+                                        },
+                                        onLongPress: () =>
+                                            _showDiscoverActionSheet(
+                                              item: item,
+                                              tab: _tabs[_tab],
+                                            ),
+                                      ),
+                                    ),
+                                  );
+                                }),
+                                SizedBox(height: t.spacing.md),
+                                _SectionTitle(title: '你可能喜欢'),
+                                SizedBox(height: t.spacing.sm),
+                                _DiscoverGrid(
+                                  feed: filteredItems,
+                                  highlightQuery: searchQuery,
+                                  onItemLongPress: (item) =>
+                                      _showDiscoverActionSheet(
+                                        item: item,
+                                        tab: _tabs[_tab],
+                                      ),
+                                ),
+                              ],
+                              if (state.isLoadingMore) ...[
+                                SizedBox(height: t.spacing.sm),
+                                const Center(
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                  ),
           ),
         );
       },
@@ -501,24 +713,32 @@ class _DiscoverPageState extends ConsumerState<DiscoverPage>
     for (final item in items) {
       _searchIndex.putIfAbsent(
         item.id,
-        () => '${item.title} ${item.summary} ${item.author} ${item.tags.join(' ')}'.toLowerCase(),
+        () =>
+            '${item.title} ${item.summary} ${item.author} ${item.tags.join(' ')}'
+                .toLowerCase(),
       );
     }
-    final filtered = items.where((e) => (_searchIndex[e.id] ?? '').contains(q)).toList();
+    final filtered = items
+        .where((e) => (_searchIndex[e.id] ?? '').contains(q))
+        .toList();
     _cachedFilteredItems = filtered;
     return filtered;
   }
 
   @override
   bool get wantKeepAlive => true;
-
 }
 
 class _DiscoverGrid extends StatelessWidget {
-  const _DiscoverGrid({required this.feed, required this.highlightQuery});
+  const _DiscoverGrid({
+    required this.feed,
+    required this.highlightQuery,
+    this.onItemLongPress,
+  });
 
   final List<HomeFeedEntity> feed;
   final String highlightQuery;
+  final ValueChanged<HomeFeedEntity>? onItemLongPress;
 
   @override
   Widget build(BuildContext context) {
@@ -550,12 +770,14 @@ class _DiscoverGrid extends StatelessWidget {
                 extra: item,
               );
             },
+            onLongPress: onItemLongPress == null
+                ? null
+                : () => onItemLongPress!(item),
           ),
         );
       }),
     );
   }
-
 }
 
 class _SectionTitle extends StatelessWidget {
@@ -584,6 +806,7 @@ class _DiscoverCard extends StatelessWidget {
     required this.icon,
     required this.cta,
     this.onTap,
+    this.onLongPress,
   });
   final String title;
   final String subtitle;
@@ -592,6 +815,7 @@ class _DiscoverCard extends StatelessWidget {
   final IconData icon;
   final String cta;
   final VoidCallback? onTap;
+  final VoidCallback? onLongPress;
 
   @override
   Widget build(BuildContext context) {
@@ -601,6 +825,7 @@ class _DiscoverCard extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(t.radius.lg),
         onTap: onTap,
+        onLongPress: onLongPress,
         child: Container(
           padding: EdgeInsets.all(t.spacing.cardPadding),
           decoration: BoxDecoration(
@@ -631,7 +856,8 @@ class _DiscoverCard extends StatelessWidget {
                         color: t.textPrimary,
                         fontWeight: FontWeight.w700,
                       ),
-                      highlightStyle: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      highlightStyle: Theme.of(context).textTheme.titleSmall
+                          ?.copyWith(
                             color: t.brandPrimary,
                             fontWeight: FontWeight.w800,
                           ),
@@ -639,17 +865,17 @@ class _DiscoverCard extends StatelessWidget {
                     SizedBox(height: t.spacing.xxs),
                     Text(
                       subtitle,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: t.textSecondary,
-                      ),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodySmall?.copyWith(color: t.textSecondary),
                     ),
                     SizedBox(height: t.spacing.xxs),
                     Text(
                       cta,
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                            color: accent,
-                            fontWeight: FontWeight.w700,
-                          ),
+                        color: accent,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ],
                 ),
@@ -668,11 +894,13 @@ class _MiniTopicCard extends StatelessWidget {
     required this.highlightQuery,
     required this.sub,
     this.onTap,
+    this.onLongPress,
   });
   final String title;
   final String highlightQuery;
   final String sub;
   final VoidCallback? onTap;
+  final VoidCallback? onLongPress;
 
   @override
   Widget build(BuildContext context) {
@@ -682,6 +910,7 @@ class _MiniTopicCard extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(t.radius.lg),
         onTap: onTap,
+        onLongPress: onLongPress,
         child: Container(
           padding: EdgeInsets.all(t.spacing.sm),
           decoration: BoxDecoration(
@@ -701,7 +930,8 @@ class _MiniTopicCard extends StatelessWidget {
                   color: t.textPrimary,
                   fontWeight: FontWeight.w700,
                 ),
-                highlightStyle: Theme.of(context).textTheme.titleSmall?.copyWith(
+                highlightStyle: Theme.of(context).textTheme.titleSmall
+                    ?.copyWith(
                       color: t.brandPrimary,
                       fontWeight: FontWeight.w800,
                     ),
@@ -709,9 +939,9 @@ class _MiniTopicCard extends StatelessWidget {
               const Spacer(),
               Text(
                 sub,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: t.textSecondary,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: t.textSecondary),
               ),
             ],
           ),
@@ -797,10 +1027,26 @@ _DiscoverSceneStyle _sceneOf(String tab, HomeFeedEntity item, int index) {
     );
   }
   const fallback = [
-    _DiscoverSceneStyle(accent: Color(0xFF7CB8FF), icon: Icons.explore_rounded, cta: '去看看'),
-    _DiscoverSceneStyle(accent: Color(0xFF79D7C9), icon: Icons.auto_awesome_rounded, cta: '去看看'),
-    _DiscoverSceneStyle(accent: Color(0xFF9A8CFF), icon: Icons.local_fire_department_rounded, cta: '参与讨论'),
-    _DiscoverSceneStyle(accent: Color(0xFF7EA3FF), icon: Icons.groups_rounded, cta: '去看看'),
+    _DiscoverSceneStyle(
+      accent: Color(0xFF7CB8FF),
+      icon: Icons.explore_rounded,
+      cta: '去看看',
+    ),
+    _DiscoverSceneStyle(
+      accent: Color(0xFF79D7C9),
+      icon: Icons.auto_awesome_rounded,
+      cta: '去看看',
+    ),
+    _DiscoverSceneStyle(
+      accent: Color(0xFF9A8CFF),
+      icon: Icons.local_fire_department_rounded,
+      cta: '参与讨论',
+    ),
+    _DiscoverSceneStyle(
+      accent: Color(0xFF7EA3FF),
+      icon: Icons.groups_rounded,
+      cta: '去看看',
+    ),
   ];
   return fallback[index % fallback.length];
 }

@@ -40,7 +40,7 @@ class IcebreakerCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '首聊 / 恢复建议',
+              '首聊 / 回聊 / 稍后再聊建议',
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
                 color: t.textPrimary,
                 fontWeight: FontWeight.w700,
@@ -48,7 +48,7 @@ class IcebreakerCard extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              '点一下就能把话题草稿放进输入框，适合开场、接话或回到上一个话题。',
+              '点一下就能把话题草稿放进输入框，适合开场、接话、稍后再聊或回到上一个话题。',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: t.textSecondary,
                 height: 1.35,
