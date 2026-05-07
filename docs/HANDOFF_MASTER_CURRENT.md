@@ -1,265 +1,178 @@
-# EliteSync 项目总交接稿（当前基线）
+# EliteSync Current Handoff Master
 
-更新时间：2026-05-02
+更新时间：2026-05-07
 
-本文档是 EliteSync 当前阶段的总交接主入口，用于统一说明：
-- 当前做到哪里了
-- 各方向的进度
-- 当前算法与数据真值
-- 当前接口与调用链
-- 后续版本应如何接续
+用途：这是当前恢复后的主交接入口。它只做“交接恢复 + 信息追回 + 单文件收口”，不代表继续扩大 5.5 范围，也不代表进入 commit / push 流程。
 
-## 1. 当前基线
+## 1. 当前审计快照
 
-- 对外发布版本：`0.04.09 / 40900`
-- 当前已完成并验收版本：`5.1`
-- 当前有效文档索引：`docs/DOC_INDEX_CURRENT.md`
-- 当前版本计划索引：`docs/version_plans/README.md`
-- 当前运行手册索引：`docs/runbooks/README.md`
-- `3.8` 已推进到 stage 5 回归与归档完成：参数联动区域、校准报告、已知偏差、Beta 回归清单、验收报告、最终交接稿、截图证据索引与截图验收说明已经落盘，Gemini CLI 已对截图验收说明给出 `pass`
-- `3.9` 已正式归档收口：高级时法框架首版、细粒度解释层、截图证据索引、验收摘要与多 Agent 审查链已经完成，顾问口径为 `pass with observations`
-- `4.0` 已正式归档通过：领域骨架、对象存储主路径最小闭环、媒体状态机、队列/缓存闭环、附件状态骨架与最小可观测性已完成
-- `4.1` 已正式归档通过：非官方四维人格问卷、历史记录、复测、主页/匹配轻量联动与 walkthrough 证据链已完成
-- `4.2` 图片消息正式接入版已正式通过：图片选择、上传、附件绑定、图片消息发送、图片气泡展示、预览与最小 telemetry 已完成，walkthrough 证据包、验收摘要与 closeout 文档已补齐
-- `4.3` 动态流基础版已正式归档：动态主链、轻互动、治理挂点、首页 / 作者页轻量联动已落地，walkthrough 证据包、验收摘要、handoff 与 closeout 已冻结
-- `4.4` 视频消息版已正式归档：聊天中的单视频消息最小闭环、成功态 walkthrough 证据包、验收摘要、handoff 与 closeout 已完成，会话列表摘要已稳定回读为 `视频消息`，归档口径为 `pass with observations`，不要再回头扩写成视频动态、RTC、通话或媒体平台化版本
-- `4.4S` 媒体链稳定性修正版已完成：`public_url` 规范化、图片 / 视频内容端点与读取兜底已修复，历史媒体资源已恢复可读，作为 4.4 的稳定性收尾已纳入当前发布版本
-- 历史材料：统一归档到 `docs/archive/legacy_2026-04/`
-- 当前 5.1 主交接入口：`docs/version_plans/5.1_HANDOFF_MASTER.md`
-- 当前 5.1 状态：`pass with observations`
-- 下一阶段承接方向：`5.2`，不重复建设 5.1 已通过能力，优先承接观察项小单与个人经营页 / 表达层增强。
+- Branch: `feature/5.0-alpha-readiness-20260501`
+- HEAD: `8cdc29c37d5c53a433fe985c5fb1f6dc2cab6d6a`
+- 当前工作树：未清洁，有 20 个 tracked 文件改动与 1 个新增文件。
+- 当前 diff 主题集中在：
+  - 5.4 Admin Dashboard runtime / tests
+  - 5.4 handoff / current entry docs
+  - `0.05.04 / 50400` release / version metadata sync
+  - backend version checks and release config
+  - matching marker config remains observation / pending confirmation
+  - `docs/version_plans/0.05.04_UPDATE_BRIEF.md`
 
-## 2. 项目主线概览
+## 2. 当前版本线口径
 
-EliteSync 当前主线已经从“能跑”进入“正式化收口 + 版本化治理”阶段，核心方向如下：
+- 当前最新已完成并验收版本：`5.4`
+- 当前 5.4 主交接入口：`docs/version_plans/5.4_HANDOFF_MASTER.md`
+- 当前发布链同步口径：`0.05.04 / 50400`
+- 当前发布证据状态：0.05.04 APK 存在、下载 URL、SHA256、version API 与 Version Center 0.05.04 补证已完成。
+- 5.4 状态：`pass with observations`
+- 5.5 状态：只作为下一条主线恢复到文档口径，主题为“真实小样本反馈吸收版”。当前工作树未追回到明确的 5.5 实现文件、5.5 计划文件或 5.5 主交接文件；不要把 5.5 当作已实现。
+- 5.4 已按用户前提完成开发、code review、GitHub 提交，并通过 PR merge regression。当前本地 HEAD 已包含 5.4 相关提交。
+- 已追回的正式项目状态：`5.4` 已完成 code review、已提交 GitHub、已通过 PR merge regression；这不是 observation，也不需要在后续会话重新判定 5.4 是否完成。
+- 已追回的正式项目状态：`0.05.04 / 50400` 已在 GitHub regression 通过后发布到阿里云；这不是 observation。
 
-1. 账号体系与治理
-   - test / synthetic / normal 分层清晰
-   - Admin 客观治理视图可查批次、版本、可见性、指标排除
-2. 资料与画像
-   - 保存资料后由服务端重算 canonical 真值
-   - 前端优先消费保存响应，再刷新详情
-3. 玄学链路
-   - 星盘、八字、紫微等均以服务端真值为准
-   - Flutter 端本地绘制星盘 SVG，不再把绘制当成服务端输出
-4. 匹配与转化
-   - 匹配解释、首聊草稿、会话入口已完成转化增强
-5. 设置与版本中心
-   - 设置中心、盘面设置、版本中心已产品化
-6. 发布与回归
-   - health / version check / smoke / regression / rollback 已纳入固定门禁
+## 3. 5.4 已完成内容
 
-## 3. 各方向进度
+5.4 是“测试运营准备与云端治理增强版”，已完成：
 
-### 3.1 账号与治理
+- Admin Dashboard 只读运营准备入口
+- release baseline / cloud database / observability rows
+- Health / Version、Notification、Media、RTC / LiveKit、Queue / Logs 观测入口
+- Smoke / Regression Matrix
+- 5.4 Runbook Library
+- backup / restore / migration readiness
+- synthetic / smoke 账号治理提示
+- 19 张截图与 19 份 XML 证据，索引在 `docs/version_plans/5.4_OBSERVABILITY_EVIDENCE_INDEX.md`
+- 5.4 回归清单：`docs/version_plans/5.4_REGRESSION_CHECKLIST.md`
 
-已完成：
-- 用户分层：`normal / test / synthetic`
-- synthetic 批次生成、重建、清理、停用
-- Admin 用户列表的批次审计信息
-- synthetic 默认排除指标口径 `exclude_from_metrics = true`
+5.4 不应重开，不应扩成完整运营平台、云端执行平台、后台重构或 RTC / 数据库重写。
 
-当前状态：
-- 可以支撑 Beta / smoke / regression / 运营抽检
-- 合成账号与测试账号口径已明确可重叠，不是互斥分组
+5.4 的 GitHub 合并事实已作为正式项目状态承接：code review 已完成，GitHub 提交已完成，PR merge regression 已通过。
 
-### 3.2 资料与画像
+## 4. 发布链与证据边界
 
-已完成：
-- `POST /api/v1/profile/basic` 保存后会返回重算后的 `astro_profile`
-- Flutter 编辑页优先消费保存响应，再做缓存刷新
-- 资料页、画像页、星盘页的“真值优先”口径已统一
+- `0.05.04 / 50400` 已成为当前发布链同步口径。
+- `0.05.04 / 50400` 已在 GitHub regression 通过后发布到阿里云，当前应按已发布版本承接。
+- 本次同步覆盖 Android host versionName / versionCode、Flutter module pubspec version、app 内更新历史、Laravel version check 默认值与测试断言、`0.05.04_UPDATE_BRIEF.md`。
+- 旧 5.4 UI / Version Center 证据仍主要来自 release-chain sync 前的 `0.04.09 / 40900` 包。
+- 0.05.04 发布证据已补齐：
+  - 本地 APK：`apps/android/app/build/outputs/apk/debug/app-debug.apk`
+  - 阿里云 APK：`/opt/elitesync/services/backend-laravel/public/downloads/elitesync-0.05.04.apk`
+  - 下载 URL：`http://101.133.161.203/downloads/elitesync-0.05.04.apk`，返回 `HTTP/1.1 200 OK`
+  - 本地 / 远程 SHA256：`C53633477E60A804E57DCB7094BDAA1C3863334234A8A4BB34C007BAA264335B`
+  - version API：`latest_version_name=0.05.04`、`latest_version_code=50400`，download URL 与 SHA256 匹配
+  - Version Center 0.05.04 补证：`docs/version_plans/assets/5.4/screenshots/version_center_0_05_04_release_evidence.png` 与 `docs/version_plans/assets/5.4/xml/version_center_0_05_04_release_evidence.xml`
 
-当前状态：
-- 资料编辑 -> 服务端重算 -> 页面刷新链路已闭环
-- 资料与玄学显示层已经从“猜测状态”转成“消费 canonical 快照”
+不要把 0.05.04 发布证据闭环误写成 Cloud DB、backup、restore、migration、queue/logs 或 RTC success 已通过。
 
-### 3.3 星盘 / 八字 / 紫微
+## 5. GitHub 推送信息
 
-已完成：
-- 服务端星盘链路只负责计算与保存，不再负责 SVG 绘制
-- Flutter 本地根据 `chart_data` 绘制星盘
-- 星盘设置页支持本地元素开关、预设、恢复默认
-- 星盘阅读性提示、版本口径、说明卡已补齐
+- 当前 Git remote:
+  - `origin git@github.com:zcx369658780/EliteSync.git`
+- GitHub push 配置文件位置：
+  - `C:\Users\zcxve\.codex\memories\secrets\elitesync_github_push.env`
+- 相关说明：
+  - `docs/reference/GITHUB_PUSH_NETWORK_MODE.md`
+  - `scripts/publish_to_github.ps1`
+- 已追回的 HTTPS + proxy 工作模式：
+  - `HTTP_PROXY=http://127.0.0.1:7890`
+  - `HTTPS_PROXY=http://127.0.0.1:7890`
 
-当前状态：
-- 当前主实现使用 `kerykeion==5.12.7`
-- `astro_chart_preferences_v1` 只影响 Flutter 本地展示
-- 星盘 canonical 算法仍然冻结，不做高风险大改
+注意：`scripts/publish_to_github.ps1` 内部会执行 `git add -A`、commit、push。它只应在用户明确要求整仓发布并接受该行为时使用；当前仓库规则默认禁止 `git add .` / `git add -A`，日常提交应按单主题逐文件 stage。
 
-### 3.4 匹配与转化
+## 6. 阿里云 SSH 与发布方法
 
-已完成：
-- 匹配解释与分项结构增强
-- 匹配结果到首聊的草稿转化
-- 会话入口与破冰建议可点击
-- 旧功能未被误伤的回归门禁已保留
+- ServerHost: `101.133.161.203`
+- User: `root`
+- RemoteRoot: `/opt/elitesync`
+- 默认 SSH 私钥：
+  - `C:\Users\zcxve\.ssh\CodexKey.pem`
+  - 脚本默认写法：`$env:USERPROFILE\.ssh\CodexKey.pem`
+- 后端远程路径：
+  - `/opt/elitesync/services/backend-laravel`
+- APK 远程下载目录：
+  - `/opt/elitesync/services/backend-laravel/public/downloads/`
+- 当前下载 URL 口径：
+  - `http://101.133.161.203/downloads/elitesync-0.05.04.apk`
 
-当前状态：
-- 主链路稳定，可作为 Beta 基线
-- 当前重点是稳定性与解释性，而不是再扩大发现面
+推荐 PowerShell SSH 调用模板：
 
-### 3.5 设置中心与版本中心
+```powershell
+$KeyPath = "$env:USERPROFILE\.ssh\CodexKey.pem"
+$remote = @'
+set -euo pipefail
+cd /opt/elitesync/services/backend-laravel
+php artisan about
+'@
+$sshArgs = @(
+  '-o','BatchMode=yes',
+  '-o','StrictHostKeyChecking=no',
+  '-i',$KeyPath,
+  'root@101.133.161.203',
+  $remote
+)
+& $env:WINDIR\System32\OpenSSH\ssh.exe @sshArgs
+```
 
-已完成：
-- 设置中心结构产品化
-- 盘面设置、隐私设置、性能偏好、Beta 运营准备说明都已归位
-- 版本中心统一了当前版本、服务状态、更新历史、健康检查的口径
+该模板只用于用户明确要求远端检查或执行时；不要在交接恢复阶段主动连云端。
 
-当前状态：
-- 设置与版本页已不再是临时调试页
-- 服务状态定位为可观测性，不是业务真值
+## 7. 常用脚本与用途
 
-### 3.6 发布 / 运维 / 文档
+- `scripts/release_android_update_aliyun.ps1`
+  - 用途：更新 Android version、追加 changelog、构建 debug APK、上传阿里云、更新 Laravel `.env` 和 release metadata、清理旧 APK、执行 post-release self check、追加 `docs/devlogs/RELEASE_LOG.md`。
+  - 只应在用户明确要求发版 / 上传 APK 到阿里云时运行。
+- `scripts/publish_to_github.ps1`
+  - 用途：从外部 env 读取 GitHub push 配置，设置 remote，执行 `git add -A`、commit、push。
+  - 当前默认不推荐直接运行，除非用户明确接受整仓 add / commit / push。
+- `scripts/deploy_aliyun_backend.ps1`
+  - 用途：上传 Laravel backend、可选备份、composer install、migrate、cache、restart nginx / php-fpm / websocket 服务。
+  - 会触碰云端服务与迁移，必须用户明确要求。
+- `scripts/db_backup_aliyun_mysql.ps1`
+  - 用途：在云端导出 MySQL 备份并下载 manifest / sql.gz / sha256 到本地 `backups/aliyun_mysql`。
+  - 涉及云端 DB 读取，运行前需确认。
+- `scripts/db_restore_aliyun_mysql.ps1`
+  - 用途：把备份恢复到目标数据库，默认 `elitesync_restore`。
+  - 高风险脚本，只能在用户明确指定备份和目标库时运行。
+- `scripts/release_gate_alpha.ps1`
+  - 用途：Android compile、backend smoke、astro regression、可选 calibration cycle，并写入 `docs/devlogs/RELEASE_GATE_LOG.md`。
+- `scripts/regression_alpha_baseline.ps1`
+  - 用途：组合 backend tests 与 release gate，写入 `docs/devlogs/REGRESSION_BASELINE_LOG.md`。
+- `scripts/smoke_backend_alpha.ps1`
+  - 用途：对 `http://101.133.161.203` 或指定 BaseUrl 执行后端 smoke，可用 `-SkipAuthChecks` 做公开链路检查。
+- `scripts/fast_deploy_flutter_android_debug.ps1`
+  - 用途：构建 Flutter AAR / Android debug APK，安装到指定 emulator/device 并启动 app。
+- `scripts/apply_calibration_mode.ps1`、`scripts/apply_match_tuning_profile.ps1`、`scripts/run_astro_calibration_cycle.ps1`
+  - 用途：匹配 / 玄学校准相关，只应在校准任务明确时运行。
 
-已完成：
-- 版本号、更新说明、APK 文件名已收口到 `0.04.09 / 40900`
-- `docs/` 当前入口、规划、runbooks、reference、licenses、devlogs 已统一索引
-- 历史材料已迁移到 `docs/archive/legacy_2026-04/`
+## 8. 保护面与 blocker 规则
 
-当前状态：
-- 新版本规划可以直接从 `docs/DOC_INDEX_CURRENT.md` 进入
-- 当前文档体系已经具备长期维护的骨架
+当前不能误动：
 
-## 4. 当前算法与真值链路
+- Laravel backend contract
+- 数据库 schema / migrations / production data
+- profile/basic、profile/astro/summary、profile/astro/chart 真值链
+- 出生地、坐标、八字、紫微、星盘等 canonical 服务端真源
+- RTC / LiveKit contract 与通话状态机
+- notification payload contract
+- media_assets / message_attachments / chat_messages 稳定链路
+- Android host release version 真值与 `/api/v1/app/version/check` 一致性
+- UI protected surfaces：主导航、首页、消息页、聊天页、通知中心、匹配页、资料页、问卷页、版本中心、现代 UI spacing / card / background
 
-### 4.1 资料与画像 canonical 真值
+遇到跨层不确定点，先写 blocker / observation，不要盲修。尤其不要把本地前端工作误写成云端已执行，不要伪造 smoke / regression / version-chain 已通过。
 
-主真值来源：
-- `users`
-- `user_astro_profiles`
+## 9. 下一步最安全顺序
 
-关键规则：
-- `POST /api/v1/profile/basic` 保存后必须触发服务端重算
-- 前端只消费最新保存响应或详情接口结果
-- 前端缓存只能兜底，不能抢真值
+1. 先确认是否要继续 5.5，还是先收口当前 dirty 工作树。
+2. 如果要交付当前 5.4 / 0.05.04 工作，先按固定提交流程分桶，不使用 `git add .`。
+3. `0.05.04 / 50400` 已正式发布到阿里云，且本轮已补齐 version-chain / Version Center / download / release / SHA256 留痕。
+4. 如果要开始 5.5，先写 5.5 计划与 scope freeze，再做只读 dependency / risk / test / architecture 审计。
+5. 5.5 第一轮只能吸收真实小样本反馈，不应预先脑补大功能包，也不应重开 5.0-5.4 主链。
 
-### 4.2 星盘计算
+## 10. 当前仍是 observation
 
-当前路线：
-- 服务端计算
-- Flutter 本地绘制
-
-当前使用的 Python 依赖：
-- `kerykeion==5.12.7`
-
-当前数据形态：
-- `chart_data`
-- `planets`
-- `houses`
-- `aspects`
-
-当前规则：
-- 服务器不再生成最终 SVG 作为主路径
-- 盘面元素开关只影响本地展示，不影响 canonical 真值
-
-### 4.3 匹配算法
-
-当前匹配体系以多模块评分为主，包含：
-- personality
-- MBTI
-- astro
-- bazi
-- zodiac
-- constellation
-- natal_chart
-- ziwei
-- pair_chart
-
-核心要求：
-- 模块分项要可解释
-- 匹配解释要能回溯证据标签
-- 首聊 / 行为转化要能从解释页导流
-
-### 4.4 synthetic 与治理算法
-
-当前规则：
-- synthetic 默认排除指标
-- batch 级别记录生成版本、seed、batch_id、可见性
-- Admin 视图显示治理字段用于核对，而不是靠口头说明
-
-## 5. 当前接口总表
-
-### 5.1 资料与玄学
-
-- `POST /api/v1/profile/basic`
-- `GET /api/v1/profile/astro`
-- `GET /api/v1/profile/astro/summary`
-- `GET /api/v1/profile/astro/chart`
-- `POST /api/v1/profile/astro`
-- `POST /api/v1/profile/astro/render`（历史 / 兼容链路，已不作为主绘制路径）
-
-### 5.2 账号与认证
-
-- `POST /api/v1/auth/login`
-- `POST /api/v1/auth/register`
-- `POST /api/v1/auth/change-password`
-- `DELETE /api/v1/auth/me`
-
-### 5.3 匹配与消息
-
-- `GET /api/v1/matches/current`
-- `GET /api/v1/match/current`
-- `GET /api/v1/matches/{id}/explanation`
-- `GET /api/v1/match/{id}/explanation`
-- `GET /api/v1/messages`
-- `POST /api/v1/messages`
-
-### 5.4 管理与治理
-
-- `GET /api/v1/admin/users`
-- `POST /api/v1/admin/users/{id}/disable`
-- `GET /api/v1/admin/verify-queue`
-- `GET /api/v1/admin/reports`
-
-### 5.5 基础可观测性
-
-- `GET /api/v1/app/health`
-- `GET /api/v1/app/version/check`
-- `GET /api/v1/geo/places`
-
-## 6. 当前前端接口约定
-
-- 星盘页面本地根据 `chart_data` 构图
-- `astro_chart_preferences_v1` 只做本地渲染偏好
-- 资料页、画像页、星盘页要优先读保存响应中的最新快照
-- 登录超时排查先看 host APK 与 bootstrap 注入是否正确
-
-## 7. 已知约束与保护面
-
-必须保持稳定的面：
-- `POST /api/v1/profile/basic`
-- `GET /api/v1/profile/astro/summary`
-- `GET /api/v1/profile/astro/chart`
-- `GET /api/v1/app/health`
-- `GET /api/v1/app/version/check`
-- `astro_chart_preferences_v1`
-- Admin 治理字段
-- synthetic 批次审计字段
-
-不能随意改的边界：
-- 服务端 canonical 真值
-- 地点搜索与地理编码链路
-- 权限 / 路由 / 生命周期 / 状态缓存
-- 第三方 SDK 接入与许可证状态
-
-## 8. 后续高风险议题
-
-顾问已明确指出：
-- 星盘引擎升级需要多版本推进
-- 当前截图对应的网页版能力与现有 Kerykeion 路线不完全等价
-
-因此后续如果要复刻更高层的星盘引擎能力，应另起专门版本规划，不能直接塞进当前稳定基线。
-
-## 9. 交接使用方式
-
-建议后续对接顺序：
-1. 先看本文件
-2. 再看 `docs/DOC_INDEX_CURRENT.md`
-3. 再看 `docs/version_plans/README.md`
-4. 再看对应版本的 `ACCEPTANCE_REPORT` / `HANDOFF_FINAL`
-5. 3.9 相关材料优先看 `docs/version_plans/elite_sync_3_9_版本开发计划书_2026_04_17.md` 及其归档材料
-6. 3.x 收口与下一阶段讨论优先看 `docs/HANDOFF_3X_CLOSEOUT_20260417.md`
-
-如果需要向顾问补充版本材料，本文件应作为总入口，不要把散落的历史规划当作当前主入口。
-
+- Cloud DB read-only audit 需要真实批准环境与凭据路径。
+- backup existence 需要真实备份证据。
+- restore drill 需要非生产恢复环境演练。
+- migration-level checks 需要真实只读环境或后端证据。
+- queue / logs 需要当前日志源。
+- RTC success evidence 未声明通过，当前只保留 RTC 权限面证据。
+- `services/backend-laravel/config/matching.php` 的 matching algo marker 同步仍是待确认 observation，不属于当前 `0.05.04 / 50400` 正式发布链同步口径。
+- 旧 `0.04.09 / 40900` 截图仍只作为历史 5.4 功能 / 保护面证据，不作为 0.05.04 release-chain 证据。
