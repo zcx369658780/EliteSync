@@ -45,10 +45,7 @@ void main() {
     expect(find.text('只读'), findsOneWidget);
     expect(find.text('待核验'), findsOneWidget);
     expect(find.text('索引化'), findsOneWidget);
-    expect(
-      find.text('当前正式发布基线保持 0.04.09 / 40900；5.4 不改 release chain。'),
-      findsOneWidget,
-    );
+    expect(find.text('当前发布目标为 0.05.04 / 50400；仅作为 release-chain 口径展示。'), findsOneWidget);
 
     await tester.scrollUntilVisible(
       find.text('观测与回归核验入口'),
