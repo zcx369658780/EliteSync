@@ -3,6 +3,15 @@
 适用版本范围：0.01.00 - 0.99.99（Alpha/Beta）
 
 
+0.05.04
+
+1) 完成 5.0-5.4 高价值主链覆盖与测试运营准备阶段收口，版本号、版本检查、关于页历史、发布配置与 APK 文件名统一到 `0.05.04 / 50400`；
+
+2) 将 Discover / Chat / Me / Settings 的 5.x 产品化补强、关系推进、个人经营表达层、功能覆盖收尾，以及 5.4 只读运营准备入口、观测入口、Smoke / Regression Matrix 和 Runbook Library 纳入 app 内更新历史；
+
+3) 继续保持 4.9 稳定门禁基线、资料真值链、RTC / LiveKit contract、通知 payload contract、数据库 schema 与 release gate 保护面不变；5.4 的 Cloud DB read-only audit、backup existence、restore drill、migration-level checks、queue / logs、RTC success evidence 仍保留为真实环境 observation。
+
+
 0.04.09
 
 1) 完成 4.9 测试前治理、限流、监控与发布链强化版的收口与发版同步，版本号、版本检查、关于页历史、发布配置与 APK 文件名统一到 `0.04.09 / 40900`；
