@@ -58,15 +58,16 @@ Current 5.4 status:
 - [assets/5.4/](./assets/5.4/)
 - 5.4 observations: Cloud DB read-only audit, backup existence, restore drill, migration-level checks, queue / logs, and RTC success evidence require real environment evidence before they can be marked as passed.
 
-Current 5.5 startup:
+Current 5.5 status:
 
-- status: startup audit and feedback entry freeze in progress; runtime implementation has not started.
+- status: `pass with observations` for approved real small-sample feedback absorption scope.
 - [v_5_5_真实小样本反馈吸收版_开发计划书_2026_05_06.md](./v_5_5_真实小样本反馈吸收版_开发计划书_2026_05_06.md)
+- [5.5_ACCEPTANCE_SUMMARY.md](./5.5_ACCEPTANCE_SUMMARY.md)
 - [5.5_HANDOFF_MASTER.md](./5.5_HANDOFF_MASTER.md)
 - [5.5_FEEDBACK_MATRIX.md](./5.5_FEEDBACK_MATRIX.md)
 - [5.5_FEEDBACK_EVIDENCE_INDEX.md](./5.5_FEEDBACK_EVIDENCE_INDEX.md)
 - [5.5_REGRESSION_CHECKLIST.md](./5.5_REGRESSION_CHECKLIST.md)
-- first runtime slice is blocked until the feedback matrix has at least one concrete feedback row with path, evidence or user feedback text, severity, suspected layer, proposed action, and explicit non-goals.
+- 5.5 observations: restore drill, matching algo marker semantics, remote debug-mode hardening, existing Flutter info-level lint cleanup, and Match Detail success-state retest under active match data remain open.
 
 Current 5.x route:
 

@@ -2,7 +2,7 @@
 
 更新时间：2026-05-07
 
-用途：这是当前恢复后的项目总交接入口。当前版本开发主入口已切到 `docs/version_plans/5.5_HANDOFF_MASTER.md`，但 5.5 仍处于启动审计与反馈入口冻结阶段，尚未进入 runtime 实现，也不代表进入 commit / push 流程。
+用途：这是当前恢复后的项目总交接入口。当前版本开发主入口已切到 `docs/version_plans/5.5_HANDOFF_MASTER.md`；5.5 已按批准范围完成真实小样本反馈吸收，建议按 `pass with observations` 承接，但不代表进入 push 流程。
 
 ## 1. 当前审计快照
 
@@ -19,7 +19,7 @@
 - 当前发布链同步口径：`0.05.04 / 50400`
 - 当前发布证据状态：0.05.04 APK 存在、下载 URL、SHA256、version API 与 Version Center 0.05.04 补证已完成。
 - 5.4 状态：`pass with observations`
-- 5.5 状态：已进入启动审计与反馈入口冻结，主题为“真实小样本反馈吸收版”。当前主入口为 `docs/version_plans/5.5_HANDOFF_MASTER.md`；runtime implementation 尚未开始。
+- 5.5 状态：已完成批准范围内的“真实小样本反馈吸收版”开发与验收材料整理。当前主入口为 `docs/version_plans/5.5_HANDOFF_MASTER.md`；验收建议为 `pass with observations`。
 - 5.4 已按用户前提完成开发、code review、GitHub 提交，并通过 PR merge regression。当前本地 HEAD 已包含 5.4 相关提交。
 - 已追回的正式项目状态：`5.4` 已完成 code review、已提交 GitHub、已通过 PR merge regression；这不是 observation，也不需要在后续会话重新判定 5.4 是否完成。
 - 已追回的正式项目状态：`0.05.04 / 50400` 已在 GitHub regression 通过后发布到阿里云；这不是 observation。

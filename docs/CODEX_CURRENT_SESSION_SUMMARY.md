@@ -4,7 +4,7 @@
 
 来源会话：`019de395-9420-7d42-9e24-ef7bf78fb028`
 
-本次恢复任务：交接恢复 + 信息追回 + 单文件收口，并已进入 5.5 启动审计与反馈入口冻结。当前项目总交接入口为 `docs/HANDOFF_MASTER_CURRENT.md`，当前版本开发主入口为 `docs/version_plans/5.5_HANDOFF_MASTER.md`。
+本次恢复任务：交接恢复 + 信息追回 + 单文件收口，并已推进到 5.5 批准范围开发与验收材料收口。当前项目总交接入口为 `docs/HANDOFF_MASTER_CURRENT.md`，当前版本开发主入口为 `docs/version_plans/5.5_HANDOFF_MASTER.md`。
 
 ## 1. 当前项目状态
 
@@ -17,7 +17,7 @@
 - 当前 5.5 启动主交接入口：`docs/version_plans/5.5_HANDOFF_MASTER.md`
 - 当前项目总交接入口：`docs/HANDOFF_MASTER_CURRENT.md`
 - 下一条主线：`5.5` 真实小样本反馈吸收版
-- 5.5 当前状态：启动材料已提交，已进入启动审计与反馈入口冻结；runtime implementation 尚未开始。
+- 5.5 当前状态：已完成批准范围内的真实小样本反馈吸收、RTC 双设备 / 阿里云复测与验收材料整理；建议按 `pass with observations` 承接。
 - 当前不应重开：`5.0`、`5.1`、`5.2`、`5.3`、`5.4` 主链
 
 ## 2. 本轮完成事项
@@ -116,7 +116,7 @@
   - `docs/version_plans/5.5_FEEDBACK_EVIDENCE_INDEX.md`
   - `docs/version_plans/5.5_REGRESSION_CHECKLIST.md`
 - 5.5 启动前仓库为 clean。
-- 当前新增的 5.5 handoff / index 同步只属于启动审计与反馈入口冻结，不是 runtime implementation。
+- 当前 5.5 已从启动审计进入并完成批准范围内 runtime implementation 与验收材料整理；不要再按“尚未开始实现”的旧口径承接。
 
 ## 6. 已清理的临时文件
 
@@ -210,5 +210,14 @@
 - 接收端验证：真机账号 `13772423130` 在 API-assisted `call_id: 114` 中自动进入 `语音通话`，状态 `in_call`，有 heartbeat 与 local audio frame 日志；测试会话已通过 API cleanly ended。
 - 双端 app-to-app 验证：模拟器账号 `17094346566` 从聊天页向真机账号 `13772423130` 发起 `call_id: 115`，确认弹窗 `现在语音` 后服务端进入 created / accepted / connected / heartbeat / ended；两端都有 LiveKit local / remote audio frame 或 stats 证据，用户现场确认真机可听到打字声音 / 音频采集已启动。
 - 清理：本轮已 force-stop 两端 app 释放麦克风，并将 `call_id: 115` 服务端状态收口为 `ended`。
-- 当前口径：receiver incoming-call UI、accept/connect path、当前 debug build 双端 LiveKit media 都已验证；阿里云后端 30s invite timeout 已通过单文件部署完成，远端 grep 显示 `INVITE_TIMEOUT_SECONDS = 30`，`php8.4-fpm` / `nginx` / `elitesync-ws` active，`/up` 返回 200。本轮未做远端 DB 写入式 create/end call 验证。
+- 当前口径：receiver incoming-call UI、accept/connect path、当前 debug build 双端 LiveKit media 都已验证；阿里云后端 30s invite timeout 已通过单文件部署完成，远端 grep 显示 `INVITE_TIMEOUT_SECONDS = 30`，`php8.4-fpm` / `nginx` / `elitesync-ws` active，`/up` 返回 200。
+- 写入式 RTC 复测：执行前已备份阿里云 MySQL 到 `D:\EliteSync_Aliyun_DB_Backups\20260508_142630` 且 SHA256 校验一致；远端 API `call_id: 116` 完成 create / receiver list visible / accept / connect / caller heartbeat / receiver heartbeat / end，TTL 为 30 秒，最终 `ended` / terminal。
+- RTC TTL 口径：`call_id: 116` 的 30 秒来自 create response before connect；connect 后服务端会把 `expires_at` 延长为通话存活期，因此最终 DB 行不再保留原始 invite TTL。
+- Cloud read-only / ops follow-up：阿里云只读检查已记录 migrations `49`、最新 migration `2026_04_24_000020_add_last_seen_at_to_rtc_sessions_table`、users `4`、rtc_sessions `116`、rtc_session_events `1928`、notifications `229`、jobs `0`；`php8.4-fpm` / `nginx` / `elitesync-ws` active，`/up` 200，version API 仍为 `0.05.04 / 50400`，checked log tail 没有当天 Laravel error-like 行。
+- Ops observation：远端 `php artisan about` 显示 `Environment local` 和 debug enabled；这应作为单独运维硬化项，不要混入 5.5 runtime slice。
+- 本地回归：后端重点回归因测试环境未固定 `APP_URL` 首次出现 3 个 media URL 断言失败；已在 `services/backend-laravel/phpunit.xml` 固定 `APP_URL=http://localhost:8080`，复跑通过，剩余为 PHP 8.5 PDO deprecation。5.5 相关 Flutter focused tests 通过；`flutter analyze` 仍因 14 条既有 info-level lint 非零退出。
+- 双设备现场复测：模拟器 `emulator-5554` 和真机 `TG9L8HOBKFMJZTZX` 均在线且安装 rebuilt debug APK `0.05.04 / 50400`。真机曾复现 ended `call_id: 116` 进入 incoming-call 页仍显示 `接听` / `拒绝`；已修 `RtcIncomingCallPage`，terminal session 只显示 `查看结果` / `返回`。真机 direct route `/rtc/incoming/116` XML 已确认不再暴露 `接听` / `拒绝`。
+- 边界：这条证据只关闭已部署 Aliyun RTC 30s create/end 写入链路和只读运维观察，不等于 restore drill 已通过，也不代表可以执行 migration / restore / DB rewrite。
 - Protected route follow-up：模拟器 `0.05.04 / 50400` 已补做 Settings 与 Edit Profile reachability smoke。Settings 从 Profile 进入成功；Edit Profile 通过 `elitesync_initial_route=/profile/edit` direct-route 打开成功，显示服务端真值说明与昵称 / 性别 / 生日 / 出生时间等字段。本轮未执行保存 / 写入动作。
+- 5.5 验收材料已整理：`docs/version_plans/5.5_HANDOFF_MASTER.md` 仍是主交接入口，`docs/version_plans/5.5_ACCEPTANCE_SUMMARY.md` 是验收摘要附件；当前建议口径为 `pass with observations`。
+- Claude 作为 Android app 测试人员的开发记录已整理进 `5.5_ACCEPTANCE_SUMMARY.md`，并与 `AGENTS.md` / `docs/project_memory.md` 的长期规则保持一致。
