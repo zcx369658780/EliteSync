@@ -48,16 +48,55 @@
    - Gemini CLI 的仓库级默认模型固定为 `gemini-2.5-flash`；如果项目内外存在多个 Gemini 配置来源，以仓库级配置和长期记忆为准。
    - 只要任务与验收质量、视觉审美、界面一致性、工作流总结或大范围上下文消化有关，Gemini 应优先作为第一个专家调用。
 
-3. **Claude 仅作为高价值架构顾问**
-   - Claude CLI 仅在关键架构决策、重大权衡、隐藏回归风险、特别高风险的边界 / 分层审查时使用。
-   - Claude 不应成为常规实现者、普通 review 者、日常 debug 工具或重复迭代的默认协作者。
-   - Claude 的调用应尽量克制，视作稀缺且昂贵的专家资源。
+3. **Claude 作为高价值架构顾问与 App 测试专家**
+   - Claude CLI 默认仍优先用于关键架构决策、重大权衡、隐藏回归风险、特别高风险的边界 / 分层审查。
+   - 当前 Claude 已接入 Deepseek 接口，额度成本较低；同时已安装并验证 Appium MCP / Android app 测试能力。
+   - Claude 可作为 EliteSync Android app 测试 subagent 使用，负责模拟器页面读取、UI 层级检查、截图采集、低风险手势操作、页面可达性和回归清单执行。
+   - Claude 不应成为常规实现者，也不应绕过 Codex 主编排直接扩大需求或修改代码。
+   - Claude 进行 app 测试时默认只做只读或低风险操作，不执行登录、发布、删除、写库、安装 APK、发版、恢复、迁移等动作，除非用户明确授权。
 
 4. **Claude 预算 / 配额保护规则**
    - 若 Claude 调用失败，或明显可能因配额、计费、额度不足、rate limit、预算耗尽等原因失败，必须立即通知用户。
    - 通知内容必须明确说明：Claude 当前因可用预算 / 配额不足而不可用。
    - 一旦发生该类失败，在用户明确确认充值 / 补额度已完成之前，不得继续重试 Claude，也不得循环调用 Claude。
    - Claude 不可用期间，继续使用 Codex 作为主工作者，Gemini 负责验收 / 视觉 / 长文摘要。
+
+### 3.0.1 Claude Android App 测试能力
+
+已验证结论：
+
+- Claude 可以通过 Appium MCP 连接当前 Android 模拟器，例如 `emulator-5554`。
+- Claude 可以创建 Appium session，并使用 UiAutomator2 读取 Flutter app 的 UI XML。
+- Claude 可以识别 EliteSync 当前页面、主要文本、底部导航、按钮和页面结构。
+- Claude 可以执行低风险手势，例如滚动；截图能力可用。
+- Claude 可以作为 app 测试人员执行页面可达性、文本存在性、导航路径、回归清单和截图 / XML 证据核对。
+
+默认使用场景：
+
+- 修改后验收阶段的独立 app walkthrough。
+- 5.5 真实小样本反馈吸收中的页面复查。
+- UI protected surfaces 回归。
+- 与 Gemini 分工：Claude 更偏结构化 UI 层级 / 可达性 / 自动化路径，Gemini 更偏视觉审美 / 截图一致性 / 长上下文总结。
+
+限制与安全边界：
+
+- Flutter 元素多为 `android.view.View`，定位优先依赖文本、`content-desc`、XPath 和页面 XML。
+- Claude 截图视觉分析能力可能不如直接人工 / Codex 图像查看稳定；关键视觉结论仍需截图证据或人工复核。
+- 不允许 Claude 默认执行发布状态、删除内容、登录账号、写数据、安装 APK、生产库操作、迁移、恢复、发版或 push。
+- 需要写入或破坏性操作时，必须先由主线程说明风险并等待用户明确确认。
+
+调用经验：
+
+- Claude + Appium MCP 的单轮测试可能明显慢于普通 CLI 问答；复杂页面 walkthrough 建议预留 15-20 分钟超时。
+- 外层 shell 命令超时不等于 Claude 已失败；如果能看到 `claude` / `node` / Appium 相关进程仍在运行，应继续等待，不要立即重启第二个 Claude 测试。
+- 同一模拟器测试任务不要并发启动多个 Claude / Appium session，避免抢前台、互相滚动、覆盖截图或污染页面状态。
+- 若外层命令已超时但 Claude 进程仍运行，优先等待原进程退出；只有确认进程结束且没有报告回传时，才用更短、更聚焦的 prompt 重跑同一项。
+- 给 Claude 的 app 测试 prompt 要明确禁止写操作，并要求输出 `pass / fail / uncertain`、操作路径、可见文本和证据路径。
+- 对登录守卫后的页面做 direct-route smoke 前，先确认模拟器当前已有登录 session；否则 GoRouter 会把 `/notifications`、`/profile/settings/about`、`/rtc/permission` 等路由重定向到 `/auth/login`，测试只能记为 auth-gated uncertain。
+- 不要让 Claude 为了绕过登录守卫自行登录、退出、清 session 或改本地缓存；如需使用 smoke 账号登录测试，必须由主线程说明账号、范围和风险，并获得用户明确确认。
+- Claude 执行登录 / 表单输入类 Appium 测试时，`.claude/settings.local.json` 需要允许 `appium_set_value`；剪贴板、键盘、按键、元素属性和 active element 工具可显著降低误输入和卡键盘概率。
+- Claude 的简短 `PASS` 结论不足以直接入证据库；验收后要追问结构化明细，包括进入路径、关键可见文本、异常检查项和 `pass / risky pass / fail` 总评。
+- 双端 RTC / 通话测试前必须确认两端设备、包名、`versionName` 和 `versionCode`；旧包设备只能作为兼容性 observation，不能写成当前版本正式通过。
 
 ### 3.1 dependency-mapper
 

@@ -31,6 +31,35 @@
 - 第三批仅保留为预留能力：
   - `elitesync-release-readiness`
 
+## Claude / Gemini / App 测试协作
+
+- Claude 当前默认入口：`C:\Users\zcxve\.local\bin\claude.exe`。
+- Claude 当前已配置为 Deepseek 接口，用户确认额度成本较低；后续不要再默认把 Claude 视为昂贵稀缺资源，但仍要保持主编排克制。
+- Claude 已安装并验证 Appium MCP / Android app 测试能力：
+  - 可连接 `emulator-5554` 等当前运行中的 Android 模拟器。
+  - 可创建 Appium session，使用 UiAutomator2 读取 EliteSync Flutter app 的 UI XML。
+  - 可识别当前页面标题、主要文本、底部导航、按钮和页面结构。
+  - 可执行低风险手势，例如滚动。
+  - 可保存截图并输出页面结构化测试报告。
+  - 如需登录 / 表单输入测试，Claude 的 Appium MCP 权限需要包含输入、键盘、剪贴板、元素属性和 active element 类工具；否则容易卡在手动审批或误输入。
+- Claude 可作为 EliteSync app 测试 subagent / 验收审查员，默认用于：
+  - 修改后独立 walkthrough；
+  - UI protected surfaces 回归；
+  - 页面可达性和文本存在性核验；
+  - 5.5 真实小样本反馈复查；
+  - 根据回归清单执行结构化 app 测试。
+- Claude app 测试安全边界：
+  - 默认只做只读或低风险操作。
+  - 不默认执行登录、发布状态、删除内容、写数据、安装 APK、发版、迁移、恢复、生产库操作或 push。
+  - 需要任何写入、破坏性或环境改变操作时，必须先由主线程说明风险并等待用户明确确认。
+  - 双端 RTC / 通话测试必须先确认两端 app 版本；旧包只能作为兼容性观察，不能直接算当前版本正式验收证据。若 Appium 真机 session 被辅助 APK 安装权限阻断，可用原生 ADB 做受限页面读取 / 截图，但结论必须标注为受限证据。
+  - Flutter 元素定位优先依赖文本、`content-desc`、XPath 和页面 XML；复杂视觉判断仍需截图证据或人工 / Codex 复核。
+- Gemini 当前默认用于视觉 / UI / UX 评审、截图一致性检查、长上下文总结、跨文件综合判断和补漏验证覆盖。
+- 后续推荐分工：
+  - Codex：主编排、实现、工具执行、证据收口。
+  - Claude：架构边界复核 + Android app 结构化测试 / 自动化 walkthrough。
+  - Gemini：视觉审美、截图一致性、长文档验收总结。
+
 ## 交接材料规范
 
 - 同一版本的交接材料必须收敛为一个主交接文件，优先命名为 `*_HANDOFF_MASTER.md`。
