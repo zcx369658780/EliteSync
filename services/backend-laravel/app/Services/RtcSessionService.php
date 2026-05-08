@@ -15,7 +15,7 @@ class RtcSessionService
 {
     private const ACTIVE_STATUSES = ['calling', 'ringing', 'connecting', 'in_call'];
     private const TERMINAL_STATUSES = ['rejected', 'missed', 'busy', 'ended', 'failed'];
-    private const INVITE_TIMEOUT_SECONDS = 10;
+    private const INVITE_TIMEOUT_SECONDS = 30;
     private const DISCONNECT_TIMEOUT_SECONDS = 30;
 
     public function roomKey(int $a, int $b): string
