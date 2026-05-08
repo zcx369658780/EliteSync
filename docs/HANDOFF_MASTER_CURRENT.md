@@ -2,20 +2,15 @@
 
 更新时间：2026-05-07
 
-用途：这是当前恢复后的主交接入口。它只做“交接恢复 + 信息追回 + 单文件收口”，不代表继续扩大 5.5 范围，也不代表进入 commit / push 流程。
+用途：这是当前恢复后的项目总交接入口。当前版本开发主入口已切到 `docs/version_plans/5.5_HANDOFF_MASTER.md`，但 5.5 仍处于启动审计与反馈入口冻结阶段，尚未进入 runtime 实现，也不代表进入 commit / push 流程。
 
 ## 1. 当前审计快照
 
 - Branch: `feature/5.0-alpha-readiness-20260501`
-- HEAD: `8cdc29c37d5c53a433fe985c5fb1f6dc2cab6d6a`
-- 当前工作树：未清洁，有 20 个 tracked 文件改动与 1 个新增文件。
-- 当前 diff 主题集中在：
-  - 5.4 Admin Dashboard runtime / tests
-  - 5.4 handoff / current entry docs
-  - `0.05.04 / 50400` release / version metadata sync
-  - backend version checks and release config
-  - matching marker config remains observation / pending confirmation
-  - `docs/version_plans/0.05.04_UPDATE_BRIEF.md`
+- HEAD: `a8bff9d9e4f8085149dad44ec5824ee7e4ac346c`
+- 5.4 收口提交链与 5.5 启动材料提交已完成。
+- 启动 5.5 前工作树为 clean。
+- 当前新增的 5.5 文档改动只用于启动审计与反馈入口冻结，不是 runtime 实现。
 
 ## 2. 当前版本线口径
 
@@ -24,7 +19,7 @@
 - 当前发布链同步口径：`0.05.04 / 50400`
 - 当前发布证据状态：0.05.04 APK 存在、下载 URL、SHA256、version API 与 Version Center 0.05.04 补证已完成。
 - 5.4 状态：`pass with observations`
-- 5.5 状态：只作为下一条主线恢复到文档口径，主题为“真实小样本反馈吸收版”。当前工作树未追回到明确的 5.5 实现文件、5.5 计划文件或 5.5 主交接文件；不要把 5.5 当作已实现。
+- 5.5 状态：已进入启动审计与反馈入口冻结，主题为“真实小样本反馈吸收版”。当前主入口为 `docs/version_plans/5.5_HANDOFF_MASTER.md`；runtime implementation 尚未开始。
 - 5.4 已按用户前提完成开发、code review、GitHub 提交，并通过 PR merge regression。当前本地 HEAD 已包含 5.4 相关提交。
 - 已追回的正式项目状态：`5.4` 已完成 code review、已提交 GitHub、已通过 PR merge regression；这不是 observation，也不需要在后续会话重新判定 5.4 是否完成。
 - 已追回的正式项目状态：`0.05.04 / 50400` 已在 GitHub regression 通过后发布到阿里云；这不是 observation。
@@ -160,11 +155,11 @@ $sshArgs = @(
 
 ## 9. 下一步最安全顺序
 
-1. 先确认是否要继续 5.5，还是先收口当前 dirty 工作树。
-2. 如果要交付当前 5.4 / 0.05.04 工作，先按固定提交流程分桶，不使用 `git add .`。
-3. `0.05.04 / 50400` 已正式发布到阿里云，且本轮已补齐 version-chain / Version Center / download / release / SHA256 留痕。
-4. 如果要开始 5.5，先写 5.5 计划与 scope freeze，再做只读 dependency / risk / test / architecture 审计。
-5. 5.5 第一轮只能吸收真实小样本反馈，不应预先脑补大功能包，也不应重开 5.0-5.4 主链。
+1. 5.5 已完成启动材料提交与模拟器基线 smoke，下一步先补具体真实反馈行。
+2. 5.5 第一轮只能吸收真实小样本反馈，不应预先脑补大功能包，也不应重开 5.0-5.4 主链。
+3. 没有具体反馈行前，不进入 runtime slice。
+4. 如果反馈涉及后端 / 云端 / 数据库 / 队列 / RTC / 媒体 / 版本链不一致，先写 blocker report，不盲修。
+5. 只有用户明确要求 commit / push 时，才进入固定提交流程。
 
 ## 10. 当前仍是 observation
 

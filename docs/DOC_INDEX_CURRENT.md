@@ -54,6 +54,11 @@
 - `docs/version_plans/5.3_REGRESSION_CHECKLIST.md`：5.3 回归清单
 - `docs/version_plans/5.3_UI_BASELINE_EVIDENCE_INDEX.md`：5.3 UI 基线证据索引
 - `docs/version_plans/5.4_HANDOFF_MASTER.md`：5.4 单文件主交接（当前最新验收主入口），状态为 `pass with observations`
+- `docs/version_plans/5.5_HANDOFF_MASTER.md`：5.5 启动期单文件主交接入口，状态为启动审计与反馈入口冻结中，运行时实现尚未开始
+- `docs/version_plans/v_5_5_真实小样本反馈吸收版_开发计划书_2026_05_06.md`：5.5 真实小样本反馈吸收版开发计划书
+- `docs/version_plans/5.5_FEEDBACK_MATRIX.md`：5.5 反馈矩阵；没有具体反馈行前不得进入 runtime slice
+- `docs/version_plans/5.5_FEEDBACK_EVIDENCE_INDEX.md`：5.5 反馈证据索引
+- `docs/version_plans/5.5_REGRESSION_CHECKLIST.md`：5.5 回归清单
 - `docs/HANDOFF_MASTER_CURRENT.md`：当前恢复后的项目总交接主入口，包含 5.4 / 5.5 状态、0.05.04 发布链、GitHub / 阿里云 SSH 与发布脚本方法
 - `docs/version_plans/5.4_REGRESSION_CHECKLIST.md`：5.4 回归清单
 - `docs/version_plans/5.4_OBSERVABILITY_EVIDENCE_INDEX.md`：5.4 观测与证据索引
@@ -108,4 +113,5 @@
 - 5.2 已验收通过，状态为 `pass with observations`
 - 5.3 已验收通过，状态为 `pass with observations`
 - 5.4 已验收通过，状态为 `pass with observations`
+- 5.5 已进入启动审计与反馈入口冻结；运行时实现尚未开始，必须先形成具体小样本反馈行
 - 5.x 当前主线是高价值主链功能覆盖优先，不再回头重开 4.x 已归档主链

@@ -4,7 +4,7 @@
 
 来源会话：`019de395-9420-7d42-9e24-ef7bf78fb028`
 
-本次恢复任务：交接恢复 + 信息追回 + 单文件收口。当前主交接入口已恢复为 `docs/HANDOFF_MASTER_CURRENT.md`。
+本次恢复任务：交接恢复 + 信息追回 + 单文件收口，并已进入 5.5 启动审计与反馈入口冻结。当前项目总交接入口为 `docs/HANDOFF_MASTER_CURRENT.md`，当前版本开发主入口为 `docs/version_plans/5.5_HANDOFF_MASTER.md`。
 
 ## 1. 当前项目状态
 
@@ -13,10 +13,11 @@
 - 当前发布证据状态：本地 / 阿里云 APK SHA256 一致，下载 URL、version API、Version Center 0.05.04 发布链证据已补齐。
 - 当前最新已验收版本：`5.4`
 - 当前 5.4 验收口径：`pass with observations`
-- 当前最新主交接入口：`docs/version_plans/5.4_HANDOFF_MASTER.md`
+- 当前最新已验收主交接入口：`docs/version_plans/5.4_HANDOFF_MASTER.md`
+- 当前 5.5 启动主交接入口：`docs/version_plans/5.5_HANDOFF_MASTER.md`
 - 当前项目总交接入口：`docs/HANDOFF_MASTER_CURRENT.md`
 - 下一条主线：`5.5` 真实小样本反馈吸收版
-- 5.5 当前状态：仅恢复为下一条主线口径，当前工作树未追回到明确的 5.5 实现文件、5.5 主交接或 5.5 计划文件。
+- 5.5 当前状态：启动材料已提交，已进入启动审计与反馈入口冻结；runtime implementation 尚未开始。
 - 当前不应重开：`5.0`、`5.1`、`5.2`、`5.3`、`5.4` 主链
 
 ## 2. 本轮完成事项
@@ -105,52 +106,17 @@
   - Version Center 截图：`docs/version_plans/assets/5.4/screenshots/version_center_0_05_04_release_evidence.png`
   - Version Center XML：`docs/version_plans/assets/5.4/xml/version_center_0_05_04_release_evidence.xml`
 
-## 5. 当前 dirty 工作区
+## 5. 当前工作区
 
-当前未提交内容仍然较多，新会话若要提交，必须先进入固定提交 / 推送前流程，按 A/B/C/D 分桶，一次只处理一个主题。
-
-当前主要 dirty 组：
-
-- 5.4 runtime / tests：
-  - `apps/flutter_elitesync_module/lib/features/admin/presentation/pages/admin_dashboard_page.dart`
-  - `apps/flutter_elitesync_module/test/features/admin/presentation/pages/admin_dashboard_page_test.dart`
-- 5.4 handoff / evidence / regression / runbooks：
-  - `docs/version_plans/5.4_HANDOFF_MASTER.md`
-  - `docs/version_plans/5.4_OBSERVABILITY_EVIDENCE_INDEX.md`
-  - `docs/version_plans/5.4_REGRESSION_CHECKLIST.md`
-  - `docs/version_plans/assets/5.4/`
-  - `docs/runbooks/CLOUD_READONLY_DB_ACCESS_AND_AUDIT.md`
-  - `docs/runbooks/BACKUP_RESTORE_AND_MIGRATION_CHECK.md`
-  - `docs/runbooks/SYNTHETIC_ACCOUNT_GOVERNANCE.md`
-  - `docs/version_plans/v_5_4_测试运营准备与云端治理增强版_开发计划书_2026_05_05.md`
-- current entry docs sync：
-  - `docs/DEVELOPMENT_PLAN_CURRENT.md`
-  - `docs/DOC_INDEX_CURRENT.md`
-  - `docs/project_memory.md`
-  - `docs/version_plans/README.md`
-  - `docs/project_kb_export/00_PROJECT_OVERVIEW.md`
-  - `docs/project_kb_export/01_CURRENT_STATUS.md`
-  - `docs/project_kb_export/04_ACTIVE_PLAN_AND_NEXT_STEP.md`
-- release / version metadata sync：
-  - `apps/android/app/build.gradle.kts`
-  - `apps/android/app/src/main/assets/changelog_v0.txt`
-  - `apps/flutter_elitesync_module/assets/config/about_update_0_xx.json`
-  - `apps/flutter_elitesync_module/pubspec.yaml`
-  - `services/backend-laravel/config/app_update.php`
-  - `services/backend-laravel/.env.example`
-  - `services/backend-laravel/tests/Feature/AppVersionApiTest.php`
-  - `services/backend-laravel/tests/Feature/FrontendTelemetryApiTest.php`
-  - `apps/flutter_elitesync_module/test/features/notification/presentation/pages/notification_center_page_test.dart`
-  - `apps/flutter_elitesync_module/test/features/rtc/presentation/pages/rtc_call_result_page_test.dart`
-  - `docs/version_plans/0.05.04_UPDATE_BRIEF.md`
-- EliteSync App Studio：
-  - `.agents/`
-  - `plugins/elitesync-app-studio/`
-  - `docs/ELITESYNC_APP_STUDIO_AUDIT.md`
-  - `docs/ELITESYNC_APP_STUDIO_SKILL_AUDIT.md`
-  - `docs/ELITESYNC_APP_STUDIO_WORKFLOW.md`
-- 其他规则文档：
-  - `docs/EXEC_PLAN_TEMPLATE.md`
+- 5.4 收口链已提交。
+- `services/backend-laravel/config/matching.php` 已按单文件级恢复处理，不再作为 dirty 文件存在。
+- 5.5 启动材料已提交：
+  - `docs/version_plans/v_5_5_真实小样本反馈吸收版_开发计划书_2026_05_06.md`
+  - `docs/version_plans/5.5_FEEDBACK_MATRIX.md`
+  - `docs/version_plans/5.5_FEEDBACK_EVIDENCE_INDEX.md`
+  - `docs/version_plans/5.5_REGRESSION_CHECKLIST.md`
+- 5.5 启动前仓库为 clean。
+- 当前新增的 5.5 handoff / index 同步只属于启动审计与反馈入口冻结，不是 runtime implementation。
 
 ## 6. 已清理的临时文件
 
@@ -187,10 +153,10 @@
   4. current entry docs sync
   5. EliteSync App Studio
 
-若下一步是直接启动 5.5：
+若下一步是继续 5.5：
 
-- 先确认是否允许在当前 dirty 工作区上继续。
-- 默认应先完成 5.4 提交或至少冻结 5.4 dirty 范围。
+- 先补一条具体小样本反馈行，或由用户指定要 walkthrough 的页面 / 路径。
+- 没有具体反馈行前，不进入 runtime slice。
 - 5.5 启动流程不能提前套用提交前 A/B/C/D 分桶，除非用户明确要求准备 commit / push。
 
 ## 9. 不可破坏规则
@@ -227,5 +193,19 @@
 - 5.4 的 code review、GitHub 提交与 PR merge regression 通过属于已追回的正式项目状态，不是 observation。
 - `0.05.04 / 50400` 已在 GitHub regression 通过后发布到阿里云；这是正式项目状态，不是 observation。
 - `0.05.04 / 50400` 发布证据已补齐：version-chain / Version Center / download / release / SHA256 留痕已记录。
-- 5.5 不要继续盲目开发；先确认 5.5 计划、scope freeze 与真实反馈输入来源。
+- 5.5 已完成启动审计与入口冻结的文档化；下一步只能从真实反馈矩阵进入最小 runtime slice。
 - 如果下一步要提交当前工作树，必须先按单主题分桶逐文件 stage，禁止 `git add .`。
+
+## 12. 5.5 当前测试与设备事实
+
+- Claude 已作为 Appium Android 测试 subagent 执行 5.5 smoke / regression，并已记录到 `docs/version_plans/5.5_HANDOFF_MASTER.md` 与 `docs/version_plans/5.5_FEEDBACK_EVIDENCE_INDEX.md`。
+- 登录态 guarded smoke 已用用户授权账号 `17094346566` 完成：Messages / notification surface、Version Center、RTC voice-call page 均可达，无 crash / red screen / cast error / infinite skeleton / severe overlap。
+- 该 RTC 结果只证明页面与状态机可达，不证明 LiveKit 媒体链路成功。
+- 当前 ADB 识别两台设备：模拟器 `emulator-5554` 与真机 `TG9L8HOBKFMJZTZX`。
+- 模拟器当前 app 为 `0.05.04 / 50400`；真机已通过 USB debug 安装更新到 `0.05.04 / 50400`。
+- 用户授权 Claude / 测试流程使用真机账号 `13772423130` 做通话测试；真机本地缓存确认当前账号为 `13772423130`。
+- 双端 RTC 初始事实：模拟器账号 `17094346566` 可发起语音通话，`call_id: 110 / f232d48f-cd13-4e44-bde6-f623440101dc` 进入 `calling` / `created`，最终 `missed` / timeout；真机账号 `13772423130` 在消息页未观察到 incoming-call UI 或接听入口。
+- RTC 接收端根因已追回：logcat 显示 watcher 在 `_currentUserId` 中对 dynamic `AsyncData<SessionState>` 调用 `maybeWhen`，导致每轮 `RTC_INVITE_PROVIDER_ERROR`，还没进入 `/api/v1/rtc/calls` 扫描。
+- RTC 接收端已做最小修复：typed `AsyncData<SessionState>` 读取、先扫 incoming calls 再取 notifications、本地后端 invite timeout 从 10s 延到 30s 并更新 `RtcApiTest`。
+- 最新验证：真机账号 `13772423130` 在 API-assisted `call_id: 114` 中自动进入 `语音通话`，状态 `in_call`，有 heartbeat 与 local audio frame 日志；测试会话已通过 API cleanly ended。
+- 当前口径：receiver incoming-call UI 与 accept/connect path 已验证；完整双端 LiveKit 媒体成功仍是 observation，因为 `114` 的 caller side 是 API-created，不是第二个 app media participant，且阿里云后端仍是旧 10s timeout，后端修复尚未部署。

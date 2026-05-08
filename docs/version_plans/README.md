@@ -2,7 +2,7 @@
 
 Current active handoff entry:
 
-- [5.4_HANDOFF_MASTER.md](./5.4_HANDOFF_MASTER.md)
+- [5.5_HANDOFF_MASTER.md](./5.5_HANDOFF_MASTER.md)
 
 Current active plan:
 
@@ -57,6 +57,16 @@ Current 5.4 status:
 - [5.4_OBSERVABILITY_EVIDENCE_INDEX.md](./5.4_OBSERVABILITY_EVIDENCE_INDEX.md)
 - [assets/5.4/](./assets/5.4/)
 - 5.4 observations: Cloud DB read-only audit, backup existence, restore drill, migration-level checks, queue / logs, and RTC success evidence require real environment evidence before they can be marked as passed.
+
+Current 5.5 startup:
+
+- status: startup audit and feedback entry freeze in progress; runtime implementation has not started.
+- [v_5_5_真实小样本反馈吸收版_开发计划书_2026_05_06.md](./v_5_5_真实小样本反馈吸收版_开发计划书_2026_05_06.md)
+- [5.5_HANDOFF_MASTER.md](./5.5_HANDOFF_MASTER.md)
+- [5.5_FEEDBACK_MATRIX.md](./5.5_FEEDBACK_MATRIX.md)
+- [5.5_FEEDBACK_EVIDENCE_INDEX.md](./5.5_FEEDBACK_EVIDENCE_INDEX.md)
+- [5.5_REGRESSION_CHECKLIST.md](./5.5_REGRESSION_CHECKLIST.md)
+- first runtime slice is blocked until the feedback matrix has at least one concrete feedback row with path, evidence or user feedback text, severity, suspected layer, proposed action, and explicit non-goals.
 
 Current 5.x route:
 
