@@ -104,6 +104,23 @@
 - 默认不自动 push，除非用户明确要求。
 - 如果仓库过脏、文件跨域过多、主题不清楚，必须先停下来重新分桶，不得硬提。
 
+## GitHub SSH 推送约定
+
+- GitHub 代码远端默认使用 SSH：`git@github.com:zcx369658780/EliteSync.git`。
+- 本机已验证可用的 GitHub SSH key 是：`C:\Users\zcxve\.ssh\id_ed25519`。
+- 本机 SSH config 已把 `github.com` 映射到 `ssh.github.com:443`，可绕过常规 22 端口网络问题。
+- GitHub 推送 / `ls-remote` / PR 前分支推送必须走 SSH，不再走 HTTPS 认证窗口、Git Credential Manager 弹窗或 PAT 交互登录。
+- `C:\Users\zcxve\.ssh\CodexKey.pem` 是阿里云 SSH key，不是 GitHub key；不要用它推 GitHub。
+- 推荐认证测试：
+  - `& $env:WINDIR\System32\OpenSSH\ssh.exe -T -o BatchMode=yes -o IdentitiesOnly=yes -i "$env:USERPROFILE\.ssh\id_ed25519" git@github.com`
+  - 返回 `Hi zcx369658780! You've successfully authenticated, but GitHub does not provide shell access.` 即为成功；该命令可能 exit code 为 1，不能按普通失败处理。
+- 推荐 PowerShell Git SSH 环境：
+  - `$ssh = "$($env:WINDIR.Replace('\','/'))/System32/OpenSSH/ssh.exe"`
+  - `$key = "$($env:USERPROFILE.Replace('\','/'))/.ssh/id_ed25519"`
+  - `$env:GIT_SSH_COMMAND = "'$ssh' -o BatchMode=yes -o IdentitiesOnly=yes -i '$key'"`
+  - 然后再执行 `git ls-remote origin` 或 `git push -u origin <branch>`。
+- `scripts/publish_to_github.ps1` 会执行 `git add -A`，只有用户明确接受整仓 add / commit / push 时才可使用；日常仍按单主题逐文件 stage。
+
 ## 双流程分离规则
 
 - EliteSync 从现在开始区分两套流程，且不得混用：
