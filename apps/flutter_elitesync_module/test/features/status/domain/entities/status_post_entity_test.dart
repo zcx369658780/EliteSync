@@ -89,4 +89,27 @@ void main() {
     expect(entity.coverMediaUrl, 'https://example.com/cover.png');
     expect(entity.hasMedia, isTrue);
   });
+
+  test(
+    'status post entity tolerates map-shaped personality and media payloads',
+    () {
+      final entity = StatusPostEntity.fromJson({
+        'id': 6,
+        'title': '发布兼容性',
+        'body': '后端历史字段可能返回 map。',
+        'author': {
+          'id': 8,
+          'name': '小样本用户',
+          'public_personality': {'primary': '温和', 'secondary': '慢热'},
+        },
+        'visibility': 'public',
+        'media': {'id': 77, 'public_url': 'https://example.com/status-map.png'},
+        'created_at': '2026-05-07T08:00:00.000Z',
+      });
+
+      expect(entity.authorPublicPersonality, ['温和', '慢热']);
+      expect(entity.coverMediaUrl, 'https://example.com/status-map.png');
+      expect(entity.hasMedia, isTrue);
+    },
+  );
 }

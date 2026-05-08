@@ -3,10 +3,7 @@ import 'package:flutter_elitesync_module/design_system/theme/app_theme_extension
 import 'package:flutter_elitesync_module/features/profile/presentation/widgets/astro_profile_sections.dart';
 
 class AstroIdentityHeader extends StatelessWidget {
-  const AstroIdentityHeader({
-    super.key,
-    required this.profile,
-  });
+  const AstroIdentityHeader({super.key, required this.profile});
 
   final Map<String, dynamic> profile;
 
@@ -36,17 +33,17 @@ class AstroIdentityHeader extends StatelessWidget {
           Text(
             '玄学身份摘要',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: t.textPrimary,
-                  fontWeight: FontWeight.w800,
-                ),
+              color: t.textPrimary,
+              fontWeight: FontWeight.w800,
+            ),
           ),
           SizedBox(height: t.spacing.xxs),
           Text(
             '将西占三轴、八字日主与紫微命星整合为一个统一入口',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: t.textSecondary,
-                  height: 1.35,
-                ),
+              color: t.textSecondary,
+              height: 1.35,
+            ),
           ),
           SizedBox(height: t.spacing.md),
           Wrap(
@@ -63,7 +60,9 @@ class AstroIdentityHeader extends StatelessWidget {
               _IdentityMetricCard(
                 title: '八字日主',
                 primary: dayMaster.isEmpty ? '-' : dayMaster,
-                secondary: dayMasterElement.isEmpty ? '未知五行' : '$dayMasterElement 日主',
+                secondary: dayMasterElement.isEmpty
+                    ? '未知五行'
+                    : '$dayMasterElement 日主',
                 accent: _elementColor(dayMasterElement),
                 icon: Icons.view_module_rounded,
               ),
@@ -117,17 +116,17 @@ class AstroPortalCard extends StatelessWidget {
               Text(
                 title,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: t.textPrimary,
-                      fontWeight: FontWeight.w800,
-                    ),
+                  color: t.textPrimary,
+                  fontWeight: FontWeight.w800,
+                ),
               ),
               SizedBox(height: t.spacing.xxs),
               Text(
                 subtitle,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: t.textSecondary,
-                      height: 1.35,
-                    ),
+                  color: t.textSecondary,
+                  height: 1.35,
+                ),
               ),
               SizedBox(height: t.spacing.sm),
               ClipRRect(
@@ -137,7 +136,9 @@ class AstroPortalCard extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: t.surface,
                     borderRadius: BorderRadius.circular(t.radius.lg),
-                    border: Border.all(color: t.browseBorder.withValues(alpha: 0.9)),
+                    border: Border.all(
+                      color: t.browseBorder.withValues(alpha: 0.9),
+                    ),
                   ),
                   padding: EdgeInsets.all(t.spacing.sm),
                   child: preview,
@@ -152,10 +153,7 @@ class AstroPortalCard extends StatelessWidget {
 }
 
 class BaziOverviewPreview extends StatelessWidget {
-  const BaziOverviewPreview({
-    super.key,
-    required this.bazi,
-  });
+  const BaziOverviewPreview({super.key, required this.bazi});
 
   final String bazi;
 
@@ -174,13 +172,20 @@ class BaziOverviewPreview extends StatelessWidget {
       child: Row(
         children: List.generate(4, (index) {
           final pillar = index < pillars.length ? pillars[index] : '--';
-          final stem = pillar.isNotEmpty ? String.fromCharCode(pillar.runes.first) : '-';
-          final branch = pillar.runes.length > 1 ? String.fromCharCode(pillar.runes.elementAt(1)) : '-';
+          final stem = pillar.isNotEmpty
+              ? String.fromCharCode(pillar.runes.first)
+              : '-';
+          final branch = pillar.runes.length > 1
+              ? String.fromCharCode(pillar.runes.elementAt(1))
+              : '-';
           final accent = _elementColor(_elementOfStem(stem));
           return Expanded(
             child: Container(
               margin: EdgeInsets.only(right: index == 3 ? 0 : t.spacing.xs),
-              padding: EdgeInsets.symmetric(horizontal: t.spacing.xs, vertical: t.spacing.sm),
+              padding: EdgeInsets.symmetric(
+                horizontal: t.spacing.xs,
+                vertical: t.spacing.sm,
+              ),
               decoration: BoxDecoration(
                 color: accent.withValues(alpha: 0.10),
                 borderRadius: BorderRadius.circular(t.radius.lg),
@@ -192,23 +197,23 @@ class BaziOverviewPreview extends StatelessWidget {
                   Text(
                     labels[index],
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: t.textSecondary,
-                          fontWeight: FontWeight.w700,
-                        ),
+                      color: t.textSecondary,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                   Text(
                     stem,
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          color: accent,
-                          fontWeight: FontWeight.w800,
-                        ),
+                      color: accent,
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
                   Text(
                     branch,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: accent,
-                          fontWeight: FontWeight.w700,
-                        ),
+                      color: accent,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ],
               ),
@@ -221,10 +226,7 @@ class BaziOverviewPreview extends StatelessWidget {
 }
 
 class NatalAxisPoster extends StatelessWidget {
-  const NatalAxisPoster({
-    super.key,
-    required this.profile,
-  });
+  const NatalAxisPoster({super.key, required this.profile});
 
   final Map<String, dynamic> profile;
 
@@ -272,10 +274,7 @@ class NatalAxisPoster extends StatelessWidget {
 }
 
 class ZiweiOverviewPreview extends StatelessWidget {
-  const ZiweiOverviewPreview({
-    super.key,
-    required this.ziwei,
-  });
+  const ZiweiOverviewPreview({super.key, required this.ziwei});
 
   final Map<String, dynamic> ziwei;
 
@@ -304,85 +303,100 @@ class ZiweiOverviewPreview extends StatelessWidget {
       '迁移宫',
     ];
 
-    return SizedBox(
-      height: 164,
-      child: GridView.builder(
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: order.length,
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 4,
-          crossAxisSpacing: 4,
-          mainAxisSpacing: 4,
-          childAspectRatio: 1,
-        ),
-        itemBuilder: (context, index) {
-          final name = order[index];
-          if (name.isEmpty) {
-            return Container(
-              decoration: BoxDecoration(
-                color: t.surface.withValues(alpha: 0.55),
-                borderRadius: BorderRadius.circular(t.radius.md),
-              ),
-            );
-          }
-          final palace = palaces
-              .whereType<Map>()
-              .map((e) => e.map((k, v) => MapEntry(k.toString(), v)))
-              .cast<Map<String, dynamic>>()
-              .firstWhere(
-                (row) => astroText(row['name'], '') == name,
-                orElse: () => const <String, dynamic>{},
-              );
-          final isLife = name == lifePalace;
-          final isBody = name == bodyPalace;
-          final accent = isLife
-              ? const Color(0xFF5AA8FF)
-              : isBody
+    const gridGap = 4.0;
+    const columnCount = 4;
+    const rowCount = 4;
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final tileWidth =
+            (constraints.maxWidth - gridGap * (columnCount - 1)) / columnCount;
+        final gridHeight = tileWidth * rowCount + gridGap * (rowCount - 1);
+
+        return SizedBox(
+          height: gridHeight,
+          child: GridView.builder(
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: order.length,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: columnCount,
+              crossAxisSpacing: gridGap,
+              mainAxisSpacing: gridGap,
+              childAspectRatio: 1,
+            ),
+            itemBuilder: (context, index) {
+              final name = order[index];
+              if (name.isEmpty) {
+                return Container(
+                  decoration: BoxDecoration(
+                    color: t.surface.withValues(alpha: 0.55),
+                    borderRadius: BorderRadius.circular(t.radius.md),
+                  ),
+                );
+              }
+              final palace = palaces
+                  .whereType<Map>()
+                  .map((e) => e.map((k, v) => MapEntry(k.toString(), v)))
+                  .cast<Map<String, dynamic>>()
+                  .firstWhere(
+                    (row) => astroText(row['name'], '') == name,
+                    orElse: () => const <String, dynamic>{},
+                  );
+              final isLife = name == lifePalace;
+              final isBody = name == bodyPalace;
+              final accent = isLife
+                  ? const Color(0xFF5AA8FF)
+                  : isBody
                   ? const Color(0xFF8A7CFF)
                   : t.textSecondary;
-          return Container(
-            padding: const EdgeInsets.all(6),
-            decoration: BoxDecoration(
-              color: accent.withValues(alpha: isLife || isBody ? 0.12 : 0.05),
-              borderRadius: BorderRadius.circular(t.radius.md),
-              border: Border.all(color: accent.withValues(alpha: isLife || isBody ? 0.40 : 0.16)),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name.replaceAll('宫', ''),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              return Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: accent.withValues(
+                    alpha: isLife || isBody ? 0.12 : 0.05,
+                  ),
+                  borderRadius: BorderRadius.circular(t.radius.md),
+                  border: Border.all(
+                    color: accent.withValues(
+                      alpha: isLife || isBody ? 0.40 : 0.16,
+                    ),
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      name.replaceAll('宫', ''),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
                         color: accent,
                         fontWeight: FontWeight.w800,
                       ),
-                ),
-                const Spacer(),
-                Text(
-                  astroText(palace['main_star'], '-'),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    ),
+                    const Spacer(),
+                    Text(
+                      astroText(palace['main_star'], '-'),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: t.textPrimary,
                         fontWeight: FontWeight.w700,
                       ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          );
-        },
-      ),
+              );
+            },
+          ),
+        );
+      },
     );
   }
 }
 
 class WuXingPulseStrip extends StatelessWidget {
-  const WuXingPulseStrip({
-    super.key,
-    required this.wuXing,
-  });
+  const WuXingPulseStrip({super.key, required this.wuXing});
 
   final Map<String, dynamic> wuXing;
 
@@ -405,21 +419,23 @@ class WuXingPulseStrip extends StatelessWidget {
           Text(
             '五行能量脉冲条',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: t.textPrimary,
-                  fontWeight: FontWeight.w800,
-                ),
+              color: t.textPrimary,
+              fontWeight: FontWeight.w800,
+            ),
           ),
           SizedBox(height: t.spacing.xxs),
           Text(
             '只保留用户可感知的五行能量，不在总览页暴露技术参数',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: t.textSecondary,
-                  height: 1.35,
-                ),
+              color: t.textSecondary,
+              height: 1.35,
+            ),
           ),
           SizedBox(height: t.spacing.sm),
           ...items.map((item) {
-            final percent = total <= 0 ? 0.0 : (item.value / total * 100).clamp(0.0, 100.0);
+            final percent = total <= 0
+                ? 0.0
+                : (item.value / total * 100).clamp(0.0, 100.0);
             return Padding(
               padding: EdgeInsets.only(bottom: t.spacing.sm),
               child: Row(
@@ -429,9 +445,9 @@ class WuXingPulseStrip extends StatelessWidget {
                     child: Text(
                       item.label,
                       style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                            color: item.color,
-                            fontWeight: FontWeight.w800,
-                          ),
+                        color: item.color,
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
                   ),
                   Expanded(
@@ -441,7 +457,9 @@ class WuXingPulseStrip extends StatelessWidget {
                         height: 14,
                         child: Stack(
                           children: [
-                            Container(color: item.color.withValues(alpha: 0.10)),
+                            Container(
+                              color: item.color.withValues(alpha: 0.10),
+                            ),
                             FractionallySizedBox(
                               widthFactor: percent / 100,
                               child: DecoratedBox(
@@ -468,9 +486,9 @@ class WuXingPulseStrip extends StatelessWidget {
                       '${percent.toStringAsFixed(0)}%',
                       textAlign: TextAlign.right,
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                            color: t.textSecondary,
-                            fontWeight: FontWeight.w700,
-                          ),
+                        color: t.textSecondary,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
                 ],
@@ -518,25 +536,25 @@ class _IdentityMetricCard extends StatelessWidget {
             Text(
               title,
               style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    color: accent,
-                    fontWeight: FontWeight.w800,
-                  ),
+                color: accent,
+                fontWeight: FontWeight.w800,
+              ),
             ),
             SizedBox(height: t.spacing.xxs),
             Text(
               primary,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: t.textPrimary,
-                    fontWeight: FontWeight.w800,
-                  ),
+                color: t.textPrimary,
+                fontWeight: FontWeight.w800,
+              ),
             ),
             SizedBox(height: t.spacing.xxs),
             Text(
               secondary,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: t.textSecondary,
-                    height: 1.35,
-                  ),
+                color: t.textSecondary,
+                height: 1.35,
+              ),
             ),
           ],
         ),
@@ -636,25 +654,25 @@ class _AxisPreviewTile extends StatelessWidget {
           Text(
             emoji,
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: accent,
-                  fontWeight: FontWeight.w800,
-                ),
+              color: accent,
+              fontWeight: FontWeight.w800,
+            ),
           ),
           Text(
             label,
             style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  color: t.textSecondary,
-                  fontWeight: FontWeight.w700,
-                ),
+              color: t.textSecondary,
+              fontWeight: FontWeight.w700,
+            ),
           ),
           Text(
             value,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: t.textPrimary,
-                  fontWeight: FontWeight.w800,
-                ),
+              color: t.textPrimary,
+              fontWeight: FontWeight.w800,
+            ),
           ),
         ],
       ),
@@ -665,11 +683,13 @@ class _AxisPreviewTile extends StatelessWidget {
 List<_PulseItem> _buildPulseItems(Map<String, dynamic> wuXing) {
   const labels = ['木', '火', '土', '金', '水'];
   return labels
-      .map((label) => _PulseItem(
-            label: label,
-            value: astroDouble(wuXing[label]) ?? 0,
-            color: _elementColor(label),
-          ))
+      .map(
+        (label) => _PulseItem(
+          label: label,
+          value: astroDouble(wuXing[label]) ?? 0,
+          color: _elementColor(label),
+        ),
+      )
       .toList(growable: false);
 }
 

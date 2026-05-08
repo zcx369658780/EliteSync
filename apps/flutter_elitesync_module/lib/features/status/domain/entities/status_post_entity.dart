@@ -61,10 +61,38 @@ class StatusPostEntity {
       }
       return false;
     }
+
     int parseInt(dynamic value) {
       if (value is num) return value.toInt();
       if (value is String) return int.tryParse(value) ?? 0;
       return 0;
+    }
+
+    List<dynamic> parseList(dynamic value) {
+      if (value is List<dynamic>) return value;
+      if (value is Map<String, dynamic>) return value.values.toList();
+      if (value is String && value.trim().isNotEmpty) return [value];
+      return const [];
+    }
+
+    String? parseMediaUrl(dynamic value) {
+      if (value is Map<String, dynamic>) {
+        final publicUrl = (value['public_url'] ?? value['url'] ?? '')
+            .toString()
+            .trim();
+        return publicUrl.isEmpty ? null : publicUrl;
+      }
+      final list = parseList(value);
+      if (list.isEmpty) return null;
+      final first = list.first;
+      if (first is Map<String, dynamic>) {
+        final publicUrl = (first['public_url'] ?? first['url'] ?? '')
+            .toString()
+            .trim();
+        return publicUrl.isEmpty ? null : publicUrl;
+      }
+      final mediaUrl = first.toString().trim();
+      return mediaUrl.isEmpty ? null : mediaUrl;
     }
 
     return StatusPostEntity(
@@ -80,11 +108,9 @@ class StatusPostEntity {
       authorCity: (author['city'] ?? '').toString(),
       authorRelationshipGoal: (author['relationship_goal'] ?? '').toString(),
       authorPublicMbti: (author['public_mbti'] ?? '').toString(),
-      authorPublicPersonality:
-          (author['public_personality'] as List<dynamic>? ?? const [])
-              .map((e) => e.toString())
-              .where((e) => e.isNotEmpty)
-              .toList(),
+      authorPublicPersonality: parseList(
+        author['public_personality'],
+      ).map((e) => e.toString()).where((e) => e.isNotEmpty).toList(),
       locationName: (json['location_name'] ?? '').toString(),
       visibility: (json['visibility'] ?? 'public').toString(),
       canDelete: parseBool(json['can_delete']),
@@ -95,14 +121,8 @@ class StatusPostEntity {
           (json['cover_media'] is Map<String, dynamic>
               ? parseInt((json['cover_media'] as Map<String, dynamic>)['id'])
               : null),
-      coverMediaUrl: json['cover_media'] is Map<String, dynamic>
-          ? ((json['cover_media'] as Map<String, dynamic>)['public_url'] ?? '')
-              .toString()
-          : ((json['media'] as List<dynamic>? ?? const [])
-                  .cast<dynamic>()
-                  .isNotEmpty
-              ? (json['media'] as List<dynamic>).first.toString()
-              : null),
+      coverMediaUrl:
+          parseMediaUrl(json['cover_media']) ?? parseMediaUrl(json['media']),
       createdAt:
           DateTime.tryParse((json['created_at'] ?? '').toString()) ??
           DateTime.fromMillisecondsSinceEpoch(0),
@@ -160,10 +180,7 @@ class StatusPostEntity {
       'cover_media_asset_id': coverMediaAssetId,
       'cover_media': coverMediaUrl == null
           ? null
-          : {
-              'id': coverMediaAssetId,
-              'public_url': coverMediaUrl,
-            },
+          : {'id': coverMediaAssetId, 'public_url': coverMediaUrl},
       'media': coverMediaUrl == null ? const [] : [coverMediaUrl],
       'created_at': createdAt.toIso8601String(),
       'author': {
