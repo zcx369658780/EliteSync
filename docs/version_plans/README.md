@@ -114,6 +114,7 @@ Current 5.0E Handoff:
 
 Current release brief:
 
+- [0.05.05_UPDATE_BRIEF.md](./0.05.05_UPDATE_BRIEF.md)
 - [0.05.04_UPDATE_BRIEF.md](./0.05.04_UPDATE_BRIEF.md)
 - [0.04.09_UPDATE_BRIEF.md](./0.04.09_UPDATE_BRIEF.md)
 
