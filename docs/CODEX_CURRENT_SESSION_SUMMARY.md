@@ -211,3 +211,4 @@
 - 双端 app-to-app 验证：模拟器账号 `17094346566` 从聊天页向真机账号 `13772423130` 发起 `call_id: 115`，确认弹窗 `现在语音` 后服务端进入 created / accepted / connected / heartbeat / ended；两端都有 LiveKit local / remote audio frame 或 stats 证据，用户现场确认真机可听到打字声音 / 音频采集已启动。
 - 清理：本轮已 force-stop 两端 app 释放麦克风，并将 `call_id: 115` 服务端状态收口为 `ended`。
 - 当前口径：receiver incoming-call UI、accept/connect path、当前 debug build 双端 LiveKit media 都已验证；阿里云后端仍是旧 10s timeout，后端修复尚未部署，所以 release / remote backend parity 仍是 observation。
+- Protected route follow-up：模拟器 `0.05.04 / 50400` 已补做 Settings 与 Edit Profile reachability smoke。Settings 从 Profile 进入成功；Edit Profile 通过 `elitesync_initial_route=/profile/edit` direct-route 打开成功，显示服务端真值说明与昵称 / 性别 / 生日 / 出生时间等字段。本轮未执行保存 / 写入动作。
