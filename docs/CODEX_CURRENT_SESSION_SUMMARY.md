@@ -200,12 +200,14 @@
 
 - Claude 已作为 Appium Android 测试 subagent 执行 5.5 smoke / regression，并已记录到 `docs/version_plans/5.5_HANDOFF_MASTER.md` 与 `docs/version_plans/5.5_FEEDBACK_EVIDENCE_INDEX.md`。
 - 登录态 guarded smoke 已用用户授权账号 `17094346566` 完成：Messages / notification surface、Version Center、RTC voice-call page 均可达，无 crash / red screen / cast error / infinite skeleton / severe overlap。
-- 该 RTC 结果只证明页面与状态机可达，不证明 LiveKit 媒体链路成功。
+- 早期 RTC logged-in smoke 只证明页面与状态机可达，不证明 LiveKit 媒体链路成功；后续双端 app-to-app `call_id: 115` 已补齐当前 debug build 的 LiveKit 媒体证据。
 - 当前 ADB 识别两台设备：模拟器 `emulator-5554` 与真机 `TG9L8HOBKFMJZTZX`。
 - 模拟器当前 app 为 `0.05.04 / 50400`；真机已通过 USB debug 安装更新到 `0.05.04 / 50400`。
 - 用户授权 Claude / 测试流程使用真机账号 `13772423130` 做通话测试；真机本地缓存确认当前账号为 `13772423130`。
 - 双端 RTC 初始事实：模拟器账号 `17094346566` 可发起语音通话，`call_id: 110 / f232d48f-cd13-4e44-bde6-f623440101dc` 进入 `calling` / `created`，最终 `missed` / timeout；真机账号 `13772423130` 在消息页未观察到 incoming-call UI 或接听入口。
 - RTC 接收端根因已追回：logcat 显示 watcher 在 `_currentUserId` 中对 dynamic `AsyncData<SessionState>` 调用 `maybeWhen`，导致每轮 `RTC_INVITE_PROVIDER_ERROR`，还没进入 `/api/v1/rtc/calls` 扫描。
 - RTC 接收端已做最小修复：typed `AsyncData<SessionState>` 读取、先扫 incoming calls 再取 notifications、本地后端 invite timeout 从 10s 延到 30s 并更新 `RtcApiTest`。
-- 最新验证：真机账号 `13772423130` 在 API-assisted `call_id: 114` 中自动进入 `语音通话`，状态 `in_call`，有 heartbeat 与 local audio frame 日志；测试会话已通过 API cleanly ended。
-- 当前口径：receiver incoming-call UI 与 accept/connect path 已验证；完整双端 LiveKit 媒体成功仍是 observation，因为 `114` 的 caller side 是 API-created，不是第二个 app media participant，且阿里云后端仍是旧 10s timeout，后端修复尚未部署。
+- 接收端验证：真机账号 `13772423130` 在 API-assisted `call_id: 114` 中自动进入 `语音通话`，状态 `in_call`，有 heartbeat 与 local audio frame 日志；测试会话已通过 API cleanly ended。
+- 双端 app-to-app 验证：模拟器账号 `17094346566` 从聊天页向真机账号 `13772423130` 发起 `call_id: 115`，确认弹窗 `现在语音` 后服务端进入 created / accepted / connected / heartbeat / ended；两端都有 LiveKit local / remote audio frame 或 stats 证据，用户现场确认真机可听到打字声音 / 音频采集已启动。
+- 清理：本轮已 force-stop 两端 app 释放麦克风，并将 `call_id: 115` 服务端状态收口为 `ended`。
+- 当前口径：receiver incoming-call UI、accept/connect path、当前 debug build 双端 LiveKit media 都已验证；阿里云后端仍是旧 10s timeout，后端修复尚未部署，所以 release / remote backend parity 仍是 observation。
