@@ -163,6 +163,11 @@ void main() {
     );
     await tester.pumpAndSettle();
 
+    await tester.scrollUntilVisible(
+      find.text('返回上一页'),
+      240,
+      scrollable: find.byType(Scrollable),
+    );
     await tester.tap(find.text('返回上一页'));
     await tester.pumpAndSettle();
 

@@ -195,53 +195,67 @@ class _RtcIncomingCallPageState extends ConsumerState<RtcIncomingCallPage> {
         SizedBox(height: t.spacing.md),
         AppInfoSectionCard(
           title: '来电操作',
-          subtitle: '接听 / 拒绝 / 结果回流',
+          subtitle: session.isTerminal ? '通话已收口 / 查看结果' : '接听 / 拒绝 / 结果回流',
           leadingIcon: Icons.tune_rounded,
           child: Column(
             children: [
-              AppPrimaryButton(
-                label: '接听',
-                isLoading: _busy,
-                prefixIcon: const Icon(Icons.call, color: Colors.white),
-                onPressed: () async {
-                  final updated = await _withAction(
-                    () => ref
-                        .read(rtcRemoteDataSourceProvider)
-                        .acceptCall(session.id),
-                    '已接听来电',
-                  );
-                  if (!mounted || updated == null) return;
-                  context.go(
-                    '${AppRouteNames.rtcCall}/${updated.id}',
-                    extra: updated.title.isNotEmpty
-                        ? updated.title
+              if (session.isTerminal) ...[
+                AppPrimaryButton(
+                  label: '查看结果',
+                  prefixIcon: const Icon(Icons.fact_check, color: Colors.white),
+                  onPressed: () => context.go(
+                    '${AppRouteNames.rtcCallResult}/${session.id}',
+                    extra: session.title.isNotEmpty
+                        ? session.title
                         : widget.title,
-                  );
-                },
-              ),
-              SizedBox(height: t.spacing.sm),
-              AppSecondaryButton(
-                label: '拒绝',
-                style: AppSecondaryButtonStyle.outline,
-                isLoading: _busy,
-                prefixIcon: const Icon(Icons.call_end_rounded),
-                onPressed: () async {
-                  final updated = await _withAction(
-                    () => ref
-                        .read(rtcRemoteDataSourceProvider)
-                        .rejectCall(session.id),
-                    '已拒绝来电',
-                  );
-                  if (!mounted || updated == null) return;
-                  context.go(
-                    '${AppRouteNames.rtcCallResult}/${updated.id}',
-                    extra: updated.title.isNotEmpty
-                        ? updated.title
-                        : widget.title,
-                  );
-                },
-              ),
-              SizedBox(height: t.spacing.sm),
+                  ),
+                ),
+                SizedBox(height: t.spacing.sm),
+              ] else ...[
+                AppPrimaryButton(
+                  label: '接听',
+                  isLoading: _busy,
+                  prefixIcon: const Icon(Icons.call, color: Colors.white),
+                  onPressed: () async {
+                    final updated = await _withAction(
+                      () => ref
+                          .read(rtcRemoteDataSourceProvider)
+                          .acceptCall(session.id),
+                      '已接听来电',
+                    );
+                    if (!mounted || updated == null) return;
+                    context.go(
+                      '${AppRouteNames.rtcCall}/${updated.id}',
+                      extra: updated.title.isNotEmpty
+                          ? updated.title
+                          : widget.title,
+                    );
+                  },
+                ),
+                SizedBox(height: t.spacing.sm),
+                AppSecondaryButton(
+                  label: '拒绝',
+                  style: AppSecondaryButtonStyle.outline,
+                  isLoading: _busy,
+                  prefixIcon: const Icon(Icons.call_end_rounded),
+                  onPressed: () async {
+                    final updated = await _withAction(
+                      () => ref
+                          .read(rtcRemoteDataSourceProvider)
+                          .rejectCall(session.id),
+                      '已拒绝来电',
+                    );
+                    if (!mounted || updated == null) return;
+                    context.go(
+                      '${AppRouteNames.rtcCallResult}/${updated.id}',
+                      extra: updated.title.isNotEmpty
+                          ? updated.title
+                          : widget.title,
+                    );
+                  },
+                ),
+                SizedBox(height: t.spacing.sm),
+              ],
               AppSecondaryButton(
                 label: '返回',
                 fullWidth: true,
