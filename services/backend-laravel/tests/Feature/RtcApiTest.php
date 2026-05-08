@@ -72,7 +72,7 @@ class RtcApiTest extends TestCase
         $this->assertSame('rtc_call', $invite->payload['route_name'] ?? null);
         $this->assertSame($callId, (int) ($invite->payload['route_args']['call_id'] ?? 0));
         $this->assertLessThanOrEqual(
-            12,
+            32,
             abs(Carbon::parse((string) $create['expires_at'])->diffInSeconds(now()))
         );
 

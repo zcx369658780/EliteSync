@@ -400,13 +400,12 @@ class AdminDashboardPage extends ConsumerWidget {
                         governanceRow(
                           icon: Icons.verified_outlined,
                           title: '发布基线',
-                          description:
-                              '当前正式发布基线保持 0.04.09 / 40900；5.4 不改 release chain。',
+                          description: '当前发布目标为 0.05.04 / 50400；仅作为 release-chain 口径展示。',
                           status: '只读',
                           checks: const [
                             '版本中心截图必须来自当前安装包。',
                             'version check 结果需要和宿主版本链分开记录。',
-                            '如不发版，不修改 build.gradle、changelog 或 app_update 配置。',
+                            '发版时 build.gradle、changelog、app_update 和 APK 文件名必须同步。',
                           ],
                           evidence:
                               'docs/version_plans/5.4_OBSERVABILITY_EVIDENCE_INDEX.md',
@@ -642,7 +641,7 @@ class AdminDashboardPage extends ConsumerWidget {
                           checks: const [
                             '图片 / 视频消息入口和 public_url 证据分开记录。',
                             'RTC 只核验 1v1 语音保护面。',
-                            'Version Center 必须继续显示 0.04.09 / 40900。',
+                            'Version Center 必须显示 0.05.04 / 50400。',
                           ],
                           evidence:
                               'docs/version_plans/5.4_OBSERVABILITY_EVIDENCE_INDEX.md',

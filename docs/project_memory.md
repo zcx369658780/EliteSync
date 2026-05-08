@@ -31,6 +31,35 @@
 - 第三批仅保留为预留能力：
   - `elitesync-release-readiness`
 
+## Claude / Gemini / App 测试协作
+
+- Claude 当前默认入口：`C:\Users\zcxve\.local\bin\claude.exe`。
+- Claude 当前已配置为 Deepseek 接口，用户确认额度成本较低；后续不要再默认把 Claude 视为昂贵稀缺资源，但仍要保持主编排克制。
+- Claude 已安装并验证 Appium MCP / Android app 测试能力：
+  - 可连接 `emulator-5554` 等当前运行中的 Android 模拟器。
+  - 可创建 Appium session，使用 UiAutomator2 读取 EliteSync Flutter app 的 UI XML。
+  - 可识别当前页面标题、主要文本、底部导航、按钮和页面结构。
+  - 可执行低风险手势，例如滚动。
+  - 可保存截图并输出页面结构化测试报告。
+  - 如需登录 / 表单输入测试，Claude 的 Appium MCP 权限需要包含输入、键盘、剪贴板、元素属性和 active element 类工具；否则容易卡在手动审批或误输入。
+- Claude 可作为 EliteSync app 测试 subagent / 验收审查员，默认用于：
+  - 修改后独立 walkthrough；
+  - UI protected surfaces 回归；
+  - 页面可达性和文本存在性核验；
+  - 5.5 真实小样本反馈复查；
+  - 根据回归清单执行结构化 app 测试。
+- Claude app 测试安全边界：
+  - 默认只做只读或低风险操作。
+  - 不默认执行登录、发布状态、删除内容、写数据、安装 APK、发版、迁移、恢复、生产库操作或 push。
+  - 需要任何写入、破坏性或环境改变操作时，必须先由主线程说明风险并等待用户明确确认。
+  - 双端 RTC / 通话测试必须先确认两端 app 版本；旧包只能作为兼容性观察，不能直接算当前版本正式验收证据。若 Appium 真机 session 被辅助 APK 安装权限阻断，可用原生 ADB 做受限页面读取 / 截图，但结论必须标注为受限证据。
+  - Flutter 元素定位优先依赖文本、`content-desc`、XPath 和页面 XML；复杂视觉判断仍需截图证据或人工 / Codex 复核。
+- Gemini 当前默认用于视觉 / UI / UX 评审、截图一致性检查、长上下文总结、跨文件综合判断和补漏验证覆盖。
+- 后续推荐分工：
+  - Codex：主编排、实现、工具执行、证据收口。
+  - Claude：架构边界复核 + Android app 结构化测试 / 自动化 walkthrough。
+  - Gemini：视觉审美、截图一致性、长文档验收总结。
+
 ## 交接材料规范
 
 - 同一版本的交接材料必须收敛为一个主交接文件，优先命名为 `*_HANDOFF_MASTER.md`。
@@ -75,6 +104,23 @@
 - 默认不自动 push，除非用户明确要求。
 - 如果仓库过脏、文件跨域过多、主题不清楚，必须先停下来重新分桶，不得硬提。
 
+## GitHub SSH 推送约定
+
+- GitHub 代码远端默认使用 SSH：`git@github.com:zcx369658780/EliteSync.git`。
+- 本机已验证可用的 GitHub SSH key 是：`C:\Users\zcxve\.ssh\id_ed25519`。
+- 本机 SSH config 已把 `github.com` 映射到 `ssh.github.com:443`，可绕过常规 22 端口网络问题。
+- GitHub 推送 / `ls-remote` / PR 前分支推送必须走 SSH，不再走 HTTPS 认证窗口、Git Credential Manager 弹窗或 PAT 交互登录。
+- `C:\Users\zcxve\.ssh\CodexKey.pem` 是阿里云 SSH key，不是 GitHub key；不要用它推 GitHub。
+- 推荐认证测试：
+  - `& $env:WINDIR\System32\OpenSSH\ssh.exe -T -o BatchMode=yes -o IdentitiesOnly=yes -i "$env:USERPROFILE\.ssh\id_ed25519" git@github.com`
+  - 返回 `Hi zcx369658780! You've successfully authenticated, but GitHub does not provide shell access.` 即为成功；该命令可能 exit code 为 1，不能按普通失败处理。
+- 推荐 PowerShell Git SSH 环境：
+  - `$ssh = "$($env:WINDIR.Replace('\','/'))/System32/OpenSSH/ssh.exe"`
+  - `$key = "$($env:USERPROFILE.Replace('\','/'))/.ssh/id_ed25519"`
+  - `$env:GIT_SSH_COMMAND = "'$ssh' -o BatchMode=yes -o IdentitiesOnly=yes -i '$key'"`
+  - 然后再执行 `git ls-remote origin` 或 `git push -u origin <branch>`。
+- `scripts/publish_to_github.ps1` 会执行 `git add -A`，只有用户明确接受整仓 add / commit / push 时才可使用；日常仍按单主题逐文件 stage。
+
 ## 双流程分离规则
 
 - EliteSync 从现在开始区分两套流程，且不得混用：
@@ -114,7 +160,7 @@
 
 ## 当前基线
 
-- 对外发布版本：`0.04.09 / 40900`
+- 对外发布版本：`0.05.04 / 50400`
 - 当前稳定阶段：`4.9`、`5.0`、`5.1`、`5.2`、`5.3`、`5.4` 均已按 `pass with observations` 收口；`4.9` 仍作为 `5.x` 的稳定门禁基线，`5.4` 是当前最新已验收版本。
 - 当前主计划入口：`docs/DEVELOPMENT_PLAN_CURRENT.md`
 - 当前 5.x 主计划：`docs/version_plans/elite_sync_整体开发计划书_5_x方向重排版_2026_05_01.md`

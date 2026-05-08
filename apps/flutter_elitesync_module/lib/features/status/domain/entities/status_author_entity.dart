@@ -36,6 +36,13 @@ class StatusAuthorEntity {
         ? json['author'] as Map<String, dynamic>
         : <String, dynamic>{};
     final recent = json['items'] as List<dynamic>? ?? const [];
+    List<dynamic> parseList(dynamic value) {
+      if (value is List<dynamic>) return value;
+      if (value is Map<String, dynamic>) return value.values.toList();
+      if (value is String && value.trim().isNotEmpty) return [value];
+      return const [];
+    }
+
     return StatusAuthorEntity(
       id: (author['id'] as num?)?.toInt() ?? 0,
       name: (author['name'] ?? '').toString(),
@@ -44,11 +51,9 @@ class StatusAuthorEntity {
       city: (author['city'] ?? '').toString(),
       relationshipGoal: (author['relationship_goal'] ?? '').toString(),
       publicMbti: (author['public_mbti'] ?? '').toString(),
-      publicPersonality:
-          (author['public_personality'] as List<dynamic>? ?? const [])
-              .map((e) => e.toString())
-              .where((e) => e.isNotEmpty)
-              .toList(),
+      publicPersonality: parseList(
+        author['public_personality'],
+      ).map((e) => e.toString()).where((e) => e.isNotEmpty).toList(),
       isSynthetic: (author['is_synthetic'] as bool?) ?? false,
       isSquareVisible: (author['is_square_visible'] as bool?) ?? true,
       statusCount: (json['total'] as num?)?.toInt() ?? recent.length,

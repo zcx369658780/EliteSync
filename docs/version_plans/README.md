@@ -2,7 +2,7 @@
 
 Current active handoff entry:
 
-- [5.4_HANDOFF_MASTER.md](./5.4_HANDOFF_MASTER.md)
+- [5.5_HANDOFF_MASTER.md](./5.5_HANDOFF_MASTER.md)
 
 Current active plan:
 
@@ -58,6 +58,17 @@ Current 5.4 status:
 - [assets/5.4/](./assets/5.4/)
 - 5.4 observations: Cloud DB read-only audit, backup existence, restore drill, migration-level checks, queue / logs, and RTC success evidence require real environment evidence before they can be marked as passed.
 
+Current 5.5 status:
+
+- status: `pass with observations` for approved real small-sample feedback absorption scope.
+- [v_5_5_真实小样本反馈吸收版_开发计划书_2026_05_06.md](./v_5_5_真实小样本反馈吸收版_开发计划书_2026_05_06.md)
+- [5.5_ACCEPTANCE_SUMMARY.md](./5.5_ACCEPTANCE_SUMMARY.md)
+- [5.5_HANDOFF_MASTER.md](./5.5_HANDOFF_MASTER.md)
+- [5.5_FEEDBACK_MATRIX.md](./5.5_FEEDBACK_MATRIX.md)
+- [5.5_FEEDBACK_EVIDENCE_INDEX.md](./5.5_FEEDBACK_EVIDENCE_INDEX.md)
+- [5.5_REGRESSION_CHECKLIST.md](./5.5_REGRESSION_CHECKLIST.md)
+- 5.5 observations: restore drill, matching algo marker semantics, remote debug-mode hardening, existing Flutter info-level lint cleanup, and Match Detail success-state retest under active match data remain open.
+
 Current 5.x route:
 
 - 5.0: 最小产品化覆盖集
@@ -103,6 +114,8 @@ Current 5.0E Handoff:
 
 Current release brief:
 
+- [0.05.05_UPDATE_BRIEF.md](./0.05.05_UPDATE_BRIEF.md)
+- [0.05.04_UPDATE_BRIEF.md](./0.05.04_UPDATE_BRIEF.md)
 - [0.04.09_UPDATE_BRIEF.md](./0.04.09_UPDATE_BRIEF.md)
 
 ## Archived Materials

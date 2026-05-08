@@ -23,10 +23,10 @@ final rtcInviteBootstrapProvider = Provider<void>((ref) {
 
 int _currentUserId(dynamic ref) {
   final session = ref.read(sessionProvider);
-  return session.maybeWhen(
-    data: (state) => state.user?.id ?? 0,
-    orElse: () => 0,
-  );
+  if (session is AsyncData<SessionState>) {
+    return session.value.user?.id ?? 0;
+  }
+  return 0;
 }
 
 Future<void> _openIncomingCall(
@@ -37,7 +37,8 @@ Future<void> _openIncomingCall(
 }) async {
   if (callId <= 0) return;
   if (_rtcIncomingHandledCallId == callId &&
-      (notificationId == null || _rtcInviteHandledNotificationId == notificationId)) {
+      (notificationId == null ||
+          _rtcInviteHandledNotificationId == notificationId)) {
     return;
   }
   _rtcIncomingHandledCallId = callId;
@@ -53,6 +54,27 @@ Future<void> _openIncomingCall(
   );
 }
 
+Future<bool> _scanIncomingCalls(dynamic ref, {int? handledCallId}) async {
+  final currentUserId = _currentUserId(ref);
+  if (currentUserId <= 0) return false;
+
+  ref.invalidate(rtcCallsProvider);
+  final calls = await ref.read(rtcCallsProvider.future);
+  final incoming = shell.selectLatestIncomingRtcCall(calls, currentUserId);
+  // ignore: avoid_print
+  print(
+    'RTC_INVITE_PROVIDER_CALL_SCAN total=${calls.length} incoming=${incoming?.id ?? 0}',
+  );
+  if (incoming == null) return false;
+  if (handledCallId == incoming.id ||
+      _rtcIncomingHandledCallId == incoming.id) {
+    return true;
+  }
+
+  await _openIncomingCall(ref, callId: incoming.id, title: incoming.title);
+  return true;
+}
+
 void startRtcInviteWatcher(dynamic ref) {
   if (_rtcInviteTimer != null) return;
   // ignore: avoid_print
@@ -62,6 +84,8 @@ void startRtcInviteWatcher(dynamic ref) {
     if (_rtcInviteScanning) return;
     _rtcInviteScanning = true;
     try {
+      if (await _scanIncomingCalls(ref)) return;
+
       ref.invalidate(notificationListProvider);
       final notifications = await ref.read(notificationListProvider.future);
       final invite = shell.selectLatestRtcInvite(notifications);
@@ -99,27 +123,9 @@ void startRtcInviteWatcher(dynamic ref) {
           return;
         }
       }
-
-      final currentUserId = _currentUserId(ref);
-      if (currentUserId <= 0) return;
-      ref.invalidate(rtcCallsProvider);
-      final calls = await ref.read(rtcCallsProvider.future);
-      final incoming = shell.selectLatestIncomingRtcCall(calls, currentUserId);
+    } catch (error) {
       // ignore: avoid_print
-      print(
-        'RTC_INVITE_PROVIDER_CALL_SCAN total=${calls.length} incoming=${incoming?.id ?? 0}',
-      );
-      if (incoming == null) return;
-      if (_rtcIncomingHandledCallId == incoming.id) return;
-
-      await _openIncomingCall(
-        ref,
-        callId: incoming.id,
-        title: incoming.title,
-      );
-    } catch (_) {
-      // ignore: avoid_print
-      print('RTC_INVITE_PROVIDER_ERROR');
+      print('RTC_INVITE_PROVIDER_ERROR $error');
     } finally {
       _rtcInviteScanning = false;
     }
@@ -153,6 +159,8 @@ final rtcInviteWatcherProvider = Provider<void>((ref) {
     if (scanning) return;
     scanning = true;
     try {
+      if (await _scanIncomingCalls(ref, handledCallId: handledCallId)) return;
+
       ref.invalidate(notificationListProvider);
       final notifications = await ref.read(notificationListProvider.future);
       final invite = shell.selectLatestRtcInvite(notifications);
@@ -190,29 +198,9 @@ final rtcInviteWatcherProvider = Provider<void>((ref) {
           return;
         }
       }
-
-      final currentUserId = _currentUserId(ref);
-      if (currentUserId <= 0) return;
-      ref.invalidate(rtcCallsProvider);
-      final calls = await ref.read(rtcCallsProvider.future);
-      final incoming = shell.selectLatestIncomingRtcCall(calls, currentUserId);
+    } catch (error) {
       // ignore: avoid_print
-      print(
-        'RTC_INVITE_PROVIDER_CALL_SCAN total=${calls.length} incoming=${incoming?.id ?? 0}',
-      );
-      if (incoming == null) return;
-      if (handledCallId == incoming.id) return;
-
-      handledCallId = incoming.id;
-      handledNotificationId = null;
-      await _openIncomingCall(
-        ref,
-        callId: incoming.id,
-        title: incoming.title,
-      );
-    } catch (_) {
-      // ignore: avoid_print
-      print('RTC_INVITE_PROVIDER_ERROR');
+      print('RTC_INVITE_PROVIDER_ERROR $error');
     } finally {
       scanning = false;
     }
@@ -274,29 +262,61 @@ class _RtcInviteCoordinatorState extends ConsumerState<RtcInviteCoordinator> {
 
   Future<void> _pollOnce() async {
     if (!mounted) return;
+    if (_scanning) return;
+    _scanning = true;
     try {
+      if (await _handleIncomingCalls()) return;
+
       ref.invalidate(notificationListProvider);
       final notifications = await ref.read(notificationListProvider.future);
       await _handleNotifications(notifications);
-    } catch (_) {
+    } catch (error) {
       // ignore: avoid_print
-      print('RTC_INVITE_COORDINATOR_ERROR');
+      print('RTC_INVITE_COORDINATOR_ERROR $error');
+    } finally {
+      _scanning = false;
     }
+  }
+
+  Future<bool> _handleIncomingCalls() async {
+    final currentUserId = _currentUserId(ref);
+    if (currentUserId <= 0) return false;
+
+    ref.invalidate(rtcCallsProvider);
+    final calls = await ref.read(rtcCallsProvider.future);
+    final incoming = shell.selectLatestIncomingRtcCall(calls, currentUserId);
+    // ignore: avoid_print
+    print(
+      'RTC_INVITE_COORDINATOR_CALL_SCAN total=${calls.length} incoming=${incoming?.id ?? 0}',
+    );
+    if (incoming == null) return false;
+    if (_handledCallId == incoming.id) return true;
+
+    _handledCallId = incoming.id;
+    _handledNotificationId = null;
+    // ignore: avoid_print
+    print('RTC_INVITE_COORDINATOR_OPEN callId=${incoming.id} notificationId=0');
+    final router = ref.read(appRouterProvider);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      router.go(
+        '${AppRouteNames.rtcIncomingCall}/${incoming.id}',
+        extra: incoming.title.isNotEmpty ? incoming.title : '来电',
+      );
+    });
+    return true;
   }
 
   Future<void> _handleNotifications(
     List<NotificationItemEntity> notifications,
   ) async {
-    if (_scanning || !mounted) return;
-    _scanning = true;
+    if (!mounted) return;
     try {
       // ignore: avoid_print
       print(
         'RTC_INVITE_COORDINATOR_SCAN total=${notifications.length} invite=${notifications.where((item) => item.kind == "rtc_call_invite" && !item.isRead).length}',
       );
-      final invite = selectLatestRtcInvite(
-        notifications,
-      );
+      final invite = selectLatestRtcInvite(notifications);
       if (invite != null) {
         final callId =
             (invite.routeArgs['call_id'] as num?)?.toInt() ??
@@ -332,39 +352,10 @@ class _RtcInviteCoordinatorState extends ConsumerState<RtcInviteCoordinator> {
           return;
         }
       }
-
-      final currentUserId = _currentUserId(ref);
-      if (currentUserId <= 0) return;
-      ref.invalidate(rtcCallsProvider);
-      final calls = await ref.read(rtcCallsProvider.future);
-      final incoming = shell.selectLatestIncomingRtcCall(calls, currentUserId);
+    } catch (error) {
       // ignore: avoid_print
-      print(
-        'RTC_INVITE_COORDINATOR_CALL_SCAN total=${calls.length} incoming=${incoming?.id ?? 0}',
-      );
-      if (incoming == null) return;
-      if (_handledCallId == incoming.id) return;
-
-      _handledCallId = incoming.id;
-      _handledNotificationId = null;
-      // ignore: avoid_print
-      print(
-        'RTC_INVITE_COORDINATOR_OPEN callId=${incoming.id} notificationId=0',
-      );
-      final router = ref.read(appRouterProvider);
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!mounted) return;
-        router.go(
-          '${AppRouteNames.rtcIncomingCall}/${incoming.id}',
-          extra: incoming.title.isNotEmpty ? incoming.title : '来电',
-        );
-      });
-    } catch (_) {
-      // ignore: avoid_print
-      print('RTC_INVITE_COORDINATOR_ERROR');
+      print('RTC_INVITE_COORDINATOR_ERROR $error');
       // 轮询失败不应阻断主链路；下一轮继续。
-    } finally {
-      _scanning = false;
     }
   }
 

@@ -96,7 +96,7 @@ class FrontendTelemetryApiTest extends TestCase
                 'call_id' => 66,
             ],
         ], [
-            'X-App-Version' => '0.04.09',
+            'X-App-Version' => '0.05.04',
             'X-Source-Page' => 'chat_room',
         ])
             ->assertOk()

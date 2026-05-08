@@ -242,4 +242,71 @@ void main() {
     expect(find.text('接听'), findsWidgets);
     expect(find.text('拒绝'), findsWidgets);
   });
+
+  testWidgets('RtcIncomingCallPage hides accept actions for terminal calls', (
+    tester,
+  ) async {
+    final session = RtcSessionEntity.fromJson({
+      'id': 116,
+      'call_key': 'call-ended',
+      'room_key': '1_2',
+      'mode': 'voice',
+      'status': 'ended',
+      'title': '语音通话',
+      'initiator_user_id': 1,
+      'peer_user_id': 2,
+      'initiator_name': 'Caller',
+      'peer_name': 'Callee',
+      'is_initiator': false,
+      'accepted_by_user_id': 2,
+      'ended_by_user_id': 1,
+      'failure_code': null,
+      'failure_message': null,
+      'ringing_at': '2026-05-08T06:29:31Z',
+      'accepted_at': '2026-05-08T06:29:33Z',
+      'started_at': '2026-05-08T06:29:33Z',
+      'ended_at': '2026-05-08T06:29:34Z',
+      'expires_at': '2026-05-08T06:59:34Z',
+      'created_at': '2026-05-08T06:29:31Z',
+      'updated_at': '2026-05-08T06:29:34Z',
+      'latest_event_name': 'ended',
+      'events': [
+        {
+          'id': 1,
+          'event_name': 'created',
+          'user_id': 1,
+          'payload': {'mode': 'voice'},
+          'created_at': '2026-05-08T06:29:31Z',
+        },
+        {
+          'id': 2,
+          'event_name': 'ended',
+          'user_id': 1,
+          'payload': <String, dynamic>{},
+          'created_at': '2026-05-08T06:29:34Z',
+        },
+      ],
+      'is_active': false,
+      'is_terminal': true,
+    });
+    final rtc = FakeRtcRemoteDataSource(session);
+
+    await tester.pumpWidget(
+      _wrap(
+        const RtcIncomingCallPage(
+          callId: 116,
+          title: '语音来电',
+          autoAccept: false,
+        ),
+        rtc: rtc,
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    expect(find.text('通话结束'), findsOneWidget);
+    expect(find.text('查看结果'), findsOneWidget);
+    expect(find.text('接听'), findsNothing);
+    expect(find.text('拒绝'), findsNothing);
+  });
 }

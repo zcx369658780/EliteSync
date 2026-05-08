@@ -140,6 +140,7 @@ class _AppShellState extends ConsumerState<AppShell> {
   Widget build(BuildContext context) {
     // ignore: avoid_print
     print('APP_SHELL_BUILD index=${widget.navigationShell.currentIndex}');
+    final showStatusCenterAction = widget.navigationShell.currentIndex == 0;
     return Scaffold(
       body: widget.navigationShell,
       extendBody: true,
@@ -147,8 +148,10 @@ class _AppShellState extends ConsumerState<AppShell> {
         currentIndex: widget.navigationShell.currentIndex,
         onTap: _onTap,
         browseMode: widget.navigationShell.currentIndex != 2,
-        centerActionLabel: '发布状态',
-        onCenterActionTap: () => context.push(AppRouteNames.statusSquare),
+        centerActionLabel: showStatusCenterAction ? '发布状态' : null,
+        onCenterActionTap: showStatusCenterAction
+            ? () => context.push(AppRouteNames.statusSquare)
+            : null,
         items: const [
           AppBottomNavItem(
             icon: Icons.home_outlined,

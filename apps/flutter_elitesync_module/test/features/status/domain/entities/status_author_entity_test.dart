@@ -54,4 +54,19 @@ void main() {
     );
     expect(entity.recentPosts.first.authorCity, '南阳');
   });
+
+  test('status author entity tolerates map-shaped personality payloads', () {
+    final entity = StatusAuthorEntity.fromJson({
+      'author': {
+        'id': 20,
+        'name': '慢热用户',
+        'public_personality': {'primary': '温和', 'secondary': '慢热'},
+      },
+      'items': const [],
+      'total': 0,
+    });
+
+    expect(entity.publicPersonality, ['温和', '慢热']);
+    expect(entity.statusCount, 0);
+  });
 }

@@ -15,7 +15,7 @@ description: "EliteSync Flutter UI module."
 # This version is used _only_ for the Runner app, which is used if you just do
 # a `flutter run`. It has no impact on any other native host app that you embed
 # your Flutter project into.
-version: 1.0.0+1
+version: 0.05.04+50400
 
 environment:
   sdk: ^3.11.3
