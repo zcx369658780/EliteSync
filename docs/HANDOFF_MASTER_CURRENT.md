@@ -1,5 +1,34 @@
 # EliteSync Current Handoff Master
 
+更新时间：2026-05-09
+
+## 0. 当前最高优先级交接口径
+
+- 当前版本：`5.5` 已完成批准范围内开发、验收材料、阿里云 `0.05.05 / 50500` release-chain 与 GitHub PR；用户确认 5.5 GitHub regression 已通过。
+- 当前验收口径：`5.5` 按 `pass with observations` 承接。
+- 当前版本主入口：`docs/version_plans/5.5_HANDOFF_MASTER.md`。
+- 验收附件：`docs/version_plans/5.5_ACCEPTANCE_SUMMARY.md`。
+- 当前发布版本：`0.05.05 / 50500`；下载 URL 为 `http://101.133.161.203/downloads/elitesync-0.05.05.apk`。
+- 当前 release SHA256：`D051518D42618E34B08EF15F79D9734E83F5B0BF76CEE2F5AD1A7212CB3A6E1A`；本地与远程一致。
+- version API 已返回 `latest_version_name=0.05.05`、`latest_version_code=50500`、download URL 与 SHA256 匹配。
+- GitHub PR：`https://github.com/zcx369658780/EliteSync/pull/36`；当前会话未重新核验 merge 状态。
+- 本轮本地清理：已删除 `.tmp/` 与 `.claude/logs/`；未删除正式 evidence assets。
+- 当前未提交本地变更应按单主题处理：
+  - Settings 管理员入口可见性修正与测试：白名单管理员手机号 `13772423130` 在生产包中可见运营入口；用户已确认手机端可进入运营看板。
+  - `docs/version_plans/0.05.05_UPDATE_BRIEF.md` 中文发布短报与路线图进度。
+  - 当前交接入口与 session summary 收口更新。
+- 阿里云管理员与匹配操作：
+  - 已备份后将 `13772423130` 配置为管理员手机号。
+  - 已触发 `php artisan app:dev:run-matching --release-drop`。
+  - 已生成 match id `6`：`15210606448` 与 `17094346577`，`week_tag=2026-W19`，`score_final=65`，`drop_released=true`。
+- 仍是 observation / 待确认：
+  - restore drill 未做。
+  - matching marker semantics 继续排除。
+  - 远端 public dev matching 配置仍需后续评估是否关闭。
+  - Version Center `0.05.05` 设备截图 / XML 可继续补强。
+
+以下 2026-05-07 段落为历史交接内容；凡与本节冲突，以本节为准。
+
 更新时间：2026-05-07
 
 用途：这是当前恢复后的项目总交接入口。当前版本开发主入口已切到 `docs/version_plans/5.5_HANDOFF_MASTER.md`；5.5 已按批准范围完成真实小样本反馈吸收，建议按 `pass with observations` 承接，但不代表进入 push 流程。

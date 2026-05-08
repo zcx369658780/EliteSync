@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_elitesync_module/app/router/app_route_names.dart';
+import 'package:flutter_elitesync_module/core/network/network_result.dart';
 import 'package:flutter_elitesync_module/core/storage/cache_keys.dart';
 import 'package:flutter_elitesync_module/design_system/components/bars/app_top_bar.dart';
 import 'package:flutter_elitesync_module/design_system/components/cards/app_info_section_card.dart';
@@ -29,15 +30,19 @@ class SettingsPage extends ConsumerStatefulWidget {
 }
 
 class _SettingsPageState extends ConsumerState<SettingsPage> {
+  static const Set<String> _adminPhones = {'13772423130'};
+
   bool _pushEnabled = true;
   bool _pushLoaded = false;
   bool _performanceLiteMode = false;
+  bool _adminAccessAllowed = false;
   String _contentRankerMode = 'auto';
 
   @override
   void initState() {
     super.initState();
     _loadPushSetting();
+    _loadAdminAccess();
   }
 
   Future<void> _loadPushSetting() async {
@@ -61,6 +66,26 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
           : 'auto';
       _pushLoaded = true;
     });
+  }
+
+  Future<void> _loadAdminAccess() async {
+    if (ref.read(appEnvProvider).isDev) {
+      if (!mounted) return;
+      setState(() => _adminAccessAllowed = true);
+      return;
+    }
+
+    final session = await ref.read(sessionProvider.future);
+    final currentPhone = session.user?.phone.trim() ?? '';
+    if (_adminPhones.contains(currentPhone)) {
+      if (!mounted) return;
+      setState(() => _adminAccessAllowed = true);
+      return;
+    }
+
+    final result = await ref.read(apiClientProvider).get('/api/v1/admin/users');
+    if (!mounted) return;
+    setState(() => _adminAccessAllowed = result is NetworkSuccess);
   }
 
   Future<void> _togglePush(bool value) async {
@@ -206,6 +231,15 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   Widget build(BuildContext context) {
     final t = context.appTokens;
     final themeMode = ref.watch(themeModeProvider);
+    final session = ref.watch(sessionProvider);
+    final currentPhone = session.maybeWhen(
+      data: (state) => state.user?.phone.trim() ?? '',
+      orElse: () => '',
+    );
+    final showAdminEntries =
+        _adminAccessAllowed ||
+        ref.watch(appEnvProvider).isDev ||
+        _adminPhones.contains(currentPhone);
     final isDark =
         themeMode == AppThemeMode.dark ||
         (themeMode == AppThemeMode.system &&
@@ -375,7 +409,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               ),
             ),
           ),
-          if (ref.watch(appEnvProvider).isDev) ...[
+          if (showAdminEntries) ...[
             SizedBox(height: t.spacing.md),
             SectionReveal(
               delay: const Duration(milliseconds: 160),
