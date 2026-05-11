@@ -2,10 +2,11 @@
 
 Current active handoff entry:
 
-- [5.8_HANDOFF_MASTER.md](./5.8_HANDOFF_MASTER.md)
+- [5.9_HANDOFF_MASTER.md](./5.9_HANDOFF_MASTER.md)
 
 Current active plan:
 
+- [v_5_9_Chat轻追问与低压开场版_开发计划书_2026_05_11.md](./v_5_9_Chat轻追问与低压开场版_开发计划书_2026_05_11.md)
 - [v_5_8_Me个人解释层与表达建议版_开发计划书_2026_05_11.md](./v_5_8_Me个人解释层与表达建议版_开发计划书_2026_05_11.md)
 - [v_5_7_Match关系解释层最小产品化版_开发计划书_2026_05_11.md](./v_5_7_Match关系解释层最小产品化版_开发计划书_2026_05_11.md)
 - [v_5_6_玄学能力二次产品化边界与校准版_开发计划书_2026_05_11.md](./v_5_6_玄学能力二次产品化边界与校准版_开发计划书_2026_05_11.md)
@@ -102,13 +103,23 @@ Current 5.7 status:
 
 Current 5.8 status:
 
-- status: `runtime slice complete; recommended pass with observations`
+- status: `pass with observations`; remote archive completed before 5.9 start
 - scope: Me / Profile presentation additive only; no backend, DB, API, release-chain, true AI, profile write, astro write, or automatic profile editing.
 - [v_5_8_Me个人解释层与表达建议版_开发计划书_2026_05_11.md](./v_5_8_Me个人解释层与表达建议版_开发计划书_2026_05_11.md)
 - [5.8_HANDOFF_MASTER.md](./5.8_HANDOFF_MASTER.md)
 - [5.8_REGRESSION_CHECKLIST.md](./5.8_REGRESSION_CHECKLIST.md)
 - [5.8_UI_BASELINE_EVIDENCE_INDEX.md](./5.8_UI_BASELINE_EVIDENCE_INDEX.md)
 - 5.8 observation: existing `profile_providers_test.dart` times out with a provider disposed during loading error; focused widget/page tests and DTO mapping test pass, and 5.8 does not modify provider/data/domain.
+
+Current 5.9 status:
+
+- status: `runtime slice complete; recommended pass with observations`
+- scope: Chat presentation additive only; no backend, DB, API, release-chain, true AI, private chat history read, automatic send, `chat_messages` write, profile write, astro write, or match truth write.
+- [v_5_9_Chat轻追问与低压开场版_开发计划书_2026_05_11.md](./v_5_9_Chat轻追问与低压开场版_开发计划书_2026_05_11.md)
+- [5.9_HANDOFF_MASTER.md](./5.9_HANDOFF_MASTER.md)
+- [5.9_REGRESSION_CHECKLIST.md](./5.9_REGRESSION_CHECKLIST.md)
+- [5.9_UI_BASELINE_EVIDENCE_INDEX.md](./5.9_UI_BASELINE_EVIDENCE_INDEX.md)
+- 5.9 observation: runtime evidence is debug-host based and current real conversation history requires scrolling back to the header; focused widget/page tests prove no-auto-send behavior.
 
 Current 5.x route:
 

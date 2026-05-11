@@ -68,3 +68,10 @@
 - 验收标准是 `我的慢约会表达建议` 在 Profile presentation 可见，且包含摘要、`真实感`、`表达清晰度`、`慢约会适配度`、`开场友好度`、资料展示建议、慢约会友好表达、可以补充什么、AI 草稿 disabled / coming soon 占位和 display-only 免责声明。
 - 5.8 必须确认没有新增 API、没有新增 DB / migration、没有修改 Laravel backend、routes / config、release chain、Android version、真实 AI、profile / astro canonical truth 写入或自动修改资料。
 - 若 focused widget/page test 通过、保护面检查为空、runtime screenshot/XML 可读，但既有 provider 守护测试存在异步超时，可按 `pass with observations` 处理，不重开 5.8 主链。
+
+## 5.9 Chat 轻追问与低压开场验收口径
+
+- 5.9 是 Chat 轻追问与低压开场 runtime slice。
+- 验收标准是 `低压开场建议` 在 Chat room presentation 可见，且包含 `从共同点开始`、`换个更自然的说法`、`低压问候建议`、`不要太急`、`可编辑草稿`、`填入后仍需你自己确认发送` 和 no-auto-send 免责声明。
+- 5.9 必须确认没有新增 API、没有新增 DB / migration、没有修改 Laravel backend、routes / config、release chain、Android version、真实 AI、私密聊天历史读取、自动发送、`chat_messages` 写入、profile / astro / match canonical truth 写入。
+- 若 focused widget/page test 通过、保护面检查为空、runtime screenshot/XML 可读，但证据来自 debug host 或真实会话历史较多需要滚动，可按 `pass with observations` 处理，不重开 5.9 主链。
