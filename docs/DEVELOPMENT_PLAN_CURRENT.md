@@ -31,8 +31,10 @@
 - 5.7 只在 Match result / detail 展示层新增 `为什么值得聊` 解释卡，继续保持 `derived-only / display-only / explanation layer`，不改 API / DB / backend / release chain，不写 chat / profile / astro，不接真实 AI。
 - 5.8 已完成 Me / Profile 个人解释层与表达建议 runtime slice，并已通过 GPT 顾问验收，口径为 `pass with observations`。
 - 5.8 只在 Profile presentation 层新增 `我的慢约会表达建议` 解释卡，继续保持 display-only，不改 API / DB / backend / release chain，不写 profile / astro canonical truth，不接真实 AI，不自动修改资料。
-- 5.9 已进入并完成 Chat 轻追问与低压开场 runtime slice。当前 5.9 主交接入口为 `docs/version_plans/5.9_HANDOFF_MASTER.md`，建议验收口径为 `pass with observations`。
+- 5.9 已完成 Chat 轻追问与低压开场 runtime slice，并已通过 GPT 顾问验收，口径为 `pass with observations`。
 - 5.9 只在 Chat presentation 层新增 `低压开场建议`，点击建议只填入本机可编辑草稿，不自动发送，不读取私密聊天，不写 `chat_messages`，不改 API / DB / backend / release chain，不接真实 AI。
+- 5.10 已进入并完成 Settings 解释层治理与用户控制 runtime slice。当前 5.10 主交接入口为 `docs/version_plans/5.10_HANDOFF_MASTER.md`，建议验收口径为 `pass with observations`。
+- 5.10 只在 Settings presentation 层新增 `解释与建议设置`，统一说明 Match / Profile / Chat 三类解释层，提供说明型开关占位、统一免责声明与本地详情说明；不新增 API / DB / backend，不做后端偏好持久化，不跨页强联动，不改 release chain。
 - 所有玄学解释、合盘解释、AI 追问都必须保持 `derived-only / display-only / explanation layer`，不得反写 `profile/basic`、`profile/astro/summary`、`profile/astro/chart`、`user_astro_profiles`。
 - 5.6+ 不吸收测测的真人玄学咨询市场、付费报告商店、上传截图主路径、娱乐化测试主路径、强出生资料收集、测试结果反写画像、大规模社区讨论或测测术语体系复制。
 - 当前版本顺序统一为：

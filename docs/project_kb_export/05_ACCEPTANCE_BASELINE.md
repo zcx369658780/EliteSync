@@ -75,3 +75,10 @@
 - 验收标准是 `低压开场建议` 在 Chat room presentation 可见，且包含 `从共同点开始`、`换个更自然的说法`、`低压问候建议`、`不要太急`、`可编辑草稿`、`填入后仍需你自己确认发送` 和 no-auto-send 免责声明。
 - 5.9 必须确认没有新增 API、没有新增 DB / migration、没有修改 Laravel backend、routes / config、release chain、Android version、真实 AI、私密聊天历史读取、自动发送、`chat_messages` 写入、profile / astro / match canonical truth 写入。
 - 若 focused widget/page test 通过、保护面检查为空、runtime screenshot/XML 可读，但证据来自 debug host 或真实会话历史较多需要滚动，可按 `pass with observations` 处理，不重开 5.9 主链。
+
+## 5.10 Settings 解释层治理与用户控制验收口径
+
+- 5.10 是 Settings 解释层治理与用户控制 runtime slice。
+- 验收标准是 `解释与建议设置` 在 Settings presentation 可见，且包含 `关系解释提示`、`个人表达建议`、`聊天开场建议`、说明型开关占位、`了解这些建议如何工作` 和 display-only / no-write / no-auto-send 免责声明。
+- 5.10 必须确认没有新增 API、没有新增 DB / migration、没有修改 Laravel backend、routes / config、release chain、Android version、真实 AI、后端用户偏好持久化、跨页强联动、profile / astro / match / chat canonical truth 写入。
+- 若 focused Settings test 通过、保护面检查为空、runtime screenshot/XML 可读，但当前控制仅为说明型占位且证据来自 debug host，可按 `pass with observations` 处理，不重开 5.10 主链。

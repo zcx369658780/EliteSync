@@ -29,6 +29,10 @@
 - `docs/version_plans/5.9_HANDOFF_MASTER.md`：当前 5.9 单文件主交接入口，建议验收口径为 `pass with observations`
 - `docs/version_plans/5.9_REGRESSION_CHECKLIST.md`：5.9 回归与保护面清单
 - `docs/version_plans/5.9_UI_BASELINE_EVIDENCE_INDEX.md`：5.9 UI 证据索引
+- `docs/version_plans/v_5_10_解释层治理与用户控制版_开发计划书_2026_05_11.md`：当前 5.10 解释层治理与用户控制版开发计划书
+- `docs/version_plans/5.10_HANDOFF_MASTER.md`：当前 5.10 单文件主交接入口，建议验收口径为 `pass with observations`
+- `docs/version_plans/5.10_REGRESSION_CHECKLIST.md`：5.10 回归与保护面清单
+- `docs/version_plans/5.10_UI_BASELINE_EVIDENCE_INDEX.md`：5.10 UI 证据索引
 - `docs/version_plans/elite_sync_5_6_plus_玄学能力二次产品化_路线图与计划书.md`：5.6+ 路线图与开发计划顾问参考稿，不作为正式主入口
 - `docs/version_plans/elite_sync_整体开发计划书_5_x方向重排版_2026_05_01.md`：5.x 整体开发计划书（历史参考）
 - `docs/version_plans/elite_sync_未来版本开发路线图草案_2026_05_01.md`：5.x 路线图草案（历史参考）
@@ -140,3 +144,4 @@
 - 5.7 已完成 Match 关系解释层最小产品化 runtime slice，主交接入口为 `docs/version_plans/5.7_HANDOFF_MASTER.md`
 - 5.8 已完成 Me / Profile 个人解释层与表达建议 runtime slice，主交接入口为 `docs/version_plans/5.8_HANDOFF_MASTER.md`
 - 5.9 已完成 Chat 轻追问与低压开场 runtime slice，当前主交接入口为 `docs/version_plans/5.9_HANDOFF_MASTER.md`
+- 5.10 已完成 Settings 解释层治理与用户控制 runtime slice，当前主交接入口为 `docs/version_plans/5.10_HANDOFF_MASTER.md`

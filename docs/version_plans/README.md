@@ -2,10 +2,11 @@
 
 Current active handoff entry:
 
-- [5.9_HANDOFF_MASTER.md](./5.9_HANDOFF_MASTER.md)
+- [5.10_HANDOFF_MASTER.md](./5.10_HANDOFF_MASTER.md)
 
 Current active plan:
 
+- [v_5_10_解释层治理与用户控制版_开发计划书_2026_05_11.md](./v_5_10_解释层治理与用户控制版_开发计划书_2026_05_11.md)
 - [v_5_9_Chat轻追问与低压开场版_开发计划书_2026_05_11.md](./v_5_9_Chat轻追问与低压开场版_开发计划书_2026_05_11.md)
 - [v_5_8_Me个人解释层与表达建议版_开发计划书_2026_05_11.md](./v_5_8_Me个人解释层与表达建议版_开发计划书_2026_05_11.md)
 - [v_5_7_Match关系解释层最小产品化版_开发计划书_2026_05_11.md](./v_5_7_Match关系解释层最小产品化版_开发计划书_2026_05_11.md)
@@ -113,13 +114,23 @@ Current 5.8 status:
 
 Current 5.9 status:
 
-- status: `runtime slice complete; recommended pass with observations`
+- status: `pass with observations`; remote archive completed before 5.10 start
 - scope: Chat presentation additive only; no backend, DB, API, release-chain, true AI, private chat history read, automatic send, `chat_messages` write, profile write, astro write, or match truth write.
 - [v_5_9_Chat轻追问与低压开场版_开发计划书_2026_05_11.md](./v_5_9_Chat轻追问与低压开场版_开发计划书_2026_05_11.md)
 - [5.9_HANDOFF_MASTER.md](./5.9_HANDOFF_MASTER.md)
 - [5.9_REGRESSION_CHECKLIST.md](./5.9_REGRESSION_CHECKLIST.md)
 - [5.9_UI_BASELINE_EVIDENCE_INDEX.md](./5.9_UI_BASELINE_EVIDENCE_INDEX.md)
 - 5.9 observation: runtime evidence is debug-host based and current real conversation history requires scrolling back to the header; focused widget/page tests prove no-auto-send behavior.
+
+Current 5.10 status:
+
+- status: `runtime slice complete; recommended pass with observations`
+- scope: Settings presentation additive only; no backend, DB, API, release-chain, true AI, backend preference persistence, cross-page strong linkage, profile write, astro write, match write, or chat write.
+- [v_5_10_解释层治理与用户控制版_开发计划书_2026_05_11.md](./v_5_10_解释层治理与用户控制版_开发计划书_2026_05_11.md)
+- [5.10_HANDOFF_MASTER.md](./5.10_HANDOFF_MASTER.md)
+- [5.10_REGRESSION_CHECKLIST.md](./5.10_REGRESSION_CHECKLIST.md)
+- [5.10_UI_BASELINE_EVIDENCE_INDEX.md](./5.10_UI_BASELINE_EVIDENCE_INDEX.md)
+- 5.10 observation: current controls are explanation placeholders, not persisted user preferences; runtime evidence is debug-host based.
 
 Current 5.x route:
 
