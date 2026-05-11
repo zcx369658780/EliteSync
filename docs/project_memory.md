@@ -160,11 +160,14 @@
 
 ## 当前基线
 
-- 对外发布版本：`0.05.04 / 50400`
-- 当前稳定阶段：`4.9`、`5.0`、`5.1`、`5.2`、`5.3`、`5.4` 均已按 `pass with observations` 收口；`4.9` 仍作为 `5.x` 的稳定门禁基线，`5.4` 是当前最新已验收版本。
+- 当前最新对外发布版本：`0.05.05 / 50500`，5.5 已完成并发布到阿里云。
+- 上一条发布基线 / 历史发布链：`0.05.04 / 50400`。
+- 当前稳定阶段：`4.9`、`5.0`、`5.1`、`5.2`、`5.3`、`5.4`、`5.5` 均已收口；`4.9` 仍作为 `5.x` 的稳定门禁基线，5.0-5.5 作为已完成历史链路保留。
 - 当前主计划入口：`docs/DEVELOPMENT_PLAN_CURRENT.md`
-- 当前 5.x 主计划：`docs/version_plans/elite_sync_整体开发计划书_5_x方向重排版_2026_05_01.md`
-- 当前 5.x 路线图草案：`docs/version_plans/elite_sync_未来版本开发路线图草案_2026_05_01.md`
+- 当前 5.6+ 整体开发计划主入口：`docs/version_plans/elite_sync_整体开发计划书_5_6_plus_玄学能力二次产品化修订版_2026_05_11.md`
+- 当前 5.6+ 路线图主入口：`docs/version_plans/elite_sync_未来版本开发路线图_5_6_plus_玄学能力二次产品化_2026_05_11.md`
+- 历史 5.x 主计划参考：`docs/version_plans/elite_sync_整体开发计划书_5_x方向重排版_2026_05_01.md`
+- 历史 5.x 路线图草案参考：`docs/version_plans/elite_sync_未来版本开发路线图草案_2026_05_01.md`
 - 当前 4.9 主交接文件：`docs/version_plans/4.9_HANDOFF_MASTER.md`
 - 当前 4.9 关键验收材料除 `4.9_HANDOFF_MASTER.md` 外已归档到 `docs/archive/legacy_2026-04/version_plans/`
 - 4.9 的核心收口已经完成：现代 UI baseline、rollback / recovery policy、数据库正式演练、release gate、health、RTC / LiveKit 可观测性、通知降噪都已固化为门禁基线
@@ -179,7 +182,7 @@
 - 2026-05-02 已核对 5.1 功能实现分支完成 PR、merge 与 regression：GitHub Actions `regression-full-manual #34` 在 `main` 分支 commit `f4b0419` 上成功，run URL 为 `https://github.com/zcx369658780/EliteSync/actions/runs/25242898302`，总耗时 `15m 19s`，产物为 `regression-full-logs`。该记录只固化 5.1 已合入并通过回归，不重开 5.1 主链。
 - 5.2 已形成统一验收与单文件交接材料，当前主交接入口为 `docs/version_plans/5.2_HANDOFF_MASTER.md`，验收口径为 `pass with observations`。5.2 已完成个人经营区、标签表达体系、AI 展示建议、AI 草稿助手、轻语音表达候选位和个人空间外观层；保护面回归覆盖设置页、版本中心、消息页、聊天页、编辑资料页、版本号 `0.04.09 / 40900` 与资料真值链口径。保留 observations：AI 草稿 bottom sheet 场景下全局浮层 `发布状态` CTA 可能遮挡文案，轻语音仍是候选位而非录制闭环，AI 草稿仍是本地建议不持久化，个人空间外观仍是预览层而非持久化装扮系统；这些观察项只作为后续小 UI polish 或产品 contract 任务，不重开 5.2 主链。
 - 5.3 已形成统一验收与单文件交接材料，当前主交接入口为 `docs/version_plans/5.3_HANDOFF_MASTER.md`，验收口径为 `pass with observations`。5.3 已完成 Discover / Chat / Me / Settings 的第二轮补齐与护栏回归，正式证据已收敛为 `docs/version_plans/5.3_UI_BASELINE_EVIDENCE_INDEX.md`，并用 `docs/version_plans/5.3_REGRESSION_CHECKLIST.md` 固化回归清单；保留 observations：全局 `发布状态` 浮层在部分 sheet 场景下仍会遮挡底部内容，轻语音 dialog 仍残留少量 5.2 旧文案，`稍后再聊`、`冷场恢复`、`AI 续话`、`个人空间外观` 仍是轻量候选 / 预览语义，不作为后端持久化系统，也不重开 5.3 主链。
-- 5.4 已形成统一验收与单文件交接材料，当前主交接入口为 `docs/version_plans/5.4_HANDOFF_MASTER.md`，验收口径为 `pass with observations`。5.4 已完成测试运营准备与云端治理增强：只读运营准备入口、观测入口、Smoke / Regression Matrix、5.4 Runbook Library、synthetic / smoke 账号治理提示、备份 / 恢复 / migration readiness 与保护面证据，正式证据已收敛为 `docs/version_plans/5.4_OBSERVABILITY_EVIDENCE_INDEX.md`，并用 `docs/version_plans/5.4_REGRESSION_CHECKLIST.md` 固化回归清单；保留 observations：Cloud DB read-only audit、backup existence、restore drill、migration-level checks、queue / logs、RTC success evidence 仍需真实环境证据，不写成已通过，也不重开 5.4 主链。后续主线进入 `5.5` 真实小样本反馈吸收版。
+- 5.4 已形成统一验收与单文件交接材料，历史主交接入口为 `docs/version_plans/5.4_HANDOFF_MASTER.md`，验收口径为 `pass with observations`。5.4 已完成测试运营准备与云端治理增强：只读运营准备入口、观测入口、Smoke / Regression Matrix、5.4 Runbook Library、synthetic / smoke 账号治理提示、备份 / 恢复 / migration readiness 与保护面证据，正式证据已收敛为 `docs/version_plans/5.4_OBSERVABILITY_EVIDENCE_INDEX.md`，并用 `docs/version_plans/5.4_REGRESSION_CHECKLIST.md` 固化回归清单；保留 observations：Cloud DB read-only audit、backup existence、restore drill、migration-level checks、queue / logs、RTC success evidence 仍需真实环境证据，不写成已通过，也不重开 5.4 主链。历史上后续主线进入 `5.5` 真实小样本反馈吸收版；当前 5.5 已完成并发布到阿里云。
 - 5.x 验收提交经验补充：验收不能只看文档自报，必须让截图文件名、截图内容和页面实际内容三者一致；若证据链出现错绑 / 错传，必须先修正证据文件再谈升档，避免把 Chat 页证据误当成 Me 页证据。
 - 当前阶段结论：`3.5` 已正式验收通过并归档
 - `3.6` 已进入计划执行阶段，stage 0、stage 1 与 stage 2 已完成
@@ -297,3 +300,13 @@
   - 个人页：资料展示 + AI 助理 + 内容经营 + 功能中心的综合中枢
   - 设置页：个人空间外观 / 主页背景 / 装扮面板与真实设置中心分层
   - 这些结论应作为 5.x 高价值主链功能覆盖优先的直接输入，而不是原样照搬 Soul 的商业化入口
+
+## 2026-05-11 5.6+ 玄学能力二次产品化路线记忆
+
+- 测测 Stage 1-5 拆解已完成，当前摘要入口为 `docs/reference/CECE_RESEARCH_MASTER_CURRENT.md`，全量文本证据聚合为 `docs/reference/CECE_ALL_DECOMPOSITION_REPORTS_AND_TEXT_EVIDENCE_2026_05_11.md`。
+- Stage 2-5 已用 Claude rerun 校正：Stage 2 区分 `AI问` 与 `在线`，Stage 3 将 `测试` 收窄为本轮样本内的互动答题入口层，Stage 4 强化 `星盘` 的档案上下文与图谱解释层，Stage 5 将 `缘分合盘` 收窄为双人上下文下的示例 / 预览关系解释层。
+- 不再继续测测 Stage 6；后续不扩大竞品拆解，转入 EliteSync 版本路线与计划书承接。
+- 5.0-5.5 是已完成历史链路，不重写。5.6+ 进入“玄学能力二次产品化与校准线”：Soul 继续作为社交主链参考，测测作为玄学解释层参考。
+- 5.6 不做 runtime implementation，只做路线冻结、边界校准与 5.6 具体开发计划书生成。下一步应制定 `docs/version_plans/v_5_6_玄学能力二次产品化边界与校准版_开发计划书_2026_05_11.md`，而不是直接进入 5.7 runtime。
+- 所有玄学解释、合盘解释、AI 追问都必须保持 `derived-only / display-only / explanation layer`，不得反写 `profile/basic`、`profile/astro/summary`、`profile/astro/chart`、`user_astro_profiles`，不得改 Match algorithm contract、API / DB / release chain。
+- 后续竞品 UI 研究必须遵守 `docs/agents/CODEX_CYBER_SAFE_UI_RESEARCH_RULES.md`：只观察公开可见 UI，证据优先截图和 Android UI hierarchy，不做逆向、抓包、接口分析、读取私有数据、权限绕过、付费 / 咨询 / 发布 / 收藏 / 点赞等写入行为。

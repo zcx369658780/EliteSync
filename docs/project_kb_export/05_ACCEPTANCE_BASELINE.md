@@ -1,6 +1,6 @@
 # 验收基线
 
-更新时间：2026-04-19
+更新时间：2026-05-11
 
 ## 顾问验收口径
 
@@ -46,3 +46,11 @@
 
 - 新版本尽量在归档前形成一份“验收摘要 + 交接说明 + closeout note + 证据索引”的最小包。
 - 若顾问意见是 `pass with observations`，应将 observation 固化，但不要把 observation 当成阻断。
+
+## 5.6 Planning-Only 验收口径
+
+- 5.6 是 planning / boundary / calibration 版本，不做 runtime implementation。
+- 验收标准是路线、边界、non-goals、protected surfaces、derived-only / display-only contract 和后续版本计划书齐备。
+- 不因没有 runtime 截图、XML、UI hierarchy 或实现证据而降级。
+- 不允许用 5.6 planning-only 验收推动 5.7 runtime；5.7 之前必须先完成并验收 5.6 具体开发计划书。
+- 5.6 验收必须确认没有触碰 Flutter、Laravel、数据库、API、版本号或 release chain。

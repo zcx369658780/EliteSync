@@ -1,8 +1,25 @@
 # EliteSync Current Handoff Master
 
+更新时间：2026-05-11
+
+## 0. 当前最高优先级交接口径（2026-05-11 修正）
+
+本文件保留为历史恢复交接文件，不再作为 5.6+ 新会话默认第一阅读项。当前 5.6+ 正式主入口以 `docs/DEVELOPMENT_PLAN_CURRENT.md`、`docs/DOC_INDEX_CURRENT.md`、`docs/project_memory.md` 和两份 5.6+ 路线文件为准。
+
+- 最新完成版本：`5.5`，已完成并发布到阿里云。
+- 当前最新对外发布版本：`0.05.05 / 50500`。
+- 上一条发布基线 / 历史发布链：`0.05.04 / 50400`。
+- 当前主线：`5.6+ 玄学能力二次产品化与校准线`。
+- 当前 5.6+ 整体开发计划主入口：`docs/version_plans/elite_sync_整体开发计划书_5_6_plus_玄学能力二次产品化修订版_2026_05_11.md`。
+- 当前 5.6+ 路线图主入口：`docs/version_plans/elite_sync_未来版本开发路线图_5_6_plus_玄学能力二次产品化_2026_05_11.md`。
+- 当前下一步：制定 `docs/version_plans/v_5_6_玄学能力二次产品化边界与校准版_开发计划书_2026_05_11.md`。
+- `5.6` 是 planning / boundary / calibration 版本，不做 runtime implementation；不要直接进入 `5.7` runtime。
+
+以下 2026-05-09 与 2026-05-07 段落为历史恢复交接内容；凡与本节冲突，以本节为准。
+
 更新时间：2026-05-09
 
-## 0. 当前最高优先级交接口径
+## 0A. 2026-05-09 交接口径（历史）
 
 - 当前版本：`5.5` 已完成批准范围内开发、验收材料、阿里云 `0.05.05 / 50500` release-chain 与 GitHub PR；用户确认 5.5 GitHub regression 已通过。
 - 当前验收口径：`5.5` 按 `pass with observations` 承接。
@@ -31,7 +48,7 @@
 
 更新时间：2026-05-07
 
-用途：这是当前恢复后的项目总交接入口。当前版本开发主入口已切到 `docs/version_plans/5.5_HANDOFF_MASTER.md`；5.5 已按批准范围完成真实小样本反馈吸收，建议按 `pass with observations` 承接，但不代表进入 push 流程。
+用途：这是历史恢复交接内容。当前 5.6+ 正式主入口已切到 `docs/version_plans/elite_sync_整体开发计划书_5_6_plus_玄学能力二次产品化修订版_2026_05_11.md` 与 `docs/version_plans/elite_sync_未来版本开发路线图_5_6_plus_玄学能力二次产品化_2026_05_11.md`。5.5 已完成并发布到阿里云，当前最新对外发布版本为 `0.05.05 / 50500`。
 
 ## 1. 当前审计快照
 
@@ -43,15 +60,15 @@
 
 ## 2. 当前版本线口径
 
-- 当前最新已完成并验收版本：`5.4`
-- 当前 5.4 主交接入口：`docs/version_plans/5.4_HANDOFF_MASTER.md`
-- 当前发布链同步口径：`0.05.04 / 50400`
-- 当前发布证据状态：0.05.04 APK 存在、下载 URL、SHA256、version API 与 Version Center 0.05.04 补证已完成。
+- 历史已完成并验收版本：`5.4`
+- 历史 5.4 主交接入口：`docs/version_plans/5.4_HANDOFF_MASTER.md`
+- 上一条发布基线 / 历史发布链：`0.05.04 / 50400`
+- 历史发布证据状态：0.05.04 APK 存在、下载 URL、SHA256、version API 与 Version Center 0.05.04 补证已完成。
 - 5.4 状态：`pass with observations`
 - 5.5 状态：已完成批准范围内的“真实小样本反馈吸收版”开发与验收材料整理。当前主入口为 `docs/version_plans/5.5_HANDOFF_MASTER.md`；验收建议为 `pass with observations`。
 - 5.4 已按用户前提完成开发、code review、GitHub 提交，并通过 PR merge regression。当前本地 HEAD 已包含 5.4 相关提交。
 - 已追回的正式项目状态：`5.4` 已完成 code review、已提交 GitHub、已通过 PR merge regression；这不是 observation，也不需要在后续会话重新判定 5.4 是否完成。
-- 已追回的正式项目状态：`0.05.04 / 50400` 已在 GitHub regression 通过后发布到阿里云；这不是 observation。
+- 已追回的历史项目状态：`0.05.04 / 50400` 已在 GitHub regression 通过后发布到阿里云；当前它只作为上一条发布基线 / 历史发布链。
 
 ## 3. 5.4 已完成内容
 
@@ -73,8 +90,8 @@
 
 ## 4. 发布链与证据边界
 
-- `0.05.04 / 50400` 已成为当前发布链同步口径。
-- `0.05.04 / 50400` 已在 GitHub regression 通过后发布到阿里云，当前应按已发布版本承接。
+- `0.05.04 / 50400` 是上一条发布基线 / 历史发布链。
+- `0.05.04 / 50400` 已在 GitHub regression 通过后发布到阿里云，但当前最新对外发布版本已统一为 `0.05.05 / 50500`。
 - 本次同步覆盖 Android host versionName / versionCode、Flutter module pubspec version、app 内更新历史、Laravel version check 默认值与测试断言、`0.05.04_UPDATE_BRIEF.md`。
 - 旧 5.4 UI / Version Center 证据仍主要来自 release-chain sync 前的 `0.04.09 / 40900` 包。
 - 0.05.04 发布证据已补齐：
@@ -114,7 +131,7 @@
   - `/opt/elitesync/services/backend-laravel`
 - APK 远程下载目录：
   - `/opt/elitesync/services/backend-laravel/public/downloads/`
-- 当前下载 URL 口径：
+- 历史 0.05.04 下载 URL：
   - `http://101.133.161.203/downloads/elitesync-0.05.04.apk`
 
 推荐 PowerShell SSH 调用模板：
@@ -184,9 +201,9 @@ $sshArgs = @(
 
 ## 9. 下一步最安全顺序
 
-1. 5.5 已完成启动材料提交与模拟器基线 smoke，下一步先补具体真实反馈行。
-2. 5.5 第一轮只能吸收真实小样本反馈，不应预先脑补大功能包，也不应重开 5.0-5.4 主链。
-3. 没有具体反馈行前，不进入 runtime slice。
+1. 当前 5.6+ 主线先制定 `docs/version_plans/v_5_6_玄学能力二次产品化边界与校准版_开发计划书_2026_05_11.md`。
+2. `5.6` 只做 planning / boundary / calibration，不进入 runtime implementation。
+3. 不直接进入 `5.7` runtime；后续实现必须等待 5.6 具体开发计划书确认。
 4. 如果反馈涉及后端 / 云端 / 数据库 / 队列 / RTC / 媒体 / 版本链不一致，先写 blocker report，不盲修。
 5. 只有用户明确要求 commit / push 时，才进入固定提交流程。
 
@@ -198,5 +215,5 @@ $sshArgs = @(
 - migration-level checks 需要真实只读环境或后端证据。
 - queue / logs 需要当前日志源。
 - RTC success evidence 未声明通过，当前只保留 RTC 权限面证据。
-- `services/backend-laravel/config/matching.php` 的 matching algo marker 同步仍是待确认 observation，不属于当前 `0.05.04 / 50400` 正式发布链同步口径。
-- 旧 `0.04.09 / 40900` 截图仍只作为历史 5.4 功能 / 保护面证据，不作为 0.05.04 release-chain 证据。
+- `services/backend-laravel/config/matching.php` 的 matching algo marker 同步仍是待确认 observation，不属于当前 `0.05.05 / 50500` 正式发布链同步口径。
+- 旧 `0.04.09 / 40900` 截图仍只作为历史 5.4 功能 / 保护面证据，不作为当前 release-chain 证据。

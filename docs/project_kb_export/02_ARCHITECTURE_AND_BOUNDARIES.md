@@ -1,6 +1,6 @@
 # 架构与边界
 
-更新时间：2026-05-01
+更新时间：2026-05-11
 
 ## 真值链路
 
@@ -51,6 +51,14 @@
   - 微服务大拆分
   - 多人 RTC
   - 重娱乐化玩法平台
+
+## 5.6+ 玄学解释层边界
+
+- 玄学解释、合盘解释、AI 追问只能作为 `derived-only / display-only / explanation layer`。
+- 不反写 `profile/basic`、`profile/astro/summary`、`profile/astro/chart`、`user_astro_profiles`。
+- 不改 Match algorithm contract，不把解释层结果作为匹配算法输入。
+- 不改 API / DB / release chain；5.6 是 planning / boundary / calibration 版本，不做 runtime implementation。
+- 不引入真人玄学咨询市场、付费报告商店、上传截图主路径、娱乐化测试主路径、强出生资料收集、测试结果反写画像、大规模社区讨论或测测术语体系复制。
 
 ## 保护面接口
 

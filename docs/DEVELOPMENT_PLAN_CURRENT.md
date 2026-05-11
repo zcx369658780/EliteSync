@@ -1,8 +1,15 @@
 # EliteSync 整体开发计划书入口
 
 当前可编辑的主计划请看：
+- `docs/version_plans/elite_sync_整体开发计划书_5_6_plus_玄学能力二次产品化修订版_2026_05_11.md`
+- `docs/version_plans/elite_sync_未来版本开发路线图_5_6_plus_玄学能力二次产品化_2026_05_11.md`
+
+历史参考：
 - `docs/version_plans/elite_sync_整体开发计划书_5_x方向重排版_2026_05_01.md`
 - `docs/version_plans/elite_sync_未来版本开发路线图草案_2026_05_01.md`
+
+顾问参考稿：
+- `docs/version_plans/elite_sync_5_6_plus_玄学能力二次产品化_路线图与计划书.md`
 
 当前说明：
 - 4.9 已作为测试前治理、限流、监控、发布链强化版收口，并作为 5.x 的稳定门禁基线。
@@ -15,7 +22,13 @@
 - 5.4 已作为测试运营准备与云端治理增强版收口，状态为 `pass with observations`；主交接入口为 `docs/version_plans/5.4_HANDOFF_MASTER.md`。
 - 5.4 已完成只读运营准备入口、观测入口、Smoke / Regression Matrix、5.4 Runbook Library、synthetic / smoke 账号治理提示、备份 / 恢复 / migration readiness 与保护面证据补齐；正式 evidence package 已收敛到 `docs/version_plans/5.4_OBSERVABILITY_EVIDENCE_INDEX.md`。
 - 5.4 observations 保留为后续真实环境核验项：Cloud DB read-only audit、backup existence、restore drill、migration-level checks、queue / logs、RTC success evidence 仍需真实环境证据，不写成已通过。
+- 5.5 已完成并发布到阿里云；当前最新对外发布版本为 `0.05.05 / 50500`。`0.05.04 / 50400` 仅作为上一条发布基线 / 历史发布链保留。
 - 5.x 当前主线已经切换为“高价值主链功能覆盖优先”：在运营资质申请成功前，先让 EliteSync 的高价值主链尽量与 Soul 对齐，遵循“先覆盖、再优化、再治理”的顺序。
+- 5.0-5.5 已作为已完成历史链路保留，不重写。
+- 5.6 起进入“玄学能力二次产品化与校准线”。Soul 继续作为社交主链参考，测测作为玄学解释层参考。
+- 5.6 是 planning / boundary / calibration 版本，不做 runtime implementation。下一步不是直接进入 5.7 runtime，而是先制定 `docs/version_plans/v_5_6_玄学能力二次产品化边界与校准版_开发计划书_2026_05_11.md`。
+- 所有玄学解释、合盘解释、AI 追问都必须保持 `derived-only / display-only / explanation layer`，不得反写 `profile/basic`、`profile/astro/summary`、`profile/astro/chart`、`user_astro_profiles`。
+- 5.6+ 不吸收测测的真人玄学咨询市场、付费报告商店、上传截图主路径、娱乐化测试主路径、强出生资料收集、测试结果反写画像、大规模社区讨论或测测术语体系复制。
 - 当前版本顺序统一为：
   - `5.0` 最小产品化覆盖集
   - `5.1` 关系推进与内容转化补齐版

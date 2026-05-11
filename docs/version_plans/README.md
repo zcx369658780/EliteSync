@@ -6,10 +6,19 @@ Current active handoff entry:
 
 Current active plan:
 
-- [elite_sync_整体开发计划书_5_x方向重排版_2026_05_01.md](./elite_sync_整体开发计划书_5_x方向重排版_2026_05_01.md)
+- [elite_sync_整体开发计划书_5_6_plus_玄学能力二次产品化修订版_2026_05_11.md](./elite_sync_整体开发计划书_5_6_plus_玄学能力二次产品化修订版_2026_05_11.md)
 
 Current roadmap draft:
 
+- [elite_sync_未来版本开发路线图_5_6_plus_玄学能力二次产品化_2026_05_11.md](./elite_sync_未来版本开发路线图_5_6_plus_玄学能力二次产品化_2026_05_11.md)
+
+Advisor reference draft:
+
+- [elite_sync_5_6_plus_玄学能力二次产品化_路线图与计划书.md](./elite_sync_5_6_plus_玄学能力二次产品化_路线图与计划书.md)
+
+Historical 5.x route references:
+
+- [elite_sync_整体开发计划书_5_x方向重排版_2026_05_01.md](./elite_sync_整体开发计划书_5_x方向重排版_2026_05_01.md)
 - [elite_sync_未来版本开发路线图草案_2026_05_01.md](./elite_sync_未来版本开发路线图草案_2026_05_01.md)
 
 Current 5.1 status:
@@ -61,6 +70,7 @@ Current 5.4 status:
 Current 5.5 status:
 
 - status: `pass with observations` for approved real small-sample feedback absorption scope.
+- release: `0.05.05 / 50500` has been published to Aliyun. `0.05.04 / 50400` remains the previous release baseline / historical release chain.
 - [v_5_5_真实小样本反馈吸收版_开发计划书_2026_05_06.md](./v_5_5_真实小样本反馈吸收版_开发计划书_2026_05_06.md)
 - [5.5_ACCEPTANCE_SUMMARY.md](./5.5_ACCEPTANCE_SUMMARY.md)
 - [5.5_HANDOFF_MASTER.md](./5.5_HANDOFF_MASTER.md)
@@ -77,8 +87,11 @@ Current 5.x route:
 - 5.3: 功能覆盖收尾版
 - 5.4: 测试运营准备与云端治理增强版
 - 5.5: 真实小样本反馈吸收版
-- 在运营资质申请成功前，5.x 的最高优先级是高价值主链功能覆盖优先；5.4 已完成测试运营准备与治理入口收口，后续主线进入 5.5 真实小样本反馈吸收版。
+- 5.0-5.5 已作为已完成历史链路保留，不重写。
+- 5.6+ 当前主线进入“玄学能力二次产品化与校准线”；5.6 是 planning / boundary / calibration 版本，不做 runtime implementation。
+- 下一步是制定 `v_5_6_玄学能力二次产品化边界与校准版_开发计划书_2026_05_11.md`，不是直接进入 5.7 runtime。
 - Soul Stage2 综合主报告是当前默认竞品主参考入口：`docs/reference/SOUL_STAGE2_MASTER_CONSOLIDATED_REPORT.md`
+- 测测 Stage 1-5 主报告摘要入口：`docs/reference/CECE_RESEARCH_MASTER_CURRENT.md`
 
 Current 5.0 baseline:
 

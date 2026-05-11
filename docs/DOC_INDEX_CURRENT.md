@@ -1,12 +1,11 @@
 # 文档索引（当前有效）
 
-更新时间：2026-05-07
+更新时间：2026-05-11
 
 ## 当前主入口
 
 - `docs/DEVELOPMENT_PLAN_CURRENT.md`：当前整体开发计划入口
 - `docs/project_memory.md`：项目长期记忆
-- `docs/HANDOFF_MASTER_CURRENT.md`：当前恢复后的项目总交接主入口
 - `docs/CODEX_CURRENT_SESSION_SUMMARY.md`：当前会话续接短摘要
 - `docs/PROTECTED_UI_SURFACES.md`：UI protected surfaces
 - `docs/runbooks/ROLLBACK_AND_RECOVERY_POLICY.md`：回滚与恢复政策
@@ -14,8 +13,11 @@
 
 ## 当前版本与交接基线
 
-- `docs/version_plans/elite_sync_整体开发计划书_5_x方向重排版_2026_05_01.md`：5.x 整体开发计划书（当前主计划）
-- `docs/version_plans/elite_sync_未来版本开发路线图草案_2026_05_01.md`：5.x 路线图草案
+- `docs/version_plans/elite_sync_整体开发计划书_5_6_plus_玄学能力二次产品化修订版_2026_05_11.md`：当前 5.6+ 整体开发计划主入口
+- `docs/version_plans/elite_sync_未来版本开发路线图_5_6_plus_玄学能力二次产品化_2026_05_11.md`：当前 5.6+ 未来版本路线图主入口
+- `docs/version_plans/elite_sync_5_6_plus_玄学能力二次产品化_路线图与计划书.md`：5.6+ 路线图与开发计划顾问参考稿，不作为正式主入口
+- `docs/version_plans/elite_sync_整体开发计划书_5_x方向重排版_2026_05_01.md`：5.x 整体开发计划书（历史参考）
+- `docs/version_plans/elite_sync_未来版本开发路线图草案_2026_05_01.md`：5.x 路线图草案（历史参考）
 - `docs/version_plans/5.0_BASELINE_START_NOTE.md`：5.0 基线起点说明
 - `docs/version_plans/5.0_SCOPE_AND_NON_GOALS.md`：5.0 范围与非目标
 - `docs/version_plans/5.0_DISCOVER_PRODUCTIZATION_NOTE.md`：5.0B Discover 产品化说明
@@ -53,13 +55,13 @@
 - `docs/version_plans/5.3_HANDOFF_MASTER.md`：5.3 单文件主交接（历史已验收主入口），状态为 `pass with observations`
 - `docs/version_plans/5.3_REGRESSION_CHECKLIST.md`：5.3 回归清单
 - `docs/version_plans/5.3_UI_BASELINE_EVIDENCE_INDEX.md`：5.3 UI 基线证据索引
-- `docs/version_plans/5.4_HANDOFF_MASTER.md`：5.4 单文件主交接（当前最新验收主入口），状态为 `pass with observations`
-- `docs/version_plans/5.5_HANDOFF_MASTER.md`：5.5 单文件主交接入口，状态为批准范围内开发完成，验收建议 `pass with observations`
+- `docs/version_plans/5.4_HANDOFF_MASTER.md`：5.4 单文件主交接（历史已验收主入口），状态为 `pass with observations`
+- `docs/version_plans/5.5_HANDOFF_MASTER.md`：5.5 单文件主交接入口（历史已完成版本主入口），状态为批准范围内开发完成并发布到阿里云，验收建议 `pass with observations`
 - `docs/version_plans/v_5_5_真实小样本反馈吸收版_开发计划书_2026_05_06.md`：5.5 真实小样本反馈吸收版开发计划书
 - `docs/version_plans/5.5_FEEDBACK_MATRIX.md`：5.5 反馈矩阵；没有具体反馈行前不得进入 runtime slice
 - `docs/version_plans/5.5_FEEDBACK_EVIDENCE_INDEX.md`：5.5 反馈证据索引
 - `docs/version_plans/5.5_REGRESSION_CHECKLIST.md`：5.5 回归清单
-- `docs/HANDOFF_MASTER_CURRENT.md`：当前恢复后的项目总交接主入口，包含 5.4 / 5.5 状态、0.05.04 发布链、GitHub / 阿里云 SSH 与发布脚本方法
+- `docs/HANDOFF_MASTER_CURRENT.md`：历史恢复交接文件，包含 5.4 / 5.5 状态、发布链、GitHub / 阿里云 SSH 与发布脚本方法；已补 5.6+ 顶部修正，但不再作为新会话默认第一阅读项。当前最新对外发布版本为 `0.05.05 / 50500`，`0.05.04 / 50400` 为上一条发布基线 / 历史发布链
 - `docs/version_plans/5.4_REGRESSION_CHECKLIST.md`：5.4 回归清单
 - `docs/version_plans/5.4_OBSERVABILITY_EVIDENCE_INDEX.md`：5.4 观测与证据索引
 - `docs/version_plans/assets/5.4/`：5.4 正式截图与 XML 证据目录
@@ -77,6 +79,9 @@
 - `docs/reference/SOUL_CHAT_MODULE_REPORT.md`
 - `docs/reference/SOUL_DISCOVER_MODULE_REPORT.md`
 - `docs/reference/SOUL_STAGE2_MASTER_CONSOLIDATED_REPORT.md`
+- `docs/reference/CECE_RESEARCH_MASTER_CURRENT.md`：测测 Stage 1-5 主报告摘要版，作为 5.6+ 玄学解释层参考入口
+- `docs/reference/CECE_ALL_DECOMPOSITION_REPORTS_AND_TEXT_EVIDENCE_2026_05_11.md`：测测全量拆解报告与文本证据聚合；体积较大，不建议上传到 ChatGPT Project Source
+- `docs/agents/CODEX_CYBER_SAFE_UI_RESEARCH_RULES.md`：竞品 UI research 安全规则主路径
 
 ## 当前稳定化 / 门禁规则
 
@@ -88,6 +93,7 @@
 ## 当前发布与版本
 
 - `docs/CHANGELOG.md`
+- `docs/version_plans/0.05.05_UPDATE_BRIEF.md`
 - `docs/version_plans/0.05.04_UPDATE_BRIEF.md`
 - `docs/version_plans/0.04.09_UPDATE_BRIEF.md`
 - `docs/version_plans/README.md`
@@ -101,12 +107,14 @@
 ## 使用口径
 
 - 新会话先读：
-1. `docs/CODEX_CURRENT_SESSION_SUMMARY.md`
-2. `docs/HANDOFF_MASTER_CURRENT.md`
-3. `docs/version_plans/5.4_HANDOFF_MASTER.md`
-4. `docs/DEVELOPMENT_PLAN_CURRENT.md`
-5. `docs/project_memory.md`
-6. `docs/version_plans/README.md`
+1. `docs/DEVELOPMENT_PLAN_CURRENT.md`
+2. `docs/DOC_INDEX_CURRENT.md`
+3. `docs/project_memory.md`
+4. `docs/version_plans/elite_sync_整体开发计划书_5_6_plus_玄学能力二次产品化修订版_2026_05_11.md`
+5. `docs/version_plans/elite_sync_未来版本开发路线图_5_6_plus_玄学能力二次产品化_2026_05_11.md`
+6. `docs/reference/CECE_RESEARCH_MASTER_CURRENT.md`
+7. `docs/agents/CODEX_CYBER_SAFE_UI_RESEARCH_RULES.md`
+8. `docs/version_plans/README.md`
 - 4.9 已冻结为 `pass with observations`
 - 5.0 已冻结为 `pass with observations`
 - 5.1 已验收通过，状态为 `pass with observations`
@@ -114,4 +122,5 @@
 - 5.3 已验收通过，状态为 `pass with observations`
 - 5.4 已验收通过，状态为 `pass with observations`
 - 5.5 已完成批准范围内的真实小样本反馈吸收，验收建议为 `pass with observations`
-- 5.x 当前主线是高价值主链功能覆盖优先，不再回头重开 4.x 已归档主链
+- 5.0-5.5 是已完成历史链路，不重写；5.6 起进入“玄学能力二次产品化与校准线”
+- 5.6 是 planning / boundary / calibration 版本，不做 runtime implementation；下一步是制定 `docs/version_plans/v_5_6_玄学能力二次产品化边界与校准版_开发计划书_2026_05_11.md`
