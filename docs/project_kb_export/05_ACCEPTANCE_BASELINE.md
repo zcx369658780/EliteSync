@@ -54,3 +54,10 @@
 - 不因没有 runtime 截图、XML、UI hierarchy 或实现证据而降级。
 - 不允许用 5.6 planning-only 验收推动 5.7 runtime；5.7 之前必须先完成并验收 5.6 具体开发计划书与 `5.6_HANDOFF_MASTER.md`。
 - 5.6 验收必须确认没有触碰 Flutter、Laravel、数据库、API、版本号或 release chain。
+
+## 5.7 Match 解释层验收口径
+
+- 5.7 是 Match 关系解释层最小产品化 runtime slice。
+- 验收标准是 `为什么值得聊` 在 Match result / detail presentation 可见，且包含摘要、`共同点`、`表达节奏`、`慢约会适配度`、建议 / 避免、轻追问 disabled 占位和 display-only 免责声明。
+- 5.7 必须确认没有新增 API、没有新增 DB / migration、没有修改 Laravel backend、routes / config、release chain、Android version、真实 AI、chat message 写入、profile / astro canonical truth 写入或 Match algorithm 改动。
+- 若核心 widget/page test 通过、保护面检查为空，但真实 active match 实机截图因账号状态受限未补齐，可按 `pass with observations` 处理，不重开 5.7 主链。

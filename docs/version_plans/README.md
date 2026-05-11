@@ -2,10 +2,11 @@
 
 Current active handoff entry:
 
-- [5.6_HANDOFF_MASTER.md](./5.6_HANDOFF_MASTER.md)
+- [5.7_HANDOFF_MASTER.md](./5.7_HANDOFF_MASTER.md)
 
 Current active plan:
 
+- [v_5_7_Match关系解释层最小产品化版_开发计划书_2026_05_11.md](./v_5_7_Match关系解释层最小产品化版_开发计划书_2026_05_11.md)
 - [v_5_6_玄学能力二次产品化边界与校准版_开发计划书_2026_05_11.md](./v_5_6_玄学能力二次产品化边界与校准版_开发计划书_2026_05_11.md)
 - [elite_sync_整体开发计划书_5_6_plus_玄学能力二次产品化修订版_2026_05_11.md](./elite_sync_整体开发计划书_5_6_plus_玄学能力二次产品化修订版_2026_05_11.md)
 
@@ -87,6 +88,16 @@ Current 5.6 status:
 - [v_5_6_玄学能力二次产品化边界与校准版_开发计划书_2026_05_11.md](./v_5_6_玄学能力二次产品化边界与校准版_开发计划书_2026_05_11.md)
 - [5.6_HANDOFF_MASTER.md](./5.6_HANDOFF_MASTER.md)
 - 5.6 conclusion: `derived-only / display-only / explanation layer` is now the controlling contract for 5.7-5.10 planning; 5.7 Match runtime still requires a separate approved plan.
+
+Current 5.7 status:
+
+- status: `runtime slice complete; recommended pass with observations`
+- scope: Match result/detail presentation additive only; no backend, DB, API, release-chain, true AI, chat write, profile write, or astro write.
+- [v_5_7_Match关系解释层最小产品化版_开发计划书_2026_05_11.md](./v_5_7_Match关系解释层最小产品化版_开发计划书_2026_05_11.md)
+- [5.7_HANDOFF_MASTER.md](./5.7_HANDOFF_MASTER.md)
+- [5.7_REGRESSION_CHECKLIST.md](./5.7_REGRESSION_CHECKLIST.md)
+- [5.7_UI_BASELINE_EVIDENCE_INDEX.md](./5.7_UI_BASELINE_EVIDENCE_INDEX.md)
+- 5.7 observation: emulator runtime evidence is blocked by current account Drop countdown / detail loading state; focused widget/page tests prove the relationship explanation layer renders.
 
 Current 5.x route:
 

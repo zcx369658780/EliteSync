@@ -311,4 +311,5 @@
 - 5.0-5.5 是已完成历史链路，不重写。5.6+ 进入“玄学能力二次产品化与校准线”：Soul 继续作为社交主链参考，测测作为玄学解释层参考。
 - 5.6 不做 runtime implementation，只做路线冻结、边界校准与文档收口。5.6 具体开发计划书与 `docs/version_plans/5.6_HANDOFF_MASTER.md` 已落库；下一步应做顾问验收，而不是直接进入 5.7 runtime。
 - 所有玄学解释、合盘解释、AI 追问都必须保持 `derived-only / display-only / explanation layer`，不得反写 `profile/basic`、`profile/astro/summary`、`profile/astro/chart`、`user_astro_profiles`，不得改 Match algorithm contract、API / DB / release chain。
+- 5.7 已完成 Match 关系解释层最小产品化 runtime slice：只在 `apps/flutter_elitesync_module` 的 Match result / detail presentation 层新增 `为什么值得聊` 解释卡；轻追问保持 disabled / coming soon；不新增 API / DB / backend，不写 chat / profile / astro，不接真实 AI，不改 release chain。主交接入口为 `docs/version_plans/5.7_HANDOFF_MASTER.md`，建议验收口径 `pass with observations`。
 - 后续竞品 UI 研究必须遵守 `docs/agents/CODEX_CYBER_SAFE_UI_RESEARCH_RULES.md`：只观察公开可见 UI，证据优先截图和 Android UI hierarchy，不做逆向、抓包、接口分析、读取私有数据、权限绕过、付费 / 咨询 / 发布 / 收藏 / 点赞等写入行为。
