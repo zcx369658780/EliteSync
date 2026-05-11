@@ -136,6 +136,61 @@ Future<void> _pumpSettingsPage(
 }
 
 void main() {
+  testWidgets('SettingsPage shows explanation control contract', (
+    tester,
+  ) async {
+    await _pumpSettingsPage(
+      tester,
+      flavor: AppFlavor.dev,
+      phone: '17094346566',
+    );
+
+    await tester.scrollUntilVisible(
+      find.text('解释与建议设置'),
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('解释与建议设置'), findsOneWidget);
+    expect(find.text('关系解释提示'), findsOneWidget);
+    expect(find.text('个人表达建议'), findsOneWidget);
+    expect(find.text('聊天开场建议'), findsOneWidget);
+    expect(find.textContaining('不会写入资料'), findsWidgets);
+    expect(find.textContaining('不会改变星盘或匹配算法'), findsWidgets);
+    expect(find.textContaining('不会自动发送消息'), findsWidgets);
+    expect(find.textContaining('关闭后仍可使用主流程'), findsWidgets);
+    expect(find.text('了解这些建议如何工作'), findsOneWidget);
+    expect(find.text('账号与安全'), findsOneWidget);
+    expect(find.text('修改密码'), findsOneWidget);
+  });
+
+  testWidgets('SettingsPage opens explanation control sheet', (tester) async {
+    await _pumpSettingsPage(
+      tester,
+      flavor: AppFlavor.dev,
+      phone: '17094346566',
+    );
+
+    await tester.scrollUntilVisible(
+      find.text('了解这些建议如何工作'),
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+    await tester.drag(find.byType(Scrollable).first, const Offset(0, 140));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('了解这些建议如何工作'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('这些建议如何工作'), findsOneWidget);
+    expect(find.textContaining('不会读取私密聊天'), findsOneWidget);
+    expect(find.textContaining('不会写入资料'), findsWidgets);
+    expect(find.textContaining('不会自动发送消息'), findsWidgets);
+    expect(find.textContaining('关闭后仍可使用匹配、个人资料和聊天主流程'), findsOneWidget);
+  });
+
   testWidgets('SettingsPage opens appearance boundary sheet', (tester) async {
     await _pumpSettingsPage(
       tester,
