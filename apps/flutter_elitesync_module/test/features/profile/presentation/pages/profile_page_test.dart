@@ -57,6 +57,26 @@ void main() {
     expect(find.text('看看状态'), findsOneWidget);
 
     await tester.scrollUntilVisible(
+      find.text('我的慢约会表达建议'),
+      400,
+      scrollable: find.byType(Scrollable).last,
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('我的慢约会表达建议'), findsOneWidget);
+    expect(find.text('真实感'), findsOneWidget);
+    expect(find.text('表达清晰度'), findsOneWidget);
+    expect(find.text('慢约会适配度'), findsOneWidget);
+    expect(find.text('开场友好度'), findsOneWidget);
+    expect(find.text('资料展示建议'), findsOneWidget);
+    expect(find.text('可以补充什么'), findsOneWidget);
+    expect(find.text('帮我整理一句表达 · 敬请期待'), findsOneWidget);
+    expect(
+      find.text('以上内容仅为自我表达参考，不会写入资料，不会改变星盘或匹配算法，也不会自动修改个人资料。'),
+      findsOneWidget,
+    );
+
+    await tester.scrollUntilVisible(
       find.text('AI 助理 / 展示建议'),
       400,
       scrollable: find.byType(Scrollable).last,

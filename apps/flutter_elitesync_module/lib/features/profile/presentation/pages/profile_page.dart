@@ -13,6 +13,7 @@ import 'package:flutter_elitesync_module/design_system/theme/app_theme_extension
 import 'package:flutter_elitesync_module/features/profile/domain/entities/profile_summary_entity.dart';
 import 'package:flutter_elitesync_module/features/profile/presentation/providers/profile_providers.dart';
 import 'package:flutter_elitesync_module/features/profile/presentation/widgets/profile_completion_card.dart';
+import 'package:flutter_elitesync_module/features/profile/presentation/widgets/profile_expression_advice_card.dart';
 import 'package:flutter_elitesync_module/features/profile/presentation/widgets/profile_result_tag_list.dart';
 
 class ProfilePage extends ConsumerWidget {
@@ -222,6 +223,8 @@ class ProfilePage extends ConsumerWidget {
                   ProfileCompletionCard(completion: summary.completion),
                   SizedBox(height: t.spacing.md),
                   _ProfileOperatingHubSection(summary: summary),
+                  SizedBox(height: t.spacing.sm),
+                  ProfileExpressionAdviceCard(summary: summary),
                   SizedBox(height: t.spacing.sm),
                   AppInfoSectionCard(
                     title: 'AI 助理 / 展示建议',
