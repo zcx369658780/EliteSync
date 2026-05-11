@@ -5,7 +5,7 @@
 - 当前有效文档索引：`docs/DOC_INDEX_CURRENT.md`
 - 当前版本计划索引：`docs/version_plans/README.md`
 - 当前运行手册索引：`docs/runbooks/README.md`
-- 3.x 收口与后续计划交接稿：`docs/HANDOFF_3X_CLOSEOUT_20260417.md`
+- 当前 5.6+ 会话交接稿：`docs/CODEX_HANDOFF_20260511_5_6_PLUS_READY.md`
 - 历史材料统一进入 `docs/archive/legacy_2026-04/`
 
 ## EliteSync App Studio
@@ -154,9 +154,9 @@
 
 ## 会话压缩规范
 
-- 当前活动对话只保留一份短摘要文件，优先命名为 `CODEX_CURRENT_SESSION_SUMMARY.md`。
+- 当前活动对话只在必要时保留一份短交接文件，优先命名为 `CODEX_HANDOFF_YYYYMMDD_<topic>.md`。
 - 详细历史内容应迁入 `docs/archive/legacy_YYYY_MM/` 下的历史记录文件，避免当前工作树与上下文继续膨胀。
-- 当前会话续接时，只需要读取短摘要文件 + 当前主交接文件 + 当前活跃版本索引即可，不再默认重读所有历史长文档。
+- 当前会话续接时，只需要读取当前短交接文件 + 当前活跃版本索引即可，不再默认重读所有历史长文档。
 
 ## 当前基线
 
@@ -166,6 +166,8 @@
 - 当前主计划入口：`docs/DEVELOPMENT_PLAN_CURRENT.md`
 - 当前 5.6+ 整体开发计划主入口：`docs/version_plans/elite_sync_整体开发计划书_5_6_plus_玄学能力二次产品化修订版_2026_05_11.md`
 - 当前 5.6+ 路线图主入口：`docs/version_plans/elite_sync_未来版本开发路线图_5_6_plus_玄学能力二次产品化_2026_05_11.md`
+- 当前 5.6 计划书：`docs/version_plans/v_5_6_玄学能力二次产品化边界与校准版_开发计划书_2026_05_11.md`
+- 当前 5.6 主交接入口：`docs/version_plans/5.6_HANDOFF_MASTER.md`
 - 历史 5.x 主计划参考：`docs/version_plans/elite_sync_整体开发计划书_5_x方向重排版_2026_05_01.md`
 - 历史 5.x 路线图草案参考：`docs/version_plans/elite_sync_未来版本开发路线图草案_2026_05_01.md`
 - 当前 4.9 主交接文件：`docs/version_plans/4.9_HANDOFF_MASTER.md`
@@ -303,10 +305,10 @@
 
 ## 2026-05-11 5.6+ 玄学能力二次产品化路线记忆
 
-- 测测 Stage 1-5 拆解已完成，当前摘要入口为 `docs/reference/CECE_RESEARCH_MASTER_CURRENT.md`，全量文本证据聚合为 `docs/reference/CECE_ALL_DECOMPOSITION_REPORTS_AND_TEXT_EVIDENCE_2026_05_11.md`。
+- 测测 Stage 1-5 拆解已完成，摘要入口 `docs/reference/CECE_RESEARCH_MASTER_CURRENT.md` 与全量文本证据聚合 `docs/reference/CECE_ALL_DECOMPOSITION_REPORTS_AND_TEXT_EVIDENCE_2026_05_11.md` 作为本机本地参考资料保留；Git 交付口径以 `docs/version_plans/5.6_HANDOFF_MASTER.md` 中的摘要承接为准。
 - Stage 2-5 已用 Claude rerun 校正：Stage 2 区分 `AI问` 与 `在线`，Stage 3 将 `测试` 收窄为本轮样本内的互动答题入口层，Stage 4 强化 `星盘` 的档案上下文与图谱解释层，Stage 5 将 `缘分合盘` 收窄为双人上下文下的示例 / 预览关系解释层。
 - 不再继续测测 Stage 6；后续不扩大竞品拆解，转入 EliteSync 版本路线与计划书承接。
 - 5.0-5.5 是已完成历史链路，不重写。5.6+ 进入“玄学能力二次产品化与校准线”：Soul 继续作为社交主链参考，测测作为玄学解释层参考。
-- 5.6 不做 runtime implementation，只做路线冻结、边界校准与 5.6 具体开发计划书生成。下一步应制定 `docs/version_plans/v_5_6_玄学能力二次产品化边界与校准版_开发计划书_2026_05_11.md`，而不是直接进入 5.7 runtime。
+- 5.6 不做 runtime implementation，只做路线冻结、边界校准与文档收口。5.6 具体开发计划书与 `docs/version_plans/5.6_HANDOFF_MASTER.md` 已落库；下一步应做顾问验收，而不是直接进入 5.7 runtime。
 - 所有玄学解释、合盘解释、AI 追问都必须保持 `derived-only / display-only / explanation layer`，不得反写 `profile/basic`、`profile/astro/summary`、`profile/astro/chart`、`user_astro_profiles`，不得改 Match algorithm contract、API / DB / release chain。
 - 后续竞品 UI 研究必须遵守 `docs/agents/CODEX_CYBER_SAFE_UI_RESEARCH_RULES.md`：只观察公开可见 UI，证据优先截图和 Android UI hierarchy，不做逆向、抓包、接口分析、读取私有数据、权限绕过、付费 / 咨询 / 发布 / 收藏 / 点赞等写入行为。

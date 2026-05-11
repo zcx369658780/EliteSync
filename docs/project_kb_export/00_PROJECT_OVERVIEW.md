@@ -15,6 +15,7 @@
 
 - `5.5` 已完成并发布到阿里云，当前最新对外发布版本为 `0.05.05 / 50500`；5.0-5.5 作为已完成历史链路保留，不重写。
 - 当前主线切换到 `5.6+`：Soul 继续作为社交主链参考，测测作为玄学解释层参考，围绕慢约会、深度匹配、资料真值和轻量转化做解释层产品化。
+- `5.6` 已完成 planning-only 文档落库与边界收口，当前等待顾问验收，不进入 runtime implementation。
 
 ## 核心差异化能力
 
@@ -36,12 +37,12 @@
 
 - 当前最新对外发布版本：`0.05.05 / 50500`
 - 上一条发布基线 / 历史发布链：`0.05.04 / 50400`
-- 算法版本：沿用既有模块标记；matching marker 是否同步到 `5.4` 仍待确认，不作为当前正式口径。
+- 算法版本：沿用既有模块标记；`matching marker` 同步问题仅作为历史观察，不属于 5.6 planning-only 正式口径。
 - 当前 4.9 状态：已完成验收并收口为 `pass with observations`
 
 ## 5.x 当前方向
 
-- 5.6：planning / boundary / calibration，不做 runtime implementation。
+- 5.6：planning / boundary / calibration 文档收口，计划书与 handoff master 已落库，不做 runtime implementation。
 - 5.7：Match 关系解释层承接位。
 - 5.8：Me 个人解释层承接位。
 - 5.9：Chat 低压开场和轻追问承接位。

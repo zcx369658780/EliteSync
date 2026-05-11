@@ -2,10 +2,11 @@
 
 Current active handoff entry:
 
-- [5.5_HANDOFF_MASTER.md](./5.5_HANDOFF_MASTER.md)
+- [5.6_HANDOFF_MASTER.md](./5.6_HANDOFF_MASTER.md)
 
 Current active plan:
 
+- [v_5_6_玄学能力二次产品化边界与校准版_开发计划书_2026_05_11.md](./v_5_6_玄学能力二次产品化边界与校准版_开发计划书_2026_05_11.md)
 - [elite_sync_整体开发计划书_5_6_plus_玄学能力二次产品化修订版_2026_05_11.md](./elite_sync_整体开发计划书_5_6_plus_玄学能力二次产品化修订版_2026_05_11.md)
 
 Current roadmap draft:
@@ -79,6 +80,14 @@ Current 5.5 status:
 - [5.5_REGRESSION_CHECKLIST.md](./5.5_REGRESSION_CHECKLIST.md)
 - 5.5 observations: restore drill, matching algo marker semantics, remote debug-mode hardening, existing Flutter info-level lint cleanup, and Match Detail success-state retest under active match data remain open.
 
+Current 5.6 status:
+
+- status: `planning-only closeout ready for advisor acceptance`
+- scope: boundary / calibration / documentation closeout only; no runtime, backend, DB, API, version, or release-chain changes.
+- [v_5_6_玄学能力二次产品化边界与校准版_开发计划书_2026_05_11.md](./v_5_6_玄学能力二次产品化边界与校准版_开发计划书_2026_05_11.md)
+- [5.6_HANDOFF_MASTER.md](./5.6_HANDOFF_MASTER.md)
+- 5.6 conclusion: `derived-only / display-only / explanation layer` is now the controlling contract for 5.7-5.10 planning; 5.7 Match runtime still requires a separate approved plan.
+
 Current 5.x route:
 
 - 5.0: 最小产品化覆盖集
@@ -89,9 +98,9 @@ Current 5.x route:
 - 5.5: 真实小样本反馈吸收版
 - 5.0-5.5 已作为已完成历史链路保留，不重写。
 - 5.6+ 当前主线进入“玄学能力二次产品化与校准线”；5.6 是 planning / boundary / calibration 版本，不做 runtime implementation。
-- 下一步是制定 `v_5_6_玄学能力二次产品化边界与校准版_开发计划书_2026_05_11.md`，不是直接进入 5.7 runtime。
+- 5.6 计划书与 handoff master 已落库；下一步是顾问验收 5.6，不是直接进入 5.7 runtime。
 - Soul Stage2 综合主报告是当前默认竞品主参考入口：`docs/reference/SOUL_STAGE2_MASTER_CONSOLIDATED_REPORT.md`
-- 测测 Stage 1-5 主报告摘要入口：`docs/reference/CECE_RESEARCH_MASTER_CURRENT.md`
+- 测测 Stage 1-5 主报告摘要入口：`docs/reference/CECE_RESEARCH_MASTER_CURRENT.md`（本机本地参考资料；Git 交付以 `5.6_HANDOFF_MASTER.md` 摘要承接为准）
 
 Current 5.0 baseline:
 

@@ -77,6 +77,20 @@
 - `GET /api/v1/rtc/calls/{callId}/livekit`
 - `POST /api/v1/rtc/calls/{callId}/heartbeat`
 
+## 5.6 版本 / 发布链保护面
+
+- `GET /api/v1/app/version/check`
+- `apps/android/**`
+- `apps/android/app/build.gradle.kts`
+- `apps/android/app/src/main/assets/changelog_v0.txt`
+- `services/backend-laravel/config/app_update.php`
+- `routes/**`
+- `config/**`
+- `scripts/release_android_update_aliyun.ps1`
+- `app_release_versions`
+
+5.6 不修改 version check 路由、不修改默认 app update 配置、不修改 Android build 配置、不更新 APK，也不改变 release metadata。
+
 ## 不能被误改的口径
 
 - canonical truth 只能由服务端写入

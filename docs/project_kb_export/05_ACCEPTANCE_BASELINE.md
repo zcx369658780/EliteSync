@@ -52,5 +52,5 @@
 - 5.6 是 planning / boundary / calibration 版本，不做 runtime implementation。
 - 验收标准是路线、边界、non-goals、protected surfaces、derived-only / display-only contract 和后续版本计划书齐备。
 - 不因没有 runtime 截图、XML、UI hierarchy 或实现证据而降级。
-- 不允许用 5.6 planning-only 验收推动 5.7 runtime；5.7 之前必须先完成并验收 5.6 具体开发计划书。
+- 不允许用 5.6 planning-only 验收推动 5.7 runtime；5.7 之前必须先完成并验收 5.6 具体开发计划书与 `5.6_HANDOFF_MASTER.md`。
 - 5.6 验收必须确认没有触碰 Flutter、Laravel、数据库、API、版本号或 release chain。
