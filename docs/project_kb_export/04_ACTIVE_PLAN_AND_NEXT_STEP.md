@@ -8,10 +8,10 @@
 - 当前主线已从 `4.9` 稳定门禁和 `5.x` 高价值主链功能覆盖进入 `5.6+` 玄学能力二次产品化与校准线。
 - `5.0`、`5.1`、`5.2`、`5.3`、`5.4` 与 `5.5` 已作为历史链路收口，不重写。
 - 如果继续按当前产品线推进，优先级应为：
-  1. 验收 `docs/version_plans/5.7_HANDOFF_MASTER.md`
-  2. 验收 `docs/version_plans/5.7_REGRESSION_CHECKLIST.md`
-  3. 验收 `docs/version_plans/5.7_UI_BASELINE_EVIDENCE_INDEX.md`
-  4. 验收通过前不要自动进入 5.8 runtime
+  1. 验收 `docs/version_plans/5.8_HANDOFF_MASTER.md`
+  2. 验收 `docs/version_plans/5.8_REGRESSION_CHECKLIST.md`
+  3. 验收 `docs/version_plans/5.8_UI_BASELINE_EVIDENCE_INDEX.md`
+  4. 验收通过前不要自动进入 5.9 runtime
 
 ## 为什么这样排
 
@@ -53,6 +53,6 @@
 
 ## 当前建议
 
-- 继续做新版本前，先确认 5.7 handoff、回归清单与 UI 证据索引已通过顾问验收。
-- 下一步只做 5.7 顾问验收，不直接做 5.8 runtime。
+- 继续做新版本前，先确认 5.8 handoff、回归清单与 UI 证据索引已通过顾问验收。
+- 下一步只做 5.8 顾问验收，不直接做 5.9 runtime。
 - 任何后续解释层能力都必须保持 `derived-only / display-only / explanation layer`，不得反写真值链、匹配算法、API / DB / release contract。

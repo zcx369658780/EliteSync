@@ -27,8 +27,10 @@
 - 5.0-5.5 已作为已完成历史链路保留，不重写。
 - 5.6 起进入“玄学能力二次产品化与校准线”。Soul 继续作为社交主链参考，测测作为玄学解释层参考。
 - 5.6 是 planning / boundary / calibration 版本，不做 runtime implementation。5.6 已通过顾问验收，口径为 `pass with observations`。
-- 5.7 已进入并完成 Match 关系解释层最小产品化 runtime slice。当前 5.7 主交接入口为 `docs/version_plans/5.7_HANDOFF_MASTER.md`，建议验收口径为 `pass with observations`。
+- 5.7 已完成 Match 关系解释层最小产品化 runtime slice，并已通过 GPT 顾问验收，口径为 `pass with observations`。
 - 5.7 只在 Match result / detail 展示层新增 `为什么值得聊` 解释卡，继续保持 `derived-only / display-only / explanation layer`，不改 API / DB / backend / release chain，不写 chat / profile / astro，不接真实 AI。
+- 5.8 已进入并完成 Me / Profile 个人解释层与表达建议 runtime slice。当前 5.8 主交接入口为 `docs/version_plans/5.8_HANDOFF_MASTER.md`，建议验收口径为 `pass with observations`。
+- 5.8 只在 Profile presentation 层新增 `我的慢约会表达建议` 解释卡，继续保持 display-only，不改 API / DB / backend / release chain，不写 profile / astro canonical truth，不接真实 AI，不自动修改资料。
 - 所有玄学解释、合盘解释、AI 追问都必须保持 `derived-only / display-only / explanation layer`，不得反写 `profile/basic`、`profile/astro/summary`、`profile/astro/chart`、`user_astro_profiles`。
 - 5.6+ 不吸收测测的真人玄学咨询市场、付费报告商店、上传截图主路径、娱乐化测试主路径、强出生资料收集、测试结果反写画像、大规模社区讨论或测测术语体系复制。
 - 当前版本顺序统一为：

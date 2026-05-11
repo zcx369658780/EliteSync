@@ -58,6 +58,7 @@
 - 不反写 `profile/basic`、`profile/astro/summary`、`profile/astro/chart`、`user_astro_profiles`。
 - 不改 Match algorithm contract，不把解释层结果作为匹配算法输入。
 - 不改 API / DB / release chain；5.6 是 planning / boundary / calibration 版本，不做 runtime implementation。
+- 5.8 Me / Profile 个人解释层只允许读取现有 Profile summary 做 presentation 派生展示，不得接入 edit profile save chain、profile providers 写链、astro providers 或真实 AI。
 - 不引入真人玄学咨询市场、付费报告商店、上传截图主路径、娱乐化测试主路径、强出生资料收集、测试结果反写画像、大规模社区讨论或测测术语体系复制。
 
 ## 保护面接口

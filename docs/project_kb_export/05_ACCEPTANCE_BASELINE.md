@@ -61,3 +61,10 @@
 - 验收标准是 `为什么值得聊` 在 Match result / detail presentation 可见，且包含摘要、`共同点`、`表达节奏`、`慢约会适配度`、建议 / 避免、轻追问 disabled 占位和 display-only 免责声明。
 - 5.7 必须确认没有新增 API、没有新增 DB / migration、没有修改 Laravel backend、routes / config、release chain、Android version、真实 AI、chat message 写入、profile / astro canonical truth 写入或 Match algorithm 改动。
 - 若核心 widget/page test 通过、保护面检查为空，但真实 active match 实机截图因账号状态受限未补齐，可按 `pass with observations` 处理，不重开 5.7 主链。
+
+## 5.8 Me / Profile 解释层验收口径
+
+- 5.8 是 Me / Profile 个人解释层与表达建议 runtime slice。
+- 验收标准是 `我的慢约会表达建议` 在 Profile presentation 可见，且包含摘要、`真实感`、`表达清晰度`、`慢约会适配度`、`开场友好度`、资料展示建议、慢约会友好表达、可以补充什么、AI 草稿 disabled / coming soon 占位和 display-only 免责声明。
+- 5.8 必须确认没有新增 API、没有新增 DB / migration、没有修改 Laravel backend、routes / config、release chain、Android version、真实 AI、profile / astro canonical truth 写入或自动修改资料。
+- 若 focused widget/page test 通过、保护面检查为空、runtime screenshot/XML 可读，但既有 provider 守护测试存在异步超时，可按 `pass with observations` 处理，不重开 5.8 主链。

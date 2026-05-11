@@ -4,7 +4,7 @@
 
 ## 当前最新完成到哪里
 
-- 当前最新完成版本：`5.7`（待 GPT 顾问最终验收）
+- 当前最新完成版本：`5.8`（待 GPT 顾问最终验收）
 - 当前最新对外发布版本：`0.05.05 / 50500`
 - 上一条发布基线 / 历史发布链：`0.05.04 / 50400`
 - 当前算法版本：沿用既有模块标记；`matching marker` 同步问题仅作为历史观察，不属于 5.6 planning-only 正式口径。
@@ -30,14 +30,15 @@
 - 5.6+ 主线已经切到“玄学能力二次产品化与校准线”。
 - Soul 继续作为社交主链参考；测测作为玄学解释层参考。
 - `5.6` 已通过 GPT 顾问验收，口径为 `pass with observations`。
-- `5.7` 已完成 Match 关系解释层最小产品化 runtime slice，建议验收口径为 `pass with observations`。
+- `5.7` 已完成 Match 关系解释层最小产品化 runtime slice，并已通过 GPT 顾问验收，口径为 `pass with observations`。
+- `5.8` 已完成 Me / Profile 个人解释层与表达建议 runtime slice，建议验收口径为 `pass with observations`。
 - `5.0` 已作为最小产品化覆盖集收口，状态为 `pass with observations`
 - `5.1` 已作为关系推进与内容转化补齐版收口，状态为 `pass with observations`
 - `5.2` 已作为个人经营中枢与表达层覆盖版收口，状态为 `pass with observations`
 - `5.3` 已作为功能覆盖收尾版收口，状态为 `pass with observations`
 - `5.4` 已作为测试运营准备与云端治理增强版收口，状态为 `pass with observations`
-- 当前最自然的下一步不是回头重做 4.x / 5.0-5.6 主链，也不是直接进入 5.8 runtime，而是：
-  - 将 `docs/version_plans/5.7_HANDOFF_MASTER.md`、`docs/version_plans/5.7_REGRESSION_CHECKLIST.md` 与 `docs/version_plans/5.7_UI_BASELINE_EVIDENCE_INDEX.md` 交给顾问验收
+- 当前最自然的下一步不是回头重做 4.x / 5.0-5.7 主链，也不是直接进入 5.9 runtime，而是：
+  - 将 `docs/version_plans/5.8_HANDOFF_MASTER.md`、`docs/version_plans/5.8_REGRESSION_CHECKLIST.md` 与 `docs/version_plans/5.8_UI_BASELINE_EVIDENCE_INDEX.md` 交给顾问验收
 
 ## 各版本简要演进
 
@@ -152,6 +153,8 @@
 - 5.6+ 路线已生成，当前主入口为 `docs/version_plans/elite_sync_整体开发计划书_5_6_plus_玄学能力二次产品化修订版_2026_05_11.md` 与 `docs/version_plans/elite_sync_未来版本开发路线图_5_6_plus_玄学能力二次产品化_2026_05_11.md`
 - 5.6 是 planning / boundary / calibration 版本，不做 runtime implementation
 - 5.6 具体开发计划书与 handoff master 已落库；下一步是顾问验收，不是 5.7 runtime
+- 5.7 已完成 Match 关系解释层最小产品化 runtime slice
+- 5.8 已完成 Me / Profile 个人解释层与表达建议 runtime slice
 
 ## 当前发布信息
 
@@ -163,7 +166,7 @@
 
 ## 当前最自然的下一步
 
-- 先验收 `5.7_HANDOFF_MASTER.md`、5.7 回归清单与 UI 证据索引；不要自动进入 5.8 runtime。
+- 先验收 `5.8_HANDOFF_MASTER.md`、5.8 回归清单与 UI 证据索引；不要自动进入 5.9 runtime。
 
 ## 当前不建议再动的旧版本线
 

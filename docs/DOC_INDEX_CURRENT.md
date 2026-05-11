@@ -18,9 +18,13 @@
 - `docs/version_plans/v_5_6_玄学能力二次产品化边界与校准版_开发计划书_2026_05_11.md`：当前 5.6 具体版本开发计划书，planning-only / boundary / calibration
 - `docs/version_plans/5.6_HANDOFF_MASTER.md`：当前 5.6 单文件主交接入口，建议验收口径为 `pass with observations`
 - `docs/version_plans/v_5_7_Match关系解释层最小产品化版_开发计划书_2026_05_11.md`：当前 5.7 Match 关系解释层最小产品化版开发计划书
-- `docs/version_plans/5.7_HANDOFF_MASTER.md`：当前 5.7 单文件主交接入口，建议验收口径为 `pass with observations`
+- `docs/version_plans/5.7_HANDOFF_MASTER.md`：5.7 单文件主交接入口，已通过顾问验收，口径为 `pass with observations`
 - `docs/version_plans/5.7_REGRESSION_CHECKLIST.md`：5.7 回归与保护面清单
 - `docs/version_plans/5.7_UI_BASELINE_EVIDENCE_INDEX.md`：5.7 UI 证据索引
+- `docs/version_plans/v_5_8_Me个人解释层与表达建议版_开发计划书_2026_05_11.md`：当前 5.8 Me / Profile 个人解释层与表达建议版开发计划书
+- `docs/version_plans/5.8_HANDOFF_MASTER.md`：当前 5.8 单文件主交接入口，建议验收口径为 `pass with observations`
+- `docs/version_plans/5.8_REGRESSION_CHECKLIST.md`：5.8 回归与保护面清单
+- `docs/version_plans/5.8_UI_BASELINE_EVIDENCE_INDEX.md`：5.8 UI 证据索引
 - `docs/version_plans/elite_sync_5_6_plus_玄学能力二次产品化_路线图与计划书.md`：5.6+ 路线图与开发计划顾问参考稿，不作为正式主入口
 - `docs/version_plans/elite_sync_整体开发计划书_5_x方向重排版_2026_05_01.md`：5.x 整体开发计划书（历史参考）
 - `docs/version_plans/elite_sync_未来版本开发路线图草案_2026_05_01.md`：5.x 路线图草案（历史参考）
@@ -129,4 +133,5 @@
 - 5.5 已完成批准范围内的真实小样本反馈吸收，验收建议为 `pass with observations`
 - 5.0-5.5 是已完成历史链路，不重写；5.6 起进入“玄学能力二次产品化与校准线”
 - 5.6 是 planning / boundary / calibration 版本，不做 runtime implementation；5.6 计划书与 handoff master 已落库，下一步是顾问验收，不是 5.7 runtime
-- 5.7 已完成 Match 关系解释层最小产品化 runtime slice，当前主交接入口为 `docs/version_plans/5.7_HANDOFF_MASTER.md`
+- 5.7 已完成 Match 关系解释层最小产品化 runtime slice，主交接入口为 `docs/version_plans/5.7_HANDOFF_MASTER.md`
+- 5.8 已完成 Me / Profile 个人解释层与表达建议 runtime slice，当前主交接入口为 `docs/version_plans/5.8_HANDOFF_MASTER.md`
