@@ -21,6 +21,7 @@ import 'package:flutter_elitesync_module/features/match/presentation/widgets/mat
 import 'package:flutter_elitesync_module/features/match/presentation/widgets/match_module_insight_card.dart';
 import 'package:flutter_elitesync_module/features/match/presentation/widgets/match_reason_card.dart';
 import 'package:flutter_elitesync_module/features/match/presentation/widgets/match_weight_breakdown.dart';
+import 'package:flutter_elitesync_module/features/match/presentation/widgets/relationship_explanation_card.dart';
 import 'package:flutter_elitesync_module/shared/providers/app_providers.dart';
 
 class _DetailChatSuggestion {
@@ -239,6 +240,75 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
         ],
       ),
     );
+  }
+
+  String _relationshipDetailSummary(MatchDetailEntity data) {
+    final firstReason = data.reasons
+        .map((e) => e.trim())
+        .firstWhere((e) => e.isNotEmpty, orElse: () => '');
+    if (firstReason.isNotEmpty) {
+      return '$firstReason。适合把它当成开场参考，而不是关系结论。';
+    }
+    final firstBlock = data.explanationBlocks
+        .map((e) => (e['summary'] ?? '').toString().trim())
+        .firstWhere((e) => e.isNotEmpty, orElse: () => '');
+    if (firstBlock.isNotEmpty) {
+      return '$firstBlock。建议先用轻问题确认彼此节奏。';
+    }
+    return '当前解释信息有限，先从轻松问候和共同经历开始会更稳妥。';
+  }
+
+  List<RelationshipExplanationDimension> _relationshipDetailDimensions(
+    MatchDetailEntity data,
+  ) {
+    final labels = data.moduleExplanations
+        .map((e) => (e['label'] ?? '').toString().trim())
+        .where((e) => e.isNotEmpty)
+        .toList();
+    final firstModule = labels.isNotEmpty ? labels.first : '';
+    final communicationModule = labels.firstWhere(
+      (e) => e.contains('沟通') || e.contains('表达') || e.contains('情绪'),
+      orElse: () => '',
+    );
+    final firstAdvice = data.explanationBlocks
+        .expand((e) => (e['advice'] as List<dynamic>? ?? const []))
+        .map((e) => e.toString().trim())
+        .firstWhere((e) => e.isNotEmpty, orElse: () => '');
+    return [
+      RelationshipExplanationDimension(
+        title: '共同点',
+        description: firstModule.isNotEmpty
+            ? '完整解释里「$firstModule」可以作为一个自然开场点。'
+            : '可以先从资料里最具体的共同线索问起。',
+        tag: firstModule.isNotEmpty ? firstModule : null,
+      ),
+      RelationshipExplanationDimension(
+        title: '表达节奏',
+        description: communicationModule.isNotEmpty
+            ? '「$communicationModule」提示你们更适合先确认沟通速度和回应方式。'
+            : '先用短句说明感受，再问一个开放问题，会更符合慢聊节奏。',
+      ),
+      RelationshipExplanationDimension(
+        title: '慢约会适配度',
+        description: firstAdvice.isNotEmpty
+            ? firstAdvice
+            : '把解释当成提醒，先观察彼此是否愿意稳定回应。',
+      ),
+    ];
+  }
+
+  List<String> _relationshipDetailSuggestions(MatchDetailEntity data) {
+    final firstLabel = data.moduleExplanations
+        .map((e) => (e['label'] ?? '').toString().trim())
+        .firstWhere((e) => e.isNotEmpty, orElse: () => '');
+    return [
+      firstLabel.isNotEmpty ? '从「$firstLabel」相关的轻问题问起。' : '先用一句轻问候，不急着推进关系。',
+      '可以先回应对方资料里的具体细节。',
+    ];
+  }
+
+  List<String> _relationshipDetailAvoidances() {
+    return const ['避免把解释说成确定预测或诊断。', '避免连续发送太多长消息。'];
   }
 
   GlobalKey? _resolveModuleAnchorKey(String moduleLabel) {
@@ -1593,6 +1663,16 @@ class _MatchDetailPageState extends ConsumerState<MatchDetailPage> {
             children: [
               const SectionReveal(
                 child: PageTitleRail(title: '匹配解释', subtitle: '先看关系解释，再看参数补充'),
+              ),
+              SizedBox(height: t.spacing.md),
+              SectionReveal(
+                delay: const Duration(milliseconds: 8),
+                child: RelationshipExplanationCard(
+                  summary: _relationshipDetailSummary(data),
+                  dimensions: _relationshipDetailDimensions(data),
+                  suggestions: _relationshipDetailSuggestions(data),
+                  avoidances: _relationshipDetailAvoidances(),
+                ),
               ),
               SizedBox(height: t.spacing.md),
               SectionReveal(
