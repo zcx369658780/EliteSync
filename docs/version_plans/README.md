@@ -11,12 +11,12 @@
 
 6.0 Alpha 内测准备线
 
-当前下一步：完成 6.0-A0 planning-only 的 Claude 轻量横向复评与 GPT 顾问最终验收；通过前不得进入 6.0-A1 runtime。
+当前下一步：6.0-A1 后端 v2 与位置链路最小闭环。先执行 Framework / Runtime Support Gate，再进入 v1 contract audit、v2 contract map、v2 skeleton 与位置链路清理；不得直接开始 A1 runtime skeleton。
 
 ## 6.0 Alpha Version Split
 
 - 6.0-A0：商用化底座与路线冻结版，planning-only，计划书已落地；仍需 Claude 轻量横向复评与 GPT 顾问最终验收
-- 6.0-A1：后端 v2 与位置链路最小闭环
+- 6.0-A1：后端 v2 与位置链路最小闭环，先做 Framework / Runtime Support Gate，再做 v1 contract audit、v2 contract map、v2 skeleton 与位置链路清理
 - 6.0-A2：Date Drop 式匹配主链重构
 - 6.0-A3：搭子精准陪伴最小闭环
 - 6.0-A4：基础社交功能补齐

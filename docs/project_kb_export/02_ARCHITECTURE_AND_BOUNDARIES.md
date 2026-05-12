@@ -11,6 +11,11 @@
 
 ## 后端 v2 边界
 
+- 6.0-A1 后端 v2 商用目标栈为 Laravel 12/13 + PHP 8.4 + MariaDB 10.11 LTS 最新补丁版 + Redis + Nginx + 队列 / 缓存 / 监控 / 备份 / 压测 / staging-production 分环境部署。
+- 当前云端实际环境为 Laravel 11.48.0 + PHP 8.4.18 + MariaDB 10.11.14 + Nginx + Redis；Laravel 11 不作为 v2 商用目标版本。
+- 当前数据库口径应写 MariaDB 10.11 / MySQL-compatible，不再笼统写 Oracle MySQL。
+- Redis 承担 cache / queue / session / rate limit。
+- A1 必须先做 Framework / Runtime Support Gate，完成 Laravel 12/13、PHP 8.4、MariaDB 10.11 LTS 最新补丁、Nginx + PHP-FPM、queue worker、scheduler、监控、备份、回滚、压测与分环境部署审计后，才允许进入 v2 skeleton。
 - 先定义 contract map，再规划迁移顺序。
 - 旧 API 与新 contract 必须有兼容策略。
 - 不把 A0 文档计划写成已完成实现。

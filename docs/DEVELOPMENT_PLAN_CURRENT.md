@@ -10,7 +10,9 @@
 
 当前 A0 计划书：`docs/version_plans/v_6_0_A0_Alpha内测准备_商用化底座与路线冻结版_开发计划书_2026_05_12.md`
 
-当前下一步：完成 6.0-A0 planning-only 的 Claude 轻量横向复评与 GPT 顾问最终验收；通过前不得进入 6.0-A1 runtime。
+当前 A1 顾问计划书：`C:/Users/zcxve/Downloads/v_6_0_a_1_后端v_2_与位置链路最小闭环_开发计划书_2026_05_12.md`
+
+当前下一步：6.0-A1 不直接开始 v2 skeleton。先执行 Framework / Runtime Support Gate，确认 Laravel 12/13 + PHP 8.4 + MariaDB 10.11 LTS 最新补丁版 + Redis + Nginx + 队列 / 缓存 / 监控 / 备份 / 压测 / 分环境部署的目标栈与升级风险，再进入 v1 contract audit、v2 contract map、v2 skeleton 与位置链路最小闭环。
 
 ## 当前判断
 
@@ -18,6 +20,7 @@
 - 当前不继续直接制定 5.11，也不直接进入 5.11 runtime。
 - 6.0 Alpha 进入内测准备线：商用级底座重构 + Date Drop 式高质量低频匹配 + 搭子精准陪伴 + 基础社交功能补齐 + 玄学解释产品化 + UI/IA 内测打磨。
 - 6.0-A0 是 planning-only 版本，只做路线冻结、边界定义、计划书与门禁固化，不做 runtime；A0 不是后端 v2、搭子、Date Drop 或 UI/IA 的 runtime 完成版本。
+- 6.0-A1 当前只做计划书与项目源口径同步；Framework / Runtime Support Gate 完成前，不得启动后端 v2 skeleton runtime。Laravel 11 不作为 v2 商用级目标版本。
 
 ## 6.0 Alpha 优先级
 

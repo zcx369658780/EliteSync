@@ -7,6 +7,10 @@
 - 6.0 Alpha 起，后端 v2 与位置链路重构是 P0。
 - 后端 v2 必须采用 contract-first + parallel migration，不允许无计划推倒重写。
 - A0 只做规划，不改 Laravel / DB / API runtime。
+- 6.0-A1 必须先执行 Framework / Runtime Support Gate；Gate 完成前不得开始后端 v2 skeleton runtime。
+- 后端 v2 商用目标栈为 Laravel 12/13 + PHP 8.4 + MariaDB 10.11 LTS 最新补丁版 + Redis + Nginx + 队列 / 缓存 / 监控 / 备份 / 压测 / staging-production 分环境部署。Laravel 11 不作为 v2 商用目标版本。
+- 当前数据库软件口径为 MariaDB 10.11 / MySQL-compatible；当前云端为 MariaDB 10.11.14，需要在 A1 Gate 中评估升级到 10.11 LTS 最新补丁版，不再笼统写 Oracle MySQL。
+- Redis 负责 cache / queue / session / rate limit；Nginx + PHP-FPM、queue worker、scheduler、监控、备份、回滚、压测与 staging/production 分离均进入 P0 底座审计。
 
 ## 既有核心表
 

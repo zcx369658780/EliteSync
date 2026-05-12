@@ -168,6 +168,8 @@
 - 测测 / CECE 是玄学解释层参考：入口矩阵、档案上下文、字段引导、维度解释、摘要 / 详情分层可参考，但不吸收真人咨询、付费报告、上传截图主路径或娱乐化测试。
 - 搭子精准陪伴是 6.0 Alpha P1 主线，覆盖学习搭子、电影搭子、吃饭搭子、健身搭子等共同兴趣精准陪伴，不得做成泛同城约玩。
 - 后端 v2 与位置链路重构是 6.0 Alpha P0，采用 contract-first + parallel migration，不允许无计划推倒重写。
+- 6.0-A1 后端 v2 商用目标栈为 Laravel 12/13 + PHP 8.4 + MariaDB 10.11 LTS 最新补丁版 + Redis + Nginx + 队列 / 缓存 / 监控 / 备份 / 压测 / staging-production 分环境部署。当前云端实际环境为 Laravel 11.48.0 + PHP 8.4.18 + MariaDB 10.11.14 + Nginx + Redis；当前云端数据库是 MariaDB 10.11，不是 Oracle MySQL，文档应写 MariaDB 10.11 / MySQL-compatible。Laravel 11 不作为后端 v2 商用目标版本。
+- 6.0-A1 必须先执行 Framework / Runtime Support Gate，再进入 v1 contract audit、v2 contract map、v2 skeleton 与位置链路最小闭环；Gate 完成前不得开始后端 v2 skeleton runtime，不得升级 Laravel，不得执行 composer update，不得执行 migration，不得改 production。
 - 每个版本必须通过 Claude 横向复评后，才能提交 GPT 顾问最终验收；无 Claude 复评不得进入 GPT 顾问最终验收。
 - 无 GPT 顾问最终验收，不得进入下一版本。
 - 2026-05-12 起，所有 EliteSync 版本开发计划书必须遵守 `PROJECT_RULE_DEVELOPMENT_PLAN_FORMAT_CURRENT.md`；所有版本进入 GPT 顾问最终验收前，必须遵守 `PROJECT_RULE_CLAUDE_SOUL_CECE_HORIZONTAL_REVIEW.md` 完成 Claude 使用 Soul + 测测 / CECE 的横向复评。
