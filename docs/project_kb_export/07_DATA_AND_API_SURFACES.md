@@ -1,108 +1,59 @@
 # 数据与 API 面
 
-更新时间：2026-05-01
+更新时间：2026-05-12
 
-## 核心表
+## 当前原则
 
-### 资料与画像
+- 6.0 Alpha 起，后端 v2 与位置链路重构是 P0。
+- 后端 v2 必须采用 contract-first + parallel migration，不允许无计划推倒重写。
+- A0 只做规划，不改 Laravel / DB / API runtime。
+
+## 既有核心表
 
 - `users`
 - `user_astro_profiles`
-
-### 发布与版本
-
-- `app_release_versions`
-
-### 问卷
-
-- `questionnaire_questions`
-- `questionnaire_answers`
-- `questionnaire_attempts`
-- `mbti_attempts`（兼容层 / 历史数据）
-
-### 匹配 / 消息 / 媒体
-
 - `dating_matches`
 - `chat_messages`
 - `conversations`
 - `conversation_members`
 - `media_assets`
-- `media_processing_jobs`
 - `message_attachments`
-
-### 治理 / 互动
-
-- `moderation_reports`
-- `user_blocks`
 - `status_posts`
-- `status_post_likes`
 - `notifications`
-- `user_relationship_events`
-- `app_events`
-
-### RTC / 通话
-
 - `rtc_calls`
 - `rtc_sessions`
-- `rtc_session_heartbeats`
-- `rtc_call_events`（如有）
+- `app_release_versions`
 
-## 核心接口
+## 6.0 Alpha 新增关注域
 
-### 版本与健康
+- `buddy_requests`
+- `buddy_matches`
+- `buddy_feedback`
+- `location_context`
+- `place_preferences`
+- `alpha_feedback`
+- `match_feedback`
+- `backend_v2_contract`
 
-- `GET /api/v1/app/health`
-- `GET /api/v1/app/version/check`
+这些名称是 6.0 Alpha planning / contract 关注域，不代表当前已经存在数据库表或 API。
 
-### 资料与星盘
+## 位置语义拆分
 
-- `POST /api/v1/profile/basic`
-- `GET /api/v1/profile/basic`
-- `GET /api/v1/profile/astro/summary`
-- `GET /api/v1/profile/astro/chart`
-- `POST /api/v1/profile/astro`
+- 出生地：用于星盘、八字、紫微等资料真值链，必须服务端真值优先。
+- 现居地：用于用户当前生活圈、匹配范围和内测分布判断。
+- 约会地点：用于 Date Drop 式匹配后的低频高质量见面场景建议。
+- 搭子地点：用于学习搭子、电影搭子、吃饭搭子、健身搭子等共同兴趣陪伴场景。
 
-### 问卷
+四类位置不得混写；任何 UI、API、缓存或数据模型规划都必须标明语义。
 
-- `GET /api/v1/questionnaire/questions`
-- `POST /api/v1/questionnaire/answers`
-- `GET /api/v1/questionnaire/history`
-- `GET /api/v1/profile/mbti/quiz`
-- `POST /api/v1/profile/mbti/submit`
-- `GET /api/v1/profile/mbti/result`
+## 后端 v2 contract 关注点
 
-### 匹配与消息
-
-- `GET /api/v1/match/current`
-- `GET /api/v1/match/history`
-- `GET /api/v1/match/{targetUserId}/explanation`
-- `GET /api/v1/messages`
-- `POST /api/v1/messages`
-- `POST /api/v1/messages/read/{messageId}`
-
-### 媒体
-
-- `GET /api/v1/media`
-- `POST /api/v1/media`
-- `GET /api/v1/media/{assetId}`
-- `GET /api/v1/media/{assetId}/content`
-
-### 治理、发现、互动
-
-- `GET /api/v1/home/banner`
-- `GET /api/v1/home/shortcuts`
-- `GET /api/v1/home/feed`
-- `GET /api/v1/discover/feed`
-- `GET /api/v1/geo/places`
-- `POST /api/v1/moderation/reports`
-- `POST /api/v1/moderation/blocks`
-- `DELETE /api/v1/moderation/blocks/{blockedUserId}`
-
-### RTC / LiveKit
-
-- `POST /api/v1/rtc/calls`
-- `GET /api/v1/rtc/calls/{callId}/livekit`
-- `POST /api/v1/rtc/calls/{callId}/heartbeat`
+- 用户资料真值 contract。
+- 位置上下文 contract。
+- Date Drop 式匹配 contract。
+- 搭子请求 / 匹配 / 反馈 contract。
+- alpha feedback 与 match feedback contract。
+- 版本兼容与 parallel migration contract。
 
 ## 保护面接口
 
@@ -119,49 +70,11 @@
 - `GET /api/v1/rtc/calls/{callId}/livekit`
 - `POST /api/v1/rtc/calls/{callId}/heartbeat`
 
-## 媒体关键字段
-
-- `media_assets.media_type`
-- `media_assets.storage_provider`
-- `media_assets.storage_key`
-- `media_assets.mime_type`
-- `media_assets.size_bytes`
-- `media_assets.status`
-- `media_assets.error_code`
-- `media_assets.owner_user_id`
-- `media_assets.public_url`
-
-## 动态流关键字段
-
-- `status_posts.cover_media_asset_id`
-- `status_post_likes`
-- `moderation_reports.target_status_post_id`
-
-## RTC / 可观测性关键字段
-
-- `rtc_calls.status`
-- `rtc_calls.room_name`
-- `rtc_calls.initiator_user_id`
-- `rtc_calls.responder_user_id`
-- `rtc_sessions.call_id`
-- `rtc_sessions.heartbeat_at`
-- `rtc_sessions.last_seen_at`
-- `rtc_sessions.disconnect_reason`
-
-## 5.x 新增关注域
-
-- `status_feed`
-- `discovery`
-- `rtc_signal`
-- `call_state`
-- `search_terms`
-- `relationship_progress`
-- 以上关注域应服务于高价值主链功能覆盖优先，不应被重新解释为单纯治理便利性字段。
-
 ## 发版绑定
 
-- `apps/android/app/build.gradle.kts` 是版本真值
-- `apps/android/app/src/main/assets/changelog_v0.txt` 是宿主 changelog
-- `apps/flutter_elitesync_module/assets/config/about_update_0_xx.json` 是版本中心历史
-- `services/backend-laravel/config/app_update.php` 是后端版本检查默认值
-- `scripts/release_android_update_aliyun.ps1` 是唯一推荐发版脚本
+- `apps/android/app/build.gradle.kts` 是版本真值。
+- `apps/android/app/src/main/assets/changelog_v0.txt` 是宿主 changelog。
+- `apps/flutter_elitesync_module/assets/config/about_update_0_xx.json` 是版本中心历史。
+- `services/backend-laravel/config/app_update.php` 是后端版本检查默认值。
+- `scripts/release_android_update_aliyun.ps1` 是唯一推荐发版脚本。
+- 本次 6.0 Alpha 项目源同步不改 release chain。
