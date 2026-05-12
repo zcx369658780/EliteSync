@@ -9,6 +9,7 @@
 - `docs/project_memory.md`：项目长期记忆
 - `docs/version_plans/README.md`：版本计划总索引
 - `docs/version_plans/ELITESYNC_6_0_ALPHA_MASTER_PLAN_2026_05_12.md`：6.0 Alpha 内测准备线主计划
+- `docs/version_plans/v_6_0_A0_Alpha内测准备_商用化底座与路线冻结版_开发计划书_2026_05_12.md`：6.0-A0 planning-only 路线冻结计划书
 - `docs/agents/CLAUDE_HORIZONTAL_REVIEW_GATE_RULES.md`：Claude 横向复评门禁长期规则
 - `docs/agents/PROJECT_RULE_DEVELOPMENT_PLAN_FORMAT_CURRENT.md`：版本开发计划书格式长期规则
 - `docs/agents/PROJECT_RULE_CLAUDE_SOUL_CECE_HORIZONTAL_REVIEW.md`：Claude 使用 Soul + 测测 / CECE 横向评测长期规则
@@ -20,19 +21,23 @@
 2. `docs/DOC_INDEX_CURRENT.md`
 3. `docs/project_memory.md`
 4. `docs/version_plans/ELITESYNC_6_0_ALPHA_MASTER_PLAN_2026_05_12.md`
-5. `docs/reference/ELITESYNC_FEATURE_GAP_ANALYSIS_2026_05_12.md`
-6. `docs/reference/ELITESYNC_REVIEW_ACTION_MATRIX_2026_05_12.md`
-7. `docs/agents/CLAUDE_HORIZONTAL_REVIEW_GATE_RULES.md`
-8. `docs/agents/PROJECT_RULE_DEVELOPMENT_PLAN_FORMAT_CURRENT.md`
-9. `docs/agents/PROJECT_RULE_CLAUDE_SOUL_CECE_HORIZONTAL_REVIEW.md`
-10. `docs/agents/CODEX_CYBER_SAFE_UI_RESEARCH_RULES.md`
-11. `docs/PROJECT_RULE_CROSS_LAYER_BLOCKERS.md`
-12. `docs/PROJECT_RULE_HANDOFF_SINGLE_FILE.md`
+5. `docs/version_plans/v_6_0_A0_Alpha内测准备_商用化底座与路线冻结版_开发计划书_2026_05_12.md`
+6. `docs/reference/ELITESYNC_FEATURE_GAP_ANALYSIS_2026_05_12.md`
+7. `docs/reference/ELITESYNC_REVIEW_ACTION_MATRIX_2026_05_12.md`
+8. `docs/agents/CLAUDE_HORIZONTAL_REVIEW_GATE_RULES.md`
+9. `docs/agents/PROJECT_RULE_DEVELOPMENT_PLAN_FORMAT_CURRENT.md`
+10. `docs/agents/PROJECT_RULE_CLAUDE_SOUL_CECE_HORIZONTAL_REVIEW.md`
+11. `docs/agents/CODEX_CYBER_SAFE_UI_RESEARCH_RULES.md`
+12. `docs/ELITESYNC_APP_STUDIO_WORKFLOW.md`
 13. `docs/version_plans/README.md`
 
 ## 6.0 Alpha 当前参考
 
 - `docs/version_plans/ELITESYNC_6_0_ALPHA_MASTER_PLAN_2026_05_12.md`
+- `docs/version_plans/v_6_0_A0_Alpha内测准备_商用化底座与路线冻结版_开发计划书_2026_05_12.md`
+- `docs/version_plans/CODEX_6_0_A0_EXECUTION_REPORT.md`
+- `docs/version_plans/CODEX_6_0_A0_CLAUDE_FEEDBACK_RESPONSE.md`
+- `docs/version_plans/claude_reviews/6.0_A0/CLAUDE_6_0_A0_HORIZONTAL_REVIEW.md`
 - `docs/reference/ELITESYNC_FEATURE_GAP_ANALYSIS_2026_05_12.md`
 - `docs/reference/ELITESYNC_REVIEW_ACTION_MATRIX_2026_05_12.md`
 - `docs/agents/CLAUDE_HORIZONTAL_REVIEW_GATE_RULES.md`
@@ -70,6 +75,7 @@
 ## 当前发布与版本
 
 - `docs/CHANGELOG.md`
+- `docs/devlogs/RELEASE_LOG.md`
 - `docs/version_plans/0.05.05_UPDATE_BRIEF.md`
 - `docs/version_plans/0.05.04_UPDATE_BRIEF.md`
 - `docs/version_plans/0.04.09_UPDATE_BRIEF.md`

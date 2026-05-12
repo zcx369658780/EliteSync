@@ -8,14 +8,16 @@
 
 当前主计划：`docs/version_plans/ELITESYNC_6_0_ALPHA_MASTER_PLAN_2026_05_12.md`
 
-当前下一步：制定 `v_6_0_A0_Alpha内测准备_商用化底座与路线冻结版_开发计划书_2026_05_12.md`
+当前 A0 计划书：`docs/version_plans/v_6_0_A0_Alpha内测准备_商用化底座与路线冻结版_开发计划书_2026_05_12.md`
+
+当前下一步：完成 6.0-A0 planning-only 的 Claude 轻量横向复评与 GPT 顾问最终验收；通过前不得进入 6.0-A1 runtime。
 
 ## 当前判断
 
 - 5.6-5.10 已完成第一轮“玄学能力二次产品化与校准线”闭环，GPT 顾问验收口径为 `pass with observations`。
 - 当前不继续直接制定 5.11，也不直接进入 5.11 runtime。
 - 6.0 Alpha 进入内测准备线：商用级底座重构 + Date Drop 式高质量低频匹配 + 搭子精准陪伴 + 基础社交功能补齐 + 玄学解释产品化 + UI/IA 内测打磨。
-- 6.0-A0 是 planning-only 版本，只做路线冻结、边界定义、计划书与门禁固化，不做 runtime。
+- 6.0-A0 是 planning-only 版本，只做路线冻结、边界定义、计划书与门禁固化，不做 runtime；A0 不是后端 v2、搭子、Date Drop 或 UI/IA 的 runtime 完成版本。
 
 ## 6.0 Alpha 优先级
 
