@@ -5,7 +5,7 @@
 - 当前有效文档索引：`docs/DOC_INDEX_CURRENT.md`
 - 当前版本计划索引：`docs/version_plans/README.md`
 - 当前运行手册索引：`docs/runbooks/README.md`
-- 当前 5.6+ 会话交接稿：`docs/CODEX_HANDOFF_20260511_5_6_PLUS_READY.md`
+- 历史 5.6+ 会话交接稿：`docs/CODEX_HANDOFF_20260511_5_6_PLUS_READY.md`
 - 历史材料统一进入 `docs/archive/legacy_2026-04/`
 
 ## EliteSync App Studio
@@ -170,14 +170,15 @@
 - 后端 v2 与位置链路重构是 6.0 Alpha P0，采用 contract-first + parallel migration，不允许无计划推倒重写。
 - 每个版本必须通过 Claude 横向复评后，才能提交 GPT 顾问最终验收；无 Claude 复评不得进入 GPT 顾问最终验收。
 - 无 GPT 顾问最终验收，不得进入下一版本。
+- 2026-05-12 起，所有 EliteSync 版本开发计划书必须遵守 `PROJECT_RULE_DEVELOPMENT_PLAN_FORMAT_CURRENT.md`；所有版本进入 GPT 顾问最终验收前，必须遵守 `PROJECT_RULE_CLAUDE_SOUL_CECE_HORIZONTAL_REVIEW.md` 完成 Claude 使用 Soul + 测测 / CECE 的横向复评。
 - 当前最新对外发布版本：`0.05.05 / 50500`，5.5 已完成并发布到阿里云。
 - 上一条发布基线 / 历史发布链：`0.05.04 / 50400`。
 - 当前稳定阶段：`4.9`、`5.0`、`5.1`、`5.2`、`5.3`、`5.4`、`5.5` 均已收口；`4.9` 仍作为 `5.x` 的稳定门禁基线，5.0-5.5 作为已完成历史链路保留。
 - 当前主计划入口：`docs/DEVELOPMENT_PLAN_CURRENT.md`
-- 当前 5.6+ 整体开发计划主入口：`docs/version_plans/elite_sync_整体开发计划书_5_6_plus_玄学能力二次产品化修订版_2026_05_11.md`
-- 当前 5.6+ 路线图主入口：`docs/version_plans/elite_sync_未来版本开发路线图_5_6_plus_玄学能力二次产品化_2026_05_11.md`
-- 当前 5.6 计划书：`docs/version_plans/v_5_6_玄学能力二次产品化边界与校准版_开发计划书_2026_05_11.md`
-- 当前 5.6 主交接入口：`docs/version_plans/5.6_HANDOFF_MASTER.md`
+- 历史 5.6+ 整体开发计划主入口：`docs/version_plans/elite_sync_整体开发计划书_5_6_plus_玄学能力二次产品化修订版_2026_05_11.md`
+- 历史 5.6+ 路线图主入口：`docs/version_plans/elite_sync_未来版本开发路线图_5_6_plus_玄学能力二次产品化_2026_05_11.md`
+- 历史 5.6 计划书：`docs/version_plans/v_5_6_玄学能力二次产品化边界与校准版_开发计划书_2026_05_11.md`
+- 历史 5.6 主交接入口：`docs/version_plans/5.6_HANDOFF_MASTER.md`
 - 历史 5.x 主计划参考：`docs/version_plans/elite_sync_整体开发计划书_5_x方向重排版_2026_05_01.md`
 - 历史 5.x 路线图草案参考：`docs/version_plans/elite_sync_未来版本开发路线图草案_2026_05_01.md`
 - 当前 4.9 主交接文件：`docs/version_plans/4.9_HANDOFF_MASTER.md`

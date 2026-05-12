@@ -10,6 +10,8 @@
 - `docs/version_plans/README.md`：版本计划总索引
 - `docs/version_plans/ELITESYNC_6_0_ALPHA_MASTER_PLAN_2026_05_12.md`：6.0 Alpha 内测准备线主计划
 - `docs/agents/CLAUDE_HORIZONTAL_REVIEW_GATE_RULES.md`：Claude 横向复评门禁长期规则
+- `docs/agents/PROJECT_RULE_DEVELOPMENT_PLAN_FORMAT_CURRENT.md`：版本开发计划书格式长期规则
+- `docs/agents/PROJECT_RULE_CLAUDE_SOUL_CECE_HORIZONTAL_REVIEW.md`：Claude 使用 Soul + 测测 / CECE 横向评测长期规则
 - `docs/agents/CODEX_CYBER_SAFE_UI_RESEARCH_RULES.md`：竞品 UI research 安全规则
 
 ## 新会话阅读顺序
@@ -21,8 +23,12 @@
 5. `docs/reference/ELITESYNC_FEATURE_GAP_ANALYSIS_2026_05_12.md`
 6. `docs/reference/ELITESYNC_REVIEW_ACTION_MATRIX_2026_05_12.md`
 7. `docs/agents/CLAUDE_HORIZONTAL_REVIEW_GATE_RULES.md`
-8. `docs/agents/CODEX_CYBER_SAFE_UI_RESEARCH_RULES.md`
-9. `docs/version_plans/README.md`
+8. `docs/agents/PROJECT_RULE_DEVELOPMENT_PLAN_FORMAT_CURRENT.md`
+9. `docs/agents/PROJECT_RULE_CLAUDE_SOUL_CECE_HORIZONTAL_REVIEW.md`
+10. `docs/agents/CODEX_CYBER_SAFE_UI_RESEARCH_RULES.md`
+11. `docs/PROJECT_RULE_CROSS_LAYER_BLOCKERS.md`
+12. `docs/PROJECT_RULE_HANDOFF_SINGLE_FILE.md`
+13. `docs/version_plans/README.md`
 
 ## 6.0 Alpha 当前参考
 
@@ -30,6 +36,21 @@
 - `docs/reference/ELITESYNC_FEATURE_GAP_ANALYSIS_2026_05_12.md`
 - `docs/reference/ELITESYNC_REVIEW_ACTION_MATRIX_2026_05_12.md`
 - `docs/agents/CLAUDE_HORIZONTAL_REVIEW_GATE_RULES.md`
+
+## 规则文件 / Agent Rules / Project Rules
+
+- `docs/agents/PROJECT_RULE_DEVELOPMENT_PLAN_FORMAT_CURRENT.md`
+  - 后续所有版本开发计划书格式规则；
+  - 强制写入多 agent / sub-agent 协作计划；
+  - 强制写入 Claude APP 实测横向对比报告作为 GPT 顾问验收前置门禁。
+
+- `docs/agents/PROJECT_RULE_CLAUDE_SOUL_CECE_HORIZONTAL_REVIEW.md`
+  - Claude 使用 Soul + 测测 / CECE 对 EliteSync 做横向评测的长期规则；
+  - 规定设备、权限、停止规则、证据目录、Action Matrix、pass / conditional pass / fail 判定；
+  - 后续每个版本进入 GPT 顾问验收前必须遵守。
+
+- `docs/agents/CLAUDE_HORIZONTAL_REVIEW_GATE_RULES.md`：Claude 横向复评门禁长期规则。
+- `docs/agents/CODEX_CYBER_SAFE_UI_RESEARCH_RULES.md`：竞品 UI research 安全规则。
 
 ## 历史参考 / 上一阶段闭环
 

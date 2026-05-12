@@ -29,6 +29,9 @@
 - `fail` 必须返工。
 - 无 Claude 横向复评，不得进入 GPT 顾问最终验收。
 - 无 GPT 顾问最终验收，不得进入下一版本。
+- 6.0 Alpha 起，所有版本开发计划书必须遵守：
+  - `docs/agents/PROJECT_RULE_DEVELOPMENT_PLAN_FORMAT_CURRENT.md`
+  - `docs/agents/PROJECT_RULE_CLAUDE_SOUL_CECE_HORIZONTAL_REVIEW.md`
 
 ## Historical Closeout
 
