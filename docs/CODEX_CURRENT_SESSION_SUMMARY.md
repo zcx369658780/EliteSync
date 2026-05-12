@@ -1,22 +1,86 @@
 # Current Session Summary
 
+更新时间：2026-05-11
+
+## 0. 当前最高优先级续接口径（2026-05-11 修正）
+
+- 最新完成版本：`5.5`。
+- 当前最新对外发布版本：`0.05.05 / 50500`，5.5 已完成并发布到阿里云。
+- 上一条发布基线 / 历史发布链：`0.05.04 / 50400`。
+- 当前主线：`5.6+ 玄学能力二次产品化与校准线`。
+- 当前 5.6+ 整体开发计划主入口：`docs/version_plans/elite_sync_整体开发计划书_5_6_plus_玄学能力二次产品化修订版_2026_05_11.md`。
+- 当前 5.6+ 路线图主入口：`docs/version_plans/elite_sync_未来版本开发路线图_5_6_plus_玄学能力二次产品化_2026_05_11.md`。
+- 当前下一步：制定 `docs/version_plans/v_5_6_玄学能力二次产品化边界与校准版_开发计划书_2026_05_11.md`。
+- `5.6` 是 planning / boundary / calibration 版本，不做 runtime implementation；不要直接进入 `5.7` runtime。
+- `docs/HANDOFF_MASTER_CURRENT.md` 保留为历史恢复交接文件，不再作为新会话默认第一阅读项。
+
+新会话建议阅读顺序：
+
+1. `docs/DEVELOPMENT_PLAN_CURRENT.md`
+2. `docs/DOC_INDEX_CURRENT.md`
+3. `docs/project_memory.md`
+4. `docs/version_plans/elite_sync_整体开发计划书_5_6_plus_玄学能力二次产品化修订版_2026_05_11.md`
+5. `docs/version_plans/elite_sync_未来版本开发路线图_5_6_plus_玄学能力二次产品化_2026_05_11.md`
+6. `docs/reference/CECE_RESEARCH_MASTER_CURRENT.md`
+7. `docs/agents/CODEX_CYBER_SAFE_UI_RESEARCH_RULES.md`
+8. `docs/version_plans/README.md`
+
+以下 2026-05-09 与 2026-05-07 段落为历史会话摘要；凡与本节冲突，以本节为准。
+
+更新时间：2026-05-09
+
+本节为历史交接口径；若下方历史段落仍提到 2026-05-07、`0.05.04 / 50400` 作为当前基线，均以 2026-05-11 修正节为准。
+
+## 0. 2026-05-09 收口交接
+
+- 当前版本状态：`5.5` 批准范围内开发、验收材料、阿里云 `0.05.05 / 50500` release-chain、GitHub PR 均已完成；用户确认 GitHub regression 已通过。
+- 当前验收口径：`5.5` 按 `pass with observations` 承接。
+- 当前主交接入口：`docs/version_plans/5.5_HANDOFF_MASTER.md`；`docs/version_plans/5.5_ACCEPTANCE_SUMMARY.md` 只是验收附件。
+- 当前发布版本：`0.05.05 / 50500`，下载 URL 为 `http://101.133.161.203/downloads/elitesync-0.05.05.apk`。
+- 0.05.05 SHA256：`D051518D42618E34B08EF15F79D9734E83F5B0BF76CEE2F5AD1A7212CB3A6E1A`；本地 / 阿里云远程一致。
+- version API 已返回 `latest_version_name=0.05.05`、`latest_version_code=50500`、download URL 与 SHA256 匹配。
+- GitHub PR：`https://github.com/zcx369658780/EliteSync/pull/36`；用户已确认 5.5 regression 通过。当前会话未重新核验 PR merge 状态。
+- 本轮已清理本地临时目录：`.tmp/`、`.claude/logs/`。正式证据目录 `docs/version_plans/assets/` 未清理。
+- 当前仍未提交的本地变更：
+  - `apps/flutter_elitesync_module/lib/features/profile/presentation/pages/settings_page.dart`
+  - `apps/flutter_elitesync_module/test/features/profile/presentation/pages/settings_page_test.dart`
+  - `docs/version_plans/0.05.05_UPDATE_BRIEF.md`
+  - 本交接文件及 `docs/HANDOFF_MASTER_CURRENT.md` 的收口更新
+- 未提交变更含义：
+  - Settings 页管理员入口可见性修正：允许白名单管理员手机号 `13772423130` 在生产包中看到运营入口；已本地编译并安装到手机，用户确认可进入运营看板。
+  - Settings 页测试补充：覆盖管理员手机号可见、非管理员不可见。
+  - `0.05.05_UPDATE_BRIEF.md` 已改为中文发布短报，并补充路线图执行进度。
+- 阿里云管理员配置：已备份后将 `13772423130` 加入管理员手机号；远端已执行配置缓存刷新。
+- 阿里云数据库备份：
+  - 管理员配置前备份：本地 `D:\EliteSync_Aliyun_DB_Backups\20260508_203747`，远端 `/opt/backups/elitesync/mysql/20260508_203747`，SHA256 `29a378b26aaf22484825fbf4f853dd40e791c3766a653e6896335677621f26ca`。
+  - 匹配写入前备份：本地 `D:\EliteSync_Aliyun_DB_Backups\20260508_212323`，远端 `/opt/backups/elitesync/mysql/20260508_212323`。
+- 匹配任务已由管理员场景触发：`php artisan app:dev:run-matching --release-drop`，`week_tag=2026-W19`，`eligible_users=4`，`pairs_created=1`，`released=1`。
+- 已生成匹配：match id `6`，用户 `15210606448` 与 `17094346577`，`score_final=65`，`drop_released=true`。下一步应由用户侧验证两端是否能看到匹配结果与 drop 内容。
+- 继续保留为 observation：
+  - restore drill 未做。
+  - matching marker semantics 继续排除。
+  - `ALLOW_PUBLIC_DEV_MATCHING_CONFIG=true`、`ALLOW_PUBLIC_DEV_MATCHING=true` 属于远端测试便利配置，后续应评估是否关闭。
+  - Version Center `0.05.05` 设备截图 / XML 仍可补强；当前发布链已由 APK、URL、SHA256、version API 与用户安装验证支撑。
+  - `flutter analyze` 仍有历史 info lint，不能写成 clean。
+- 下一步建议（历史）：当时建议先暂停开发并处理 5.5 收口项；当前已切到 5.6+ 玄学能力二次产品化与校准线，下一步以 2026-05-11 修正节为准。
+
 更新时间：2026-05-07
 
 来源会话：`019de395-9420-7d42-9e24-ef7bf78fb028`
 
-本次恢复任务：交接恢复 + 信息追回 + 单文件收口，并已推进到 5.5 批准范围开发与验收材料收口。当前项目总交接入口为 `docs/HANDOFF_MASTER_CURRENT.md`，当前版本开发主入口为 `docs/version_plans/5.5_HANDOFF_MASTER.md`。
+本次恢复任务：交接恢复 + 信息追回 + 单文件收口，并已推进到 5.5 批准范围开发与验收材料收口。该段为历史记录；当前 5.6+ 正式主入口以 2026-05-11 修正节为准。
 
 ## 1. 当前项目状态
 
-- 当前发布基线：`0.05.04 / 50400`
-- 当前发布状态：`0.05.04 / 50400` 已在 GitHub regression 通过后发布到阿里云；这是正式项目状态，不是 observation。
-- 当前发布证据状态：本地 / 阿里云 APK SHA256 一致，下载 URL、version API、Version Center 0.05.04 发布链证据已补齐。
+- 历史发布基线：`0.05.04 / 50400`
+- 历史发布状态：`0.05.04 / 50400` 已在 GitHub regression 通过后发布到阿里云；当前它只是上一条发布基线 / 历史发布链。
+- 历史发布证据状态：本地 / 阿里云 APK SHA256 一致，下载 URL、version API、Version Center 0.05.04 发布链证据已补齐。
 - 当前最新已验收版本：`5.4`
 - 当前 5.4 验收口径：`pass with observations`
-- 当前最新已验收主交接入口：`docs/version_plans/5.4_HANDOFF_MASTER.md`
+- 历史 5.4 主交接入口：`docs/version_plans/5.4_HANDOFF_MASTER.md`
 - 当前 5.5 启动主交接入口：`docs/version_plans/5.5_HANDOFF_MASTER.md`
-- 当前项目总交接入口：`docs/HANDOFF_MASTER_CURRENT.md`
-- 下一条主线：`5.5` 真实小样本反馈吸收版
+- 历史恢复交接文件：`docs/HANDOFF_MASTER_CURRENT.md`
+- 历史下一条主线：`5.5` 真实小样本反馈吸收版
 - 5.5 当前状态：已完成批准范围内的真实小样本反馈吸收、RTC 双设备 / 阿里云复测与验收材料整理；建议按 `pass with observations` 承接。
 - 当前不应重开：`5.0`、`5.1`、`5.2`、`5.3`、`5.4` 主链
 
@@ -127,17 +191,9 @@
 
 未删除任何 5.4 证据、handoff、runbook、代码或 App Studio 材料。
 
-## 7. 新会话建议阅读顺序
+## 7. 历史新会话阅读顺序（已废弃）
 
-新会话继续 5.5 前，建议按顺序读取：
-
-1. `docs/CODEX_CURRENT_SESSION_SUMMARY.md`
-2. `docs/version_plans/5.4_HANDOFF_MASTER.md`
-3. `docs/DEVELOPMENT_PLAN_CURRENT.md`
-4. `docs/project_memory.md`
-5. `docs/DOC_INDEX_CURRENT.md`
-6. `docs/version_plans/README.md`
-7. 5.5 计划书，如果用户已经下发
+本节原为 5.5 前的历史阅读顺序，已由 2026-05-11 修正节替代。当前新会话阅读顺序以本文件顶部和 `docs/DOC_INDEX_CURRENT.md` 为准。
 
 ## 8. 后续工作建议
 
@@ -164,9 +220,9 @@
 - 5.4 已验收为 `pass with observations`，不要改成 full pass。
 - 不要把 Cloud DB、backup、restore、migration、queue/logs、RTC success 写成已通过。
 - 不要重开 5.0-5.4 主链。
-- 0.05.04 是发布链同步，不等于 5.4 observations 已消失。
-- 0.05.04 已正式发布到阿里云，且本轮已补齐正式发版证据；但不等于 Cloud DB、backup、restore、migration、queue/logs、RTC success 已通过。
-- `services/backend-laravel/config/matching.php` 的 matching algo marker 变更仍是 observation / 待确认项，不属于当前 `0.05.04 / 50400` 正式同步口径。
+- 0.05.04 是历史发布链同步，不等于 5.4 observations 已消失。
+- 0.05.04 已发布到阿里云，且当时补齐正式发版证据；但不等于 Cloud DB、backup、restore、migration、queue/logs、RTC success 已通过。
+- `services/backend-laravel/config/matching.php` 的 matching algo marker 变更仍是 observation / 待确认项，不属于当前 `0.05.05 / 50500` 正式同步口径。
 - 不要修改 Laravel backend contract、DB schema/migration、truth chain、RTC contract，除非新计划明确要求并经过边界确认。
 - 继续遵守单文件主交接规则：5.4 主交接入口只有 `5.4_HANDOFF_MASTER.md`。
 - 竞品 / Soul 拆解报告默认本地保留，不再上传 GitHub。
@@ -180,7 +236,7 @@
 - 阿里云 RemoteRoot：`/opt/elitesync`
 - 默认 SSH key：`C:\Users\zcxve\.ssh\CodexKey.pem`
 - APK 下载目录：`/opt/elitesync/services/backend-laravel/public/downloads/`
-- 当前下载 URL 口径：`http://101.133.161.203/downloads/elitesync-0.05.04.apk`
+- 历史 0.05.04 下载 URL：`http://101.133.161.203/downloads/elitesync-0.05.04.apk`
 - 发布 APK 脚本：`scripts/release_android_update_aliyun.ps1`
 - GitHub 发布脚本：`scripts/publish_to_github.ps1`，内部会 `git add -A`，只在用户明确接受整仓 add / commit / push 时使用。
 - 后端部署脚本：`scripts/deploy_aliyun_backend.ps1`
@@ -191,7 +247,7 @@
 
 - 5.4 已完成并按 `pass with observations` 承接；用户前提确认 5.4 已 code review、提交 GitHub 并通过 PR merge regression。
 - 5.4 的 code review、GitHub 提交与 PR merge regression 通过属于已追回的正式项目状态，不是 observation。
-- `0.05.04 / 50400` 已在 GitHub regression 通过后发布到阿里云；这是正式项目状态，不是 observation。
+- `0.05.04 / 50400` 已在 GitHub regression 通过后发布到阿里云；当前它只是上一条发布基线 / 历史发布链。
 - `0.05.04 / 50400` 发布证据已补齐：version-chain / Version Center / download / release / SHA256 留痕已记录。
 - 5.5 已完成启动审计与入口冻结的文档化；下一步只能从真实反馈矩阵进入最小 runtime slice。
 - 如果下一步要提交当前工作树，必须先按单主题分桶逐文件 stage，禁止 `git add .`。
@@ -213,7 +269,7 @@
 - 当前口径：receiver incoming-call UI、accept/connect path、当前 debug build 双端 LiveKit media 都已验证；阿里云后端 30s invite timeout 已通过单文件部署完成，远端 grep 显示 `INVITE_TIMEOUT_SECONDS = 30`，`php8.4-fpm` / `nginx` / `elitesync-ws` active，`/up` 返回 200。
 - 写入式 RTC 复测：执行前已备份阿里云 MySQL 到 `D:\EliteSync_Aliyun_DB_Backups\20260508_142630` 且 SHA256 校验一致；远端 API `call_id: 116` 完成 create / receiver list visible / accept / connect / caller heartbeat / receiver heartbeat / end，TTL 为 30 秒，最终 `ended` / terminal。
 - RTC TTL 口径：`call_id: 116` 的 30 秒来自 create response before connect；connect 后服务端会把 `expires_at` 延长为通话存活期，因此最终 DB 行不再保留原始 invite TTL。
-- Cloud read-only / ops follow-up：阿里云只读检查已记录 migrations `49`、最新 migration `2026_04_24_000020_add_last_seen_at_to_rtc_sessions_table`、users `4`、rtc_sessions `116`、rtc_session_events `1928`、notifications `229`、jobs `0`；`php8.4-fpm` / `nginx` / `elitesync-ws` active，`/up` 200，version API 仍为 `0.05.04 / 50400`，checked log tail 没有当天 Laravel error-like 行。
+- Cloud read-only / ops follow-up（历史）：阿里云只读检查已记录 migrations `49`、最新 migration `2026_04_24_000020_add_last_seen_at_to_rtc_sessions_table`、users `4`、rtc_sessions `116`、rtc_session_events `1928`、notifications `229`、jobs `0`；`php8.4-fpm` / `nginx` / `elitesync-ws` active，`/up` 200，当时 version API 仍为 `0.05.04 / 50400`，checked log tail 没有当天 Laravel error-like 行。
 - Ops observation：远端 `php artisan about` 显示 `Environment local` 和 debug enabled；这应作为单独运维硬化项，不要混入 5.5 runtime slice。
 - 本地回归：后端重点回归因测试环境未固定 `APP_URL` 首次出现 3 个 media URL 断言失败；已在 `services/backend-laravel/phpunit.xml` 固定 `APP_URL=http://localhost:8080`，复跑通过，剩余为 PHP 8.5 PDO deprecation。5.5 相关 Flutter focused tests 通过；`flutter analyze` 仍因 14 条既有 info-level lint 非零退出。
 - 双设备现场复测：模拟器 `emulator-5554` 和真机 `TG9L8HOBKFMJZTZX` 均在线且安装 rebuilt debug APK `0.05.04 / 50400`。真机曾复现 ended `call_id: 116` 进入 incoming-call 页仍显示 `接听` / `拒绝`；已修 `RtcIncomingCallPage`，terminal session 只显示 `查看结果` / `返回`。真机 direct route `/rtc/incoming/116` XML 已确认不再暴露 `接听` / `拒绝`。

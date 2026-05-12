@@ -20,6 +20,7 @@ import 'package:flutter_elitesync_module/features/match/domain/entities/match_hi
 import 'package:flutter_elitesync_module/features/match/domain/entities/match_result_entity.dart';
 import 'package:flutter_elitesync_module/features/match/presentation/widgets/match_hero_summary_card.dart';
 import 'package:flutter_elitesync_module/features/match/presentation/widgets/match_reason_card.dart';
+import 'package:flutter_elitesync_module/features/match/presentation/widgets/relationship_explanation_card.dart';
 import 'package:flutter_elitesync_module/features/questionnaire/domain/entities/questionnaire_profile_snapshot.dart';
 import 'package:flutter_elitesync_module/features/questionnaire/presentation/providers/questionnaire_provider.dart';
 import 'package:flutter_elitesync_module/features/questionnaire/presentation/widgets/questionnaire_profile_summary_card.dart';
@@ -174,6 +175,75 @@ class _MatchResultPageState extends ConsumerState<MatchResultPage> {
     return unique.values.take(3).toList();
   }
 
+  String _relationshipSummary(
+    MatchResultEntity data,
+    QuestionnaireProfileSnapshot? questionnaire,
+  ) {
+    final headline = data.headline.trim();
+    if (headline.isNotEmpty) {
+      return '$headline，适合先从轻松、具体的话题慢慢开始。';
+    }
+    final label = questionnaire?.label.trim() ?? '';
+    if (label.isNotEmpty) {
+      return '你们可以先从彼此的表达倾向聊起，但不代表关系结果已经确定。';
+    }
+    return '当前资料还不够完整，先从一个轻松问候开始会更稳妥。';
+  }
+
+  List<RelationshipExplanationDimension> _relationshipDimensions(
+    MatchResultEntity data,
+    QuestionnaireProfileSnapshot? questionnaire,
+  ) {
+    final firstTag = data.tags.isNotEmpty ? data.tags.first.trim() : '';
+    final firstHighlight = data.highlights.isNotEmpty
+        ? data.highlights.first
+        : null;
+    final secondHighlight = data.highlights.length > 1
+        ? data.highlights[1]
+        : null;
+    final questionnaireLabel = questionnaire?.label.trim() ?? '';
+    return [
+      RelationshipExplanationDimension(
+        title: '共同点',
+        description: firstTag.isNotEmpty
+            ? '你们当前有「$firstTag」这类可被自然接住的共同线索。'
+            : '可以先从资料里最具体、最轻松的细节找一个共同开场。',
+        tag: firstTag.isNotEmpty ? firstTag : null,
+      ),
+      RelationshipExplanationDimension(
+        title: '表达节奏',
+        description:
+            firstHighlight != null && firstHighlight.title.trim().isNotEmpty
+            ? '「${firstHighlight.title.trim()}」提示你们适合先交换真实感受，再逐步深入。'
+            : questionnaireLabel.isNotEmpty
+            ? '你的问卷倾向「$questionnaireLabel」更适合慢一点说明自己的感受。'
+            : '先用短句问候和开放问题，会比连续长消息更容易被接住。',
+      ),
+      RelationshipExplanationDimension(
+        title: '慢约会适配度',
+        description:
+            secondHighlight != null && secondHighlight.desc.trim().isNotEmpty
+            ? secondHighlight.desc.trim()
+            : '这段匹配更适合先确认彼此节奏，不急着推进见面或关系结论。',
+      ),
+    ];
+  }
+
+  List<String> _relationshipSuggestions(MatchResultEntity data) {
+    final firstTag = data.tags.isNotEmpty ? data.tags.first.trim() : '';
+    final highlight = data.highlights.isNotEmpty
+        ? data.highlights.first.title.trim()
+        : '';
+    return [
+      firstTag.isNotEmpty ? '从「$firstTag」或城市经历问起。' : '先用一句轻问候开启对话。',
+      highlight.isNotEmpty ? '可以回应对方资料里的「$highlight」。' : '可以先问一个最近生活节奏相关的问题。',
+    ];
+  }
+
+  List<String> _relationshipAvoidances() {
+    return const ['避免一开始就问隐私或强推进见面。', '避免把星盘或匹配提示说成确定结论。'];
+  }
+
   Future<void> _openChatWithDraft(
     BuildContext context,
     WidgetRef ref,
@@ -298,6 +368,16 @@ class _MatchResultPageState extends ConsumerState<MatchResultPage> {
                     headline: data.headline,
                     score: data.score,
                     tags: data.tags,
+                  ),
+                  SizedBox(height: t.spacing.md),
+                  RelationshipExplanationCard(
+                    summary: _relationshipSummary(data, questionnaireSummary),
+                    dimensions: _relationshipDimensions(
+                      data,
+                      questionnaireSummary,
+                    ),
+                    suggestions: _relationshipSuggestions(data),
+                    avoidances: _relationshipAvoidances(),
                   ),
                   SizedBox(height: t.spacing.md),
                   AppCard(

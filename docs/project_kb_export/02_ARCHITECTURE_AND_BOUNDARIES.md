@@ -1,6 +1,6 @@
 # 架构与边界
 
-更新时间：2026-05-01
+更新时间：2026-05-11
 
 ## 真值链路
 
@@ -52,6 +52,16 @@
   - 多人 RTC
   - 重娱乐化玩法平台
 
+## 5.6+ 玄学解释层边界
+
+- 玄学解释、合盘解释、AI 追问只能作为 `derived-only / display-only / explanation layer`。
+- 不反写 `profile/basic`、`profile/astro/summary`、`profile/astro/chart`、`user_astro_profiles`。
+- 不改 Match algorithm contract，不把解释层结果作为匹配算法输入。
+- 不改 API / DB / release chain；5.6 是 planning / boundary / calibration 版本，不做 runtime implementation。
+- 5.8 Me / Profile 个人解释层只允许读取现有 Profile summary 做 presentation 派生展示，不得接入 edit profile save chain、profile providers 写链、astro providers 或真实 AI。
+- 5.9 Chat 轻追问与低压开场只允许在 presentation 层提供本地固定草稿建议；不得自动发送，不得读取私密聊天历史生成建议，不得写 `chat_messages`，不得接入真实 AI。
+- 不引入真人玄学咨询市场、付费报告商店、上传截图主路径、娱乐化测试主路径、强出生资料收集、测试结果反写画像、大规模社区讨论或测测术语体系复制。
+
 ## 保护面接口
 
 - `POST /api/v1/profile/basic`
@@ -68,6 +78,20 @@
 - `POST /api/v1/rtc/calls`
 - `GET /api/v1/rtc/calls/{callId}/livekit`
 - `POST /api/v1/rtc/calls/{callId}/heartbeat`
+
+## 5.6 版本 / 发布链保护面
+
+- `GET /api/v1/app/version/check`
+- `apps/android/**`
+- `apps/android/app/build.gradle.kts`
+- `apps/android/app/src/main/assets/changelog_v0.txt`
+- `services/backend-laravel/config/app_update.php`
+- `routes/**`
+- `config/**`
+- `scripts/release_android_update_aliyun.ps1`
+- `app_release_versions`
+
+5.6 不修改 version check 路由、不修改默认 app update 配置、不修改 Android build 配置、不更新 APK，也不改变 release metadata。
 
 ## 不能被误改的口径
 

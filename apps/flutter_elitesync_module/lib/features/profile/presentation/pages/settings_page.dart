@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_elitesync_module/app/router/app_route_names.dart';
+import 'package:flutter_elitesync_module/core/network/network_result.dart';
 import 'package:flutter_elitesync_module/core/storage/cache_keys.dart';
 import 'package:flutter_elitesync_module/design_system/components/bars/app_top_bar.dart';
 import 'package:flutter_elitesync_module/design_system/components/cards/app_info_section_card.dart';
@@ -29,15 +30,19 @@ class SettingsPage extends ConsumerStatefulWidget {
 }
 
 class _SettingsPageState extends ConsumerState<SettingsPage> {
+  static const Set<String> _adminPhones = {'13772423130'};
+
   bool _pushEnabled = true;
   bool _pushLoaded = false;
   bool _performanceLiteMode = false;
+  bool _adminAccessAllowed = false;
   String _contentRankerMode = 'auto';
 
   @override
   void initState() {
     super.initState();
     _loadPushSetting();
+    _loadAdminAccess();
   }
 
   Future<void> _loadPushSetting() async {
@@ -61,6 +66,26 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
           : 'auto';
       _pushLoaded = true;
     });
+  }
+
+  Future<void> _loadAdminAccess() async {
+    if (ref.read(appEnvProvider).isDev) {
+      if (!mounted) return;
+      setState(() => _adminAccessAllowed = true);
+      return;
+    }
+
+    final session = await ref.read(sessionProvider.future);
+    final currentPhone = session.user?.phone.trim() ?? '';
+    if (_adminPhones.contains(currentPhone)) {
+      if (!mounted) return;
+      setState(() => _adminAccessAllowed = true);
+      return;
+    }
+
+    final result = await ref.read(apiClientProvider).get('/api/v1/admin/users');
+    if (!mounted) return;
+    setState(() => _adminAccessAllowed = result is NetworkSuccess);
   }
 
   Future<void> _togglePush(bool value) async {
@@ -167,6 +192,70 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     );
   }
 
+  Future<void> _showExplanationControlSheet() async {
+    final t = context.appTokens;
+    await showModalBottomSheet<void>(
+      context: context,
+      useSafeArea: true,
+      showDragHandle: true,
+      builder: (sheetContext) {
+        return Padding(
+          padding: EdgeInsets.fromLTRB(
+            t.spacing.pageHorizontal,
+            0,
+            t.spacing.pageHorizontal,
+            t.spacing.lg,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '这些建议如何工作',
+                style: Theme.of(sheetContext).textTheme.titleMedium?.copyWith(
+                  color: t.textPrimary,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              SizedBox(height: t.spacing.xs),
+              Text(
+                '关系解释提示、个人表达建议和聊天开场建议只整理已公开展示的资料、匹配说明和本地固定文案，帮助你理解关系与表达节奏。',
+                style: Theme.of(sheetContext).textTheme.bodyMedium?.copyWith(
+                  color: t.textSecondary,
+                  height: 1.45,
+                ),
+              ),
+              SizedBox(height: t.spacing.sm),
+              Text(
+                '它们不会读取私密聊天，不会写入资料，不会改变星盘或匹配算法，也不会自动发送消息或调用真人服务。',
+                style: Theme.of(sheetContext).textTheme.bodySmall?.copyWith(
+                  color: t.textSecondary,
+                  height: 1.4,
+                ),
+              ),
+              SizedBox(height: t.spacing.sm),
+              Text(
+                '当前控制为本机展示说明，后续会继续完善可关闭和更细粒度控制；关闭后仍可使用匹配、个人资料和聊天主流程。',
+                style: Theme.of(sheetContext).textTheme.bodySmall?.copyWith(
+                  color: t.textSecondary,
+                  height: 1.4,
+                ),
+              ),
+              SizedBox(height: t.spacing.md),
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () => Navigator.of(sheetContext).pop(),
+                  child: const Text('知道了'),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   Future<void> _resetContentPreference() async {
     final local = ref.read(localStorageProvider);
     await local.remove(CacheKeys.contentPreferredTag);
@@ -206,6 +295,15 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   Widget build(BuildContext context) {
     final t = context.appTokens;
     final themeMode = ref.watch(themeModeProvider);
+    final session = ref.watch(sessionProvider);
+    final currentPhone = session.maybeWhen(
+      data: (state) => state.user?.phone.trim() ?? '',
+      orElse: () => '',
+    );
+    final showAdminEntries =
+        _adminAccessAllowed ||
+        ref.watch(appEnvProvider).isDev ||
+        _adminPhones.contains(currentPhone);
     final isDark =
         themeMode == AppThemeMode.dark ||
         (themeMode == AppThemeMode.system &&
@@ -304,6 +402,85 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
           ),
           SizedBox(height: t.spacing.md),
           SectionReveal(
+            delay: const Duration(milliseconds: 75),
+            child: SettingsGroup(
+              title: '解释与建议设置',
+              children: [
+                const _ExplanationControlTile(
+                  title: '关系解释提示',
+                  subtitle: '帮助理解 Match 中为什么值得聊，不改变匹配算法。',
+                  icon: Icons.favorite_border_rounded,
+                ),
+                Divider(height: 1, color: t.overlay.withValues(alpha: 0.35)),
+                const _ExplanationControlTile(
+                  title: '个人表达建议',
+                  subtitle: '帮助整理个人页表达，不会自动修改资料。',
+                  icon: Icons.badge_outlined,
+                ),
+                Divider(height: 1, color: t.overlay.withValues(alpha: 0.35)),
+                const _ExplanationControlTile(
+                  title: '聊天开场建议',
+                  subtitle: '帮助准备可编辑草稿，不会自动发送消息。',
+                  icon: Icons.chat_bubble_outline_rounded,
+                ),
+                Divider(height: 1, color: t.overlay.withValues(alpha: 0.35)),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(
+                    t.spacing.md,
+                    t.spacing.sm,
+                    t.spacing.md,
+                    t.spacing.xs,
+                  ),
+                  child: Text(
+                    '这些解释和建议只用于辅助理解与开场参考，不会写入资料，不会改变星盘或匹配算法，也不会自动发送消息。关闭后仍可使用主流程。',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: t.textSecondary,
+                      height: 1.45,
+                    ),
+                  ),
+                ),
+                ListTile(
+                  onTap: _showExplanationControlSheet,
+                  leading: Container(
+                    width: 34,
+                    height: 34,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: t.brandPrimary.withValues(alpha: 0.18),
+                    ),
+                    child: Icon(
+                      Icons.info_outline_rounded,
+                      size: 18,
+                      color: t.brandPrimary,
+                    ),
+                  ),
+                  title: Text(
+                    '了解这些建议如何工作',
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      color: t.textPrimary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  subtitle: Text(
+                    '来源、不会做什么，以及后续控制说明',
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.copyWith(color: t.textSecondary),
+                  ),
+                  trailing: Icon(
+                    Icons.chevron_right_rounded,
+                    color: t.textTertiary,
+                  ),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: t.spacing.md,
+                    vertical: 2,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: t.spacing.md),
+          SectionReveal(
             delay: const Duration(milliseconds: 80),
             child: SettingsGroup(
               title: '账号与安全',
@@ -375,7 +552,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               ),
             ),
           ),
-          if (ref.watch(appEnvProvider).isDev) ...[
+          if (showAdminEntries) ...[
             SizedBox(height: t.spacing.md),
             SectionReveal(
               delay: const Duration(milliseconds: 160),
@@ -456,6 +633,65 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _ExplanationControlTile extends StatelessWidget {
+  const _ExplanationControlTile({
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+  });
+
+  final String title;
+  final String subtitle;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.appTokens;
+    return ListTile(
+      leading: Container(
+        width: 34,
+        height: 34,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: t.brandPrimary.withValues(alpha: 0.18),
+        ),
+        child: Icon(icon, size: 18, color: t.brandPrimary),
+      ),
+      title: Text(
+        title,
+        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+          color: t.textPrimary,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      subtitle: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            subtitle,
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: t.textSecondary),
+          ),
+          SizedBox(height: t.spacing.xs / 2),
+          Text(
+            '本机控制 · 后续完善',
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              color: t.textTertiary,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+      trailing: Icon(Icons.toggle_on_outlined, color: t.textTertiary),
+      contentPadding: EdgeInsets.symmetric(
+        horizontal: t.spacing.md,
+        vertical: 4,
       ),
     );
   }

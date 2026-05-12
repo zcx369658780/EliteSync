@@ -1,14 +1,15 @@
 # 当前状态
 
-更新时间：2026-05-06
+更新时间：2026-05-11
 
 ## 当前最新完成到哪里
 
-- 当前最新完成版本：`5.4`
-- 当前最新对外发布版本：`0.05.04 / 50400`
-- 当前算法版本：沿用既有模块标记；matching marker 是否同步到 `5.4` 仍待确认。
+- 当前最新完成版本：`5.10`（待 GPT 顾问最终验收）
+- 当前最新对外发布版本：`0.05.05 / 50500`
+- 上一条发布基线 / 历史发布链：`0.05.04 / 50400`
+- 当前算法版本：沿用既有模块标记；`matching marker` 同步问题仅作为历史观察，不属于 5.6 planning-only 正式口径。
 - 当前已正式归档通过的版本：`3.9`、`4.0`、`4.1`、`4.2`、`4.3`、`4.4`、`4.4S`、`4.5 / 4.5E`、`4.6P`、`4.7`、`4.8`
-- 当前 5.x 已验收版本：`5.0`、`5.1`、`5.2`、`5.3`、`5.4`，状态均为 `pass with observations`
+- 当前 5.x 已验收 / 收口版本：`5.0`、`5.1`、`5.2`、`5.3`、`5.4`、`5.5`，状态按各自 handoff 保留为已完成历史链路
 
 ## 4.9 当前结论
 
@@ -23,16 +24,23 @@
   - RTC / LiveKit / heartbeat 可观测性
 - 4.9 不再继续拖长，也不作为后续功能扩张版继续迭代
 
-## 5.x 当前方向
+## 5.6+ 当前方向
 
-- 当前主线已经切到 `5.x` 高价值主链功能覆盖优先
+- 5.0-5.5 已作为已完成历史链路保留，不重写。
+- 5.6+ 主线已经切到“玄学能力二次产品化与校准线”。
+- Soul 继续作为社交主链参考；测测作为玄学解释层参考。
+- `5.6` 已通过 GPT 顾问验收，口径为 `pass with observations`。
+- `5.7` 已完成 Match 关系解释层最小产品化 runtime slice，并已通过 GPT 顾问验收，口径为 `pass with observations`。
+- `5.8` 已完成 Me / Profile 个人解释层与表达建议 runtime slice，并已通过 GPT 顾问验收，口径为 `pass with observations`。
+- `5.9` 已完成 Chat 轻追问与低压开场 runtime slice，并已通过 GPT 顾问验收，口径为 `pass with observations`。
+- `5.10` 已完成 Settings 解释层治理与用户控制 runtime slice，建议验收口径为 `pass with observations`。
 - `5.0` 已作为最小产品化覆盖集收口，状态为 `pass with observations`
 - `5.1` 已作为关系推进与内容转化补齐版收口，状态为 `pass with observations`
 - `5.2` 已作为个人经营中枢与表达层覆盖版收口，状态为 `pass with observations`
 - `5.3` 已作为功能覆盖收尾版收口，状态为 `pass with observations`
 - `5.4` 已作为测试运营准备与云端治理增强版收口，状态为 `pass with observations`
-- 当前最自然的下一步不是回头重做 4.x / 5.0-5.4 主链，而是：
-  - 5.5 真实小样本反馈吸收版
+- 当前最自然的下一步不是回头重做 4.x / 5.0-5.9 主链，也不是自动进入 5.11 runtime，而是：
+  - 将 `docs/version_plans/5.10_HANDOFF_MASTER.md`、`docs/version_plans/5.10_REGRESSION_CHECKLIST.md` 与 `docs/version_plans/5.10_UI_BASELINE_EVIDENCE_INDEX.md` 交给顾问验收
 
 ## 各版本简要演进
 
@@ -136,16 +144,33 @@
 - 状态：`pass with observations`
 - 保留 observations：Cloud DB read-only audit、backup existence、restore drill、migration-level checks、queue / logs、RTC success evidence 仍需真实环境证据，不写成已通过
 
+### 5.5
+
+- 真实小样本反馈吸收版
+- 已完成并发布到阿里云，当前对外发布版本为 `0.05.05 / 50500`
+- 后续不重写 5.5 主链
+
+### 5.6+
+
+- 5.6+ 路线已生成，当前主入口为 `docs/version_plans/elite_sync_整体开发计划书_5_6_plus_玄学能力二次产品化修订版_2026_05_11.md` 与 `docs/version_plans/elite_sync_未来版本开发路线图_5_6_plus_玄学能力二次产品化_2026_05_11.md`
+- 5.6 是 planning / boundary / calibration 版本，不做 runtime implementation
+- 5.6 具体开发计划书与 handoff master 已落库；下一步是顾问验收，不是 5.7 runtime
+- 5.7 已完成 Match 关系解释层最小产品化 runtime slice
+- 5.8 已完成 Me / Profile 个人解释层与表达建议 runtime slice
+- 5.9 已完成 Chat 轻追问与低压开场 runtime slice
+- 5.10 已完成 Settings 解释层治理与用户控制 runtime slice
+
 ## 当前发布信息
 
-- App 版本：`0.05.04`
-- 构建号：`50400`
+- App 版本：`0.05.05`
+- 构建号：`50500`
 - 算法版本：沿用既有模块标记，matching marker 同步不属于当前正式发布口径。
-- 下载地址：`http://101.133.161.203/downloads/elitesync-0.05.04.apk`
+- 下载地址：`http://101.133.161.203/downloads/elitesync-0.05.05.apk`
+- `0.05.04 / 50400` 仅作为上一条发布基线 / 历史发布链保留。
 
 ## 当前最自然的下一步
 
-- 进入 `5.5` 真实小样本反馈吸收版规划，基于 5.4 的治理与回归基线吸收真实小样本反馈；5.4 observations 作为真实环境核验项承接，不回头重开 5.0-5.4 主链。
+- 先验收 `5.10_HANDOFF_MASTER.md`、5.10 回归清单与 UI 证据索引；不要自动进入 5.11 runtime。
 
 ## 当前不建议再动的旧版本线
 
