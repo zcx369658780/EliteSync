@@ -10,7 +10,7 @@
 - `docs/version_plans/README.md`：版本计划总索引
 - `docs/version_plans/ELITESYNC_6_0_ALPHA_MASTER_PLAN_2026_05_12.md`：6.0 Alpha 内测准备线主计划
 - `docs/version_plans/v_6_0_A0_Alpha内测准备_商用化底座与路线冻结版_开发计划书_2026_05_12.md`：6.0-A0 planning-only 路线冻结计划书
-- `C:/Users/zcxve/Downloads/v_6_0_a_1_后端v_2_与位置链路最小闭环_开发计划书_2026_05_12.md`：6.0-A1 顾问计划书；先看 Framework / Runtime Support Gate，不得直接进入 v2 skeleton runtime
+- `docs/version_plans/v_6_0_A1_后端v2与位置链路最小闭环_开发计划书_2026_05_12.md`：6.0-A1 顾问计划书；先看 Framework / Runtime Support Gate，不得直接进入 v2 skeleton runtime
 - `docs/agents/CLAUDE_HORIZONTAL_REVIEW_GATE_RULES.md`：Claude 横向复评门禁长期规则
 - `docs/agents/PROJECT_RULE_DEVELOPMENT_PLAN_FORMAT_CURRENT.md`：版本开发计划书格式长期规则
 - `docs/agents/PROJECT_RULE_CLAUDE_SOUL_CECE_HORIZONTAL_REVIEW.md`：Claude 使用 Soul + 测测 / CECE 横向评测长期规则
@@ -23,7 +23,7 @@
 3. `docs/project_memory.md`
 4. `docs/version_plans/ELITESYNC_6_0_ALPHA_MASTER_PLAN_2026_05_12.md`
 5. `docs/version_plans/v_6_0_A0_Alpha内测准备_商用化底座与路线冻结版_开发计划书_2026_05_12.md`
-6. `C:/Users/zcxve/Downloads/v_6_0_a_1_后端v_2_与位置链路最小闭环_开发计划书_2026_05_12.md`
+6. `docs/version_plans/v_6_0_A1_后端v2与位置链路最小闭环_开发计划书_2026_05_12.md`
 7. `docs/reference/ELITESYNC_FEATURE_GAP_ANALYSIS_2026_05_12.md`
 8. `docs/reference/ELITESYNC_REVIEW_ACTION_MATRIX_2026_05_12.md`
 9. `docs/agents/CLAUDE_HORIZONTAL_REVIEW_GATE_RULES.md`
@@ -37,7 +37,7 @@
 
 - `docs/version_plans/ELITESYNC_6_0_ALPHA_MASTER_PLAN_2026_05_12.md`
 - `docs/version_plans/v_6_0_A0_Alpha内测准备_商用化底座与路线冻结版_开发计划书_2026_05_12.md`
-- `C:/Users/zcxve/Downloads/v_6_0_a_1_后端v_2_与位置链路最小闭环_开发计划书_2026_05_12.md`
+- `docs/version_plans/v_6_0_A1_后端v2与位置链路最小闭环_开发计划书_2026_05_12.md`
 - `docs/version_plans/CODEX_6_0_A0_EXECUTION_REPORT.md`
 - `docs/version_plans/CODEX_6_0_A0_CLAUDE_FEEDBACK_RESPONSE.md`
 - `docs/version_plans/claude_reviews/6.0_A0/CLAUDE_6_0_A0_HORIZONTAL_REVIEW.md`

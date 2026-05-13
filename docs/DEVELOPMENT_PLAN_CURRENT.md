@@ -10,7 +10,7 @@
 
 当前 A0 计划书：`docs/version_plans/v_6_0_A0_Alpha内测准备_商用化底座与路线冻结版_开发计划书_2026_05_12.md`
 
-当前 A1 顾问计划书：`C:/Users/zcxve/Downloads/v_6_0_a_1_后端v_2_与位置链路最小闭环_开发计划书_2026_05_12.md`
+当前 A1 顾问计划书：`docs/version_plans/v_6_0_A1_后端v2与位置链路最小闭环_开发计划书_2026_05_12.md`
 
 当前下一步：6.0-A1 不直接开始 v2 skeleton。先执行 Framework / Runtime Support Gate，确认 Laravel 12/13 + PHP 8.4 + MariaDB 10.11 LTS 最新补丁版 + Redis + Nginx + 队列 / 缓存 / 监控 / 备份 / 压测 / 分环境部署的目标栈与升级风险，再进入 v1 contract audit、v2 contract map、v2 skeleton 与位置链路最小闭环。
 
