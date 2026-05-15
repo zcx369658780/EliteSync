@@ -1,6 +1,6 @@
 # EliteSync 整体开发计划书入口
 
-更新时间：2026-05-14
+更新时间：2026-05-15
 
 ## 当前主线
 
@@ -14,7 +14,9 @@
 
 当前 A1 默认主交接入口：`docs/version_plans/6.0_A1_HANDOFF_MASTER.md`
 
-当前下一步：6.0-A1 前置门禁文档链已通过 handoff master 收口，但 A1 runtime 仍未完成，v2 skeleton runtime 仍 forbidden。下一步候选为 push / 索引同步、Claude 横向复评输入包、或极窄只读 v2 health / readiness / location contract skeleton planning 的授权判断；不建议直接进入完整 v2 skeleton runtime。
+当前最新 pushed HEAD：`2ac282a7c6bd28ddf6d48096a241d9d22596bc60`
+
+当前下一步：6.0-A1 documentation / precondition stage 已通过 Claude review，verdict 为 `pass with observations`。A1 runtime 仍未完成，v2 skeleton runtime 仍 forbidden。下一步候选为“极窄只读 v2 health / readiness / location contract skeleton planning”的用户授权判断；不建议直接进入完整 v2 skeleton runtime。
 
 ## 当前判断
 
@@ -22,7 +24,7 @@
 - 当前不继续直接制定 5.11，也不直接进入 5.11 runtime。
 - 6.0 Alpha 进入内测准备线：商用级底座重构 + Date Drop 式高质量低频匹配 + 搭子精准陪伴 + 基础社交功能补齐 + 玄学解释产品化 + UI/IA 内测打磨。
 - 6.0-A0 是 planning-only 版本，只做路线冻结、边界定义、计划书与门禁固化，不做 runtime；A0 不是后端 v2、搭子、Date Drop 或 UI/IA 的 runtime 完成版本。
-- 6.0-A1 handoff master 已提交并作为当前默认入口；这只代表 documentation-only / precondition-stage handoff 收口，不代表 A1 runtime pass。Laravel 11 不作为 v2 商用级目标版本；composer update、Laravel upgrade、migration、production operation、write smoke 与 v2 skeleton runtime 仍禁止。
+- 6.0-A1 handoff master 已提交并作为当前默认入口；Claude review report archive 与 Codex response 已提交并 push，Claude verdict 为 `pass with observations`。这只代表 documentation-only / precondition-stage 通过 Claude review，不代表 A1 runtime pass，也不代表 GPT final acceptance complete。Laravel 11 不作为 v2 商用级目标版本；composer update、Laravel upgrade、migration、production operation、write smoke 与 v2 skeleton runtime 仍禁止。
 
 ## 6.0 Alpha 优先级
 

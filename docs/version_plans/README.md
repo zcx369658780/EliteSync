@@ -1,6 +1,6 @@
 # Version Plans
 
-更新时间：2026-05-14
+更新时间：2026-05-15
 
 ## Current Active Plan
 
@@ -11,12 +11,18 @@
 
 6.0 Alpha 内测准备线
 
-当前下一步：6.0-A1 handoff master 已提交，当前默认主交接入口为 [6.0_A1_HANDOFF_MASTER.md](./6.0_A1_HANDOFF_MASTER.md)。A1 documentation handoff chain 已收口到当前 precondition stage；A1 runtime 仍未完成，v2 skeleton runtime 仍 forbidden。
+当前下一步：6.0-A1 默认主交接入口仍为 [6.0_A1_HANDOFF_MASTER.md](./6.0_A1_HANDOFF_MASTER.md)。Claude review report archive 与 Codex response 已提交并 push，Claude verdict 为 `pass with observations`；A1 documentation / precondition stage 可记为 `pass with observations`。A1 runtime 仍未完成，v2 skeleton runtime 仍 forbidden；下一步最多是“极窄只读 v2 health / readiness / location contract skeleton planning”的用户授权判断，不是 runtime。
 
 ## 6.0 Alpha Version Split
 
 - 6.0-A0：商用化底座与路线冻结版，planning-only，计划书已落地；仍需 Claude 轻量横向复评与 GPT 顾问最终验收
-- 6.0-A1：后端 v2 与位置链路最小闭环；当前默认主交接入口为 [6.0_A1_HANDOFF_MASTER.md](./6.0_A1_HANDOFF_MASTER.md)，其他 A1 文件均为 supporting evidence / 补充附件，不创建多个 handoff 入口。当前仍禁止 v2 skeleton runtime、Laravel upgrade、composer update、migration、production operation、write smoke。
+- 6.0-A1：后端 v2 与位置链路最小闭环；当前默认主交接入口为 [6.0_A1_HANDOFF_MASTER.md](./6.0_A1_HANDOFF_MASTER.md)，其他 A1 文件均为 supporting evidence / 补充附件，不创建多个 handoff 入口。Claude input / report / response 均为 supporting evidence，Claude verdict 为 `pass with observations`。当前仍禁止 v2 skeleton runtime、Laravel upgrade、composer update、migration、production operation、write smoke。
+
+## 6.0-A1 Current Supporting Evidence
+
+- [6.0_A1_CLAUDE_HORIZONTAL_REVIEW_INPUT_PACKAGE.md](./6.0_A1_CLAUDE_HORIZONTAL_REVIEW_INPUT_PACKAGE.md)：Claude review input package，supporting evidence。
+- [6.0_A1_CLAUDE_HORIZONTAL_REVIEW_REPORT.md](./6.0_A1_CLAUDE_HORIZONTAL_REVIEW_REPORT.md)：Claude review report archive，verdict `pass with observations`，supporting evidence only。
+- [6.0_A1_CLAUDE_REVIEW_RESPONSE.md](./6.0_A1_CLAUDE_REVIEW_RESPONSE.md)：Codex response to Claude review，supporting evidence only。
 - 6.0-A2：Date Drop 式匹配主链重构
 - 6.0-A3：搭子精准陪伴最小闭环
 - 6.0-A4：基础社交功能补齐
