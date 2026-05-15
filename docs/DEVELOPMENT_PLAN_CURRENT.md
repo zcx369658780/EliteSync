@@ -1,6 +1,6 @@
 # EliteSync 整体开发计划书入口
 
-更新时间：2026-05-12
+更新时间：2026-05-14
 
 ## 当前主线
 
@@ -12,7 +12,9 @@
 
 当前 A1 顾问计划书：`docs/version_plans/v_6_0_A1_后端v2与位置链路最小闭环_开发计划书_2026_05_12.md`
 
-当前下一步：6.0-A1 不直接开始 v2 skeleton。先执行 Framework / Runtime Support Gate，确认 Laravel 12/13 + PHP 8.4 + MariaDB 10.11 LTS 最新补丁版 + Redis + Nginx + 队列 / 缓存 / 监控 / 备份 / 压测 / 分环境部署的目标栈与升级风险，再进入 v1 contract audit、v2 contract map、v2 skeleton 与位置链路最小闭环。
+当前 A1 默认主交接入口：`docs/version_plans/6.0_A1_HANDOFF_MASTER.md`
+
+当前下一步：6.0-A1 前置门禁文档链已通过 handoff master 收口，但 A1 runtime 仍未完成，v2 skeleton runtime 仍 forbidden。下一步候选为 push / 索引同步、Claude 横向复评输入包、或极窄只读 v2 health / readiness / location contract skeleton planning 的授权判断；不建议直接进入完整 v2 skeleton runtime。
 
 ## 当前判断
 
@@ -20,7 +22,7 @@
 - 当前不继续直接制定 5.11，也不直接进入 5.11 runtime。
 - 6.0 Alpha 进入内测准备线：商用级底座重构 + Date Drop 式高质量低频匹配 + 搭子精准陪伴 + 基础社交功能补齐 + 玄学解释产品化 + UI/IA 内测打磨。
 - 6.0-A0 是 planning-only 版本，只做路线冻结、边界定义、计划书与门禁固化，不做 runtime；A0 不是后端 v2、搭子、Date Drop 或 UI/IA 的 runtime 完成版本。
-- 6.0-A1 当前只做计划书与项目源口径同步；Framework / Runtime Support Gate 完成前，不得启动后端 v2 skeleton runtime。Laravel 11 不作为 v2 商用级目标版本。
+- 6.0-A1 handoff master 已提交并作为当前默认入口；这只代表 documentation-only / precondition-stage handoff 收口，不代表 A1 runtime pass。Laravel 11 不作为 v2 商用级目标版本；composer update、Laravel upgrade、migration、production operation、write smoke 与 v2 skeleton runtime 仍禁止。
 
 ## 6.0 Alpha 优先级
 

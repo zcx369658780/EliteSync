@@ -1,6 +1,6 @@
 # 文档索引（当前有效）
 
-更新时间：2026-05-12
+更新时间：2026-05-14
 
 ## 当前主入口
 
@@ -11,6 +11,7 @@
 - `docs/version_plans/ELITESYNC_6_0_ALPHA_MASTER_PLAN_2026_05_12.md`：6.0 Alpha 内测准备线主计划
 - `docs/version_plans/v_6_0_A0_Alpha内测准备_商用化底座与路线冻结版_开发计划书_2026_05_12.md`：6.0-A0 planning-only 路线冻结计划书
 - `docs/version_plans/v_6_0_A1_后端v2与位置链路最小闭环_开发计划书_2026_05_12.md`：6.0-A1 顾问计划书；先看 Framework / Runtime Support Gate，不得直接进入 v2 skeleton runtime
+- `docs/version_plans/6.0_A1_HANDOFF_MASTER.md`：6.0-A1 当前默认主交接入口；handoff master / documentation-only，不代表 A1 runtime complete
 - `docs/agents/CLAUDE_HORIZONTAL_REVIEW_GATE_RULES.md`：Claude 横向复评门禁长期规则
 - `docs/agents/PROJECT_RULE_DEVELOPMENT_PLAN_FORMAT_CURRENT.md`：版本开发计划书格式长期规则
 - `docs/agents/PROJECT_RULE_CLAUDE_SOUL_CECE_HORIZONTAL_REVIEW.md`：Claude 使用 Soul + 测测 / CECE 横向评测长期规则
@@ -21,22 +22,24 @@
 1. `docs/DEVELOPMENT_PLAN_CURRENT.md`
 2. `docs/DOC_INDEX_CURRENT.md`
 3. `docs/project_memory.md`
-4. `docs/version_plans/ELITESYNC_6_0_ALPHA_MASTER_PLAN_2026_05_12.md`
-5. `docs/version_plans/v_6_0_A0_Alpha内测准备_商用化底座与路线冻结版_开发计划书_2026_05_12.md`
-6. `docs/version_plans/v_6_0_A1_后端v2与位置链路最小闭环_开发计划书_2026_05_12.md`
-7. `docs/reference/ELITESYNC_FEATURE_GAP_ANALYSIS_2026_05_12.md`
-8. `docs/reference/ELITESYNC_REVIEW_ACTION_MATRIX_2026_05_12.md`
-9. `docs/agents/CLAUDE_HORIZONTAL_REVIEW_GATE_RULES.md`
-10. `docs/agents/PROJECT_RULE_DEVELOPMENT_PLAN_FORMAT_CURRENT.md`
-11. `docs/agents/PROJECT_RULE_CLAUDE_SOUL_CECE_HORIZONTAL_REVIEW.md`
-12. `docs/agents/CODEX_CYBER_SAFE_UI_RESEARCH_RULES.md`
-13. `docs/ELITESYNC_APP_STUDIO_WORKFLOW.md`
-14. `docs/version_plans/README.md`
+4. `docs/version_plans/6.0_A1_HANDOFF_MASTER.md`
+5. `docs/version_plans/v_6_0_A1_后端v2与位置链路最小闭环_开发计划书_2026_05_12.md`
+6. `docs/version_plans/6.0_A1_SKELETON_PRECONDITION_EXECUTION_PLAN.md`
+7. `docs/version_plans/6.0_A1_ENVIRONMENT_SPLIT_PLAN.md`
+8. `docs/version_plans/6.0_A1_LOCATION_CHAIN_RESTRUCTURE.md`
+9. `docs/version_plans/6.0_A1_BACKUP_ROLLBACK_MONITORING_PLAN.md`
+10. `docs/version_plans/6.0_A1_LARAVEL12_STAGING_DRY_RUN_PLAN.md`
+11. `docs/version_plans/6.0_A1_ENV_CACHE_SESSION_CONFIG_UNIFICATION_PLAN.md`
+12. `docs/version_plans/6.0_A1_AUTHENTICATED_READONLY_SMOKE_BATCH2_RERUN_REPORT.md`
+13. `docs/version_plans/6.0_A1_READONLY_SMOKE_BATCH1_PRODUCTION_READONLY_REPORT.md`
+14. `docs/version_plans/6.0_A1_BACKEND_V2_CONTRACT_MAP.md`
+15. `docs/version_plans/6.0_A1_V1_CONTRACT_AUDIT.md`
 
 ## 6.0 Alpha 当前参考
 
 - `docs/version_plans/ELITESYNC_6_0_ALPHA_MASTER_PLAN_2026_05_12.md`
 - `docs/version_plans/v_6_0_A0_Alpha内测准备_商用化底座与路线冻结版_开发计划书_2026_05_12.md`
+- `docs/version_plans/6.0_A1_HANDOFF_MASTER.md`
 - `docs/version_plans/v_6_0_A1_后端v2与位置链路最小闭环_开发计划书_2026_05_12.md`
 - `docs/version_plans/CODEX_6_0_A0_EXECUTION_REPORT.md`
 - `docs/version_plans/CODEX_6_0_A0_CLAUDE_FEEDBACK_RESPONSE.md`
@@ -45,7 +48,7 @@
 - `docs/reference/ELITESYNC_REVIEW_ACTION_MATRIX_2026_05_12.md`
 - `docs/agents/CLAUDE_HORIZONTAL_REVIEW_GATE_RULES.md`
 
-6.0-A1 当前入口提醒：先执行 Framework / Runtime Support Gate。后端 v2 商用目标栈为 Laravel 12/13 + PHP 8.4 + MariaDB 10.11 LTS 最新补丁版 + Redis + Nginx + 队列 / 缓存 / 监控 / 备份 / 压测 / staging/production 分环境部署。Laravel 11 不得作为 v2 商用级目标版本。
+6.0-A1 当前入口提醒：`docs/version_plans/6.0_A1_HANDOFF_MASTER.md` 是当前 A1 默认主交接入口。A1 documentation handoff chain 已收口到当前 precondition stage；A1 runtime 仍不能标记 complete，v2 skeleton runtime 仍 forbidden。下一步候选为 push / 项目源同步、Claude 横向复评输入包、或极窄只读 v2 health / readiness / location contract skeleton planning 的授权判断；不建议直接进入完整 v2 skeleton runtime。
 
 ## 规则文件 / Agent Rules / Project Rules
 
