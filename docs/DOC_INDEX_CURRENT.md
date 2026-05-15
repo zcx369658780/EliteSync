@@ -11,9 +11,9 @@
 - `docs/version_plans/ELITESYNC_6_0_ALPHA_MASTER_PLAN_2026_05_12.md`：6.0 Alpha 内测准备线主计划
 - `docs/version_plans/v_6_0_A0_Alpha内测准备_商用化底座与路线冻结版_开发计划书_2026_05_12.md`：6.0-A0 planning-only 路线冻结计划书
 - `docs/version_plans/v_6_0_A1_后端v2与位置链路最小闭环_开发计划书_2026_05_12.md`：6.0-A1 顾问计划书；先看 Framework / Runtime Support Gate，不得直接进入 v2 skeleton runtime
-- `docs/version_plans/6.0_A1_HANDOFF_MASTER.md`：6.0-A1 当前默认主交接入口；handoff master / documentation-only，不代表 A1 runtime complete
-- `docs/version_plans/6.0_A1_V2_RUNTIME_SLICE_AUTHORIZATION_PACKAGE.md`：v2 runtime authorization package；supporting evidence，不是 runtime，不代表 runtime authorized
-- `docs/version_plans/6.0_A1_V2_HEALTH_READINESS_LOCATION_CONTRACT_SKELETON_PLAN.md`：narrow readonly v2 skeleton planning；planning-only / supporting evidence，proposal endpoints 为 `GET /api/v2/app/health`、`GET /api/v2/app/readiness`、`GET /api/v2/contracts/location`
+- `docs/version_plans/6.0_A1_HANDOFF_MASTER.md`：6.0-A1 当前默认主交接入口；已同步 R1 readonly v2 runtime slice remote-published / verification pass，但不代表 A1 final acceptance complete 或 production ready
+- `docs/version_plans/6.0_A1_V2_RUNTIME_SLICE_AUTHORIZATION_PACKAGE.md`：v2 runtime authorization package；R1 实施前 supporting evidence，历史授权包，不等同于 A1 complete
+- `docs/version_plans/6.0_A1_V2_HEALTH_READINESS_LOCATION_CONTRACT_SKELETON_PLAN.md`：narrow readonly v2 skeleton planning；R1 实施前 planning-only / supporting evidence，后续事实以 R1 commit `90436e2d` 为准
 - `docs/version_plans/6.0_A1_CLAUDE_HORIZONTAL_REVIEW_REPORT.md`：6.0-A1 Claude review report archive；verdict `pass with observations`，supporting evidence only
 - `docs/version_plans/6.0_A1_CLAUDE_REVIEW_RESPONSE.md`：Codex response to Claude review；supporting evidence only
 - `docs/version_plans/6.0_A1_CLAUDE_HORIZONTAL_REVIEW_INPUT_PACKAGE.md`：Claude 横向复评输入包；supporting evidence only
@@ -58,7 +58,7 @@
 - `docs/reference/ELITESYNC_REVIEW_ACTION_MATRIX_2026_05_12.md`
 - `docs/agents/CLAUDE_HORIZONTAL_REVIEW_GATE_RULES.md`
 
-6.0-A1 当前入口提醒：`docs/version_plans/6.0_A1_HANDOFF_MASTER.md` 是当前 A1 默认主交接入口。Claude review report archive、Codex response、narrow readonly v2 skeleton planning 与 v2 runtime authorization package 已提交并 push，Claude verdict 为 `pass with observations`；A1 documentation / precondition stage 可记为 `pass with observations`。A1 runtime 仍不能标记 complete，v2 skeleton runtime 与 route / controller / DTO / Resource 新增仍 forbidden。下一步最多是“是否授权真正极窄只读 v2 health / readiness / location contract runtime slice”的用户判断；不建议直接进入完整 v2 skeleton runtime。
+6.0-A1 当前入口提醒：`docs/version_plans/6.0_A1_HANDOFF_MASTER.md` 是当前 A1 默认主交接入口。Claude review report archive、Codex response、narrow readonly v2 skeleton planning 与 v2 runtime authorization package 已提交并 push，Claude verdict 为 `pass with observations`；R1 readonly v2 runtime slice 已 remote-published，commit `90436e2d17c611907dfe4322135c7e4ba0bbb23d feat: add readonly v2 runtime slice`。Post-push readonly verification 已通过：route-list 可见 `GET api/v2/app/health`、`GET api/v2/app/readiness`、`GET api/v2/contracts/location`，不存在 `api/v2/health` / `api/v2/readiness`；3 个新增 Feature Test 文件最小测试通过。当前仍不能标记 A1 final acceptance complete、production ready 或 A2 start；下一步应是 A1 后续验证 / 证据收口 / 顾问判断，或另一个明确授权的极窄 runtime slice 计划确认。
 
 ## 规则文件 / Agent Rules / Project Rules
 

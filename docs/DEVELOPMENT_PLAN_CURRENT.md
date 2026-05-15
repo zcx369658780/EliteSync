@@ -14,9 +14,9 @@
 
 当前 A1 默认主交接入口：`docs/version_plans/6.0_A1_HANDOFF_MASTER.md`
 
-当前最新 pushed HEAD：`3b26d7faf7387ff183194512396705f4308203d7`
+当前最新 pushed HEAD：`90436e2d17c611907dfe4322135c7e4ba0bbb23d`
 
-当前下一步：6.0-A1 documentation / precondition stage 已通过 Claude review，verdict 为 `pass with observations`。Narrow readonly v2 skeleton planning 已 push / planning-only；v2 runtime authorization package 已 push / supporting evidence。A1 runtime 仍未完成，v2 skeleton runtime 仍 forbidden。下一步候选为用户授权判断“是否执行真正的极窄只读 v2 health / readiness / location contract runtime slice”；不建议直接进入完整 v2 skeleton runtime。
+当前下一步：6.0-A1 R1 readonly v2 runtime slice 已 remote-published，commit `90436e2d17c611907dfe4322135c7e4ba0bbb23d feat: add readonly v2 runtime slice`。Post-push readonly verification 已通过：route-list 可见 `GET api/v2/app/health`、`GET api/v2/app/readiness`、`GET api/v2/contracts/location`，不存在错误旧路径 `api/v2/health` / `api/v2/readiness`；本次 7 个 PHP 文件 `php -l` 全部通过；3 个新增 Feature Test 文件最小测试通过，无 failures，仅有 `PDO::MYSQL_ATTR_SSL_CA` deprecation notice；forbidden grep 无匹配。下一步应是 A1 后续验证 / 证据收口 / 顾问判断，或另一个明确授权的极窄 runtime slice 计划确认；不建议直接进入完整 v2 skeleton runtime、A2、Date Drop、Flutter integration 或 production release。
 
 ## 当前判断
 
@@ -24,7 +24,7 @@
 - 当前不继续直接制定 5.11，也不直接进入 5.11 runtime。
 - 6.0 Alpha 进入内测准备线：商用级底座重构 + Date Drop 式高质量低频匹配 + 搭子精准陪伴 + 基础社交功能补齐 + 玄学解释产品化 + UI/IA 内测打磨。
 - 6.0-A0 是 planning-only 版本，只做路线冻结、边界定义、计划书与门禁固化，不做 runtime；A0 不是后端 v2、搭子、Date Drop 或 UI/IA 的 runtime 完成版本。
-- 6.0-A1 handoff master 已提交并作为当前默认入口；Claude review report archive、Codex response、narrow readonly v2 skeleton planning 与 v2 runtime authorization package 已提交并 push，Claude verdict 为 `pass with observations`。这只代表 documentation-only / precondition-stage 通过 Claude review 与 supporting evidence 收口，不代表 A1 runtime pass，也不代表 GPT final acceptance complete，不代表 runtime authorized。Laravel 11 不作为 v2 商用级目标版本；v2 skeleton runtime、route-controller-DTO-resource 新增、composer update、Laravel upgrade、migration、production operation、API smoke 与 write smoke 仍禁止，除非用户后续对极窄 runtime slice 另行明确授权。
+- 6.0-A1 handoff master 已提交并作为当前默认入口；Claude review report archive、Codex response、narrow readonly v2 skeleton planning 与 v2 runtime authorization package 已提交并 push，Claude verdict 为 `pass with observations`。R1 readonly v2 runtime slice 已 remote-published 并通过 post-push readonly verification，但这不代表 A1 final acceptance complete、production ready、完整 v2 skeleton complete 或 A2 start。Laravel 11 不作为 v2 商用级目标版本；composer update、Laravel upgrade、migration、production operation、API / write smoke、Flutter default base URL change 与 release chain 修改仍禁止，除非用户后续另行明确授权。
 
 ## 6.0 Alpha 优先级
 

@@ -1,22 +1,27 @@
 # 当前状态
 
-更新时间：2026-05-12
+更新时间：2026-05-15
 
 ## 当前最新完成到哪里
 
-- 当前最新完成：5.6-5.10 已完成第一轮解释层闭环，验收口径为 `pass with observations`。
-- 当前最新对外发布版本仍为：`0.05.05 / 50500`。
-- 上一条发布基线 / 历史发布链：`0.05.04 / 50400`。
+- 当前最新完成：6.0-A1 R1 readonly v2 runtime slice 已 remote-published。
+- R1 runtime commit：`90436e2d17c611907dfe4322135c7e4ba0bbb23d feat: add readonly v2 runtime slice`。
+- R1 push 结果：`46f43071..90436e2d HEAD -> feature/5.0-alpha-readiness-20260501`。
+- R1 post-push readonly verification 已通过：`php artisan route:list --path=api/v2` 可见 3 个 endpoint；本次 7 个 PHP 文件 `php -l` 通过；3 个新增 Feature Test 文件最小测试通过，无 failures，仅有 `PDO::MYSQL_ATTR_SSL_CA` deprecation notice；forbidden grep 无匹配；最终 git status clean。
+- 当前最新对外发布版本仍为：`0.05.10 / 51000`。
+- 上一条发布基线 / 历史发布链：`0.05.05 / 50500`。
 - 当前主线切换为：6.0 Alpha 内测准备线。
 - 当前主计划：`docs/version_plans/ELITESYNC_6_0_ALPHA_MASTER_PLAN_2026_05_12.md`。
 
 ## 当前下一步
 
-- 下一步不是制定 5.6，也不是直接进入 5.11 runtime。
-- 下一步是制定 6.0-A0 planning-only 计划：
-  - `v_6_0_A0_Alpha内测准备_商用化底座与路线冻结版_开发计划书_2026_05_12.md`
-- 6.0-A0 只做路线冻结、后端 v2 迁移计划、位置链路重构方案、搭子功能产品方案、Date Drop 式匹配主链重构方案、Claude 横向复评规则固化和 A1-A5 拆分。
-- A0 不做 Flutter / Laravel / 数据库 / API / release chain runtime 修改。
+- 下一步不是进入 A2 / Date Drop / Flutter v2 base URL / production release。
+- 下一步应是 6.0-A1 后续验证、证据收口、Claude / GPT 顾问判断，或另一个明确授权的极窄 runtime slice 计划确认。
+- 当前 R1 只覆盖：
+  - `GET api/v2/app/health`
+  - `GET api/v2/app/readiness`
+  - `GET api/v2/contracts/location`
+- 当前仍不能写成 6.0-A1 final acceptance complete、production ready、完整 v2 skeleton complete。
 
 ## 6.0 Alpha 重点
 

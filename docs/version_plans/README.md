@@ -11,20 +11,21 @@
 
 6.0 Alpha 内测准备线
 
-当前下一步：6.0-A1 默认主交接入口仍为 [6.0_A1_HANDOFF_MASTER.md](./6.0_A1_HANDOFF_MASTER.md)。Claude review report archive、Codex response、narrow readonly v2 skeleton planning 与 v2 runtime authorization package 已提交并 push，Claude verdict 为 `pass with observations`；A1 documentation / precondition stage 可记为 `pass with observations`。A1 runtime 仍未完成，v2 skeleton runtime 仍 forbidden；下一步最多是“是否授权真正极窄只读 v2 runtime slice”的用户判断，不是直接 runtime。
+当前下一步：6.0-A1 默认主交接入口仍为 [6.0_A1_HANDOFF_MASTER.md](./6.0_A1_HANDOFF_MASTER.md)。Claude review report archive、Codex response、narrow readonly v2 skeleton planning 与 v2 runtime authorization package 已提交并 push，Claude verdict 为 `pass with observations`。R1 readonly v2 runtime slice 已 remote-published，commit `90436e2d17c611907dfe4322135c7e4ba0bbb23d feat: add readonly v2 runtime slice`；post-push readonly verification 已通过。下一步应是 A1 后续验证 / 证据收口 / 顾问判断，或另一个明确授权的极窄 runtime slice 计划确认；不是直接进入 A2 / Date Drop / Flutter integration / production release。
 
 ## 6.0 Alpha Version Split
 
 - 6.0-A0：商用化底座与路线冻结版，planning-only，计划书已落地；仍需 Claude 轻量横向复评与 GPT 顾问最终验收
-- 6.0-A1：后端 v2 与位置链路最小闭环；当前默认主交接入口为 [6.0_A1_HANDOFF_MASTER.md](./6.0_A1_HANDOFF_MASTER.md)，其他 A1 文件均为 supporting evidence / 补充附件，不创建多个 handoff 入口。Claude input / report / response、narrow readonly v2 skeleton planning 与 v2 runtime authorization package 均为 supporting evidence，Claude verdict 为 `pass with observations`。当前仍禁止 v2 skeleton runtime、route / controller / DTO / Resource 新增、Laravel upgrade、composer update、migration、production operation、API smoke、write smoke。
+- 6.0-A1：后端 v2 与位置链路最小闭环；当前默认主交接入口为 [6.0_A1_HANDOFF_MASTER.md](./6.0_A1_HANDOFF_MASTER.md)，其他 A1 文件均为 supporting evidence / 补充附件，不创建多个 handoff 入口。Claude input / report / response、narrow readonly v2 skeleton planning 与 v2 runtime authorization package 均为 supporting evidence，Claude verdict 为 `pass with observations`。R1 已新增极窄 readonly v2 runtime slice，但当前仍禁止 Laravel upgrade、composer update、migration、production operation、API/write smoke、Flutter default base URL change、release chain 修改，以及未经授权扩展完整 v2 skeleton。
 
 ## 6.0-A1 Current Supporting Evidence
 
 - [6.0_A1_CLAUDE_HORIZONTAL_REVIEW_INPUT_PACKAGE.md](./6.0_A1_CLAUDE_HORIZONTAL_REVIEW_INPUT_PACKAGE.md)：Claude review input package，supporting evidence。
 - [6.0_A1_CLAUDE_HORIZONTAL_REVIEW_REPORT.md](./6.0_A1_CLAUDE_HORIZONTAL_REVIEW_REPORT.md)：Claude review report archive，verdict `pass with observations`，supporting evidence only。
 - [6.0_A1_CLAUDE_REVIEW_RESPONSE.md](./6.0_A1_CLAUDE_REVIEW_RESPONSE.md)：Codex response to Claude review，supporting evidence only。
-- [6.0_A1_V2_HEALTH_READINESS_LOCATION_CONTRACT_SKELETON_PLAN.md](./6.0_A1_V2_HEALTH_READINESS_LOCATION_CONTRACT_SKELETON_PLAN.md)：narrow readonly v2 skeleton planning，planning-only / supporting evidence。Future proposal endpoints: `GET /api/v2/app/health`, `GET /api/v2/app/readiness`, `GET /api/v2/contracts/location`；这些 endpoint 仍不是 implemented。
-- [6.0_A1_V2_RUNTIME_SLICE_AUTHORIZATION_PACKAGE.md](./6.0_A1_V2_RUNTIME_SLICE_AUTHORIZATION_PACKAGE.md)：v2 runtime authorization package，supporting evidence，不是 runtime。Future runtime slice candidate endpoints: `GET /api/v2/app/health`, `GET /api/v2/app/readiness`, `GET /api/v2/contracts/location`；这些 endpoint 仍不是 implemented。
+- [6.0_A1_V2_HEALTH_READINESS_LOCATION_CONTRACT_SKELETON_PLAN.md](./6.0_A1_V2_HEALTH_READINESS_LOCATION_CONTRACT_SKELETON_PLAN.md)：narrow readonly v2 skeleton planning，R1 实施前 planning-only / supporting evidence；对应 endpoints 已在 R1 commit `90436e2d` 中实现为 readonly runtime slice。
+- [6.0_A1_V2_RUNTIME_SLICE_AUTHORIZATION_PACKAGE.md](./6.0_A1_V2_RUNTIME_SLICE_AUTHORIZATION_PACKAGE.md)：v2 runtime authorization package，R1 实施前 supporting evidence；对应 endpoints 已在 R1 commit `90436e2d` 中实现为 readonly runtime slice。
+- R1 readonly v2 runtime slice：commit `90436e2d17c611907dfe4322135c7e4ba0bbb23d feat: add readonly v2 runtime slice`，remote-published。Post-push readonly verification passed：route-list 可见 `GET api/v2/app/health`、`GET api/v2/app/readiness`、`GET api/v2/contracts/location`；不存在错误旧路径 `api/v2/health` / `api/v2/readiness`；3 个新增 Feature Test 文件最小测试通过，无 failures，仅有 `PDO::MYSQL_ATTR_SSL_CA` deprecation notice。
 - 6.0-A2：Date Drop 式匹配主链重构
 - 6.0-A3：搭子精准陪伴最小闭环
 - 6.0-A4：基础社交功能补齐
