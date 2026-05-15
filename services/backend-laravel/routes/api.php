@@ -19,7 +19,16 @@ use App\Http\Controllers\Api\V1\RelationshipController;
 use App\Http\Controllers\Api\V1\ProfileController;
 use App\Http\Controllers\Api\V1\StatusPostController;
 use App\Http\Controllers\Api\V1\QuestionnaireController;
+use App\Http\Controllers\Api\V2\AppHealthController;
+use App\Http\Controllers\Api\V2\AppReadinessController;
+use App\Http\Controllers\Api\V2\Contracts\LocationContractController;
 use Illuminate\Support\Facades\Route;
+
+Route::prefix('v2')->middleware('secure.transport')->group(function () {
+    Route::get('/app/health', AppHealthController::class);
+    Route::get('/app/readiness', AppReadinessController::class);
+    Route::get('/contracts/location', LocationContractController::class);
+});
 
 Route::prefix('v1')->group(function () {
     Route::prefix('app')->group(function () {
