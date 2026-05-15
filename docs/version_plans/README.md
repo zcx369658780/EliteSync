@@ -25,6 +25,7 @@
 - [6.0_A1_CLAUDE_REVIEW_RESPONSE.md](./6.0_A1_CLAUDE_REVIEW_RESPONSE.md)：Codex response to Claude review，supporting evidence only。
 - [6.0_A1_V2_HEALTH_READINESS_LOCATION_CONTRACT_SKELETON_PLAN.md](./6.0_A1_V2_HEALTH_READINESS_LOCATION_CONTRACT_SKELETON_PLAN.md)：narrow readonly v2 skeleton planning，R1 实施前 planning-only / supporting evidence；对应 endpoints 已在 R1 commit `90436e2d` 中实现为 readonly runtime slice。
 - [6.0_A1_V2_RUNTIME_SLICE_AUTHORIZATION_PACKAGE.md](./6.0_A1_V2_RUNTIME_SLICE_AUTHORIZATION_PACKAGE.md)：v2 runtime authorization package，R1 实施前 supporting evidence；对应 endpoints 已在 R1 commit `90436e2d` 中实现为 readonly runtime slice。
+- [6.0_A1_R1_READONLY_RUNTIME_SLICE_STAGE_ACCEPTANCE.md](./6.0_A1_R1_READONLY_RUNTIME_SLICE_STAGE_ACCEPTANCE.md)：R1 readonly runtime slice stage acceptance package，supporting evidence only；不取代 `6.0_A1_HANDOFF_MASTER.md`，不代表 A1 final acceptance / production ready / full v2 skeleton / A2 start。
 - R1 readonly v2 runtime slice：commit `90436e2d17c611907dfe4322135c7e4ba0bbb23d feat: add readonly v2 runtime slice`，remote-published。Post-push readonly verification passed：route-list 可见 `GET api/v2/app/health`、`GET api/v2/app/readiness`、`GET api/v2/contracts/location`；不存在错误旧路径 `api/v2/health` / `api/v2/readiness`；3 个新增 Feature Test 文件最小测试通过，无 failures，仅有 `PDO::MYSQL_ATTR_SSL_CA` deprecation notice。
 - 6.0-A2：Date Drop 式匹配主链重构
 - 6.0-A3：搭子精准陪伴最小闭环
