@@ -14,9 +14,13 @@
 
 当前 A1 默认主交接入口：`docs/version_plans/6.0_A1_HANDOFF_MASTER.md`
 
-当前最新 pushed HEAD：`5fb233e20103eea90e6faa342ace3e58ee1367b1`
+当前 Git HEAD：以 `git rev-parse HEAD` / `git log` 实时结果为准；本文档不再硬编码自身所在 commit 作为“当前最新 HEAD”。
 
-R1 runtime commit：`90436e2d17c611907dfe4322135c7e4ba0bbb23d feat: add readonly v2 runtime slice`
+近期关键提交链：
+
+- R1 runtime commit：`90436e2d17c611907dfe4322135c7e4ba0bbb23d feat: add readonly v2 runtime slice`
+- R1 documentation sync commit：`5fb233e20103eea90e6faa342ace3e58ee1367b1 docs: record 6.0-A1 R1 readonly verification`
+- HEAD metadata correction commit：`ad3899b3d9365da3dd39d21e1a22d5d4076830d7 docs: clarify 6.0-A1 current head metadata`
 
 当前下一步：6.0-A1 R1 readonly v2 runtime slice 已 remote-published，commit `90436e2d17c611907dfe4322135c7e4ba0bbb23d feat: add readonly v2 runtime slice`。Post-push readonly verification 已通过：route-list 可见 `GET api/v2/app/health`、`GET api/v2/app/readiness`、`GET api/v2/contracts/location`，不存在错误旧路径 `api/v2/health` / `api/v2/readiness`；本次 7 个 PHP 文件 `php -l` 全部通过；3 个新增 Feature Test 文件最小测试通过，无 failures，仅有 `PDO::MYSQL_ATTR_SSL_CA` deprecation notice；forbidden grep 无匹配。下一步应是 A1 后续验证 / 证据收口 / 顾问判断，或另一个明确授权的极窄 runtime slice 计划确认；不建议直接进入完整 v2 skeleton runtime、A2、Date Drop、Flutter integration 或 production release。
 
