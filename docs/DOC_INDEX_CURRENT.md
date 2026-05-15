@@ -12,6 +12,7 @@
 - `docs/version_plans/v_6_0_A0_Alpha内测准备_商用化底座与路线冻结版_开发计划书_2026_05_12.md`：6.0-A0 planning-only 路线冻结计划书
 - `docs/version_plans/v_6_0_A1_后端v2与位置链路最小闭环_开发计划书_2026_05_12.md`：6.0-A1 顾问计划书；先看 Framework / Runtime Support Gate，不得直接进入 v2 skeleton runtime
 - `docs/version_plans/6.0_A1_HANDOFF_MASTER.md`：6.0-A1 当前默认主交接入口；handoff master / documentation-only，不代表 A1 runtime complete
+- `docs/version_plans/6.0_A1_V2_RUNTIME_SLICE_AUTHORIZATION_PACKAGE.md`：v2 runtime authorization package；supporting evidence，不是 runtime，不代表 runtime authorized
 - `docs/version_plans/6.0_A1_V2_HEALTH_READINESS_LOCATION_CONTRACT_SKELETON_PLAN.md`：narrow readonly v2 skeleton planning；planning-only / supporting evidence，proposal endpoints 为 `GET /api/v2/app/health`、`GET /api/v2/app/readiness`、`GET /api/v2/contracts/location`
 - `docs/version_plans/6.0_A1_CLAUDE_HORIZONTAL_REVIEW_REPORT.md`：6.0-A1 Claude review report archive；verdict `pass with observations`，supporting evidence only
 - `docs/version_plans/6.0_A1_CLAUDE_REVIEW_RESPONSE.md`：Codex response to Claude review；supporting evidence only
@@ -27,21 +28,22 @@
 2. `docs/DOC_INDEX_CURRENT.md`
 3. `docs/project_memory.md`
 4. `docs/version_plans/6.0_A1_HANDOFF_MASTER.md`
-5. `docs/version_plans/6.0_A1_V2_HEALTH_READINESS_LOCATION_CONTRACT_SKELETON_PLAN.md`
-6. `docs/version_plans/6.0_A1_CLAUDE_HORIZONTAL_REVIEW_REPORT.md`
-7. `docs/version_plans/6.0_A1_CLAUDE_REVIEW_RESPONSE.md`
-8. `docs/version_plans/6.0_A1_CLAUDE_HORIZONTAL_REVIEW_INPUT_PACKAGE.md`
-9. `docs/version_plans/v_6_0_A1_后端v2与位置链路最小闭环_开发计划书_2026_05_12.md`
-10. `docs/version_plans/6.0_A1_SKELETON_PRECONDITION_EXECUTION_PLAN.md`
-11. `docs/version_plans/6.0_A1_ENVIRONMENT_SPLIT_PLAN.md`
-12. `docs/version_plans/6.0_A1_LOCATION_CHAIN_RESTRUCTURE.md`
-13. `docs/version_plans/6.0_A1_BACKUP_ROLLBACK_MONITORING_PLAN.md`
-14. `docs/version_plans/6.0_A1_LARAVEL12_STAGING_DRY_RUN_PLAN.md`
-15. `docs/version_plans/6.0_A1_ENV_CACHE_SESSION_CONFIG_UNIFICATION_PLAN.md`
-16. `docs/version_plans/6.0_A1_AUTHENTICATED_READONLY_SMOKE_BATCH2_RERUN_REPORT.md`
-17. `docs/version_plans/6.0_A1_READONLY_SMOKE_BATCH1_PRODUCTION_READONLY_REPORT.md`
-18. `docs/version_plans/6.0_A1_BACKEND_V2_CONTRACT_MAP.md`
-19. `docs/version_plans/6.0_A1_V1_CONTRACT_AUDIT.md`
+5. `docs/version_plans/6.0_A1_V2_RUNTIME_SLICE_AUTHORIZATION_PACKAGE.md`
+6. `docs/version_plans/6.0_A1_V2_HEALTH_READINESS_LOCATION_CONTRACT_SKELETON_PLAN.md`
+7. `docs/version_plans/6.0_A1_CLAUDE_HORIZONTAL_REVIEW_REPORT.md`
+8. `docs/version_plans/6.0_A1_CLAUDE_REVIEW_RESPONSE.md`
+9. `docs/version_plans/6.0_A1_CLAUDE_HORIZONTAL_REVIEW_INPUT_PACKAGE.md`
+10. `docs/version_plans/v_6_0_A1_后端v2与位置链路最小闭环_开发计划书_2026_05_12.md`
+11. `docs/version_plans/6.0_A1_SKELETON_PRECONDITION_EXECUTION_PLAN.md`
+12. `docs/version_plans/6.0_A1_ENVIRONMENT_SPLIT_PLAN.md`
+13. `docs/version_plans/6.0_A1_LOCATION_CHAIN_RESTRUCTURE.md`
+14. `docs/version_plans/6.0_A1_BACKUP_ROLLBACK_MONITORING_PLAN.md`
+15. `docs/version_plans/6.0_A1_LARAVEL12_STAGING_DRY_RUN_PLAN.md`
+16. `docs/version_plans/6.0_A1_ENV_CACHE_SESSION_CONFIG_UNIFICATION_PLAN.md`
+17. `docs/version_plans/6.0_A1_AUTHENTICATED_READONLY_SMOKE_BATCH2_RERUN_REPORT.md`
+18. `docs/version_plans/6.0_A1_READONLY_SMOKE_BATCH1_PRODUCTION_READONLY_REPORT.md`
+19. `docs/version_plans/6.0_A1_BACKEND_V2_CONTRACT_MAP.md`
+20. `docs/version_plans/6.0_A1_V1_CONTRACT_AUDIT.md`
 
 ## 6.0 Alpha 当前参考
 
@@ -56,7 +58,7 @@
 - `docs/reference/ELITESYNC_REVIEW_ACTION_MATRIX_2026_05_12.md`
 - `docs/agents/CLAUDE_HORIZONTAL_REVIEW_GATE_RULES.md`
 
-6.0-A1 当前入口提醒：`docs/version_plans/6.0_A1_HANDOFF_MASTER.md` 是当前 A1 默认主交接入口。Claude review report archive、Codex response 与 narrow readonly v2 skeleton planning 已提交并 push，Claude verdict 为 `pass with observations`；A1 documentation / precondition stage 可记为 `pass with observations`。A1 runtime 仍不能标记 complete，v2 skeleton runtime 与 route / controller / DTO / Resource 新增仍 forbidden。下一步最多是“是否授权真正极窄只读 v2 health / readiness / location contract runtime slice”的用户判断；不建议直接进入完整 v2 skeleton runtime。
+6.0-A1 当前入口提醒：`docs/version_plans/6.0_A1_HANDOFF_MASTER.md` 是当前 A1 默认主交接入口。Claude review report archive、Codex response、narrow readonly v2 skeleton planning 与 v2 runtime authorization package 已提交并 push，Claude verdict 为 `pass with observations`；A1 documentation / precondition stage 可记为 `pass with observations`。A1 runtime 仍不能标记 complete，v2 skeleton runtime 与 route / controller / DTO / Resource 新增仍 forbidden。下一步最多是“是否授权真正极窄只读 v2 health / readiness / location contract runtime slice”的用户判断；不建议直接进入完整 v2 skeleton runtime。
 
 ## 规则文件 / Agent Rules / Project Rules
 
