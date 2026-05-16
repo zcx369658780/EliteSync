@@ -12,20 +12,23 @@
 - R2 authorization prepackage 已 remote-published：`docs/version_plans/6.0_A1_R2_NARROW_READONLY_RUNTIME_SLICE_AUTHORIZATION_PREPACKAGE.md`，commit `e1627b8dd9f4ec6967f9c9940e13e6cb788895ff docs: add 6.0-A1 R2 authorization prepackage`。
 - GPT 顾问已验收 R2 prepackage；当前决策为 reject endpoint R2 for now，并建议下一步方向选择 staging / production split readonly verification package。
 - 该决策只代表下一步建议方向，不代表 Candidate C 已获实施授权、已实施或已完成。
+- Candidate C staging / production split readonly verification prepackage 已 remote-published：`docs/version_plans/6.0_A1_STAGING_PRODUCTION_SPLIT_READONLY_VERIFICATION_PREPACKAGE.md`，commit `3e49879c1264f031325264a75702e8afa9db6302 docs: add 6.0-A1 staging production verification prepackage`。
+- GPT 顾问已验收 Candidate C prepackage；该文件只是 authorization / preparation document，不代表 Candidate C 已获实施授权、已实施或已完成，也不代表 staging verification passed、production verification passed 或 API smoke passed。
+- 后续 Codex 导出目录默认固定为：`C:\Users\zcxve\Downloads\`。
 - 当前实际 Git HEAD 以 `git rev-parse HEAD` / `git log` 实时结果为准。
 
 ## 当前下一步
 
-R2 prepackage 后的下一步应保持在 A1 内：
+Candidate C prepackage 后的下一步应保持在 A1 内：
 
-- prepare staging / production split readonly verification package authorization/preparation document；
-- 或由用户再次明确授权后再下达 Candidate C prepackage prompt；
+- decide whether to approve a future Candidate C local/repo-only readonly audit prompt；
+- 或 request Claude horizontal review before any staging / production request；
 - Laravel 12 staging dry-run pre-evidence package；
 - Claude horizontal review before A1 final gate。
 
-Candidate C 尚未获实施授权，本阶段不得进入 Candidate C implementation。
+Candidate C 尚未获实施授权、尚未实施、尚未完成，本阶段不得进入 Candidate C implementation、staging verification 或 production verification。
 
-不得把 R1 或 R2 prepackage 直接扩展为 R2 runtime implementation / endpoint expansion / A2 / Date Drop / Flutter integration / production release。
+不得把 R1、R2 prepackage 或 Candidate C prepackage 直接扩展为 R2 runtime implementation / endpoint expansion / A2 / Date Drop / Flutter integration / production release。
 
 ## R1 已验证范围
 
@@ -48,3 +51,4 @@ Candidate C 尚未获实施授权，本阶段不得进入 Candidate C implementa
 - 不能把 R1 写成 6.0-A1 final acceptance complete、production ready 或 A2 start。
 - 不能把 R2 prepackage 写成 R2 runtime complete。
 - 不能把 Candidate C 写成已获实施授权、已实施或已完成。
+- 不能把 staging / production split readonly verification 写成已通过。

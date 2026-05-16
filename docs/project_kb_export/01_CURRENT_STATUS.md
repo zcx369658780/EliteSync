@@ -4,7 +4,11 @@
 
 ## 当前最新完成到哪里
 
-- 当前最新完成文档：6.0-A1 R2 authorization prepackage 已 remote-published。
+- 当前最新完成文档：6.0-A1 Candidate C staging / production split readonly verification prepackage 已 remote-published。
+- Candidate C staging / production split readonly verification prepackage：`docs/version_plans/6.0_A1_STAGING_PRODUCTION_SPLIT_READONLY_VERIFICATION_PREPACKAGE.md`。
+- Candidate C prepackage commit：`3e49879c1264f031325264a75702e8afa9db6302 docs: add 6.0-A1 staging production verification prepackage`。
+- GPT 顾问已验收该 prepackage；该文件是 authorization / preparation document，不是 Candidate C implementation，不代表 Candidate C 已获实施授权、已实施或已完成，也不代表 staging verification passed、production verification passed 或 API smoke passed。
+- 后续 Codex 导出目录默认固定为：`C:\Users\zcxve\Downloads\`。
 - R2 authorization prepackage：`docs/version_plans/6.0_A1_R2_NARROW_READONLY_RUNTIME_SLICE_AUTHORIZATION_PREPACKAGE.md`。
 - R2 authorization prepackage commit：`e1627b8dd9f4ec6967f9c9940e13e6cb788895ff docs: add 6.0-A1 R2 authorization prepackage`。
 - GPT 顾问已验收该 prepackage，并建议当前 `Reject endpoint R2 for now and choose staging / production split readonly verification package as the next A1 direction`。
@@ -23,13 +27,13 @@
 
 ## 当前下一步
 
-- 下一步不是进入 R2 runtime implementation / endpoint expansion / Candidate C implementation / A2 / Date Drop / Flutter v2 base URL / production release。
-- 下一步应准备 staging / production split readonly verification package authorization/preparation document，或由用户再次明确授权后再下达 Candidate C prepackage prompt。
+- 下一步不是进入 R2 runtime implementation / endpoint expansion / Candidate C implementation / staging verification / production verification / A2 / Date Drop / Flutter v2 base URL / production release。
+- 下一步应由用户决定是否 approve future Candidate C local/repo-only readonly audit prompt，或 request Claude horizontal review before any staging / production request。
 - 当前 R1 只覆盖：
   - `GET api/v2/app/health`
   - `GET api/v2/app/readiness`
   - `GET api/v2/contracts/location`
-- 当前仍不能写成 6.0-A1 final acceptance complete、production ready、完整 v2 skeleton complete、R2 runtime complete、Candidate C authorized 或 Candidate C implemented。
+- 当前仍不能写成 6.0-A1 final acceptance complete、production ready、完整 v2 skeleton complete、R2 runtime complete、Candidate C authorized、Candidate C implemented、Candidate C complete、staging verification passed 或 production verification passed。
 
 ## 6.0 Alpha 重点
 
