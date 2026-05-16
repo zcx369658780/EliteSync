@@ -1,6 +1,6 @@
 # Version Plans
 
-更新时间：2026-05-15
+更新时间：2026-05-16
 
 ## Current Active Plan
 
@@ -11,12 +11,12 @@
 
 6.0 Alpha 内测准备线
 
-当前下一步：6.0-A1 默认主交接入口仍为 [6.0_A1_HANDOFF_MASTER.md](./6.0_A1_HANDOFF_MASTER.md)。Claude review report archive、Codex response、narrow readonly v2 skeleton planning 与 v2 runtime authorization package 已提交并 push，Claude verdict 为 `pass with observations`。R1 readonly v2 runtime slice 已 remote-published，commit `90436e2d17c611907dfe4322135c7e4ba0bbb23d feat: add readonly v2 runtime slice`；post-push readonly verification 已通过。下一步应是 A1 后续验证 / 证据收口 / 顾问判断，或另一个明确授权的极窄 runtime slice 计划确认；不是直接进入 A2 / Date Drop / Flutter integration / production release。
+当前下一步：6.0-A1 默认主交接入口仍为 [6.0_A1_HANDOFF_MASTER.md](./6.0_A1_HANDOFF_MASTER.md)。Claude review report archive、Codex response、narrow readonly v2 skeleton planning、v2 runtime authorization package 与 R2 authorization prepackage 已提交并 push，Claude verdict 为 `pass with observations`。R1 readonly v2 runtime slice 已 remote-published，commit `90436e2d17c611907dfe4322135c7e4ba0bbb23d feat: add readonly v2 runtime slice`；post-push readonly verification 已通过。R2 authorization prepackage 已 remote-published，commit `e1627b8dd9f4ec6967f9c9940e13e6cb788895ff docs: add 6.0-A1 R2 authorization prepackage`；GPT 顾问已验收，并建议当前 reject endpoint R2 for now，下一步选择 staging / production split readonly verification package。该建议不代表 Candidate C 已获实施授权或已实施；下一步应准备 staging / production split readonly verification package authorization/preparation document，或由用户再次明确授权后再下达 Candidate C prepackage prompt；不是直接进入 R2 runtime implementation / A2 / Date Drop / Flutter integration / production release。
 
 ## 6.0 Alpha Version Split
 
 - 6.0-A0：商用化底座与路线冻结版，planning-only，计划书已落地；仍需 Claude 轻量横向复评与 GPT 顾问最终验收
-- 6.0-A1：后端 v2 与位置链路最小闭环；当前默认主交接入口为 [6.0_A1_HANDOFF_MASTER.md](./6.0_A1_HANDOFF_MASTER.md)，其他 A1 文件均为 supporting evidence / 补充附件，不创建多个 handoff 入口。Claude input / report / response、narrow readonly v2 skeleton planning 与 v2 runtime authorization package 均为 supporting evidence，Claude verdict 为 `pass with observations`。R1 已新增极窄 readonly v2 runtime slice，但当前仍禁止 Laravel upgrade、composer update、migration、production operation、API/write smoke、Flutter default base URL change、release chain 修改，以及未经授权扩展完整 v2 skeleton。
+- 6.0-A1：后端 v2 与位置链路最小闭环；当前默认主交接入口为 [6.0_A1_HANDOFF_MASTER.md](./6.0_A1_HANDOFF_MASTER.md)，其他 A1 文件均为 supporting evidence / 补充附件，不创建多个 handoff 入口。Claude input / report / response、narrow readonly v2 skeleton planning、v2 runtime authorization package 与 R2 authorization prepackage 均为 supporting evidence，Claude verdict 为 `pass with observations`。R1 已新增极窄 readonly v2 runtime slice；R2 authorization prepackage 已获 GPT 顾问验收，但 Candidate C 尚未获实施授权。当前仍禁止 Laravel upgrade、composer update、migration、production operation、API/write smoke、Flutter default base URL change、release chain 修改，以及未经授权扩展完整 v2 skeleton或进入 Candidate C implementation。
 
 ## 6.0-A1 Current Supporting Evidence
 
@@ -26,6 +26,7 @@
 - [6.0_A1_V2_HEALTH_READINESS_LOCATION_CONTRACT_SKELETON_PLAN.md](./6.0_A1_V2_HEALTH_READINESS_LOCATION_CONTRACT_SKELETON_PLAN.md)：narrow readonly v2 skeleton planning，R1 实施前 planning-only / supporting evidence；对应 endpoints 已在 R1 commit `90436e2d` 中实现为 readonly runtime slice。
 - [6.0_A1_V2_RUNTIME_SLICE_AUTHORIZATION_PACKAGE.md](./6.0_A1_V2_RUNTIME_SLICE_AUTHORIZATION_PACKAGE.md)：v2 runtime authorization package，R1 实施前 supporting evidence；对应 endpoints 已在 R1 commit `90436e2d` 中实现为 readonly runtime slice。
 - [6.0_A1_R1_READONLY_RUNTIME_SLICE_STAGE_ACCEPTANCE.md](./6.0_A1_R1_READONLY_RUNTIME_SLICE_STAGE_ACCEPTANCE.md)：R1 readonly runtime slice stage acceptance package，supporting evidence only；不取代 `6.0_A1_HANDOFF_MASTER.md`，不代表 A1 final acceptance / production ready / full v2 skeleton / A2 start。
+- [6.0_A1_R2_NARROW_READONLY_RUNTIME_SLICE_AUTHORIZATION_PREPACKAGE.md](./6.0_A1_R2_NARROW_READONLY_RUNTIME_SLICE_AUTHORIZATION_PREPACKAGE.md)：R2 authorization prepackage，已 remote-published as `e1627b8dd9f4ec6967f9c9940e13e6cb788895ff docs: add 6.0-A1 R2 authorization prepackage`；GPT 顾问已验收并建议下一步选择 staging / production split readonly verification package；supporting evidence only，不代表 R2 runtime complete、Candidate C authorized 或 Candidate C implemented。
 - R1 readonly v2 runtime slice：commit `90436e2d17c611907dfe4322135c7e4ba0bbb23d feat: add readonly v2 runtime slice`，remote-published。Post-push readonly verification passed：route-list 可见 `GET api/v2/app/health`、`GET api/v2/app/readiness`、`GET api/v2/contracts/location`；不存在错误旧路径 `api/v2/health` / `api/v2/readiness`；3 个新增 Feature Test 文件最小测试通过，无 failures，仅有 `PDO::MYSQL_ATTR_SSL_CA` deprecation notice。
 - 6.0-A2：Date Drop 式匹配主链重构
 - 6.0-A3：搭子精准陪伴最小闭环

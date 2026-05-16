@@ -1,10 +1,15 @@
 # 当前状态
 
-更新时间：2026-05-15
+更新时间：2026-05-16
 
 ## 当前最新完成到哪里
 
-- 当前最新完成：6.0-A1 R1 readonly v2 runtime slice 已 stage accepted。
+- 当前最新完成文档：6.0-A1 R2 authorization prepackage 已 remote-published。
+- R2 authorization prepackage：`docs/version_plans/6.0_A1_R2_NARROW_READONLY_RUNTIME_SLICE_AUTHORIZATION_PREPACKAGE.md`。
+- R2 authorization prepackage commit：`e1627b8dd9f4ec6967f9c9940e13e6cb788895ff docs: add 6.0-A1 R2 authorization prepackage`。
+- GPT 顾问已验收该 prepackage，并建议当前 `Reject endpoint R2 for now and choose staging / production split readonly verification package as the next A1 direction`。
+- 该建议只代表下一步方向，不代表 Candidate C 已获实施授权、已实施或已完成。
+- R1 readonly v2 runtime slice 已 stage accepted。
 - R1 runtime commit：`90436e2d17c611907dfe4322135c7e4ba0bbb23d feat: add readonly v2 runtime slice`。
 - R1 stage acceptance package：`docs/version_plans/6.0_A1_R1_READONLY_RUNTIME_SLICE_STAGE_ACCEPTANCE.md`。
 - R1 stage acceptance package commit：`99cfd0ba47186bbacc03770b2679afe558a9a5f8 docs: add 6.0-A1 R1 stage acceptance package`。
@@ -18,13 +23,13 @@
 
 ## 当前下一步
 
-- 下一步不是进入 A2 / Date Drop / Flutter v2 base URL / production release。
-- 下一步应由 GPT 顾问授权后，在 R2 narrow readonly runtime slice authorization pre-package、staging / production split readonly verification package、Laravel 12 staging dry-run pre-evidence package、Claude horizontal review before A1 final gate 中选择。
+- 下一步不是进入 R2 runtime implementation / endpoint expansion / Candidate C implementation / A2 / Date Drop / Flutter v2 base URL / production release。
+- 下一步应准备 staging / production split readonly verification package authorization/preparation document，或由用户再次明确授权后再下达 Candidate C prepackage prompt。
 - 当前 R1 只覆盖：
   - `GET api/v2/app/health`
   - `GET api/v2/app/readiness`
   - `GET api/v2/contracts/location`
-- 当前仍不能写成 6.0-A1 final acceptance complete、production ready、完整 v2 skeleton complete。
+- 当前仍不能写成 6.0-A1 final acceptance complete、production ready、完整 v2 skeleton complete、R2 runtime complete、Candidate C authorized 或 Candidate C implemented。
 
 ## 6.0 Alpha 重点
 
