@@ -4,15 +4,20 @@
 
 ## 当前最新完成到哪里
 
-- 当前最新完成文档：6.0-A1 Candidate C Claude horizontal review prepackage 已 remote-published。
+- 当前最新完成文档：6.0-A1 Candidate C Claude horizontal review report 已归档。
+- Candidate C Claude horizontal review report：`docs/version_plans/6.0_A1_CANDIDATE_C_CLAUDE_HORIZONTAL_REVIEW_REPORT.md`。
+- Candidate C Claude horizontal review 已执行完成；Claude verdict 为 `pass with observations`。
+- GPT 顾问已验收该 Claude horizontal review result。
+- 该结果允许进入 future staging readonly metadata verification authorization prompt 的准备讨论；staging request 仍需用户另行明确授权，production verification 继续后置。
+- 该结果不代表 Candidate C implementation / authorized / completed，不代表 staging verification passed、production verification passed 或 API smoke passed，也不代表 A1 final acceptance、production ready、full v2 skeleton complete 或 A2 start。
 - Candidate C Claude horizontal review prepackage：`docs/version_plans/6.0_A1_CANDIDATE_C_CLAUDE_HORIZONTAL_REVIEW_PREPACKAGE.md`。
 - Candidate C Claude review prepackage commit：`2944ab310a6e189bcc420007c9423a6043a23d38 docs: add 6.0-A1 candidate C Claude review prepackage`。
-- GPT 顾问已验收该 prepackage；该文件是 Claude horizontal review prepackage，不是 Claude horizontal review result，不代表 Claude review 已执行，不代表 Claude review passed，不是 Candidate C implementation，不代表 Candidate C 已获实施授权、已实施或已完成，也不代表 staging verification passed、production verification passed 或 API smoke passed。
+- GPT 顾问已验收该 prepackage；该文件是 Claude horizontal review prepackage，后续事实以 Candidate C Claude horizontal review report 为准。
 - Candidate C local/repo-only readonly audit report：`docs/version_plans/6.0_A1_CANDIDATE_C_LOCAL_REPO_ONLY_READONLY_AUDIT_REPORT.md`。
 - Candidate C local audit report commit：`9f958508a2ca4a60a5f1e8104aece230edb5c495 docs: add 6.0-A1 candidate C local audit report`。
 - GPT 顾问已验收该 report；该 report 是 local/repo-only readonly audit report，不是 Candidate C implementation，不代表 Candidate C 已获实施授权、已实施或已完成，也不代表 staging verification passed、production verification passed 或 API smoke passed。
 - 该 report 确认本轮未请求 staging / production，未执行 API / smoke / artisan / PHPUnit / composer / migration，未读取真实 `.env` / `.env.*`，未输出 secrets。
-- 当前下一步建议：commit/push current-docs sync，上传 project source，然后新开会话决定是否执行 Claude horizontal review；当前不进入 Claude horizontal review execution。
+- 当前下一步建议：documentation-only current-docs sync 后，准备 future staging readonly metadata verification authorization prompt 的讨论；当前不直接请求 staging，不进入 production verification，也不进入 Candidate C implementation。
 - Candidate C staging / production split readonly verification prepackage：`docs/version_plans/6.0_A1_STAGING_PRODUCTION_SPLIT_READONLY_VERIFICATION_PREPACKAGE.md`。
 - Candidate C prepackage commit：`3e49879c1264f031325264a75702e8afa9db6302 docs: add 6.0-A1 staging production verification prepackage`。
 - GPT 顾问已验收该 prepackage；该文件是 authorization / preparation document，不是 Candidate C implementation，不代表 Candidate C 已获实施授权、已实施或已完成，也不代表 staging verification passed、production verification passed 或 API smoke passed。
@@ -36,13 +41,14 @@
 ## 当前下一步
 
 - 下一步不是进入 R2 runtime implementation / endpoint expansion / Candidate C implementation / staging verification / production verification / A2 / Date Drop / Flutter v2 base URL / production release。
-- 下一步建议 commit/push Candidate C Claude review prepackage current-docs sync、上传 project source，然后新开会话决定是否执行 Claude horizontal review。
-- 当前不进入 Claude horizontal review execution，除非用户后续另行明确授权。
+- 下一步建议 documentation-only current-docs sync 后，准备 future staging readonly metadata verification authorization prompt 的讨论。
+- staging request 仍需用户另行明确授权；production verification 继续后置。
 - 当前 R1 只覆盖：
   - `GET api/v2/app/health`
   - `GET api/v2/app/readiness`
   - `GET api/v2/contracts/location`
-- 当前仍不能写成 6.0-A1 final acceptance complete、production ready、完整 v2 skeleton complete、R2 runtime complete、Candidate C authorized、Candidate C implemented、Candidate C complete、staging verification passed、production verification passed、API smoke passed、Claude review passed 或 Claude horizontal review complete。
+- 当前仍不能写成 6.0-A1 final acceptance complete、production ready、完整 v2 skeleton complete、R2 runtime complete、Candidate C authorized、Candidate C implemented、Candidate C complete、staging verification passed、production verification passed 或 API smoke passed。Candidate C Claude horizontal review 已完成且 verdict 为 `pass with observations`，但这只允许进入 future staging readonly metadata verification authorization prompt 的准备讨论。
+- production 默认继续 v1；Flutter 默认不切 v2；R1 仍只保持三个 readonly endpoints。
 
 ## 6.0 Alpha 重点
 

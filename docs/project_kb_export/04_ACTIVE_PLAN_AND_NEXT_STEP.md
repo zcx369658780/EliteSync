@@ -18,19 +18,24 @@
 - GPT 顾问已验收 Candidate C local audit report；该 report 是 local/repo-only readonly audit report，不代表 Candidate C implementation，不代表 Candidate C 已获实施授权、已实施或已完成，也不代表 staging verification passed、production verification passed 或 API smoke passed。
 - 该 report 确认本轮未请求 staging / production，未执行 API / smoke / artisan / PHPUnit / composer / migration，未读取真实 `.env` / `.env.*`，未输出 secrets。
 - Candidate C Claude horizontal review prepackage 已 remote-published：`docs/version_plans/6.0_A1_CANDIDATE_C_CLAUDE_HORIZONTAL_REVIEW_PREPACKAGE.md`，commit `2944ab310a6e189bcc420007c9423a6043a23d38 docs: add 6.0-A1 candidate C Claude review prepackage`。
-- GPT 顾问已验收 Candidate C Claude review prepackage；该 prepackage 是 Claude horizontal review prepackage，不是 Claude horizontal review result，不代表 Claude review 已执行，不代表 Claude review passed，不代表 Candidate C implementation，不代表 Candidate C 已获实施授权、已实施或已完成，也不代表 staging verification passed、production verification passed 或 API smoke passed。
+- GPT 顾问已验收 Candidate C Claude review prepackage；该 prepackage 是 Claude horizontal review prepackage，后续事实以 Candidate C Claude horizontal review report 为准。
+- Candidate C Claude horizontal review 已执行完成并归档：`docs/version_plans/6.0_A1_CANDIDATE_C_CLAUDE_HORIZONTAL_REVIEW_REPORT.md`。
+- Claude verdict：`pass with observations`。
+- GPT 顾问已验收该 Claude horizontal review result。
+- 该结果允许进入 future staging readonly metadata verification authorization prompt 的准备讨论；staging request 仍需用户另行明确授权，production verification 继续后置。
+- 该结果不代表 Candidate C implementation / authorized / completed，不代表 staging verification passed、production verification passed 或 API smoke passed，也不代表 A1 final acceptance、production ready、full v2 skeleton complete 或 A2 start。
 - 后续 Codex 导出目录默认固定为：`C:\Users\zcxve\Downloads\`。
 - 当前实际 Git HEAD 以 `git rev-parse HEAD` / `git log` 实时结果为准。
 
 ## 当前下一步
 
-Candidate C Claude review prepackage 后的下一步应保持在 A1 内：
+Candidate C Claude horizontal review result 后的下一步应保持在 A1 内：
 
-- commit/push current-docs sync；
-- upload project source；
-- start a new conversation for Claude horizontal review execution decision。
+- documentation-only current-docs sync；
+- 后续准备 future staging readonly metadata verification authorization prompt 的讨论；
+- staging request 仍需用户另行明确授权。
 
-该建议不代表 Claude review 已执行或已通过。Candidate C 尚未获实施授权、尚未实施、尚未完成，本阶段不得进入 Claude horizontal review execution、Candidate C implementation、staging verification 或 production verification。
+该建议不代表 staging verification passed、production verification passed 或 API smoke passed。Candidate C 尚未 implementation，staging verification / production verification / API smoke 尚未执行、尚未通过；本阶段不得进入 Candidate C implementation、staging verification 或 production verification。
 
 不得把 R1、R2 prepackage 或 Candidate C prepackage 直接扩展为 R2 runtime implementation / endpoint expansion / A2 / Date Drop / Flutter integration / production release。
 
@@ -57,4 +62,5 @@ Candidate C Claude review prepackage 后的下一步应保持在 A1 内：
 - 不能把 Candidate C 写成已获实施授权、已实施或已完成。
 - 不能把 staging / production split readonly verification 写成已通过。
 - 不能把 API smoke 写成已通过。
-- 不能把 Claude review 写成已执行或已通过。
+- Candidate C Claude horizontal review 可以写成已执行完成，verdict 为 `pass with observations`，且 GPT 顾问已验收；但不能把它写成 staging / production verification passed、API smoke passed、Candidate C implementation authorization、A1 final acceptance complete、production ready、full v2 skeleton complete 或 A2 start。
+- production 默认继续 v1；Flutter 默认不切 v2；R1 仍只保持三个 readonly endpoints。
