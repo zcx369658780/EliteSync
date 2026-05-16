@@ -26,17 +26,23 @@
 - 该结果不代表 Candidate C implementation / authorized / completed，不代表 staging verification passed、production verification passed 或 API smoke passed，也不代表 A1 final acceptance、production ready、full v2 skeleton complete 或 A2 start。
 - Staging readonly metadata verification authorization prepackage 已准备：`docs/version_plans/6.0_A1_STAGING_READONLY_METADATA_VERIFICATION_AUTHORIZATION_PREPACKAGE.md`。
 - 该文件只用于未来授权审查；尚未请求 staging，尚未执行 staging verification；staging execution 仍需用户另行明确授权。
+- Staging boundary blocker report 已准备：`docs/version_plans/6.0_A1_STAGING_BOUNDARY_BLOCKER_REPORT.md`。
+- Staging readonly metadata verification attempt stopped before network request because staging base URL was placeholder only。
+- No separate staging base URL is currently confirmed in tracked docs/config。
+- `https://slowdate.top/` 是 Android release/default tracked config，不得在未获明确确认时当作 staging。
+- `http://101.133.161.203/` 是 debug / legacy Aliyun direct backend URL，不得在未获明确确认时当作 staging。
 - 后续 Codex 导出目录默认固定为：`C:\Users\zcxve\Downloads\`。
 - 当前实际 Git HEAD 以 `git rev-parse HEAD` / `git log` 实时结果为准。
 
 ## 当前下一步
 
-Staging readonly metadata verification authorization prepackage 后的下一步应保持在 A1 内：
+Staging boundary blocker report 后的下一步应保持在 A1 内：
 
-- 提交 authorization prepackage 给 GPT 顾问审查；
-- staging request 仍需用户另行明确授权。
+- 创建或确认独立 staging base URL；
+- staging request 仍需用户另行明确授权；
+- 不得改用 `slowdate.top` 或 `101.133.161.203` 绕过 blocker。
 
-该建议不代表 staging verification passed、production verification passed 或 API smoke passed。Candidate C 尚未 implementation，staging verification / production verification / API smoke 尚未执行、尚未通过；本阶段不得进入 Candidate C implementation、staging verification 或 production verification。
+该建议不代表 staging verification failed / passed、production verification passed 或 API smoke passed。Candidate C 尚未 implementation，staging verification / production verification / API smoke 尚未执行、尚未通过；本阶段不得进入 Candidate C implementation、staging verification 或 production verification。
 
 不得把 R1、R2 prepackage 或 Candidate C prepackage 直接扩展为 R2 runtime implementation / endpoint expansion / A2 / Date Drop / Flutter integration / production release。
 
