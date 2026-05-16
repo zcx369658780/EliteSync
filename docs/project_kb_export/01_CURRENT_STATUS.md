@@ -4,12 +4,15 @@
 
 ## 当前最新完成到哪里
 
-- 当前最新完成文档：6.0-A1 Candidate C local/repo-only readonly audit report 已 remote-published。
+- 当前最新完成文档：6.0-A1 Candidate C Claude horizontal review prepackage 已 remote-published。
+- Candidate C Claude horizontal review prepackage：`docs/version_plans/6.0_A1_CANDIDATE_C_CLAUDE_HORIZONTAL_REVIEW_PREPACKAGE.md`。
+- Candidate C Claude review prepackage commit：`2944ab310a6e189bcc420007c9423a6043a23d38 docs: add 6.0-A1 candidate C Claude review prepackage`。
+- GPT 顾问已验收该 prepackage；该文件是 Claude horizontal review prepackage，不是 Claude horizontal review result，不代表 Claude review 已执行，不代表 Claude review passed，不是 Candidate C implementation，不代表 Candidate C 已获实施授权、已实施或已完成，也不代表 staging verification passed、production verification passed 或 API smoke passed。
 - Candidate C local/repo-only readonly audit report：`docs/version_plans/6.0_A1_CANDIDATE_C_LOCAL_REPO_ONLY_READONLY_AUDIT_REPORT.md`。
 - Candidate C local audit report commit：`9f958508a2ca4a60a5f1e8104aece230edb5c495 docs: add 6.0-A1 candidate C local audit report`。
 - GPT 顾问已验收该 report；该 report 是 local/repo-only readonly audit report，不是 Candidate C implementation，不代表 Candidate C 已获实施授权、已实施或已完成，也不代表 staging verification passed、production verification passed 或 API smoke passed。
 - 该 report 确认本轮未请求 staging / production，未执行 API / smoke / artisan / PHPUnit / composer / migration，未读取真实 `.env` / `.env.*`，未输出 secrets。
-- 当前下一步建议：request Claude horizontal review before any staging / production request；该建议不代表 Claude review 已执行。
+- 当前下一步建议：commit/push current-docs sync，上传 project source，然后新开会话决定是否执行 Claude horizontal review；当前不进入 Claude horizontal review execution。
 - Candidate C staging / production split readonly verification prepackage：`docs/version_plans/6.0_A1_STAGING_PRODUCTION_SPLIT_READONLY_VERIFICATION_PREPACKAGE.md`。
 - Candidate C prepackage commit：`3e49879c1264f031325264a75702e8afa9db6302 docs: add 6.0-A1 staging production verification prepackage`。
 - GPT 顾问已验收该 prepackage；该文件是 authorization / preparation document，不是 Candidate C implementation，不代表 Candidate C 已获实施授权、已实施或已完成，也不代表 staging verification passed、production verification passed 或 API smoke passed。
@@ -33,7 +36,8 @@
 ## 当前下一步
 
 - 下一步不是进入 R2 runtime implementation / endpoint expansion / Candidate C implementation / staging verification / production verification / A2 / Date Drop / Flutter v2 base URL / production release。
-- 下一步建议 request Claude horizontal review before any staging / production request；不进入 Claude horizontal review execution，除非用户后续另行明确授权。
+- 下一步建议 commit/push Candidate C Claude review prepackage current-docs sync、上传 project source，然后新开会话决定是否执行 Claude horizontal review。
+- 当前不进入 Claude horizontal review execution，除非用户后续另行明确授权。
 - 当前 R1 只覆盖：
   - `GET api/v2/app/health`
   - `GET api/v2/app/readiness`

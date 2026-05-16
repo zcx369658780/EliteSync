@@ -11,7 +11,8 @@
 - `docs/version_plans/ELITESYNC_6_0_ALPHA_MASTER_PLAN_2026_05_12.md`：6.0 Alpha 内测准备线主计划
 - `docs/version_plans/v_6_0_A0_Alpha内测准备_商用化底座与路线冻结版_开发计划书_2026_05_12.md`：6.0-A0 planning-only 路线冻结计划书
 - `docs/version_plans/v_6_0_A1_后端v2与位置链路最小闭环_开发计划书_2026_05_12.md`：6.0-A1 顾问计划书；先看 Framework / Runtime Support Gate，不得直接进入 v2 skeleton runtime
-- `docs/version_plans/6.0_A1_HANDOFF_MASTER.md`：6.0-A1 当前默认主交接入口；已同步 R1 readonly v2 runtime slice remote-published / verification pass、R2 authorization prepackage remote-published、Candidate C staging / production split readonly verification prepackage remote-published 与 Candidate C local/repo-only readonly audit report remote-published；不代表 A1 final acceptance complete 或 production ready
+- `docs/version_plans/6.0_A1_HANDOFF_MASTER.md`：6.0-A1 当前默认主交接入口；已同步 R1 readonly v2 runtime slice remote-published / verification pass、R2 authorization prepackage remote-published、Candidate C staging / production split readonly verification prepackage remote-published、Candidate C local/repo-only readonly audit report remote-published 与 Candidate C Claude horizontal review prepackage remote-published；不代表 A1 final acceptance complete 或 production ready
+- `docs/version_plans/6.0_A1_CANDIDATE_C_CLAUDE_HORIZONTAL_REVIEW_PREPACKAGE.md`：Candidate C Claude horizontal review prepackage；已 remote-published as `2944ab310a6e189bcc420007c9423a6043a23d38 docs: add 6.0-A1 candidate C Claude review prepackage`；GPT 顾问已验收；不是 Claude horizontal review result，不代表 Claude review 已执行，不代表 Claude review passed，不代表 Candidate C implementation / authorized / implemented / complete
 - `docs/version_plans/6.0_A1_CANDIDATE_C_LOCAL_REPO_ONLY_READONLY_AUDIT_REPORT.md`：Candidate C local/repo-only readonly audit report；已 remote-published as `9f958508a2ca4a60a5f1e8104aece230edb5c495 docs: add 6.0-A1 candidate C local audit report`；GPT 顾问已验收；不代表 Candidate C implementation，不代表 staging / production verification passed 或 API smoke passed；建议未来任何 staging / production request 前先 request Claude horizontal review，但不代表 Claude review 已执行
 - `docs/version_plans/6.0_A1_STAGING_PRODUCTION_SPLIT_READONLY_VERIFICATION_PREPACKAGE.md`：Candidate C staging / production split readonly verification prepackage；GPT 顾问已验收；authorization / preparation document only，不代表 Candidate C 已获实施授权、已实施或已完成，不代表 staging / production verification passed
 - `docs/version_plans/6.0_A1_R2_NARROW_READONLY_RUNTIME_SLICE_AUTHORIZATION_PREPACKAGE.md`：R2 authorization prepackage；GPT 顾问已验收并建议下一步选择 staging / production split readonly verification package；supporting evidence only，不代表 Candidate C 已获实施授权或 R2 runtime complete
@@ -32,32 +33,34 @@
 2. `docs/DOC_INDEX_CURRENT.md`
 3. `docs/project_memory.md`
 4. `docs/version_plans/6.0_A1_HANDOFF_MASTER.md`
-5. `docs/version_plans/6.0_A1_CANDIDATE_C_LOCAL_REPO_ONLY_READONLY_AUDIT_REPORT.md`
-6. `docs/version_plans/6.0_A1_STAGING_PRODUCTION_SPLIT_READONLY_VERIFICATION_PREPACKAGE.md`
-7. `docs/version_plans/6.0_A1_R1_READONLY_RUNTIME_SLICE_STAGE_ACCEPTANCE.md`
-8. `docs/version_plans/6.0_A1_R2_NARROW_READONLY_RUNTIME_SLICE_AUTHORIZATION_PREPACKAGE.md`
-9. `docs/version_plans/6.0_A1_V2_RUNTIME_SLICE_AUTHORIZATION_PACKAGE.md`
-10. `docs/version_plans/6.0_A1_V2_HEALTH_READINESS_LOCATION_CONTRACT_SKELETON_PLAN.md`
-11. `docs/version_plans/6.0_A1_CLAUDE_HORIZONTAL_REVIEW_REPORT.md`
-12. `docs/version_plans/6.0_A1_CLAUDE_REVIEW_RESPONSE.md`
-13. `docs/version_plans/6.0_A1_CLAUDE_HORIZONTAL_REVIEW_INPUT_PACKAGE.md`
-14. `docs/version_plans/v_6_0_A1_后端v2与位置链路最小闭环_开发计划书_2026_05_12.md`
-15. `docs/version_plans/6.0_A1_SKELETON_PRECONDITION_EXECUTION_PLAN.md`
-16. `docs/version_plans/6.0_A1_ENVIRONMENT_SPLIT_PLAN.md`
-17. `docs/version_plans/6.0_A1_LOCATION_CHAIN_RESTRUCTURE.md`
-18. `docs/version_plans/6.0_A1_BACKUP_ROLLBACK_MONITORING_PLAN.md`
-19. `docs/version_plans/6.0_A1_LARAVEL12_STAGING_DRY_RUN_PLAN.md`
-20. `docs/version_plans/6.0_A1_ENV_CACHE_SESSION_CONFIG_UNIFICATION_PLAN.md`
-21. `docs/version_plans/6.0_A1_AUTHENTICATED_READONLY_SMOKE_BATCH2_RERUN_REPORT.md`
-22. `docs/version_plans/6.0_A1_READONLY_SMOKE_BATCH1_PRODUCTION_READONLY_REPORT.md`
-23. `docs/version_plans/6.0_A1_BACKEND_V2_CONTRACT_MAP.md`
-24. `docs/version_plans/6.0_A1_V1_CONTRACT_AUDIT.md`
+5. `docs/version_plans/6.0_A1_CANDIDATE_C_CLAUDE_HORIZONTAL_REVIEW_PREPACKAGE.md`
+6. `docs/version_plans/6.0_A1_CANDIDATE_C_LOCAL_REPO_ONLY_READONLY_AUDIT_REPORT.md`
+7. `docs/version_plans/6.0_A1_STAGING_PRODUCTION_SPLIT_READONLY_VERIFICATION_PREPACKAGE.md`
+8. `docs/version_plans/6.0_A1_R1_READONLY_RUNTIME_SLICE_STAGE_ACCEPTANCE.md`
+9. `docs/version_plans/6.0_A1_R2_NARROW_READONLY_RUNTIME_SLICE_AUTHORIZATION_PREPACKAGE.md`
+10. `docs/version_plans/6.0_A1_V2_RUNTIME_SLICE_AUTHORIZATION_PACKAGE.md`
+11. `docs/version_plans/6.0_A1_V2_HEALTH_READINESS_LOCATION_CONTRACT_SKELETON_PLAN.md`
+12. `docs/version_plans/6.0_A1_CLAUDE_HORIZONTAL_REVIEW_REPORT.md`
+13. `docs/version_plans/6.0_A1_CLAUDE_REVIEW_RESPONSE.md`
+14. `docs/version_plans/6.0_A1_CLAUDE_HORIZONTAL_REVIEW_INPUT_PACKAGE.md`
+15. `docs/version_plans/v_6_0_A1_后端v2与位置链路最小闭环_开发计划书_2026_05_12.md`
+16. `docs/version_plans/6.0_A1_SKELETON_PRECONDITION_EXECUTION_PLAN.md`
+17. `docs/version_plans/6.0_A1_ENVIRONMENT_SPLIT_PLAN.md`
+18. `docs/version_plans/6.0_A1_LOCATION_CHAIN_RESTRUCTURE.md`
+19. `docs/version_plans/6.0_A1_BACKUP_ROLLBACK_MONITORING_PLAN.md`
+20. `docs/version_plans/6.0_A1_LARAVEL12_STAGING_DRY_RUN_PLAN.md`
+21. `docs/version_plans/6.0_A1_ENV_CACHE_SESSION_CONFIG_UNIFICATION_PLAN.md`
+22. `docs/version_plans/6.0_A1_AUTHENTICATED_READONLY_SMOKE_BATCH2_RERUN_REPORT.md`
+23. `docs/version_plans/6.0_A1_READONLY_SMOKE_BATCH1_PRODUCTION_READONLY_REPORT.md`
+24. `docs/version_plans/6.0_A1_BACKEND_V2_CONTRACT_MAP.md`
+25. `docs/version_plans/6.0_A1_V1_CONTRACT_AUDIT.md`
 
 ## 6.0 Alpha 当前参考
 
 - `docs/version_plans/ELITESYNC_6_0_ALPHA_MASTER_PLAN_2026_05_12.md`
 - `docs/version_plans/v_6_0_A0_Alpha内测准备_商用化底座与路线冻结版_开发计划书_2026_05_12.md`
 - `docs/version_plans/6.0_A1_HANDOFF_MASTER.md`
+- `docs/version_plans/6.0_A1_CANDIDATE_C_CLAUDE_HORIZONTAL_REVIEW_PREPACKAGE.md`
 - `docs/version_plans/6.0_A1_CANDIDATE_C_LOCAL_REPO_ONLY_READONLY_AUDIT_REPORT.md`
 - `docs/version_plans/6.0_A1_STAGING_PRODUCTION_SPLIT_READONLY_VERIFICATION_PREPACKAGE.md`
 - `docs/version_plans/6.0_A1_R1_READONLY_RUNTIME_SLICE_STAGE_ACCEPTANCE.md`
@@ -70,7 +73,7 @@
 - `docs/reference/ELITESYNC_REVIEW_ACTION_MATRIX_2026_05_12.md`
 - `docs/agents/CLAUDE_HORIZONTAL_REVIEW_GATE_RULES.md`
 
-6.0-A1 当前入口提醒：`docs/version_plans/6.0_A1_HANDOFF_MASTER.md` 是当前 A1 默认主交接入口。Claude review report archive、Codex response、narrow readonly v2 skeleton planning、v2 runtime authorization package、R2 authorization prepackage、Candidate C staging / production split readonly verification prepackage 与 Candidate C local/repo-only readonly audit report 已提交并 push，Claude verdict 为 `pass with observations`；R1 readonly v2 runtime slice 已 remote-published，commit `90436e2d17c611907dfe4322135c7e4ba0bbb23d feat: add readonly v2 runtime slice`。Post-push readonly verification 已通过：route-list 可见 `GET api/v2/app/health`、`GET api/v2/app/readiness`、`GET api/v2/contracts/location`，不存在 `api/v2/health` / `api/v2/readiness`；3 个新增 Feature Test 文件最小测试通过。R2 authorization prepackage 已 remote-published，commit `e1627b8dd9f4ec6967f9c9940e13e6cb788895ff docs: add 6.0-A1 R2 authorization prepackage`；GPT 顾问已验收，并建议当前 reject endpoint R2 for now。Candidate C local/repo-only readonly audit report 已 remote-published，路径为 `docs/version_plans/6.0_A1_CANDIDATE_C_LOCAL_REPO_ONLY_READONLY_AUDIT_REPORT.md`，commit `9f958508a2ca4a60a5f1e8104aece230edb5c495 docs: add 6.0-A1 candidate C local audit report`；GPT 顾问已验收。该 report 是 local/repo-only readonly audit report，不代表 Candidate C implementation，不代表 Candidate C 已获实施授权、已实施或已完成，不代表 staging verification passed、production verification passed 或 API smoke passed；该 report 确认未请求 staging / production，未执行 API / smoke / artisan / PHPUnit / composer / migration，未读取真实 `.env` / `.env.*`，未输出 secrets。当前仍不能标记 A1 final acceptance complete、production ready、R2 runtime complete、Candidate C implemented、Claude review passed 或 A2 start；下一步建议 request Claude horizontal review before any staging / production request，但不代表 Claude review 已执行。后续 Codex 导出目录默认固定为 `C:\Users\zcxve\Downloads\`。
+6.0-A1 当前入口提醒：`docs/version_plans/6.0_A1_HANDOFF_MASTER.md` 是当前 A1 默认主交接入口。Claude review report archive、Codex response、narrow readonly v2 skeleton planning、v2 runtime authorization package、R2 authorization prepackage、Candidate C staging / production split readonly verification prepackage、Candidate C local/repo-only readonly audit report 与 Candidate C Claude horizontal review prepackage 已提交并 push，Claude verdict 为 `pass with observations`；R1 readonly v2 runtime slice 已 remote-published，commit `90436e2d17c611907dfe4322135c7e4ba0bbb23d feat: add readonly v2 runtime slice`。Post-push readonly verification 已通过：route-list 可见 `GET api/v2/app/health`、`GET api/v2/app/readiness`、`GET api/v2/contracts/location`，不存在 `api/v2/health` / `api/v2/readiness`；3 个新增 Feature Test 文件最小测试通过。Candidate C Claude horizontal review prepackage 已 remote-published，路径为 `docs/version_plans/6.0_A1_CANDIDATE_C_CLAUDE_HORIZONTAL_REVIEW_PREPACKAGE.md`，commit `2944ab310a6e189bcc420007c9423a6043a23d38 docs: add 6.0-A1 candidate C Claude review prepackage`；GPT 顾问已验收。该 prepackage 是 Claude horizontal review prepackage，不是 Claude horizontal review result，不代表 Claude review 已执行，不代表 Claude review passed，不代表 Candidate C implementation，不代表 Candidate C 已获实施授权、已实施或已完成，不代表 staging verification passed、production verification passed 或 API smoke passed。当前仍不能标记 A1 final acceptance complete、production ready、R2 runtime complete、Candidate C implemented、Claude review passed 或 A2 start；下一步建议 commit/push current-docs sync、上传 project source，然后新开会话决定是否执行 Claude horizontal review。后续 Codex 导出目录默认固定为 `C:\Users\zcxve\Downloads\`。
 
 ## 规则文件 / Agent Rules / Project Rules
 

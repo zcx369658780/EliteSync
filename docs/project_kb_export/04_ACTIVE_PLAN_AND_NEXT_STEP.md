@@ -17,18 +17,20 @@
 - Candidate C local/repo-only readonly audit report 已 remote-published：`docs/version_plans/6.0_A1_CANDIDATE_C_LOCAL_REPO_ONLY_READONLY_AUDIT_REPORT.md`，commit `9f958508a2ca4a60a5f1e8104aece230edb5c495 docs: add 6.0-A1 candidate C local audit report`。
 - GPT 顾问已验收 Candidate C local audit report；该 report 是 local/repo-only readonly audit report，不代表 Candidate C implementation，不代表 Candidate C 已获实施授权、已实施或已完成，也不代表 staging verification passed、production verification passed 或 API smoke passed。
 - 该 report 确认本轮未请求 staging / production，未执行 API / smoke / artisan / PHPUnit / composer / migration，未读取真实 `.env` / `.env.*`，未输出 secrets。
+- Candidate C Claude horizontal review prepackage 已 remote-published：`docs/version_plans/6.0_A1_CANDIDATE_C_CLAUDE_HORIZONTAL_REVIEW_PREPACKAGE.md`，commit `2944ab310a6e189bcc420007c9423a6043a23d38 docs: add 6.0-A1 candidate C Claude review prepackage`。
+- GPT 顾问已验收 Candidate C Claude review prepackage；该 prepackage 是 Claude horizontal review prepackage，不是 Claude horizontal review result，不代表 Claude review 已执行，不代表 Claude review passed，不代表 Candidate C implementation，不代表 Candidate C 已获实施授权、已实施或已完成，也不代表 staging verification passed、production verification passed 或 API smoke passed。
 - 后续 Codex 导出目录默认固定为：`C:\Users\zcxve\Downloads\`。
 - 当前实际 Git HEAD 以 `git rev-parse HEAD` / `git log` 实时结果为准。
 
 ## 当前下一步
 
-Candidate C local audit report 后的下一步应保持在 A1 内：
+Candidate C Claude review prepackage 后的下一步应保持在 A1 内：
 
-- request Claude horizontal review before any staging / production request；
-- Laravel 12 staging dry-run pre-evidence package；
-- Claude horizontal review before A1 final gate。
+- commit/push current-docs sync；
+- upload project source；
+- start a new conversation for Claude horizontal review execution decision。
 
-该建议不代表 Claude review 已执行。Candidate C 尚未获实施授权、尚未实施、尚未完成，本阶段不得进入 Claude horizontal review execution、Candidate C implementation、staging verification 或 production verification。
+该建议不代表 Claude review 已执行或已通过。Candidate C 尚未获实施授权、尚未实施、尚未完成，本阶段不得进入 Claude horizontal review execution、Candidate C implementation、staging verification 或 production verification。
 
 不得把 R1、R2 prepackage 或 Candidate C prepackage 直接扩展为 R2 runtime implementation / endpoint expansion / A2 / Date Drop / Flutter integration / production release。
 
