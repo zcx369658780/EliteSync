@@ -4,7 +4,12 @@
 
 ## 当前最新完成到哪里
 
-- 当前最新完成文档：6.0-A1 Candidate C staging / production split readonly verification prepackage 已 remote-published。
+- 当前最新完成文档：6.0-A1 Candidate C local/repo-only readonly audit report 已 remote-published。
+- Candidate C local/repo-only readonly audit report：`docs/version_plans/6.0_A1_CANDIDATE_C_LOCAL_REPO_ONLY_READONLY_AUDIT_REPORT.md`。
+- Candidate C local audit report commit：`9f958508a2ca4a60a5f1e8104aece230edb5c495 docs: add 6.0-A1 candidate C local audit report`。
+- GPT 顾问已验收该 report；该 report 是 local/repo-only readonly audit report，不是 Candidate C implementation，不代表 Candidate C 已获实施授权、已实施或已完成，也不代表 staging verification passed、production verification passed 或 API smoke passed。
+- 该 report 确认本轮未请求 staging / production，未执行 API / smoke / artisan / PHPUnit / composer / migration，未读取真实 `.env` / `.env.*`，未输出 secrets。
+- 当前下一步建议：request Claude horizontal review before any staging / production request；该建议不代表 Claude review 已执行。
 - Candidate C staging / production split readonly verification prepackage：`docs/version_plans/6.0_A1_STAGING_PRODUCTION_SPLIT_READONLY_VERIFICATION_PREPACKAGE.md`。
 - Candidate C prepackage commit：`3e49879c1264f031325264a75702e8afa9db6302 docs: add 6.0-A1 staging production verification prepackage`。
 - GPT 顾问已验收该 prepackage；该文件是 authorization / preparation document，不是 Candidate C implementation，不代表 Candidate C 已获实施授权、已实施或已完成，也不代表 staging verification passed、production verification passed 或 API smoke passed。
@@ -28,12 +33,12 @@
 ## 当前下一步
 
 - 下一步不是进入 R2 runtime implementation / endpoint expansion / Candidate C implementation / staging verification / production verification / A2 / Date Drop / Flutter v2 base URL / production release。
-- 下一步应由用户决定是否 approve future Candidate C local/repo-only readonly audit prompt，或 request Claude horizontal review before any staging / production request。
+- 下一步建议 request Claude horizontal review before any staging / production request；不进入 Claude horizontal review execution，除非用户后续另行明确授权。
 - 当前 R1 只覆盖：
   - `GET api/v2/app/health`
   - `GET api/v2/app/readiness`
   - `GET api/v2/contracts/location`
-- 当前仍不能写成 6.0-A1 final acceptance complete、production ready、完整 v2 skeleton complete、R2 runtime complete、Candidate C authorized、Candidate C implemented、Candidate C complete、staging verification passed 或 production verification passed。
+- 当前仍不能写成 6.0-A1 final acceptance complete、production ready、完整 v2 skeleton complete、R2 runtime complete、Candidate C authorized、Candidate C implemented、Candidate C complete、staging verification passed、production verification passed、API smoke passed、Claude review passed 或 Claude horizontal review complete。
 
 ## 6.0 Alpha 重点
 
