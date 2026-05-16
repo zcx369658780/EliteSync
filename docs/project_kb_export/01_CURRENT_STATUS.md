@@ -4,10 +4,13 @@
 
 ## 当前最新完成到哪里
 
-- 当前最新完成：6.0-A1 R1 readonly v2 runtime slice 已 remote-published。
+- 当前最新完成：6.0-A1 R1 readonly v2 runtime slice 已 stage accepted。
 - R1 runtime commit：`90436e2d17c611907dfe4322135c7e4ba0bbb23d feat: add readonly v2 runtime slice`。
+- R1 stage acceptance package：`docs/version_plans/6.0_A1_R1_READONLY_RUNTIME_SLICE_STAGE_ACCEPTANCE.md`。
+- R1 stage acceptance package commit：`99cfd0ba47186bbacc03770b2679afe558a9a5f8 docs: add 6.0-A1 R1 stage acceptance package`。
 - R1 push 结果：`46f43071..90436e2d HEAD -> feature/5.0-alpha-readiness-20260501`。
 - R1 post-push readonly verification 已通过：`php artisan route:list --path=api/v2` 可见 3 个 endpoint；本次 7 个 PHP 文件 `php -l` 通过；3 个新增 Feature Test 文件最小测试通过，无 failures，仅有 `PDO::MYSQL_ATTR_SSL_CA` deprecation notice；forbidden grep 无匹配；最终 git status clean。
+- 当前实际 Git HEAD 以 `git rev-parse HEAD` / `git log` 实时结果为准。
 - 当前最新对外发布版本仍为：`0.05.10 / 51000`。
 - 上一条发布基线 / 历史发布链：`0.05.05 / 50500`。
 - 当前主线切换为：6.0 Alpha 内测准备线。
@@ -16,7 +19,7 @@
 ## 当前下一步
 
 - 下一步不是进入 A2 / Date Drop / Flutter v2 base URL / production release。
-- 下一步应是 6.0-A1 后续验证、证据收口、Claude / GPT 顾问判断，或另一个明确授权的极窄 runtime slice 计划确认。
+- 下一步应由 GPT 顾问授权后，在 R2 narrow readonly runtime slice authorization pre-package、staging / production split readonly verification package、Laravel 12 staging dry-run pre-evidence package、Claude horizontal review before A1 final gate 中选择。
 - 当前 R1 只覆盖：
   - `GET api/v2/app/health`
   - `GET api/v2/app/readiness`

@@ -8,13 +8,19 @@
 - 当前主计划：`docs/version_plans/ELITESYNC_6_0_ALPHA_MASTER_PLAN_2026_05_12.md`。
 - 当前 A1 默认主交接入口：`docs/version_plans/6.0_A1_HANDOFF_MASTER.md`。
 - R1 readonly v2 runtime slice 已 remote-published：`90436e2d17c611907dfe4322135c7e4ba0bbb23d feat: add readonly v2 runtime slice`。
+- R1 readonly runtime slice 已 stage accepted；stage acceptance package 已 push：`docs/version_plans/6.0_A1_R1_READONLY_RUNTIME_SLICE_STAGE_ACCEPTANCE.md`，commit `99cfd0ba47186bbacc03770b2679afe558a9a5f8 docs: add 6.0-A1 R1 stage acceptance package`。
+- 当前实际 Git HEAD 以 `git rev-parse HEAD` / `git log` 实时结果为准。
 
 ## 当前下一步
 
 R1 后的下一步应保持在 A1 内：
 
-- 做 A1 后续 readonly verification / evidence closeout / Claude 或 GPT 顾问判断；或
-- 在用户明确授权后，规划下一条极窄 runtime slice。
+- R2 narrow readonly runtime slice authorization pre-package；
+- staging / production split readonly verification package；
+- Laravel 12 staging dry-run pre-evidence package；
+- Claude horizontal review before A1 final gate。
+
+以上方向均需 GPT 顾问授权后再选择执行。
 
 不得把 R1 直接扩展为 A2 / Date Drop / Flutter integration / production release。
 
