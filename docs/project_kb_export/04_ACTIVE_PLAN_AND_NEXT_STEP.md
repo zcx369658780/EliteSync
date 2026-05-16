@@ -24,15 +24,16 @@
 - GPT 顾问已验收该 Claude horizontal review result。
 - 该结果允许进入 future staging readonly metadata verification authorization prompt 的准备讨论；staging request 仍需用户另行明确授权，production verification 继续后置。
 - 该结果不代表 Candidate C implementation / authorized / completed，不代表 staging verification passed、production verification passed 或 API smoke passed，也不代表 A1 final acceptance、production ready、full v2 skeleton complete 或 A2 start。
+- Staging readonly metadata verification authorization prepackage 已准备：`docs/version_plans/6.0_A1_STAGING_READONLY_METADATA_VERIFICATION_AUTHORIZATION_PREPACKAGE.md`。
+- 该文件只用于未来授权审查；尚未请求 staging，尚未执行 staging verification；staging execution 仍需用户另行明确授权。
 - 后续 Codex 导出目录默认固定为：`C:\Users\zcxve\Downloads\`。
 - 当前实际 Git HEAD 以 `git rev-parse HEAD` / `git log` 实时结果为准。
 
 ## 当前下一步
 
-Candidate C Claude horizontal review result 后的下一步应保持在 A1 内：
+Staging readonly metadata verification authorization prepackage 后的下一步应保持在 A1 内：
 
-- documentation-only current-docs sync；
-- 后续准备 future staging readonly metadata verification authorization prompt 的讨论；
+- 提交 authorization prepackage 给 GPT 顾问审查；
 - staging request 仍需用户另行明确授权。
 
 该建议不代表 staging verification passed、production verification passed 或 API smoke passed。Candidate C 尚未 implementation，staging verification / production verification / API smoke 尚未执行、尚未通过；本阶段不得进入 Candidate C implementation、staging verification 或 production verification。
