@@ -45,15 +45,17 @@
 - 该 prepackage 是本次 backup execution 的前置授权审查包；执行结果以后续 execution report 为准。
 - Nginx/config backup execution report 已准备：`docs/version_plans/6.0_A1_NGINX_CONFIG_BACKUP_EXECUTION_REPORT.md`。
 - Nginx/config backup execution 已完成并归档；backup directory 为 `/opt/backups/elitesync/nginx_config_backup_20260517_173755`；只复制 allowlisted Nginx config 文件；未输出 Nginx config 正文，未读取真实 `.env` / `.env.*`，未输出 secrets，未 reload / restart Nginx，未修改 active Nginx config / firewall / security group，未创建 staging，未执行 staging verification。
+- IP staging implementation execution authorization package 已准备：`docs/version_plans/6.0_A1_IP_STAGING_IMPLEMENTATION_EXECUTION_AUTHORIZATION_PACKAGE.md`。
+- 该文件只用于未来 implementation 执行授权审查；尚未修改服务器，尚未创建 IP staging，尚未执行 staging verification；Nginx backup 已完成，可作为 future rollback reference。
 - 后续 Codex 导出目录默认固定为：`C:\Users\zcxve\Downloads\`。
 - 当前实际 Git HEAD 以 `git rev-parse HEAD` / `git log` 实时结果为准。
 
 ## 当前下一步
 
-Nginx/config backup execution report 后的下一步应保持在 A1 内：
+IP staging implementation execution authorization package 后的下一步应保持在 A1 内：
 
-- prepare IP staging implementation execution authorization package；
-- 该 authorization package 不是直接 implementation，任何后续 server change / staging creation 仍必须另行明确授权；
+- 由 GPT 顾问和用户判断是否允许未来执行 IP staging implementation；
+- 该 authorization package 不是 implementation result，任何后续 server change / staging creation 仍必须另行明确授权；
 - 不得读取真实 `.env` / `.env.*` 或输出 secrets；
 - staging request 仍需用户另行明确授权；
 - 不得改用 `slowdate.top`、`staging.slowdate.top` 或 `101.133.161.203` 根路径绕过 blocker。

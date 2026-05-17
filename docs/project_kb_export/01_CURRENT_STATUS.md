@@ -4,7 +4,16 @@
 
 ## 当前最新完成到哪里
 
-- 当前最新完成文档：6.0-A1 Nginx/config backup execution report 已准备。
+- 当前最新完成文档：6.0-A1 IP staging implementation execution authorization package 已准备。
+- IP staging implementation execution authorization package：`docs/version_plans/6.0_A1_IP_STAGING_IMPLEMENTATION_EXECUTION_AUTHORIZATION_PACKAGE.md`。
+- 该文件只用于未来 implementation 执行授权审查。
+- 尚未修改服务器。
+- 尚未创建 IP staging。
+- 尚未执行 staging verification。
+- Nginx backup 已完成，可作为 future rollback reference。
+- production 仍未请求。
+- Candidate C 尚未 implementation。
+- A1 尚未 final acceptance。
 - Nginx/config backup execution report：`docs/version_plans/6.0_A1_NGINX_CONFIG_BACKUP_EXECUTION_REPORT.md`。
 - Nginx/config backup execution 已完成并归档。
 - backup directory 为 `/opt/backups/elitesync/nginx_config_backup_20260517_173755`。
@@ -89,7 +98,7 @@
 - Candidate C local audit report commit：`9f958508a2ca4a60a5f1e8104aece230edb5c495 docs: add 6.0-A1 candidate C local audit report`。
 - GPT 顾问已验收该 report；该 report 是 local/repo-only readonly audit report，不是 Candidate C implementation，不代表 Candidate C 已获实施授权、已实施或已完成，也不代表 staging verification passed、production verification passed 或 API smoke passed。
 - 该 report 确认本轮未请求 staging / production，未执行 API / smoke / artisan / PHPUnit / composer / migration，未读取真实 `.env` / `.env.*`，未输出 secrets。
-- 当前下一步建议：基于 Nginx/config backup execution report，准备 IP staging implementation execution authorization package；当前不直接 implementation，不直接请求 staging，不进入 production verification，也不进入 Candidate C implementation。
+- 当前下一步建议：基于 IP staging implementation execution authorization package，由 GPT 顾问和用户判断是否允许未来执行 IP staging implementation；当前不直接 implementation，不直接请求 staging，不进入 production verification，也不进入 Candidate C implementation。
 - Candidate C staging / production split readonly verification prepackage：`docs/version_plans/6.0_A1_STAGING_PRODUCTION_SPLIT_READONLY_VERIFICATION_PREPACKAGE.md`。
 - Candidate C prepackage commit：`3e49879c1264f031325264a75702e8afa9db6302 docs: add 6.0-A1 staging production verification prepackage`。
 - GPT 顾问已验收该 prepackage；该文件是 authorization / preparation document，不是 Candidate C implementation，不代表 Candidate C 已获实施授权、已实施或已完成，也不代表 staging verification passed、production verification passed 或 API smoke passed。
@@ -113,7 +122,7 @@
 ## 当前下一步
 
 - 下一步不是进入 R2 runtime implementation / endpoint expansion / Candidate C implementation / staging verification / production verification / A2 / Date Drop / Flutter v2 base URL / production release。
-- 下一步建议 prepare IP staging implementation execution authorization package。
+- 下一步建议由 GPT 顾问和用户判断是否允许未来执行 IP staging implementation。
 - Nginx/config backup execution 已完成并归档，但不代表 Nginx config reviewed in full，不代表 `.env` backed up to Git，不代表 IP staging already created。
 - server inventory readonly execution 已完成并归档，但不代表 IP staging already created、staging verification passed、production verification passed 或 API smoke passed。
 - 不得把 `staging.slowdate.top` 写成短期可行，不得把 `slowdate.top` 或 `101.133.161.203` 根路径当作 staging。
