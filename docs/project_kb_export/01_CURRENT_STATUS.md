@@ -4,25 +4,28 @@
 
 ## 当前最新完成到哪里
 
-- 当前最新完成文档：6.0-A1 IP staging authorization Claude lightweight review 已完成并归档。
-- IP staging authorization Claude lightweight review：`docs/version_plans/6.0_A1_IP_STAGING_AUTHORIZATION_CLAUDE_LIGHTWEIGHT_REVIEW.md`。
-- Claude verdict: pass with observations。
-- Claude recommended next step: proceed to user final parameter confirmation。
-- blockers: none。
-- GPT 顾问已验收 Claude lightweight review result。
-- implementation 前需确认 `.env.staging` 创建方式、Nginx redacted content review、端口占用、安全组白名单、rollback health checks 等 observations。
-- 尚未 SSH。
-- 尚未修改服务器。
-- 尚未创建 IP staging。
-- 尚未执行 staging verification。
+- 当前最新完成文档：6.0-A1 IP Staging Option B narrow scaffold / preflight report 已准备归档。
+- IP Staging Option B narrow scaffold / preflight report：`docs/version_plans/6.0_A1_IP_STAGING_OPTION_B_NARROW_SCAFFOLD_PREFLIGHT_REPORT.md`。
+- 本次 narrow scaffold / preflight 已完成，带 observations。
+- 已创建 `.env.staging` from `.env.example`，但未填入真实 staging values。
+- 已创建 disabled localhost-only Nginx staging draft：`/etc/nginx/sites-available/elitesync_staging_ip.conf`。
+- 已确认 8088 当前未占用。
+- 已发现 `php8.4-fpm.sock` 并用于 staging draft。
+- `nginx -t` pass，但只验证 current active config。
+- staging draft 尚未启用，尚未 active-config tested，尚不可访问。
+- 未创建 sites-enabled symlink。
+- 未 reload / restart Nginx。
+- 未执行 endpoint verification。
+- 未请求 staging / production API。
+- 下一步建议：request sites-enabled symlink authorization。
 - Candidate C 尚未 implementation。
 - A1 尚未 final acceptance。
-- 当前下一步建议：进入用户最终参数确认阶段；不得直接 implementation。
+- 当前下一步不是直接 reload，不是 endpoint verification；任何后续 staging activation 仍需用户另行明确授权。
 - IP staging implementation execution authorization package 已准备。
 - IP staging implementation execution authorization package：`docs/version_plans/6.0_A1_IP_STAGING_IMPLEMENTATION_EXECUTION_AUTHORIZATION_PACKAGE.md`。
 - 该文件只用于未来 implementation 执行授权审查。
-- 尚未修改服务器。
-- 尚未创建 IP staging。
+- 已完成一次 narrow scaffold / preflight：只创建 `.env.staging` from `.env.example` 与 disabled localhost-only Nginx staging draft。
+- 尚未启用 IP staging。
 - 尚未执行 staging verification。
 - Nginx backup 已完成，可作为 future rollback reference。
 - production 仍未请求。
@@ -58,7 +61,7 @@
 - 本次未创建 staging。
 - 本次未执行 staging verification。
 - 发现 `8081` 已占用，不能直接复用。
-- 未发现 `.env.staging`。
+- server inventory 当时未发现 `.env.staging`；后续 Option B narrow scaffold / preflight 已从 `.env.example` 创建 `.env.staging`。
 - 未发现 active Nginx staging port。
 - 下一步建议：prepare IP staging implementation execution authorization package。
 - Server inventory readonly prepackage：`docs/version_plans/6.0_A1_SERVER_INVENTORY_READONLY_PREPACKAGE.md`。
@@ -112,7 +115,7 @@
 - Candidate C local audit report commit：`9f958508a2ca4a60a5f1e8104aece230edb5c495 docs: add 6.0-A1 candidate C local audit report`。
 - GPT 顾问已验收该 report；该 report 是 local/repo-only readonly audit report，不是 Candidate C implementation，不代表 Candidate C 已获实施授权、已实施或已完成，也不代表 staging verification passed、production verification passed 或 API smoke passed。
 - 该 report 确认本轮未请求 staging / production，未执行 API / smoke / artisan / PHPUnit / composer / migration，未读取真实 `.env` / `.env.*`，未输出 secrets。
-- 当前下一步建议：基于 IP staging authorization Claude lightweight review，进入用户最终参数确认阶段；当前不直接 implementation，不直接请求 staging，不进入 production verification，也不进入 Candidate C implementation。
+- 当前下一步建议：基于 IP Staging Option B narrow scaffold / preflight result，请求 sites-enabled symlink authorization；当前不直接 reload，不执行 endpoint verification，不请求 production，不进入 Candidate C implementation。
 - Candidate C staging / production split readonly verification prepackage：`docs/version_plans/6.0_A1_STAGING_PRODUCTION_SPLIT_READONLY_VERIFICATION_PREPACKAGE.md`。
 - Candidate C prepackage commit：`3e49879c1264f031325264a75702e8afa9db6302 docs: add 6.0-A1 staging production verification prepackage`。
 - GPT 顾问已验收该 prepackage；该文件是 authorization / preparation document，不是 Candidate C implementation，不代表 Candidate C 已获实施授权、已实施或已完成，也不代表 staging verification passed、production verification passed 或 API smoke passed。

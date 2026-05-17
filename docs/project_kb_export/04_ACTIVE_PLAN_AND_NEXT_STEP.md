@@ -51,22 +51,28 @@
 - Claude verdict：`pass with observations`。
 - blockers：none。
 - recommended next step：`proceed to user final parameter confirmation`。
-- implementation 前需确认 `.env.staging` 创建方式、Nginx redacted content review、端口占用、安全组白名单、rollback health checks 等 observations。
-- 尚未 SSH，尚未修改服务器，尚未创建 IP staging，尚未执行 staging verification。
+- implementation 前需确认 `.env.staging` 创建方式、Nginx redacted content review、端口占用、Option B 不修改安全组边界、rollback health checks 等 observations。
+- 用户最终参数已确认采用 Option B：same server + SSH tunnel only。
+- IP Staging Option B narrow scaffold / preflight 已完成并准备归档：`docs/version_plans/6.0_A1_IP_STAGING_OPTION_B_NARROW_SCAFFOLD_PREFLIGHT_REPORT.md`。
+- 已创建 `.env.staging` from `.env.example`，但未填入真实 staging values。
+- 已创建 disabled localhost-only Nginx staging draft：`/etc/nginx/sites-available/elitesync_staging_ip.conf`。
+- 已确认 8088 当前未占用，已发现 `php8.4-fpm.sock` 并用于 staging draft。
+- `nginx -t` pass，但只验证 current active config；staging draft 尚未启用，尚不可访问，尚未执行 endpoint verification。
+- 未创建 sites-enabled symlink，未 reload / restart Nginx，未修改安全组，未请求 staging / production API。
 - 后续 Codex 导出目录默认固定为：`C:\Users\zcxve\Downloads\`。
 - 当前实际 Git HEAD 以 `git rev-parse HEAD` / `git log` 实时结果为准。
 
 ## 当前下一步
 
-IP staging authorization Claude lightweight review 后的下一步应保持在 A1 内：
+IP Staging Option B narrow scaffold / preflight 后的下一步应保持在 A1 内：
 
-- 进入用户最终参数确认阶段；
-- 该 authorization package 不是 implementation result，任何后续 server change / staging creation 仍必须另行明确授权；
+- request sites-enabled symlink authorization；
+- 本次 scaffold / preflight 不是完整 staging implementation result，任何后续 symlink / reload / endpoint verification 仍必须另行明确授权；
 - 不得读取真实 `.env` / `.env.*` 或输出 secrets；
 - staging request 仍需用户另行明确授权；
 - 不得改用 `slowdate.top`、`staging.slowdate.top` 或 `101.133.161.203` 根路径绕过 blocker。
 
-该建议不代表 Nginx config reviewed in full，不代表 `.env` backed up to Git，不代表 IP staging already created，不代表 staging environment 已创建，不代表 staging verification failed / passed、production verification passed 或 API smoke passed。Candidate C 尚未 implementation，staging verification / production verification / API smoke 尚未执行、尚未通过；本阶段不得进入 Candidate C implementation、staging verification 或 production verification。
+该建议不代表 Nginx config reviewed in full，不代表 `.env` backed up to Git，不代表 IP staging enabled，不代表 staging reachable，不代表 staging verification failed / passed、production verification passed 或 API smoke passed。Candidate C 尚未 implementation，staging verification / production verification / API smoke 尚未执行、尚未通过；本阶段不得进入 Candidate C implementation、staging verification 或 production verification。
 
 不得把 R1、R2 prepackage 或 Candidate C prepackage 直接扩展为 R2 runtime implementation / endpoint expansion / A2 / Date Drop / Flutter integration / production release。
 
