@@ -4,7 +4,19 @@
 
 ## 当前最新完成到哪里
 
-- 当前最新完成文档：6.0-A1 IP-based controlled staging implementation prepackage 已准备。
+- 当前最新完成文档：6.0-A1 Server inventory readonly prepackage 已准备。
+- Server inventory readonly prepackage：`docs/version_plans/6.0_A1_SERVER_INVENTORY_READONLY_PREPACKAGE.md`。
+- 该文件只用于未来只读服务器盘点授权审查。
+- 尚未 SSH 登录服务器。
+- 尚未执行 server inventory。
+- 尚未读取真实 `.env` / `.env.*`。
+- 尚未修改服务器 / Nginx / 安全组 / DB / Redis / storage。
+- 尚未创建 staging 环境。
+- 尚未执行 staging verification。
+- production 仍未请求。
+- Candidate C 尚未 implementation。
+- A1 尚未 final acceptance。
+- 当前推荐下一步：判断是否批准 server inventory readonly execution after user confirms SSH parameters，或继续 A1 final-gate documentation only。
 - IP-based controlled staging implementation prepackage：`docs/version_plans/6.0_A1_IP_BASED_CONTROLLED_STAGING_IMPLEMENTATION_PREPACKAGE.md`。
 - 该文件只用于未来 implementation 授权审查。
 - 尚未修改服务器 / Nginx / 安全组 / DB / Redis / storage。
@@ -13,7 +25,6 @@
 - production 仍未请求。
 - Candidate C 尚未 implementation。
 - A1 尚未 final acceptance。
-- 当前推荐下一步：判断是否批准 server inventory readonly prepackage，或继续 A1 final-gate documentation only。
 - IP-based controlled staging plan：`docs/version_plans/6.0_A1_IP_BASED_CONTROLLED_STAGING_PLAN.md`。
 - 由于当前无法完成 ICP 备案，`staging.slowdate.top` 域名 staging 方案短期不可行。
 - 该 plan 是 candidate plan only；尚未创建 staging environment，尚未执行 staging verification，尚未修改服务器 / Nginx / 安全组 / DB / Redis / storage。
@@ -46,7 +57,7 @@
 - Candidate C local audit report commit：`9f958508a2ca4a60a5f1e8104aece230edb5c495 docs: add 6.0-A1 candidate C local audit report`。
 - GPT 顾问已验收该 report；该 report 是 local/repo-only readonly audit report，不是 Candidate C implementation，不代表 Candidate C 已获实施授权、已实施或已完成，也不代表 staging verification passed、production verification passed 或 API smoke passed。
 - 该 report 确认本轮未请求 staging / production，未执行 API / smoke / artisan / PHPUnit / composer / migration，未读取真实 `.env` / `.env.*`，未输出 secrets。
-- 当前下一步建议：基于 IP-based controlled staging implementation prepackage，判断是否批准 server inventory readonly prepackage；当前不直接请求 staging，不进入 production verification，也不进入 Candidate C implementation。
+- 当前下一步建议：基于 Server inventory readonly prepackage，判断是否批准 server inventory readonly execution after user confirms SSH parameters；当前不直接请求 staging，不进入 production verification，也不进入 Candidate C implementation。
 - Candidate C staging / production split readonly verification prepackage：`docs/version_plans/6.0_A1_STAGING_PRODUCTION_SPLIT_READONLY_VERIFICATION_PREPACKAGE.md`。
 - Candidate C prepackage commit：`3e49879c1264f031325264a75702e8afa9db6302 docs: add 6.0-A1 staging production verification prepackage`。
 - GPT 顾问已验收该 prepackage；该文件是 authorization / preparation document，不是 Candidate C implementation，不代表 Candidate C 已获实施授权、已实施或已完成，也不代表 staging verification passed、production verification passed 或 API smoke passed。
@@ -70,7 +81,8 @@
 ## 当前下一步
 
 - 下一步不是进入 R2 runtime implementation / endpoint expansion / Candidate C implementation / staging verification / production verification / A2 / Date Drop / Flutter v2 base URL / production release。
-- 下一步建议判断是否批准 server inventory readonly prepackage；IP-based controlled staging implementation prepackage 仍只是未来授权审查文件。
+- 下一步建议判断是否批准 server inventory readonly execution after user confirms SSH parameters；Server inventory readonly prepackage 仍只是未来授权审查文件。
+- 尚未 SSH 登录服务器，尚未执行 server inventory，尚未读取真实 `.env` / `.env.*`。
 - 不得把 `staging.slowdate.top` 写成短期可行，不得把 `slowdate.top` 或 `101.133.161.203` 根路径当作 staging。
 - staging request 仍需用户另行明确授权；production verification 继续后置。
 - 当前 R1 只覆盖：

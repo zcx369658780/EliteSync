@@ -36,15 +36,18 @@
 - 该 plan 是 candidate plan only；尚未创建 staging environment，尚未执行 staging verification，尚未修改服务器 / Nginx / 安全组 / DB / Redis / storage。
 - IP-based controlled staging implementation prepackage 已准备：`docs/version_plans/6.0_A1_IP_BASED_CONTROLLED_STAGING_IMPLEMENTATION_PREPACKAGE.md`。
 - 该 prepackage 只用于未来 implementation 授权审查；尚未修改服务器 / Nginx / 安全组 / DB / Redis / storage，尚未创建 staging 环境，尚未执行 staging verification。
+- Server inventory readonly prepackage 已准备：`docs/version_plans/6.0_A1_SERVER_INVENTORY_READONLY_PREPACKAGE.md`。
+- 该 prepackage 只用于未来只读服务器盘点授权审查；尚未 SSH 登录服务器，尚未执行 server inventory，尚未读取真实 `.env` / `.env.*`，尚未修改服务器 / Nginx / 安全组 / DB / Redis / storage。
 - 后续 Codex 导出目录默认固定为：`C:\Users\zcxve\Downloads\`。
 - 当前实际 Git HEAD 以 `git rev-parse HEAD` / `git log` 实时结果为准。
 
 ## 当前下一步
 
-IP-based controlled staging implementation prepackage 后的下一步应保持在 A1 内：
+Server inventory readonly prepackage 后的下一步应保持在 A1 内：
 
-- 判断是否批准 server inventory readonly prepackage；
-- 即使进入 server inventory readonly，也仍必须另行明确授权，且不得修改服务器 / Nginx / 安全组 / DB / Redis / storage；
+- 判断是否批准 server inventory readonly execution after user confirms SSH parameters；
+- 即使进入 server inventory readonly execution，也仍必须另行明确授权，且不得修改服务器 / Nginx / 安全组 / DB / Redis / storage；
+- 不得读取真实 `.env` / `.env.*` 或输出 secrets；
 - staging request 仍需用户另行明确授权；
 - 不得改用 `slowdate.top`、`staging.slowdate.top` 或 `101.133.161.203` 根路径绕过 blocker。
 
