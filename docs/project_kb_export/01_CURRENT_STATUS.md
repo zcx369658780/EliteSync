@@ -4,7 +4,19 @@
 
 ## 当前最新完成到哪里
 
-- 当前最新完成文档：6.0-A1 Server inventory readonly execution report 已准备。
+- 当前最新完成文档：6.0-A1 Nginx/config backup readonly prepackage 已准备。
+- Nginx/config backup readonly prepackage：`docs/version_plans/6.0_A1_NGINX_CONFIG_BACKUP_READONLY_PREPACKAGE.md`。
+- 该文件只用于未来 backup execution 授权审查。
+- 尚未 SSH 登录服务器。
+- 尚未创建 backup。
+- 尚未读取完整 Nginx 配置正文。
+- 尚未读取真实 `.env` / `.env.*`。
+- 尚未修改服务器 / Nginx / 安全组 / DB / Redis / storage。
+- 尚未创建 staging。
+- 尚未执行 staging verification。
+- production 仍未请求。
+- Candidate C 尚未 implementation。
+- A1 尚未 final acceptance。
 - Server inventory readonly execution report：`docs/version_plans/6.0_A1_SERVER_INVENTORY_READONLY_EXECUTION_REPORT.md`。
 - server inventory readonly execution 已完成并归档。
 - 本次未修改服务器。
@@ -68,7 +80,7 @@
 - Candidate C local audit report commit：`9f958508a2ca4a60a5f1e8104aece230edb5c495 docs: add 6.0-A1 candidate C local audit report`。
 - GPT 顾问已验收该 report；该 report 是 local/repo-only readonly audit report，不是 Candidate C implementation，不代表 Candidate C 已获实施授权、已实施或已完成，也不代表 staging verification passed、production verification passed 或 API smoke passed。
 - 该 report 确认本轮未请求 staging / production，未执行 API / smoke / artisan / PHPUnit / composer / migration，未读取真实 `.env` / `.env.*`，未输出 secrets。
-- 当前下一步建议：基于 Server inventory readonly execution report，准备 Nginx/config backup readonly package；当前不直接请求 staging，不进入 production verification，也不进入 Candidate C implementation。
+- 当前下一步建议：基于 Nginx/config backup readonly prepackage，由 GPT 顾问和用户判断是否允许未来执行 Nginx/config backup execution；当前不直接请求 staging，不进入 production verification，也不进入 Candidate C implementation。
 - Candidate C staging / production split readonly verification prepackage：`docs/version_plans/6.0_A1_STAGING_PRODUCTION_SPLIT_READONLY_VERIFICATION_PREPACKAGE.md`。
 - Candidate C prepackage commit：`3e49879c1264f031325264a75702e8afa9db6302 docs: add 6.0-A1 staging production verification prepackage`。
 - GPT 顾问已验收该 prepackage；该文件是 authorization / preparation document，不是 Candidate C implementation，不代表 Candidate C 已获实施授权、已实施或已完成，也不代表 staging verification passed、production verification passed 或 API smoke passed。
@@ -92,7 +104,8 @@
 ## 当前下一步
 
 - 下一步不是进入 R2 runtime implementation / endpoint expansion / Candidate C implementation / staging verification / production verification / A2 / Date Drop / Flutter v2 base URL / production release。
-- 下一步建议 prepare Nginx/config backup readonly package。
+- 下一步建议由 GPT 顾问和用户判断是否允许未来执行 Nginx/config backup execution。
+- Nginx/config backup readonly prepackage 是 planning-only / documentation-only，不代表 backup completed，不代表 Nginx config reviewed in full，不代表 `.env` backed up to Git。
 - server inventory readonly execution 已完成并归档，但不代表 IP staging already created、staging verification passed、production verification passed 或 API smoke passed。
 - 不得把 `staging.slowdate.top` 写成短期可行，不得把 `slowdate.top` 或 `101.133.161.203` 根路径当作 staging。
 - staging request 仍需用户另行明确授权；production verification 继续后置。

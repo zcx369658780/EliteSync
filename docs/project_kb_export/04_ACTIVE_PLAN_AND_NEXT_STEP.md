@@ -41,20 +41,22 @@
 - Server inventory readonly execution report 已准备：`docs/version_plans/6.0_A1_SERVER_INVENTORY_READONLY_EXECUTION_REPORT.md`。
 - server inventory readonly execution 已完成并归档；未修改服务器，未读取真实 `.env` / `.env.*`，未输出 secrets，未创建 staging，未执行 staging verification。
 - 发现 `8081` 已占用，不能直接复用；未发现 `.env.staging`；未发现 active Nginx staging port。
+- Nginx/config backup readonly prepackage 已准备：`docs/version_plans/6.0_A1_NGINX_CONFIG_BACKUP_READONLY_PREPACKAGE.md`。
+- 该 prepackage 只用于未来 backup execution 授权审查；尚未 SSH 登录服务器，尚未创建 backup，尚未读取完整 Nginx 配置正文，尚未读取真实 `.env` / `.env.*`，尚未修改服务器 / Nginx / 安全组 / DB / Redis / storage，尚未创建 staging，尚未执行 staging verification。
 - 后续 Codex 导出目录默认固定为：`C:\Users\zcxve\Downloads\`。
 - 当前实际 Git HEAD 以 `git rev-parse HEAD` / `git log` 实时结果为准。
 
 ## 当前下一步
 
-Server inventory readonly execution report 后的下一步应保持在 A1 内：
+Nginx/config backup readonly prepackage 后的下一步应保持在 A1 内：
 
-- prepare Nginx/config backup readonly package；
-- 即使进入 backup readonly package，也仍必须另行明确授权，且不得修改服务器 / Nginx / 安全组 / DB / Redis / storage；
+- 由 GPT 顾问和用户判断是否允许未来执行 Nginx/config backup execution；
+- 即使进入 backup execution，也仍必须另行明确授权，且不得修改 active Nginx config，不得 reload / restart Nginx，不得修改服务器 / 安全组 / DB / Redis / storage；
 - 不得读取真实 `.env` / `.env.*` 或输出 secrets；
 - staging request 仍需用户另行明确授权；
 - 不得改用 `slowdate.top`、`staging.slowdate.top` 或 `101.133.161.203` 根路径绕过 blocker。
 
-该建议不代表 staging environment 已创建，不代表 staging verification failed / passed、production verification passed 或 API smoke passed。Candidate C 尚未 implementation，staging verification / production verification / API smoke 尚未执行、尚未通过；本阶段不得进入 Candidate C implementation、staging verification 或 production verification。
+该建议不代表 backup completed，不代表 Nginx config reviewed in full，不代表 `.env` backed up to Git，不代表 staging environment 已创建，不代表 staging verification failed / passed、production verification passed 或 API smoke passed。Candidate C 尚未 implementation，staging verification / production verification / API smoke 尚未执行、尚未通过；本阶段不得进入 Candidate C implementation、staging verification 或 production verification。
 
 不得把 R1、R2 prepackage 或 Candidate C prepackage 直接扩展为 R2 runtime implementation / endpoint expansion / A2 / Date Drop / Flutter integration / production release。
 
@@ -81,5 +83,6 @@ Server inventory readonly execution report 后的下一步应保持在 A1 内：
 - 不能把 Candidate C 写成已获实施授权、已实施或已完成。
 - 不能把 staging / production split readonly verification 写成已通过。
 - 不能把 API smoke 写成已通过。
+- 不能把 Nginx/config backup readonly prepackage 写成 backup completed、Nginx config reviewed in full 或 `.env` backed up to Git。
 - Candidate C Claude horizontal review 可以写成已执行完成，verdict 为 `pass with observations`，且 GPT 顾问已验收；但不能把它写成 staging / production verification passed、API smoke passed、Candidate C implementation authorization、A1 final acceptance complete、production ready、full v2 skeleton complete 或 A2 start。
 - production 默认继续 v1；Flutter 默认不切 v2；R1 仍只保持三个 readonly endpoints。
