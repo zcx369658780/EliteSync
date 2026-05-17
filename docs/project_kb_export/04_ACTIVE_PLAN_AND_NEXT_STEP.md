@@ -31,18 +31,22 @@
 - No separate staging base URL is currently confirmed in tracked docs/config。
 - `https://slowdate.top/` 是 Android release/default tracked config，不得在未获明确确认时当作 staging。
 - `http://101.133.161.203/` 是 debug / legacy Aliyun direct backend URL，不得在未获明确确认时当作 staging。
+- IP-based controlled staging plan 已准备：`docs/version_plans/6.0_A1_IP_BASED_CONTROLLED_STAGING_PLAN.md`。
+- 由于当前无法完成 ICP 备案，`staging.slowdate.top` 域名 staging 方案短期不可行。
+- 该 plan 是 candidate plan only；尚未创建 staging environment，尚未执行 staging verification，尚未修改服务器 / Nginx / 安全组 / DB / Redis / storage。
 - 后续 Codex 导出目录默认固定为：`C:\Users\zcxve\Downloads\`。
 - 当前实际 Git HEAD 以 `git rev-parse HEAD` / `git log` 实时结果为准。
 
 ## 当前下一步
 
-Staging boundary blocker report 后的下一步应保持在 A1 内：
+IP-based controlled staging plan 后的下一步应保持在 A1 内：
 
-- 创建或确认独立 staging base URL；
+- 判断是否批准 IP-based controlled staging implementation prepackage；
+- 如未来进入 implementation prepackage，仍必须先明确服务器 / Nginx / 安全组 / DB / Redis / storage 边界；
 - staging request 仍需用户另行明确授权；
-- 不得改用 `slowdate.top` 或 `101.133.161.203` 绕过 blocker。
+- 不得改用 `slowdate.top`、`staging.slowdate.top` 或 `101.133.161.203` 根路径绕过 blocker。
 
-该建议不代表 staging verification failed / passed、production verification passed 或 API smoke passed。Candidate C 尚未 implementation，staging verification / production verification / API smoke 尚未执行、尚未通过；本阶段不得进入 Candidate C implementation、staging verification 或 production verification。
+该建议不代表 staging environment 已创建，不代表 staging verification failed / passed、production verification passed 或 API smoke passed。Candidate C 尚未 implementation，staging verification / production verification / API smoke 尚未执行、尚未通过；本阶段不得进入 Candidate C implementation、staging verification 或 production verification。
 
 不得把 R1、R2 prepackage 或 Candidate C prepackage 直接扩展为 R2 runtime implementation / endpoint expansion / A2 / Date Drop / Flutter integration / production release。
 
