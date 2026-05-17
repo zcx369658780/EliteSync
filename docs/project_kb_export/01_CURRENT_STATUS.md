@@ -4,7 +4,21 @@
 
 ## 当前最新完成到哪里
 
-- 当前最新完成文档：6.0-A1 IP staging implementation execution authorization package 已准备。
+- 当前最新完成文档：6.0-A1 IP staging authorization Claude lightweight review 已完成并归档。
+- IP staging authorization Claude lightweight review：`docs/version_plans/6.0_A1_IP_STAGING_AUTHORIZATION_CLAUDE_LIGHTWEIGHT_REVIEW.md`。
+- Claude verdict: pass with observations。
+- Claude recommended next step: proceed to user final parameter confirmation。
+- blockers: none。
+- GPT 顾问已验收 Claude lightweight review result。
+- implementation 前需确认 `.env.staging` 创建方式、Nginx redacted content review、端口占用、安全组白名单、rollback health checks 等 observations。
+- 尚未 SSH。
+- 尚未修改服务器。
+- 尚未创建 IP staging。
+- 尚未执行 staging verification。
+- Candidate C 尚未 implementation。
+- A1 尚未 final acceptance。
+- 当前下一步建议：进入用户最终参数确认阶段；不得直接 implementation。
+- IP staging implementation execution authorization package 已准备。
 - IP staging implementation execution authorization package：`docs/version_plans/6.0_A1_IP_STAGING_IMPLEMENTATION_EXECUTION_AUTHORIZATION_PACKAGE.md`。
 - 该文件只用于未来 implementation 执行授权审查。
 - 尚未修改服务器。
@@ -98,7 +112,7 @@
 - Candidate C local audit report commit：`9f958508a2ca4a60a5f1e8104aece230edb5c495 docs: add 6.0-A1 candidate C local audit report`。
 - GPT 顾问已验收该 report；该 report 是 local/repo-only readonly audit report，不是 Candidate C implementation，不代表 Candidate C 已获实施授权、已实施或已完成，也不代表 staging verification passed、production verification passed 或 API smoke passed。
 - 该 report 确认本轮未请求 staging / production，未执行 API / smoke / artisan / PHPUnit / composer / migration，未读取真实 `.env` / `.env.*`，未输出 secrets。
-- 当前下一步建议：基于 IP staging implementation execution authorization package，由 GPT 顾问和用户判断是否允许未来执行 IP staging implementation；当前不直接 implementation，不直接请求 staging，不进入 production verification，也不进入 Candidate C implementation。
+- 当前下一步建议：基于 IP staging authorization Claude lightweight review，进入用户最终参数确认阶段；当前不直接 implementation，不直接请求 staging，不进入 production verification，也不进入 Candidate C implementation。
 - Candidate C staging / production split readonly verification prepackage：`docs/version_plans/6.0_A1_STAGING_PRODUCTION_SPLIT_READONLY_VERIFICATION_PREPACKAGE.md`。
 - Candidate C prepackage commit：`3e49879c1264f031325264a75702e8afa9db6302 docs: add 6.0-A1 staging production verification prepackage`。
 - GPT 顾问已验收该 prepackage；该文件是 authorization / preparation document，不是 Candidate C implementation，不代表 Candidate C 已获实施授权、已实施或已完成，也不代表 staging verification passed、production verification passed 或 API smoke passed。

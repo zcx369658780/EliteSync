@@ -12,6 +12,7 @@
 - `docs/version_plans/v_6_0_A0_Alpha内测准备_商用化底座与路线冻结版_开发计划书_2026_05_12.md`：6.0-A0 planning-only 路线冻结计划书
 - `docs/version_plans/v_6_0_A1_后端v2与位置链路最小闭环_开发计划书_2026_05_12.md`：6.0-A1 顾问计划书；先看 Framework / Runtime Support Gate，不得直接进入 v2 skeleton runtime
 - `docs/version_plans/6.0_A1_HANDOFF_MASTER.md`：6.0-A1 当前默认主交接入口；已同步 R1 readonly v2 runtime slice remote-published / verification pass、R2 authorization prepackage remote-published、Candidate C staging / production split readonly verification prepackage remote-published、Candidate C local/repo-only readonly audit report remote-published、Candidate C Claude horizontal review prepackage remote-published 与 Candidate C Claude horizontal review report；不代表 A1 final acceptance complete 或 production ready
+- `docs/version_plans/6.0_A1_IP_STAGING_AUTHORIZATION_CLAUDE_LIGHTWEIGHT_REVIEW.md`：IP staging authorization Claude lightweight review；Claude verdict `pass with observations`，blockers none，recommended next step `proceed to user final parameter confirmation`；尚未 SSH，尚未修改服务器，尚未创建 IP staging，尚未执行 staging verification
 - `docs/version_plans/6.0_A1_IP_STAGING_IMPLEMENTATION_EXECUTION_AUTHORIZATION_PACKAGE.md`：IP staging implementation execution authorization package；只用于未来 implementation 执行授权审查；尚未修改服务器，尚未创建 IP staging，尚未执行 staging verification；Nginx backup 已完成，可作为 future rollback reference
 - `docs/version_plans/6.0_A1_NGINX_CONFIG_BACKUP_EXECUTION_REPORT.md`：Nginx/config backup execution report；backup directory `/opt/backups/elitesync/nginx_config_backup_20260517_173755`；只复制 allowlisted Nginx config 文件；未输出 Nginx config 正文，未读取真实 `.env` / `.env.*`，未输出 secrets，未 reload / restart Nginx，未修改 active Nginx config / symlink / firewall / security group，未创建 staging，未执行 staging verification
 - `docs/version_plans/6.0_A1_NGINX_CONFIG_BACKUP_READONLY_PREPACKAGE.md`：Nginx/config backup readonly prepackage；backup execution 前置授权审查包；执行结果以后续 Nginx/config backup execution report 为准
@@ -43,43 +44,45 @@
 2. `docs/DOC_INDEX_CURRENT.md`
 3. `docs/project_memory.md`
 4. `docs/version_plans/6.0_A1_HANDOFF_MASTER.md`
-5. `docs/version_plans/6.0_A1_IP_STAGING_IMPLEMENTATION_EXECUTION_AUTHORIZATION_PACKAGE.md`
-6. `docs/version_plans/6.0_A1_NGINX_CONFIG_BACKUP_EXECUTION_REPORT.md`
-7. `docs/version_plans/6.0_A1_NGINX_CONFIG_BACKUP_READONLY_PREPACKAGE.md`
-8. `docs/version_plans/6.0_A1_SERVER_INVENTORY_READONLY_EXECUTION_REPORT.md`
-9. `docs/version_plans/6.0_A1_SERVER_INVENTORY_READONLY_PREPACKAGE.md`
-10. `docs/version_plans/6.0_A1_IP_BASED_CONTROLLED_STAGING_IMPLEMENTATION_PREPACKAGE.md`
-11. `docs/version_plans/6.0_A1_IP_BASED_CONTROLLED_STAGING_PLAN.md`
-12. `docs/version_plans/6.0_A1_STAGING_BOUNDARY_BLOCKER_REPORT.md`
-13. `docs/version_plans/6.0_A1_STAGING_READONLY_METADATA_VERIFICATION_AUTHORIZATION_PREPACKAGE.md`
-14. `docs/version_plans/6.0_A1_CANDIDATE_C_CLAUDE_HORIZONTAL_REVIEW_REPORT.md`
-15. `docs/version_plans/6.0_A1_CANDIDATE_C_CLAUDE_HORIZONTAL_REVIEW_PREPACKAGE.md`
-16. `docs/version_plans/6.0_A1_CANDIDATE_C_LOCAL_REPO_ONLY_READONLY_AUDIT_REPORT.md`
-17. `docs/version_plans/6.0_A1_STAGING_PRODUCTION_SPLIT_READONLY_VERIFICATION_PREPACKAGE.md`
-18. `docs/version_plans/6.0_A1_R1_READONLY_RUNTIME_SLICE_STAGE_ACCEPTANCE.md`
-19. `docs/version_plans/6.0_A1_R2_NARROW_READONLY_RUNTIME_SLICE_AUTHORIZATION_PREPACKAGE.md`
-20. `docs/version_plans/6.0_A1_V2_RUNTIME_SLICE_AUTHORIZATION_PACKAGE.md`
-21. `docs/version_plans/6.0_A1_V2_HEALTH_READINESS_LOCATION_CONTRACT_SKELETON_PLAN.md`
-22. `docs/version_plans/6.0_A1_CLAUDE_HORIZONTAL_REVIEW_REPORT.md`
-23. `docs/version_plans/6.0_A1_CLAUDE_REVIEW_RESPONSE.md`
-24. `docs/version_plans/6.0_A1_CLAUDE_HORIZONTAL_REVIEW_INPUT_PACKAGE.md`
-25. `docs/version_plans/v_6_0_A1_后端v2与位置链路最小闭环_开发计划书_2026_05_12.md`
-26. `docs/version_plans/6.0_A1_SKELETON_PRECONDITION_EXECUTION_PLAN.md`
-27. `docs/version_plans/6.0_A1_ENVIRONMENT_SPLIT_PLAN.md`
-28. `docs/version_plans/6.0_A1_LOCATION_CHAIN_RESTRUCTURE.md`
-29. `docs/version_plans/6.0_A1_BACKUP_ROLLBACK_MONITORING_PLAN.md`
-30. `docs/version_plans/6.0_A1_LARAVEL12_STAGING_DRY_RUN_PLAN.md`
-31. `docs/version_plans/6.0_A1_ENV_CACHE_SESSION_CONFIG_UNIFICATION_PLAN.md`
-32. `docs/version_plans/6.0_A1_AUTHENTICATED_READONLY_SMOKE_BATCH2_RERUN_REPORT.md`
-33. `docs/version_plans/6.0_A1_READONLY_SMOKE_BATCH1_PRODUCTION_READONLY_REPORT.md`
-34. `docs/version_plans/6.0_A1_BACKEND_V2_CONTRACT_MAP.md`
-35. `docs/version_plans/6.0_A1_V1_CONTRACT_AUDIT.md`
+5. `docs/version_plans/6.0_A1_IP_STAGING_AUTHORIZATION_CLAUDE_LIGHTWEIGHT_REVIEW.md`
+6. `docs/version_plans/6.0_A1_IP_STAGING_IMPLEMENTATION_EXECUTION_AUTHORIZATION_PACKAGE.md`
+7. `docs/version_plans/6.0_A1_NGINX_CONFIG_BACKUP_EXECUTION_REPORT.md`
+8. `docs/version_plans/6.0_A1_NGINX_CONFIG_BACKUP_READONLY_PREPACKAGE.md`
+9. `docs/version_plans/6.0_A1_SERVER_INVENTORY_READONLY_EXECUTION_REPORT.md`
+10. `docs/version_plans/6.0_A1_SERVER_INVENTORY_READONLY_PREPACKAGE.md`
+11. `docs/version_plans/6.0_A1_IP_BASED_CONTROLLED_STAGING_IMPLEMENTATION_PREPACKAGE.md`
+12. `docs/version_plans/6.0_A1_IP_BASED_CONTROLLED_STAGING_PLAN.md`
+13. `docs/version_plans/6.0_A1_STAGING_BOUNDARY_BLOCKER_REPORT.md`
+14. `docs/version_plans/6.0_A1_STAGING_READONLY_METADATA_VERIFICATION_AUTHORIZATION_PREPACKAGE.md`
+15. `docs/version_plans/6.0_A1_CANDIDATE_C_CLAUDE_HORIZONTAL_REVIEW_REPORT.md`
+16. `docs/version_plans/6.0_A1_CANDIDATE_C_CLAUDE_HORIZONTAL_REVIEW_PREPACKAGE.md`
+17. `docs/version_plans/6.0_A1_CANDIDATE_C_LOCAL_REPO_ONLY_READONLY_AUDIT_REPORT.md`
+18. `docs/version_plans/6.0_A1_STAGING_PRODUCTION_SPLIT_READONLY_VERIFICATION_PREPACKAGE.md`
+19. `docs/version_plans/6.0_A1_R1_READONLY_RUNTIME_SLICE_STAGE_ACCEPTANCE.md`
+20. `docs/version_plans/6.0_A1_R2_NARROW_READONLY_RUNTIME_SLICE_AUTHORIZATION_PREPACKAGE.md`
+21. `docs/version_plans/6.0_A1_V2_RUNTIME_SLICE_AUTHORIZATION_PACKAGE.md`
+22. `docs/version_plans/6.0_A1_V2_HEALTH_READINESS_LOCATION_CONTRACT_SKELETON_PLAN.md`
+23. `docs/version_plans/6.0_A1_CLAUDE_HORIZONTAL_REVIEW_REPORT.md`
+24. `docs/version_plans/6.0_A1_CLAUDE_REVIEW_RESPONSE.md`
+25. `docs/version_plans/6.0_A1_CLAUDE_HORIZONTAL_REVIEW_INPUT_PACKAGE.md`
+26. `docs/version_plans/v_6_0_A1_后端v2与位置链路最小闭环_开发计划书_2026_05_12.md`
+27. `docs/version_plans/6.0_A1_SKELETON_PRECONDITION_EXECUTION_PLAN.md`
+28. `docs/version_plans/6.0_A1_ENVIRONMENT_SPLIT_PLAN.md`
+29. `docs/version_plans/6.0_A1_LOCATION_CHAIN_RESTRUCTURE.md`
+30. `docs/version_plans/6.0_A1_BACKUP_ROLLBACK_MONITORING_PLAN.md`
+31. `docs/version_plans/6.0_A1_LARAVEL12_STAGING_DRY_RUN_PLAN.md`
+32. `docs/version_plans/6.0_A1_ENV_CACHE_SESSION_CONFIG_UNIFICATION_PLAN.md`
+33. `docs/version_plans/6.0_A1_AUTHENTICATED_READONLY_SMOKE_BATCH2_RERUN_REPORT.md`
+34. `docs/version_plans/6.0_A1_READONLY_SMOKE_BATCH1_PRODUCTION_READONLY_REPORT.md`
+35. `docs/version_plans/6.0_A1_BACKEND_V2_CONTRACT_MAP.md`
+36. `docs/version_plans/6.0_A1_V1_CONTRACT_AUDIT.md`
 
 ## 6.0 Alpha 当前参考
 
 - `docs/version_plans/ELITESYNC_6_0_ALPHA_MASTER_PLAN_2026_05_12.md`
 - `docs/version_plans/v_6_0_A0_Alpha内测准备_商用化底座与路线冻结版_开发计划书_2026_05_12.md`
 - `docs/version_plans/6.0_A1_HANDOFF_MASTER.md`
+- `docs/version_plans/6.0_A1_IP_STAGING_AUTHORIZATION_CLAUDE_LIGHTWEIGHT_REVIEW.md`
 - `docs/version_plans/6.0_A1_IP_STAGING_IMPLEMENTATION_EXECUTION_AUTHORIZATION_PACKAGE.md`
 - `docs/version_plans/6.0_A1_NGINX_CONFIG_BACKUP_EXECUTION_REPORT.md`
 - `docs/version_plans/6.0_A1_NGINX_CONFIG_BACKUP_READONLY_PREPACKAGE.md`
@@ -103,7 +106,7 @@
 - `docs/reference/ELITESYNC_REVIEW_ACTION_MATRIX_2026_05_12.md`
 - `docs/agents/CLAUDE_HORIZONTAL_REVIEW_GATE_RULES.md`
 
-6.0-A1 当前入口提醒：`docs/version_plans/6.0_A1_HANDOFF_MASTER.md` 是当前 A1 默认主交接入口。Claude review report archive、Codex response、narrow readonly v2 skeleton planning、v2 runtime authorization package、R2 authorization prepackage、Candidate C staging / production split readonly verification prepackage、Candidate C local/repo-only readonly audit report、Candidate C Claude horizontal review prepackage、Candidate C Claude horizontal review report、Staging readonly metadata verification authorization prepackage、Staging boundary blocker report、IP-based controlled staging plan、IP-based controlled staging implementation prepackage、Server inventory readonly prepackage、Server inventory readonly execution report、Nginx/config backup readonly prepackage、Nginx/config backup execution report 与 IP staging implementation execution authorization package 已形成证据链，Claude verdict 为 `pass with observations`；R1 readonly v2 runtime slice 已 remote-published，commit `90436e2d17c611907dfe4322135c7e4ba0bbb23d feat: add readonly v2 runtime slice`。Post-push readonly verification 已通过。IP staging implementation execution authorization package 已准备为 `docs/version_plans/6.0_A1_IP_STAGING_IMPLEMENTATION_EXECUTION_AUTHORIZATION_PACKAGE.md`；该文件只用于未来 implementation 执行授权审查，尚未修改服务器，尚未创建 IP staging，尚未执行 staging verification；Nginx backup 已完成，可作为 future rollback reference。当前仍不能标记 A1 final acceptance complete、production ready、R2 runtime complete、Candidate C implemented、Candidate C authorized、staging verification passed、production verification passed、API smoke passed、full v2 skeleton complete 或 A2 start。production 默认继续 v1，Flutter 默认不切 v2，R1 仍只保持三个 readonly endpoints。后续 Codex 导出目录默认固定为 `C:\Users\zcxve\Downloads\`。
+6.0-A1 当前入口提醒：`docs/version_plans/6.0_A1_HANDOFF_MASTER.md` 是当前 A1 默认主交接入口。Claude review report archive、Codex response、narrow readonly v2 skeleton planning、v2 runtime authorization package、R2 authorization prepackage、Candidate C staging / production split readonly verification prepackage、Candidate C local/repo-only readonly audit report、Candidate C Claude horizontal review prepackage、Candidate C Claude horizontal review report、Staging readonly metadata verification authorization prepackage、Staging boundary blocker report、IP-based controlled staging plan、IP-based controlled staging implementation prepackage、Server inventory readonly prepackage、Server inventory readonly execution report、Nginx/config backup readonly prepackage、Nginx/config backup execution report、IP staging implementation execution authorization package 与 IP staging authorization Claude lightweight review 已形成证据链，Claude verdict 为 `pass with observations`；R1 readonly v2 runtime slice 已 remote-published，commit `90436e2d17c611907dfe4322135c7e4ba0bbb23d feat: add readonly v2 runtime slice`。Post-push readonly verification 已通过。IP staging authorization Claude lightweight review 已准备为 `docs/version_plans/6.0_A1_IP_STAGING_AUTHORIZATION_CLAUDE_LIGHTWEIGHT_REVIEW.md`；Claude verdict `pass with observations`，blockers none，recommended next step 为 `proceed to user final parameter confirmation`。尚未 SSH，尚未修改服务器，尚未创建 IP staging，尚未执行 staging verification。当前仍不能标记 A1 final acceptance complete、production ready、R2 runtime complete、Candidate C implemented、Candidate C authorized、staging verification passed、production verification passed、API smoke passed、full v2 skeleton complete 或 A2 start。production 默认继续 v1，Flutter 默认不切 v2，R1 仍只保持三个 readonly endpoints。后续 Codex 导出目录默认固定为 `C:\Users\zcxve\Downloads\`。
 
 ## 规则文件 / Agent Rules / Project Rules
 
