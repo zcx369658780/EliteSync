@@ -45,7 +45,15 @@ EliteSync will use repo-local docs and GitHub commits / PRs as the shared projec
 - larger feature/runtime tasks should prefer PR or isolated branch
 - every commit / PR must include scope, files changed, not done, evidence, next gate
 
-## 5. Current docs policy
+## 5. GitHub Issue task queue
+
+- GitHub Issues are the preferred task queue after the bridge package.
+- The user no longer needs to paste long task prompts between GPT advisor and Codex.
+- GPT advisor can create issues with title prefix `GPT-TASK:` that define goal, scope, allowed files, validation, commit / PR policy, and final report format.
+- Codex reads the issue number through GitHub CLI or a repo-approved helper script, then executes only the issue body scope that is also allowed by `AGENTS.md`.
+- GPT advisor reviews the resulting commit / PR through GitHub afterwards.
+
+## 6. Current docs policy
 
 - AGENTS.md is stable root instruction
 - docs/HANDOFF_MASTER_CURRENT.md is pointer only
@@ -55,7 +63,7 @@ EliteSync will use repo-local docs and GitHub commits / PRs as the shared projec
 - docs/project_memory.md remains long-term memory
 - current docs sync must be explicit; do not casually modify them
 
-## 6. Example user message after migration
+## 7. Example user message after migration
 
 After this workflow is adopted, the user should only need messages like:
 
@@ -65,7 +73,7 @@ or:
 
 > Codex 已开 PR `#<n>`，请你审查并给出是否通过。
 
-## 7. Current transition status
+## 8. Current transition status
 
 - This bridge package is documentation-only.
 - It does not modify runtime.
