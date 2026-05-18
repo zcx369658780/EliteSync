@@ -80,3 +80,11 @@ or:
 - It does not execute SSH / symlink / nginx -t / reload / endpoint verification.
 - After this package is accepted and pushed, future GPT-Codex communication can switch to GitHub commit / PR based review.
 - Current Option B symlink execution remains paused until separate authorization.
+
+## 9. Runtime / program-development task policy
+
+- Docs-only tasks can use one GitHub issue.
+- Runtime/program-development tasks use a GitHub Issue Bundle rather than one giant issue.
+- GitHub stores text reports and indexes: Codex self-review, Claude horizontal / blind review, Codex integrated acceptance, Action Matrix, and evidence index.
+- Screenshots are critical-only / user-supplied on demand; GitHub should not become a bulk image warehouse.
+- Claude horizontal / blind review artifacts are text-first and referenced in GPT final acceptance.

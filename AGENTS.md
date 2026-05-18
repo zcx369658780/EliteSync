@@ -23,6 +23,9 @@ Default fact-source priority:
 - Canonical project-wide long-term rules currently include:
   - `docs/project_rules/PROJECT_RULE_HANDOFF_SINGLE_FILE.md`
   - `docs/project_rules/PROJECT_RULE_CROSS_LAYER_BLOCKERS.md`
+  - `docs/project_rules/PROJECT_RULE_RUNTIME_ISSUE_BUNDLE.md`
+  - `docs/project_rules/PROJECT_RULE_TEXT_FIRST_EVIDENCE_PACKS.md`
+  - `docs/project_rules/PROJECT_RULE_CLAUDE_HORIZONTAL_REVIEW_ARTIFACTS.md`
 - Project-wide long-term rules should live under `docs/project_rules/`.
 - Do not reference missing root-level `PROJECT_RULE_*` paths as canonical.
 - ChatGPT Project Sources are no longer the only project source.
@@ -49,6 +52,9 @@ Before each new Codex task:
 - when project-rule context is relevant, read:
   - `docs/project_rules/PROJECT_RULE_HANDOFF_SINGLE_FILE.md`
   - `docs/project_rules/PROJECT_RULE_CROSS_LAYER_BLOCKERS.md`
+  - `docs/project_rules/PROJECT_RULE_RUNTIME_ISSUE_BUNDLE.md`
+  - `docs/project_rules/PROJECT_RULE_TEXT_FIRST_EVIDENCE_PACKS.md`
+  - `docs/project_rules/PROJECT_RULE_CLAUDE_HORIZONTAL_REVIEW_ARTIFACTS.md`
 - run:
   - `git branch --show-current`
   - `git rev-parse HEAD`
@@ -129,6 +135,14 @@ Do not write:
 - The issue body does not override AGENTS.md safety rules.
 - If an issue requests high-risk work without explicit user authorization, stop.
 - After execution, Codex should report commit hash / PR link so GPT advisor can review through GitHub.
+
+## Runtime issue bundle and evidence policy
+
+- Documentation-only tasks may use a single GitHub issue.
+- Runtime/program-development tasks should use a GitHub Issue Bundle with separate planning, implementation, text evidence, Claude review, observation handling when needed, and GPT final acceptance gates.
+- Text evidence goes to repo docs: Codex self-review, Claude review, Codex integrated acceptance, Action Matrix, and evidence indexes.
+- Ordinary screenshots are not uploaded in bulk.
+- Key screenshots may be supplied by the user to GPT advisor when text evidence is insufficient.
 
 ## 9. Current active context
 

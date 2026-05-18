@@ -9,6 +9,9 @@
 - `docs/project_memory.md`：项目长期记忆
 - `docs/project_rules/PROJECT_RULE_HANDOFF_SINGLE_FILE.md`：项目级长期规则；当前版本默认只保留一个 handoff entry，supporting evidence 不得变成并行入口
 - `docs/project_rules/PROJECT_RULE_CROSS_LAYER_BLOCKERS.md`：项目级长期规则；跨前端 / 后端 / server / DB / release chain 不确定问题进入 evidence-first blocker handling
+- `docs/project_rules/PROJECT_RULE_RUNTIME_ISSUE_BUNDLE.md`：项目级长期规则；runtime / program-development 默认使用 GitHub Issue Bundle，而不是一个巨型 issue
+- `docs/project_rules/PROJECT_RULE_TEXT_FIRST_EVIDENCE_PACKS.md`：项目级长期规则；证据链默认以 repo text reports / indexes 为主，截图只做 critical-only
+- `docs/project_rules/PROJECT_RULE_CLAUDE_HORIZONTAL_REVIEW_ARTIFACTS.md`：项目级长期规则；Claude 横向 / blind review 产物采用 text-first repo artifacts
 - `docs/version_plans/README.md`：版本计划总索引
 - `docs/version_plans/ELITESYNC_6_0_ALPHA_MASTER_PLAN_2026_05_12.md`：6.0 Alpha 内测准备线主计划
 - `docs/version_plans/v_6_0_A0_Alpha内测准备_商用化底座与路线冻结版_开发计划书_2026_05_12.md`：6.0-A0 planning-only 路线冻结计划书
@@ -48,40 +51,43 @@
 3. `docs/project_memory.md`
 4. `docs/project_rules/PROJECT_RULE_HANDOFF_SINGLE_FILE.md`
 5. `docs/project_rules/PROJECT_RULE_CROSS_LAYER_BLOCKERS.md`
-6. `docs/version_plans/6.0_A1_HANDOFF_MASTER.md`
-7. `docs/version_plans/6.0_A1_IP_STAGING_OPTION_B_NARROW_SCAFFOLD_PREFLIGHT_REPORT.md`
-8. `docs/version_plans/6.0_A1_IP_STAGING_AUTHORIZATION_CLAUDE_LIGHTWEIGHT_REVIEW.md`
-9. `docs/version_plans/6.0_A1_IP_STAGING_IMPLEMENTATION_EXECUTION_AUTHORIZATION_PACKAGE.md`
-10. `docs/version_plans/6.0_A1_NGINX_CONFIG_BACKUP_EXECUTION_REPORT.md`
-11. `docs/version_plans/6.0_A1_NGINX_CONFIG_BACKUP_READONLY_PREPACKAGE.md`
-12. `docs/version_plans/6.0_A1_SERVER_INVENTORY_READONLY_EXECUTION_REPORT.md`
-13. `docs/version_plans/6.0_A1_SERVER_INVENTORY_READONLY_PREPACKAGE.md`
-14. `docs/version_plans/6.0_A1_IP_BASED_CONTROLLED_STAGING_IMPLEMENTATION_PREPACKAGE.md`
-15. `docs/version_plans/6.0_A1_IP_BASED_CONTROLLED_STAGING_PLAN.md`
-16. `docs/version_plans/6.0_A1_STAGING_BOUNDARY_BLOCKER_REPORT.md`
-17. `docs/version_plans/6.0_A1_STAGING_READONLY_METADATA_VERIFICATION_AUTHORIZATION_PREPACKAGE.md`
-18. `docs/version_plans/6.0_A1_CANDIDATE_C_CLAUDE_HORIZONTAL_REVIEW_REPORT.md`
-19. `docs/version_plans/6.0_A1_CANDIDATE_C_CLAUDE_HORIZONTAL_REVIEW_PREPACKAGE.md`
-20. `docs/version_plans/6.0_A1_CANDIDATE_C_LOCAL_REPO_ONLY_READONLY_AUDIT_REPORT.md`
-21. `docs/version_plans/6.0_A1_STAGING_PRODUCTION_SPLIT_READONLY_VERIFICATION_PREPACKAGE.md`
-22. `docs/version_plans/6.0_A1_R1_READONLY_RUNTIME_SLICE_STAGE_ACCEPTANCE.md`
-23. `docs/version_plans/6.0_A1_R2_NARROW_READONLY_RUNTIME_SLICE_AUTHORIZATION_PREPACKAGE.md`
-24. `docs/version_plans/6.0_A1_V2_RUNTIME_SLICE_AUTHORIZATION_PACKAGE.md`
-25. `docs/version_plans/6.0_A1_V2_HEALTH_READINESS_LOCATION_CONTRACT_SKELETON_PLAN.md`
-26. `docs/version_plans/6.0_A1_CLAUDE_HORIZONTAL_REVIEW_REPORT.md`
-27. `docs/version_plans/6.0_A1_CLAUDE_REVIEW_RESPONSE.md`
-28. `docs/version_plans/6.0_A1_CLAUDE_HORIZONTAL_REVIEW_INPUT_PACKAGE.md`
-29. `docs/version_plans/v_6_0_A1_后端v2与位置链路最小闭环_开发计划书_2026_05_12.md`
-30. `docs/version_plans/6.0_A1_SKELETON_PRECONDITION_EXECUTION_PLAN.md`
-31. `docs/version_plans/6.0_A1_ENVIRONMENT_SPLIT_PLAN.md`
-32. `docs/version_plans/6.0_A1_LOCATION_CHAIN_RESTRUCTURE.md`
-33. `docs/version_plans/6.0_A1_BACKUP_ROLLBACK_MONITORING_PLAN.md`
-34. `docs/version_plans/6.0_A1_LARAVEL12_STAGING_DRY_RUN_PLAN.md`
-35. `docs/version_plans/6.0_A1_ENV_CACHE_SESSION_CONFIG_UNIFICATION_PLAN.md`
-36. `docs/version_plans/6.0_A1_AUTHENTICATED_READONLY_SMOKE_BATCH2_RERUN_REPORT.md`
-37. `docs/version_plans/6.0_A1_READONLY_SMOKE_BATCH1_PRODUCTION_READONLY_REPORT.md`
-38. `docs/version_plans/6.0_A1_BACKEND_V2_CONTRACT_MAP.md`
-39. `docs/version_plans/6.0_A1_V1_CONTRACT_AUDIT.md`
+6. `docs/project_rules/PROJECT_RULE_RUNTIME_ISSUE_BUNDLE.md`
+7. `docs/project_rules/PROJECT_RULE_TEXT_FIRST_EVIDENCE_PACKS.md`
+8. `docs/project_rules/PROJECT_RULE_CLAUDE_HORIZONTAL_REVIEW_ARTIFACTS.md`
+9. `docs/version_plans/6.0_A1_HANDOFF_MASTER.md`
+10. `docs/version_plans/6.0_A1_IP_STAGING_OPTION_B_NARROW_SCAFFOLD_PREFLIGHT_REPORT.md`
+11. `docs/version_plans/6.0_A1_IP_STAGING_AUTHORIZATION_CLAUDE_LIGHTWEIGHT_REVIEW.md`
+12. `docs/version_plans/6.0_A1_IP_STAGING_IMPLEMENTATION_EXECUTION_AUTHORIZATION_PACKAGE.md`
+13. `docs/version_plans/6.0_A1_NGINX_CONFIG_BACKUP_EXECUTION_REPORT.md`
+14. `docs/version_plans/6.0_A1_NGINX_CONFIG_BACKUP_READONLY_PREPACKAGE.md`
+15. `docs/version_plans/6.0_A1_SERVER_INVENTORY_READONLY_EXECUTION_REPORT.md`
+16. `docs/version_plans/6.0_A1_SERVER_INVENTORY_READONLY_PREPACKAGE.md`
+17. `docs/version_plans/6.0_A1_IP_BASED_CONTROLLED_STAGING_IMPLEMENTATION_PREPACKAGE.md`
+18. `docs/version_plans/6.0_A1_IP_BASED_CONTROLLED_STAGING_PLAN.md`
+19. `docs/version_plans/6.0_A1_STAGING_BOUNDARY_BLOCKER_REPORT.md`
+20. `docs/version_plans/6.0_A1_STAGING_READONLY_METADATA_VERIFICATION_AUTHORIZATION_PREPACKAGE.md`
+21. `docs/version_plans/6.0_A1_CANDIDATE_C_CLAUDE_HORIZONTAL_REVIEW_REPORT.md`
+22. `docs/version_plans/6.0_A1_CANDIDATE_C_CLAUDE_HORIZONTAL_REVIEW_PREPACKAGE.md`
+23. `docs/version_plans/6.0_A1_CANDIDATE_C_LOCAL_REPO_ONLY_READONLY_AUDIT_REPORT.md`
+24. `docs/version_plans/6.0_A1_STAGING_PRODUCTION_SPLIT_READONLY_VERIFICATION_PREPACKAGE.md`
+25. `docs/version_plans/6.0_A1_R1_READONLY_RUNTIME_SLICE_STAGE_ACCEPTANCE.md`
+26. `docs/version_plans/6.0_A1_R2_NARROW_READONLY_RUNTIME_SLICE_AUTHORIZATION_PREPACKAGE.md`
+27. `docs/version_plans/6.0_A1_V2_RUNTIME_SLICE_AUTHORIZATION_PACKAGE.md`
+28. `docs/version_plans/6.0_A1_V2_HEALTH_READINESS_LOCATION_CONTRACT_SKELETON_PLAN.md`
+29. `docs/version_plans/6.0_A1_CLAUDE_HORIZONTAL_REVIEW_REPORT.md`
+30. `docs/version_plans/6.0_A1_CLAUDE_REVIEW_RESPONSE.md`
+31. `docs/version_plans/6.0_A1_CLAUDE_HORIZONTAL_REVIEW_INPUT_PACKAGE.md`
+32. `docs/version_plans/v_6_0_A1_后端v2与位置链路最小闭环_开发计划书_2026_05_12.md`
+33. `docs/version_plans/6.0_A1_SKELETON_PRECONDITION_EXECUTION_PLAN.md`
+34. `docs/version_plans/6.0_A1_ENVIRONMENT_SPLIT_PLAN.md`
+35. `docs/version_plans/6.0_A1_LOCATION_CHAIN_RESTRUCTURE.md`
+36. `docs/version_plans/6.0_A1_BACKUP_ROLLBACK_MONITORING_PLAN.md`
+37. `docs/version_plans/6.0_A1_LARAVEL12_STAGING_DRY_RUN_PLAN.md`
+38. `docs/version_plans/6.0_A1_ENV_CACHE_SESSION_CONFIG_UNIFICATION_PLAN.md`
+39. `docs/version_plans/6.0_A1_AUTHENTICATED_READONLY_SMOKE_BATCH2_RERUN_REPORT.md`
+40. `docs/version_plans/6.0_A1_READONLY_SMOKE_BATCH1_PRODUCTION_READONLY_REPORT.md`
+41. `docs/version_plans/6.0_A1_BACKEND_V2_CONTRACT_MAP.md`
+42. `docs/version_plans/6.0_A1_V1_CONTRACT_AUDIT.md`
 
 ## 6.0 Alpha 当前参考
 
@@ -126,6 +132,21 @@
   - 项目级长期规则；
   - 前端 / 后端 / server / DB / release chain 跨层不确定问题进入 evidence-first blocker handling；
   - 不得在真实原因不明时盲目连续改 UI/runtime。
+
+- `docs/project_rules/PROJECT_RULE_RUNTIME_ISSUE_BUNDLE.md`
+  - 项目级长期规则；
+  - runtime / program-development 默认拆成 GitHub Issue Bundle；
+  - planning / implementation / evidence / Claude review / GPT final acceptance 不得混成一个巨型 issue。
+
+- `docs/project_rules/PROJECT_RULE_TEXT_FIRST_EVIDENCE_PACKS.md`
+  - 项目级长期规则；
+  - GitHub 默认保存 text-first evidence chain；
+  - ordinary screenshots 不批量入库，critical screenshots 才可按需引用或提交。
+
+- `docs/project_rules/PROJECT_RULE_CLAUDE_HORIZONTAL_REVIEW_ARTIFACTS.md`
+  - 项目级长期规则；
+  - Claude horizontal / blind review 产物默认是 repo text artifacts；
+  - key screenshots 只在必要时由用户提供给 GPT 顾问或作为 critical evidence。
 
 - `docs/agents/PROJECT_RULE_DEVELOPMENT_PLAN_FORMAT_CURRENT.md`
   - 后续所有版本开发计划书格式规则；
