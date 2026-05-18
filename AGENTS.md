@@ -20,6 +20,11 @@ Default fact-source priority:
 7. `docs/project_kb_export/`
 8. `docs/project_rules/` or `docs/agents/` rule files where present
 
+- Canonical project-wide long-term rules currently include:
+  - `docs/project_rules/PROJECT_RULE_HANDOFF_SINGLE_FILE.md`
+  - `docs/project_rules/PROJECT_RULE_CROSS_LAYER_BLOCKERS.md`
+- Project-wide long-term rules should live under `docs/project_rules/`.
+- Do not reference missing root-level `PROJECT_RULE_*` paths as canonical.
 - ChatGPT Project Sources are no longer the only project source.
 - Repo docs must be treated as the shared state between GPT advisor and Codex.
 - If repo docs and chat text conflict, stop and ask for GPT advisor decision.
@@ -41,6 +46,9 @@ Before each new Codex task:
 - read `docs/DEVELOPMENT_PLAN_CURRENT.md`
 - read `docs/HANDOFF_MASTER_CURRENT.md`
 - read `docs/project_memory.md`
+- when project-rule context is relevant, read:
+  - `docs/project_rules/PROJECT_RULE_HANDOFF_SINGLE_FILE.md`
+  - `docs/project_rules/PROJECT_RULE_CROSS_LAYER_BLOCKERS.md`
 - run:
   - `git branch --show-current`
   - `git rev-parse HEAD`

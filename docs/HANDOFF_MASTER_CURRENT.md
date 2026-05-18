@@ -38,6 +38,9 @@
 - This file is the repo-local bridge so Codex and GPT advisor can use GitHub/repo docs instead of manual copy-paste.
 - Future GPT advisor review should prefer GitHub commit / PR / repo docs over pasted terminal transcripts.
 - User should only need to provide commit hash / PR link and confirm high-risk authorizations.
+- Project-wide long-term rules now use canonical `docs/project_rules/` paths:
+  - `docs/project_rules/PROJECT_RULE_HANDOFF_SINGLE_FILE.md`
+  - `docs/project_rules/PROJECT_RULE_CROSS_LAYER_BLOCKERS.md`
 
 ## 4. Do not overclaim
 

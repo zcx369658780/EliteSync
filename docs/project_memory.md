@@ -63,6 +63,10 @@
 
 ## 交接材料规范
 
+- 项目级长期规则的 canonical namespace 是 `docs/project_rules/`。
+- `PROJECT_RULE_HANDOFF_SINGLE_FILE.md` 与 `PROJECT_RULE_CROSS_LAYER_BLOCKERS.md` 现已存在于 `docs/project_rules/`。
+- 后续引用这两项规则时，应使用 `docs/project_rules/PROJECT_RULE_HANDOFF_SINGLE_FILE.md` 与 `docs/project_rules/PROJECT_RULE_CROSS_LAYER_BLOCKERS.md`，不要再把缺失的 root-level 或 `docs/agents/` 同名路径当作 canonical。
+- Option B symlink execution 仍暂停，直到用户另行明确授权。
 - 同一版本的交接材料必须收敛为一个主交接文件，优先命名为 `*_HANDOFF_MASTER.md`。
 - 其他验收、收尾、截图、门禁、执行、说明类文档可以继续保留为索引或引用，但对外上传 / 交接时默认只发送主交接文件。
 - 若主交接文件不存在，先补主交接文件，再逐步把零散交接内容迁入其中，避免单次上传超过数量上限。
