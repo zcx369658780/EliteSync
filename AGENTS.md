@@ -1,393 +1,124 @@
-# EliteSync 仓库级多 Subagent 安全开发工作流
-
-本文件是本仓库的长期执行规则。凡是涉及非微小改动，默认必须先按本文件执行计划前置、风险拆解、实施、验收四阶段流程。
-
-如果当前 Codex 环境不提供可持久化的自定义 agent 配置，则以本文件与 `docs/` 下的模板/清单作为仓库级长期记忆与执行依据。
-
-## 1. 适用范围
-
-以下任务一律进入 plan-first 流程：
-
-- UI 重构、页面结构改动、按钮事件改动
-- 页面跳转、路由、导航、生命周期、返回栈改动
-- 状态管理、缓存、session、provider、view model 改动
-- 数据库 schema、迁移、初始化、回填、导入、恢复
-- 地图、定位、权限申请、逆地理编码、坐标刷新、地点搜索
-- 配置文件、环境变量、第三方 SDK 接入点
-- 自动备份、恢复、发布、版本升级脚本
-- 任何会影响旧功能可达性或数据可恢复性的改动
-
-微小改动可以简化流程，但只要涉及上面高风险面，必须完整执行。
-
-## 2. 永久性安全原则
-
-1. UI 重构不得默认触碰数据库 schema、初始化逻辑、迁移脚本、定位权限链路。
-2. 任何按钮/入口重构，都必须核对：
-   - 原按钮行为是否保留
-   - 关联页面跳转是否保留
-   - 关联数据读写是否保留
-   - 地图/定位/权限回调是否仍可达
-3. 旧入口移动或合并时，必须在计划中写明“旧功能如何映射到新入口”。
-4. 涉及数据库或关键状态变更时，优先给出备份、恢复、回滚建议。
-5. 所有高风险改动都要在验收报告中单独列出。
-6. 出生地、坐标、八字、紫微、星盘等画像字段必须以服务端真源为准，前端缓存只能兜底，不能抢真值。
-
-## 3. 固定 subagent 角色
-
-### 3.0 默认编排优先级
-
-以下优先级是仓库的长期默认值，适用于后续所有非微小任务：
-
-1. **Codex 为默认主编排器**
-   - Codex 默认承担 architect / programmer / reviewer / project executor 四种职责。
-   - 对于普通开发、常规改码、例行 review、计划执行、局部修复，默认优先由 Codex 自己完成。
-   - 非微小任务默认保持多 agent 模式开启，不要把 Codex 降级成单纯转发器。
-
-2. **Gemini 作为默认专项专家**
-   - Gemini CLI 默认用于验收、视觉 / UI / UX 评审、截图一致性检查、长上下文总结、跨文件综合判断、补漏验证覆盖。
-   - Gemini CLI 的仓库级默认模型固定为 `gemini-2.5-flash`；如果项目内外存在多个 Gemini 配置来源，以仓库级配置和长期记忆为准。
-   - 只要任务与验收质量、视觉审美、界面一致性、工作流总结或大范围上下文消化有关，Gemini 应优先作为第一个专家调用。
-
-3. **Claude 作为高价值架构顾问与 App 测试专家**
-   - Claude CLI 默认仍优先用于关键架构决策、重大权衡、隐藏回归风险、特别高风险的边界 / 分层审查。
-   - 当前 Claude 已接入 Deepseek 接口，额度成本较低；同时已安装并验证 Appium MCP / Android app 测试能力。
-   - Claude 可作为 EliteSync Android app 测试 subagent 使用，负责模拟器页面读取、UI 层级检查、截图采集、低风险手势操作、页面可达性和回归清单执行。
-   - Claude 不应成为常规实现者，也不应绕过 Codex 主编排直接扩大需求或修改代码。
-   - Claude 进行 app 测试时默认只做只读或低风险操作，不执行登录、发布、删除、写库、安装 APK、发版、恢复、迁移等动作，除非用户明确授权。
-
-4. **Claude 预算 / 配额保护规则**
-   - 若 Claude 调用失败，或明显可能因配额、计费、额度不足、rate limit、预算耗尽等原因失败，必须立即通知用户。
-   - 通知内容必须明确说明：Claude 当前因可用预算 / 配额不足而不可用。
-   - 一旦发生该类失败，在用户明确确认充值 / 补额度已完成之前，不得继续重试 Claude，也不得循环调用 Claude。
-   - Claude 不可用期间，继续使用 Codex 作为主工作者，Gemini 负责验收 / 视觉 / 长文摘要。
-
-### 3.0.1 Claude Android App 测试能力
-
-已验证结论：
-
-- Claude 可以通过 Appium MCP 连接当前 Android 模拟器，例如 `emulator-5554`。
-- Claude 可以创建 Appium session，并使用 UiAutomator2 读取 Flutter app 的 UI XML。
-- Claude 可以识别 EliteSync 当前页面、主要文本、底部导航、按钮和页面结构。
-- Claude 可以执行低风险手势，例如滚动；截图能力可用。
-- Claude 可以作为 app 测试人员执行页面可达性、文本存在性、导航路径、回归清单和截图 / XML 证据核对。
-
-默认使用场景：
-
-- 修改后验收阶段的独立 app walkthrough。
-- 5.5 真实小样本反馈吸收中的页面复查。
-- UI protected surfaces 回归。
-- 与 Gemini 分工：Claude 更偏结构化 UI 层级 / 可达性 / 自动化路径，Gemini 更偏视觉审美 / 截图一致性 / 长上下文总结。
-
-限制与安全边界：
-
-- Flutter 元素多为 `android.view.View`，定位优先依赖文本、`content-desc`、XPath 和页面 XML。
-- Claude 截图视觉分析能力可能不如直接人工 / Codex 图像查看稳定；关键视觉结论仍需截图证据或人工复核。
-- 不允许 Claude 默认执行发布状态、删除内容、登录账号、写数据、安装 APK、生产库操作、迁移、恢复、发版或 push。
-- 需要写入或破坏性操作时，必须先由主线程说明风险并等待用户明确确认。
-
-调用经验：
-
-- Claude + Appium MCP 的单轮测试可能明显慢于普通 CLI 问答；复杂页面 walkthrough 建议预留 15-20 分钟超时。
-- 外层 shell 命令超时不等于 Claude 已失败；如果能看到 `claude` / `node` / Appium 相关进程仍在运行，应继续等待，不要立即重启第二个 Claude 测试。
-- 同一模拟器测试任务不要并发启动多个 Claude / Appium session，避免抢前台、互相滚动、覆盖截图或污染页面状态。
-- 若外层命令已超时但 Claude 进程仍运行，优先等待原进程退出；只有确认进程结束且没有报告回传时，才用更短、更聚焦的 prompt 重跑同一项。
-- 给 Claude 的 app 测试 prompt 要明确禁止写操作，并要求输出 `pass / fail / uncertain`、操作路径、可见文本和证据路径。
-- 对登录守卫后的页面做 direct-route smoke 前，先确认模拟器当前已有登录 session；否则 GoRouter 会把 `/notifications`、`/profile/settings/about`、`/rtc/permission` 等路由重定向到 `/auth/login`，测试只能记为 auth-gated uncertain。
-- 不要让 Claude 为了绕过登录守卫自行登录、退出、清 session 或改本地缓存；如需使用 smoke 账号登录测试，必须由主线程说明账号、范围和风险，并获得用户明确确认。
-- Claude 执行登录 / 表单输入类 Appium 测试时，`.claude/settings.local.json` 需要允许 `appium_set_value`；剪贴板、键盘、按键、元素属性和 active element 工具可显著降低误输入和卡键盘概率。
-- Claude 的简短 `PASS` 结论不足以直接入证据库；验收后要追问结构化明细，包括进入路径、关键可见文本、异常检查项和 `pass / risky pass / fail` 总评。
-- 双端 RTC / 通话测试前必须确认两端设备、包名、`versionName` 和 `versionCode`；旧包设备只能作为兼容性 observation，不能写成当前版本正式通过。
-
-### 3.1 dependency-mapper
-
-职责：
-
-- 只读扫描需求涉及的调用链
-- 梳理“按钮/入口 -> 页面 -> 状态层/ViewModel -> 数据层/DAO/API -> 外部服务/SDK”
-- 输出受影响文件、关键依赖、隐藏耦合点、危险改动点
-
-输入：
-
-- 需求描述
-- 相关页面/接口/脚本路径
-
-输出：
-
-- 调用链
-- 受影响文件清单
-- 关键依赖
-- 隐藏耦合点
-- 不可擅自改动的边界
-
-何时触发：
-
-- 任何非微小需求进入 plan-first 时
-
-何时停止：
-
-- 已输出完整调用链与风险依赖
-
-禁止：
-
-- 不直接修改代码
-
-### 3.2 risk-reviewer
-
-职责：
-
-- 只读评估数据库、地图定位、权限、路由、缓存、初始化流程的风险
-- 标记高风险模块、可能丢失的旧功能、兼容性问题、回滚点
-
-输入：
-
-- 需求描述
-- dependency-mapper 输出
-
-输出：
-
-- 高风险清单
-- 潜在回归点
-- 回滚建议
-- 兼容性提示
-
-何时触发：
-
-- 任何会碰高风险面的需求
-
-何时停止：
-
-- 已明确高风险模块与回滚点
-
-禁止：
-
-- 不直接修改代码
-
-### 3.3 test-planner
-
-职责：
-
-- 只读生成验证策略
-- 输出 smoke tests、回归测试点、边界条件、手工验收步骤
-- 强制覆盖数据库读写、历史数据保留、地图定位入口、权限申请、路由跳转、按钮触发、异常恢复
-
-输入：
-
-- 需求描述
-- dependency-mapper / risk-reviewer 输出
-
-输出：
-
-- 最小验证集
-- 回归清单
-- 手工验收步骤
-- 失败后补测建议
-
-何时触发：
-
-- 任何非微小需求
-
-何时停止：
-
-- 已形成可执行测试计划
-
-禁止：
-
-- 不直接修改代码
-
-### 3.4 architecture-guardian
-
-职责：
-
-- 只读检查需求是否破坏既有架构边界
-- 关注 UI 重构是否越权改动数据层、SDK 层、初始化层
-- 关注“为了改 UI 顺手重写业务逻辑”的风险
-
-输入：
-
-- 需求描述
-- 相关架构/页面/服务路径
-
-输出：
-
-- 架构边界判断
-- 是否存在越权改动
-- 是否建议拆单
-
-何时触发：
-
-- 任何会影响分层边界的需求
-
-何时停止：
-
-- 已确认边界是否安全
-
-禁止：
-
-- 不直接修改代码
-
-### 3.5 implementation-worker
-
-职责：
-
-- 根据主线程批准的计划执行代码修改
-- 一次只允许一个 implementation-worker 负责同一批改动
-- 严格按照批准范围落地，不得私自扩大范围
-
-要求：
-
-- 修改前先列出将要变更的文件
-- 修改后运行计划中定义的验证命令
-- 如遇验证失败，优先修复，不得跳过
-
-禁止：
-
-- 不可擅自增加需求
-- 不可绕过验证
-
-### 3.6 acceptance-auditor
-
-职责：
-
-- 在修改完成后只读复核
-- 检查实现是否符合原需求、是否引入回归、是否遗漏保护模块
-- 对结果给出 `pass / risky pass / fail` 评级
-
-输入：
-
-- 修改后的代码/文档
-- 验证结果
-
-输出：
-
-- 验收评级
-- 漏项
-- 风险项
-- 是否允许进入交付
-
-何时触发：
-
-- 修改完成后
-
-何时停止：
-
-- 已给出最终复核意见
-
-禁止：
-
-- 默认不直接改代码，除非主线程明确授权进入修复轮次
-
-### 3.7 regression-sentinel
-
-职责：
-
-- 专门检查旧功能是否被误伤
-- 至少覆盖：数据库初始化/保留、地图定位链路、权限链路、页面跳转、关键按钮事件、错误处理
-- 输出“保住了什么 / 丢了什么 / 未验证什么”
-
-输入：
-
-- 变更范围
-- 验证结果
-
-输出：
-
-- 保住项
-- 丢失项
-- 未验证项
-- 追测建议
-
-何时触发：
-
-- 修改完成后，与 acceptance-auditor 并行
-
-何时停止：
-
-- 已完成旧功能保护复核
-
-禁止：
-
-- 默认不直接改代码
-
-## 4. 固定协作流程
-
-### 阶段一：需求分析与计划前置
-
-任何非微小任务，先进入 plan-first 流程。动代码前，必须并行启动：
-
-1. `dependency-mapper`
-2. `risk-reviewer`
-3. `test-planner`
-4. `architecture-guardian`
-
-等待全部完成后，由主线程汇总：
-
-- 需求理解
-- 受影响模块
-- 高风险点
-- 不可破坏的旧功能
-- 回滚/恢复点
-- 验收标准
-- 本轮明确“不改什么”
-
-### 阶段二：实施前安全闸门
-
-若任务涉及数据库、定位、权限、迁移、配置、第三方 SDK、状态持久化，必须先确认：
-
-1. 是否已有备份/回滚点
-2. 是否已有最小回归清单
-3. 是否已在计划中写明验证步骤
-
-上述任一项缺失，不得直接落地改代码。
-
-### 阶段三：代码实施
-
-- 默认只允许一个 `implementation-worker` 负责同一批写入
-- 禁止多个写入 agent 同时改同一业务模块
-- 写入范围必须与批准计划一致
-- 若需求蔓延，立即暂停并回到计划阶段
-- 每完成一个里程碑，必须先跑最小验证
-
-### 阶段四：修改后验收
-
-修改完成后，必须并行启动：
-
-1. `acceptance-auditor`
-2. `regression-sentinel`
-3. `test-planner` 复核验收覆盖
-4. `architecture-guardian` 复核结构漂移
-
-主线程统一输出：
-
-- 已通过项
-- 风险项
-- 未验证项
-- 建议补测项
-- 是否允许交付
-
-只要任一验收 subagent 判定为 `fail`，必须进入修复轮次，不能直接结束。
-
-## 5. PR / Code Review 规则
-
-- 需要发起 PR 时，必须先获得用户明确同意。
-- 每次 PR 前都要先做 Code Review。
-- 只有在计划、实现、验证、验收都通过后，才进入 PR 流程。
-
-## 6. 仓库内持久化文件的职责
-
-- `docs/project_memory.md`：项目长期记忆，记录需要跨版本持续执行的规则。
-- `docs/EXEC_PLAN_TEMPLATE.md`：每次任务的计划模板。
-- `docs/REGRESSION_CHECKLIST.md`：修改后回归验收清单。
-- `docs/PROTECTED_SURFACES.md`：高风险模块保护清单。
-- `docs/REQUIREMENT_RISK_REVIEW.md`：需求评审与风险拆解规范。
-- `docs/POST_CHANGE_ACCEPTANCE.md`：修改后验收评估规范。
-
-## 7. 默认执行建议
-
-当主线程处理普通需求时，默认顺序为：
-
-1. 读取 `docs/EXEC_PLAN_TEMPLATE.md`
-2. 启动只读 subagent 并行评审
-3. 汇总风险与验证计划
-4. 再进入实现
-5. 修改完成后并行验收
-6. 通过后再考虑 PR / 回归 / 发布
+# EliteSync Agent Rules
+
+## 0. Purpose
+
+- This repository uses repo-local docs as the shared project source for GPT advisor and Codex.
+- GPT advisor owns planning, acceptance, and risk decisions.
+- Codex owns implementation, controlled execution, evidence collection, and documentation closeout.
+- User only needs to intervene for important authorization gates.
+
+## 1. Canonical project source
+
+Default fact-source priority:
+
+1. `docs/DOC_INDEX_CURRENT.md`
+2. `docs/DEVELOPMENT_PLAN_CURRENT.md`
+3. `docs/HANDOFF_MASTER_CURRENT.md`
+4. `docs/project_memory.md`
+5. `docs/version_plans/README.md`
+6. `docs/version_plans/6.0_A1_HANDOFF_MASTER.md` for current A1 context
+7. `docs/project_kb_export/`
+8. `docs/project_rules/` or `docs/agents/` rule files where present
+
+- ChatGPT Project Sources are no longer the only project source.
+- Repo docs must be treated as the shared state between GPT advisor and Codex.
+- If repo docs and chat text conflict, stop and ask for GPT advisor decision.
+
+## 2. Role split
+
+- GPT advisor: roadmap, scope, acceptance, overclaim guard, risk authorization.
+- Codex: execution, local audit, file edits, tests, evidence reports, single-topic commits.
+- Claude: optional architecture / cross-layer / app review subagent.
+- Gemini: optional visual / UX / long-context review subagent.
+- User: confirms high-risk operations and product decisions.
+
+## 3. Default startup routine
+
+Before each new Codex task:
+
+- read `AGENTS.md`
+- read `docs/DOC_INDEX_CURRENT.md`
+- read `docs/DEVELOPMENT_PLAN_CURRENT.md`
+- read `docs/HANDOFF_MASTER_CURRENT.md`
+- read `docs/project_memory.md`
+- run:
+  - `git branch --show-current`
+  - `git rev-parse HEAD`
+  - `git status --short --untracked-files=all`
+- if dirty worktree: stop unless task is explicitly dirty-worktree handling.
+
+## 4. Hard safety rules
+
+Forbidden by default:
+
+- `git add .`
+- `git add -A`
+- `git reset --hard`
+- repo-level restore
+- `git checkout .`
+- deleting tracked files unless specifically authorized
+- mixing multiple themes in one commit
+- modifying current docs unless explicitly requested
+- claiming implementation / verification / acceptance before evidence exists
+- reading or outputting real `.env` / `.env.*` / secrets
+- production request without explicit authorization
+- DB / migration / backup / restore without explicit authorization
+- Nginx reload / restart without explicit authorization
+- endpoint verification without explicit authorization
+- release chain modification without explicit authorization
+
+## 5. High-risk authorization gates
+
+The following actions require separate explicit authorization:
+
+- SSH write operation
+- sites-enabled symlink creation
+- `nginx -t`
+- nginx reload / restart
+- endpoint verification
+- staging request
+- production request
+- DB / migration / restore
+- composer update / Laravel upgrade
+- Flutter base URL switch
+- release chain / APK / versionCode changes
+
+## 6. Commit discipline
+
+- one commit = one topic
+- stage explicit files only
+- after stage, output staged file list before commit
+- no automatic push unless task explicitly says push
+- after push, output branch / HEAD / status / file list / nature of commit
+
+## 7. Overclaim guard
+
+Do not write:
+
+- staging enabled unless reload completed
+- staging verification passed unless endpoint verification completed
+- production verification passed unless separately authorized and completed
+- Candidate C implemented unless implementation completed
+- A1 final acceptance unless GPT advisor accepted
+- production ready unless explicitly accepted
+- A2 start unless authorized
+
+## 8. Subagent / plan-first rules
+
+- Codex remains default orchestrator.
+- Claude may be used for architecture / cross-layer / Android app testing.
+- Gemini may be used for visual / UX / long-context review.
+- Non-trivial runtime work should remain plan-first.
+- High-risk work requires dependency / risk / test / architecture review.
+- No subagent may bypass the current authorization gate.
+- Claude app testing is read-only or low-risk by default and must not log in, publish, delete, write data, install APKs, run releases, migrate, restore, or push unless the user explicitly authorizes that exact scope.
+- Gemini review is read-only by default and must not modify files, request staging / production, execute API smoke, read secrets, or mark unexecuted work as passed.
+
+## 9. Current active context
+
+- Current active route: 6.0 Alpha 内测准备线
+- Current active version: 6.0-A1
+- Current active stage: Option B / SSH Tunnel staging preparation
+- Current latest known HEAD: `4c169a5da72f82d18e819fedb19a5aa5f1a3ffac`
+- Current next pending gate before this workflow bridge: sites-enabled symlink execution only, but paused until workflow bridge is accepted
+- Nginx reload, endpoint verification, staging request, production request still forbidden
