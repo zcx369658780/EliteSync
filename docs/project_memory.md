@@ -35,6 +35,7 @@
 ## Claude / Gemini / App 测试协作
 
 - Claude 当前默认入口：`C:\Users\zcxve\.local\bin\claude.exe`。
+- Claude 调用必须使用全局配置入口，不要使用本项目内可能过期的 Claude 设置或项目局部 wrapper。
 - Claude 当前已配置为 Deepseek 接口，用户确认额度成本较低；后续不要再默认把 Claude 视为昂贵稀缺资源，但仍要保持主编排克制。
 - Claude 已安装并验证 Appium MCP / Android app 测试能力：
   - 可连接 `emulator-5554` 等当前运行中的 Android 模拟器。
@@ -56,6 +57,8 @@
   - 双端 RTC / 通话测试必须先确认两端 app 版本；旧包只能作为兼容性观察，不能直接算当前版本正式验收证据。若 Appium 真机 session 被辅助 APK 安装权限阻断，可用原生 ADB 做受限页面读取 / 截图，但结论必须标注为受限证据。
   - Flutter 元素定位优先依赖文本、`content-desc`、XPath 和页面 XML；复杂视觉判断仍需截图证据或人工 / Codex 复核。
 - Gemini 当前默认用于视觉 / UI / UX 评审、截图一致性检查、长上下文总结、跨文件综合判断和补漏验证覆盖。
+- Gemini CLI 调用前必须优先确认系统环境变量 `GEMINI_API_KEY` 与 `GEMINI_MODEL` 是否存在；只报告存在 / 缺失和模型名，不输出 API key 值。
+- 当前 Windows 机器级环境变量可作为 Gemini fallback；若当前 PowerShell 进程未继承 `GEMINI_API_KEY` / `GEMINI_MODEL`，可只读读取 Machine scope 并临时注入本进程后重试，不得输出 key 值。
 - 后续推荐分工：
   - Codex：主编排、实现、工具执行、证据收口。
   - Claude：架构边界复核 + Android app 结构化测试 / 自动化 walkthrough。
@@ -128,6 +131,44 @@
   - `$env:GIT_SSH_COMMAND = "'$ssh' -o BatchMode=yes -o IdentitiesOnly=yes -i '$key'"`
   - 然后再执行 `git ls-remote origin` 或 `git push -u origin <branch>`。
 - `scripts/publish_to_github.ps1` 会执行 `git add -A`，只有用户明确接受整仓 add / commit / push 时才可使用；日常仍按单主题逐文件 stage。
+
+## 交接后能力检测门禁
+
+- 每次发生新 Codex 会话交接、compact / remote compact 后续接、或用户明确要求“继续上一会话”时，新会话必须先检测以下四项可用性，并在继续执行业务 issue 前给出测试报告：
+  - Claude CLI 可用性；
+  - Gemini CLI 可用性；
+  - GitHub SSH 可用性；
+  - 阿里云 SSH 可用性。
+- 每次交接文档 / handoff prompt 的最后必须附上本节信息，提醒下一会话先执行四项检测并输出报告。
+- 能力检测只验证工具链 / 认证链路可用，不代表授权执行当前 issue 以外的 SSH、endpoint request、DB、deploy、cache、service restart、release chain 或写操作。
+- 若当前 GitHub issue / AGENTS.md / 用户授权明确禁止 SSH，则阿里云 SSH 检测与任何 SSH 相关命令必须先停下报告授权冲突；不得为了完成检测绕过当前 issue 边界。
+- 检测报告至少包含：
+  - test time；
+  - branch / HEAD / git status；
+  - Claude command path and result；
+  - Gemini command path, `GEMINI_MODEL`, `GEMINI_API_KEY` presence only, and result；
+  - GitHub SSH auth result；
+  - Aliyun SSH auth/read-only result；
+  - any skipped item and exact reason；
+  - confirmation that no secrets were output and no server write occurred。
+- 推荐 Claude 检测命令：
+  - `Get-Command claude`
+  - `& "C:\Users\zcxve\.local\bin\claude.exe" -p "Return exactly: claude-ok" --output-format text --tools ""`
+- 推荐 Gemini 检测命令：
+  - `Get-Command gemini`
+  - `if ($env:GEMINI_API_KEY) { "GEMINI_API_KEY=present" } else { "GEMINI_API_KEY=missing" }`
+  - `"GEMINI_MODEL=$env:GEMINI_MODEL"`
+  - 如果 process env 缺失，可用 `[Environment]::GetEnvironmentVariable('GEMINI_API_KEY','Machine')` 和 `[Environment]::GetEnvironmentVariable('GEMINI_MODEL','Machine')` 检查机器级变量，只报告 present / missing 与模型名；必要时仅临时赋值到 `$env:GEMINI_API_KEY` / `$env:GEMINI_MODEL` 后重试。
+  - `gemini -p "Return exactly: gemini-ok" --output-format text --approval-mode plan`
+- 推荐 GitHub SSH 检测命令：
+  - `& $env:WINDIR\System32\OpenSSH\ssh.exe -T -o BatchMode=yes -o IdentitiesOnly=yes -i "$env:USERPROFILE\.ssh\id_ed25519" git@github.com`
+  - 返回 `Hi zcx369658780! You've successfully authenticated, but GitHub does not provide shell access.` 即为成功；该命令可能 exit code 为 1，不能按普通失败处理。
+- 推荐阿里云 SSH 只读检测命令：
+  - `& $env:WINDIR\System32\OpenSSH\ssh.exe -o BatchMode=yes -o IdentitiesOnly=yes -i "$env:USERPROFILE\.ssh\CodexKey.pem" root@101.133.161.203 "printf aliyun-ssh-ok"`
+  - 只允许认证 / 最小只读回显检测；不得读取 `.env` / secrets，不得写服务器文件，不得执行 DB、cache、composer、service restart、deploy、sync 或 release-chain 操作。
+- GitHub SSH key 与阿里云 SSH key 不得混用：
+  - GitHub：`C:\Users\zcxve\.ssh\id_ed25519`
+  - 阿里云：`C:\Users\zcxve\.ssh\CodexKey.pem`
 
 ## 双流程分离规则
 
