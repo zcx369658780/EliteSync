@@ -9,6 +9,18 @@
 - 历史 5.6+ 会话交接稿：`docs/CODEX_HANDOFF_20260511_5_6_PLUS_READY.md`
 - 历史材料统一进入 `docs/archive/legacy_2026-04/`
 
+## 2026-05-19 6.0-A1 docs sync / A1 closure planning
+
+- Issue #54 completed Option B deployment / sync for the seven allowlisted R1 readonly v2 files and corrected deployed-code staleness.
+- Issue #55 completed corrected server-localhost verification: `127.0.0.1:8088` returned HTTP 200 JSON for `GET /api/v2/app/health`, `GET /api/v2/app/readiness`, and `GET /api/v2/contracts/location`.
+- Issue #56 correctly stopped public staging readonly endpoint verification before any network request because the staging target was unclear.
+- Issue #57 completed user-confirmed public IP readonly endpoint verification: `http://101.133.161.203` returned HTTP 200 JSON for the same three R1 readonly endpoints.
+- Issue #58 gate review concluded `ready_for_docs_sync_and_a1_closure_planning`.
+- Issue #59 is docs-only current/status/index/handoff sync and A1 closure planning posture.
+- Next recommended gate: `GPT-TASK: 6.0-A1 closure review / acceptance gate`.
+- Do not claim A1 final acceptance, production verification, production readiness, broad API smoke, Candidate C implementation, A2 start, or full v2 skeleton completion.
+- Production verification, broad API smoke, Candidate C, and A2 remain separate future gates.
+
 ## EliteSync App Studio
 
 - 当前 repo-local 工作流入口：`plugins/elitesync-app-studio/`

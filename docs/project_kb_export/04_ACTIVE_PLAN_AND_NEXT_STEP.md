@@ -1,12 +1,19 @@
 # 当前计划与下一步
 
-更新时间：2026-05-16
+更新时间：2026-05-19
 
 ## 当前最建议继续推进的方向
 
 - 当前最建议方向改为 6.0 Alpha 内测准备线。
 - 当前主计划：`docs/version_plans/ELITESYNC_6_0_ALPHA_MASTER_PLAN_2026_05_12.md`。
 - 当前 A1 默认主交接入口：`docs/version_plans/6.0_A1_HANDOFF_MASTER.md`。
+- 当前 A1 docs sync / closure planning report：`docs/version_plans/6.0_A1_DOCS_SYNC_AND_A1_CLOSURE_PLANNING_REPORT.md`。
+- R1 readonly v2 runtime slice 已 stage accepted。
+- Option B #54-#58 evidence chain 已完成：#54 deployed-code staleness corrected；#55 server-localhost `127.0.0.1:8088` three readonly endpoints passed；#56 public staging target unclear blocked before request；#57 user-confirmed public IP `101.133.161.203` three readonly endpoints passed；#58 gate review concluded `ready_for_docs_sync_and_a1_closure_planning`。
+- 当前下一步建议：`GPT-TASK: 6.0-A1 closure review / acceptance gate`。
+- A1 closure gate 可接受 A1 或识别最后 docs / evidence blockers；本文件不宣布 A1 final acceptance。
+- production verification、broad API smoke、Candidate C、A2 仍是 separate future gates。
+- 不得写成 A1 final acceptance complete、production ready、production verification passed、broad API smoke passed、Candidate C implemented、A2 start 或 full v2 skeleton complete。
 - R1 readonly v2 runtime slice 已 remote-published：`90436e2d17c611907dfe4322135c7e4ba0bbb23d feat: add readonly v2 runtime slice`。
 - R1 readonly runtime slice 已 stage accepted；stage acceptance package 已 push：`docs/version_plans/6.0_A1_R1_READONLY_RUNTIME_SLICE_STAGE_ACCEPTANCE.md`，commit `99cfd0ba47186bbacc03770b2679afe558a9a5f8 docs: add 6.0-A1 R1 stage acceptance package`。
 - R2 authorization prepackage 已 remote-published：`docs/version_plans/6.0_A1_R2_NARROW_READONLY_RUNTIME_SLICE_AUTHORIZATION_PREPACKAGE.md`，commit `e1627b8dd9f4ec6967f9c9940e13e6cb788895ff docs: add 6.0-A1 R2 authorization prepackage`。
@@ -64,15 +71,16 @@
 
 ## 当前下一步
 
-IP Staging Option B narrow scaffold / preflight 后的下一步应保持在 A1 内：
+A1 当前下一步应保持在 closure review / acceptance gate：
 
-- request sites-enabled symlink authorization；
-- 本次 scaffold / preflight 不是完整 staging implementation result，任何后续 symlink / reload / endpoint verification 仍必须另行明确授权；
-- 不得读取真实 `.env` / `.env.*` 或输出 secrets；
-- staging request 仍需用户另行明确授权；
-- 不得改用 `slowdate.top`、`staging.slowdate.top` 或 `101.133.161.203` 根路径绕过 blocker。
+- 推荐新 issue：`GPT-TASK: 6.0-A1 closure review / acceptance gate`；
+- closure gate 可接受 A1 或识别最后 docs / evidence blockers；
+- 本文件不宣布 A1 final acceptance；
+- production verification、broad API smoke、Candidate C、A2 仍需 separate future gates；
+- 任何 future symlink / reload / endpoint verification / server change 仍必须另行明确授权；
+- 不得读取真实 `.env` / `.env.*` 或输出 secrets。
 
-该建议不代表 Nginx config reviewed in full，不代表 `.env` backed up to Git，不代表 IP staging enabled，不代表 staging reachable，不代表 staging verification failed / passed、production verification passed 或 API smoke passed。Candidate C 尚未 implementation，staging verification / production verification / API smoke 尚未执行、尚未通过；本阶段不得进入 Candidate C implementation、staging verification 或 production verification。
+该建议不代表 production verification passed、broad API smoke passed、Candidate C implemented、A1 final acceptance、production ready、full v2 skeleton complete 或 A2 start。
 
 不得把 R1、R2 prepackage 或 Candidate C prepackage 直接扩展为 R2 runtime implementation / endpoint expansion / A2 / Date Drop / Flutter integration / production release。
 
