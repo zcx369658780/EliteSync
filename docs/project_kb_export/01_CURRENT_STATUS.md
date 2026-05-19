@@ -4,19 +4,24 @@
 
 ## 当前最新完成到哪里
 
-- 当前最新完成文档：6.0-A1 docs sync / A1 closure planning report 已准备，路径为 `docs/version_plans/6.0_A1_DOCS_SYNC_AND_A1_CLOSURE_PLANNING_REPORT.md`。
+- 当前最新完成文档：post-A1 current docs sync / A2 planning decision report 已准备，路径为 `docs/version_plans/6.0_A1_POST_ACCEPTANCE_DOCS_SYNC_AND_A2_PLANNING_DECISION_REPORT.md`。
+- A1 closure review / acceptance report 已准备，路径为 `docs/version_plans/6.0_A1_CLOSURE_REVIEW_ACCEPTANCE_REPORT.md`。
+- Issue #60 closure review decision 为 `accepted_with_observations`。
+- A1 acceptance scope limited to R1 readonly v2 runtime slice + Option B deployed-code correction + server-localhost readonly verification + user-confirmed public IP readonly verification + docs sync posture。
 - R1 readonly v2 runtime slice 已 stage accepted。
-- Option B #54-#58 evidence chain 已完成：
+- Option B #54-#60 evidence chain 已完成：
   - #54 deployed-code staleness corrected for R1 readonly v2 allowlist；
   - #55 server-localhost `127.0.0.1:8088` three readonly endpoints passed；
   - #56 public staging target unclear correctly blocked before request；
   - #57 user-confirmed public IP `101.133.161.203` three readonly endpoints passed；
-  - #58 gate review concluded `ready_for_docs_sync_and_a1_closure_planning`。
-- Issue #59 同步 current/status/index/handoff docs and A1 closure planning posture。
-- 当前下一步建议：`GPT-TASK: 6.0-A1 closure review / acceptance gate`。
-- A1 closure gate 可接受 A1 或识别最后 docs / evidence blockers；本文件不宣布 A1 final acceptance。
-- production verification、broad API smoke、Candidate C、A2 仍是 separate future gates。
-- 仍不得写成 A1 final acceptance complete、production ready、production verification passed、broad API smoke passed、Candidate C implemented、A2 start 或 full v2 skeleton complete。
+  - #58 gate review concluded `ready_for_docs_sync_and_a1_closure_planning`；
+  - #59 synchronized current/status/index/handoff docs；
+  - #60 accepted A1 with observations within the narrowed evidence scope。
+- Issue #61 同步 #60 decision 到 current/status/index/handoff docs，并决定下一步进入 planning-only A2 authorization prepackage gate。
+- 当前下一步建议：`GPT-TASK: 6.0-A2 planning package / authorization prepackage gate`。
+- A2 planning gate 可定义 scope、evidence requirements、protected surfaces、non-goals、authorization boundaries 与 issue-bundle structure；本文件不启动 A2 runtime。
+- production verification、broad API smoke、Candidate C、R2 runtime、full v2 skeleton、A2 runtime、Flutter / Android / release-chain work 仍是 separate future gates。
+- 仍不得写成 production ready、production verification passed、broad API smoke passed、Candidate C implemented、R2 runtime complete、full v2 skeleton complete、A2 runtime start 或 release-chain readiness。
 - 历史 Option B scaffold / preflight 状态如下，保留为 supporting evidence。
 - IP Staging Option B narrow scaffold / preflight report 已准备归档。
 - IP Staging Option B narrow scaffold / preflight report：`docs/version_plans/6.0_A1_IP_STAGING_OPTION_B_NARROW_SCAFFOLD_PREFLIGHT_REPORT.md`。
@@ -129,7 +134,7 @@
 - Candidate C local audit report commit：`9f958508a2ca4a60a5f1e8104aece230edb5c495 docs: add 6.0-A1 candidate C local audit report`。
 - GPT 顾问已验收该 report；该 report 是 local/repo-only readonly audit report，不是 Candidate C implementation，不代表 Candidate C 已获实施授权、已实施或已完成，也不代表 staging verification passed、production verification passed 或 API smoke passed。
 - 该 report 确认本轮未请求 staging / production，未执行 API / smoke / artisan / PHPUnit / composer / migration，未读取真实 `.env` / `.env.*`，未输出 secrets。
-- 当前下一步建议：`GPT-TASK: 6.0-A1 closure review / acceptance gate`；当前不直接 reload，不执行 endpoint verification，不请求 production，不进入 Candidate C implementation。
+- 当前下一步建议：`GPT-TASK: 6.0-A2 planning package / authorization prepackage gate`；当前不直接 reload，不执行 endpoint verification，不请求 production，不进入 Candidate C implementation，不启动 A2 runtime。
 - Candidate C staging / production split readonly verification prepackage：`docs/version_plans/6.0_A1_STAGING_PRODUCTION_SPLIT_READONLY_VERIFICATION_PREPACKAGE.md`。
 - Candidate C prepackage commit：`3e49879c1264f031325264a75702e8afa9db6302 docs: add 6.0-A1 staging production verification prepackage`。
 - GPT 顾问已验收该 prepackage；该文件是 authorization / preparation document，不是 Candidate C implementation，不代表 Candidate C 已获实施授权、已实施或已完成，也不代表 staging verification passed、production verification passed 或 API smoke passed。
@@ -152,9 +157,10 @@
 
 ## 当前下一步
 
-- 下一步不是进入 R2 runtime implementation / endpoint expansion / Candidate C implementation / staging verification / production verification / broad API smoke / A2 / Date Drop / Flutter v2 base URL / production release。
-- 下一步建议：`GPT-TASK: 6.0-A1 closure review / acceptance gate`。
-- A1 closure gate 可接受 A1 或识别最后 docs / evidence blockers；本文件不宣布 A1 final acceptance。
+- 下一步不是进入 R2 runtime implementation / endpoint expansion / Candidate C implementation / staging verification / production verification / broad API smoke / A2 runtime / Date Drop runtime / Flutter v2 base URL / production release。
+- 下一步建议：`GPT-TASK: 6.0-A2 planning package / authorization prepackage gate`。
+- A2 planning gate 只允许形成 planning package / authorization prepackage，定义 scope、evidence requirements、protected surfaces、non-goals、authorization boundaries 与 issue-bundle structure。
+- A2 runtime implementation 必须等待后续显式 GPT advisor + user authorization gate。
 - Nginx/config backup execution 已完成并归档，但不代表 Nginx config reviewed in full，不代表 `.env` backed up to Git，不代表 IP staging already created。
 - server inventory readonly execution 已完成并归档，但不代表 IP staging already created、staging verification passed、production verification passed 或 API smoke passed。
 - 不得把 `staging.slowdate.top` 写成短期可行，不得把 `slowdate.top` 或 `101.133.161.203` 根路径当作 staging。
@@ -163,7 +169,7 @@
   - `GET api/v2/app/health`
   - `GET api/v2/app/readiness`
   - `GET api/v2/contracts/location`
-- 当前仍不能写成 6.0-A1 final acceptance complete、production ready、完整 v2 skeleton complete、R2 runtime complete、Candidate C authorized、Candidate C implemented、Candidate C complete、staging verification passed、production verification passed 或 broad API smoke passed。Candidate C Claude horizontal review 已完成且 verdict 为 `pass with observations`，但这只允许进入 future separate gate 的准备讨论。
+- 当前仍不能写成 production ready、完整 v2 skeleton complete、R2 runtime complete、Candidate C authorized、Candidate C implemented、Candidate C complete、staging verification passed、production verification passed、broad API smoke passed 或 A2 runtime start。Candidate C Claude horizontal review 已完成且 verdict 为 `pass with observations`，但这只允许进入 future separate gate 的准备讨论。
 - production 默认继续 v1；Flutter 默认不切 v2；R1 仍只保持三个 readonly endpoints。
 
 ## 6.0 Alpha 重点

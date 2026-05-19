@@ -6,8 +6,8 @@
 - 当前版本：6.0-A1
 - 当前默认主交接文件：
   `docs/version_plans/6.0_A1_HANDOFF_MASTER.md`
-- 当前最新 docs sync report：
-  `docs/version_plans/6.0_A1_DOCS_SYNC_AND_A1_CLOSURE_PLANNING_REPORT.md`
+- 当前最新 post-A1 sync report：
+  `docs/version_plans/6.0_A1_POST_ACCEPTANCE_DOCS_SYNC_AND_A2_PLANNING_DECISION_REPORT.md`
 - 当前最新 HEAD：
   以 `git rev-parse HEAD` / `git log` 实时结果为准
 
@@ -21,18 +21,23 @@
 - #57 user-confirmed public IP `101.133.161.203` 三个 R1 readonly endpoints verification passed。
 - #58 gate review conclusion 为 `ready_for_docs_sync_and_a1_closure_planning`。
 - #59 docs sync / A1 closure planning 已用于同步 current/status/index/handoff docs。
+- #60 closure review decision 为 `accepted_with_observations`。
+- #61 post-A1 current docs sync / A2 planning decision 已用于同步 current/status/index/handoff docs。
+- A1 acceptance scope limited to R1 readonly v2 runtime slice + Option B deployed-code correction + server-localhost readonly verification + user-confirmed public IP readonly verification + docs sync posture。
 - 当前仍未执行 production verification。
 - 当前仍未执行 broad API smoke。
-- 当前仍未完成 A1 final acceptance。
+- Candidate C remains not implemented。
+- R2 runtime completion and full v2 skeleton completion remain out of scope。
+- A2 runtime has not started。
 
 ## 2. Next pending gate
 
 下一步待决策：
 
-- `GPT-TASK: 6.0-A1 closure review / acceptance gate`
-- A1 closure gate 可接受 A1，或识别最后的 docs / evidence blockers。
-- production verification、broad API smoke、Candidate C、A2 仍是 separate future gates。
-- 不允许从本 current pointer 自动进入 production request、API smoke、Candidate C implementation、A2 或 release-chain work。
+- `GPT-TASK: 6.0-A2 planning package / authorization prepackage gate`
+- A2 planning gate may define scope, evidence requirements, and authorization boundaries。
+- A2 runtime implementation must not start until a later explicit GPT advisor + user authorization gate。
+- production verification、broad API smoke、Candidate C、R2 runtime、full v2 skeleton、Flutter / Android / release-chain work 仍是 separate future gates。
 
 ## 3. Repo-source workflow transition
 
@@ -50,11 +55,11 @@
 - Not staging verification passed
 - Not production verification passed
 - Not Candidate C completed
-- Not A1 final acceptance
 - Not production ready
-- Not A2 start
+- Not A2 runtime start
 - Not broad API smoke passed
 - Not full v2 skeleton complete
+- Not release-chain ready
 
 ## 5. Historical note
 

@@ -7,13 +7,15 @@
 - 当前最建议方向改为 6.0 Alpha 内测准备线。
 - 当前主计划：`docs/version_plans/ELITESYNC_6_0_ALPHA_MASTER_PLAN_2026_05_12.md`。
 - 当前 A1 默认主交接入口：`docs/version_plans/6.0_A1_HANDOFF_MASTER.md`。
-- 当前 A1 docs sync / closure planning report：`docs/version_plans/6.0_A1_DOCS_SYNC_AND_A1_CLOSURE_PLANNING_REPORT.md`。
+- 当前 A1 closure review / acceptance report：`docs/version_plans/6.0_A1_CLOSURE_REVIEW_ACCEPTANCE_REPORT.md`。
+- 当前 post-A1 docs sync / A2 planning decision report：`docs/version_plans/6.0_A1_POST_ACCEPTANCE_DOCS_SYNC_AND_A2_PLANNING_DECISION_REPORT.md`。
 - R1 readonly v2 runtime slice 已 stage accepted。
-- Option B #54-#58 evidence chain 已完成：#54 deployed-code staleness corrected；#55 server-localhost `127.0.0.1:8088` three readonly endpoints passed；#56 public staging target unclear blocked before request；#57 user-confirmed public IP `101.133.161.203` three readonly endpoints passed；#58 gate review concluded `ready_for_docs_sync_and_a1_closure_planning`。
-- 当前下一步建议：`GPT-TASK: 6.0-A1 closure review / acceptance gate`。
-- A1 closure gate 可接受 A1 或识别最后 docs / evidence blockers；本文件不宣布 A1 final acceptance。
-- production verification、broad API smoke、Candidate C、A2 仍是 separate future gates。
-- 不得写成 A1 final acceptance complete、production ready、production verification passed、broad API smoke passed、Candidate C implemented、A2 start 或 full v2 skeleton complete。
+- Option B #54-#60 evidence chain 已完成：#54 deployed-code staleness corrected；#55 server-localhost `127.0.0.1:8088` three readonly endpoints passed；#56 public staging target unclear blocked before request；#57 user-confirmed public IP `101.133.161.203` three readonly endpoints passed；#58 gate review concluded `ready_for_docs_sync_and_a1_closure_planning`；#59 synchronized current/status/index/handoff docs；#60 closure review decision `accepted_with_observations`。
+- A1 acceptance scope limited to R1 readonly v2 runtime slice + Option B deployed-code correction + server-localhost readonly verification + user-confirmed public IP readonly verification + docs sync posture。
+- 当前下一步建议：`GPT-TASK: 6.0-A2 planning package / authorization prepackage gate`。
+- A2 planning gate 只允许定义 scope、evidence requirements、protected surfaces、non-goals、authorization boundaries 与 issue-bundle structure；不启动 A2 runtime。
+- production verification、broad API smoke、Candidate C、R2 runtime、full v2 skeleton、A2 runtime、Flutter / Android / release-chain work 仍是 separate future gates。
+- 不得写成 production ready、production verification passed、broad API smoke passed、Candidate C implemented、R2 runtime complete、full v2 skeleton complete、A2 runtime start 或 release-chain readiness。
 - R1 readonly v2 runtime slice 已 remote-published：`90436e2d17c611907dfe4322135c7e4ba0bbb23d feat: add readonly v2 runtime slice`。
 - R1 readonly runtime slice 已 stage accepted；stage acceptance package 已 push：`docs/version_plans/6.0_A1_R1_READONLY_RUNTIME_SLICE_STAGE_ACCEPTANCE.md`，commit `99cfd0ba47186bbacc03770b2679afe558a9a5f8 docs: add 6.0-A1 R1 stage acceptance package`。
 - R2 authorization prepackage 已 remote-published：`docs/version_plans/6.0_A1_R2_NARROW_READONLY_RUNTIME_SLICE_AUTHORIZATION_PREPACKAGE.md`，commit `e1627b8dd9f4ec6967f9c9940e13e6cb788895ff docs: add 6.0-A1 R2 authorization prepackage`。
@@ -71,18 +73,18 @@
 
 ## 当前下一步
 
-A1 当前下一步应保持在 closure review / acceptance gate：
+A1 当前下一步应进入 planning-only A2 authorization prepackage gate：
 
-- 推荐新 issue：`GPT-TASK: 6.0-A1 closure review / acceptance gate`；
-- closure gate 可接受 A1 或识别最后 docs / evidence blockers；
-- 本文件不宣布 A1 final acceptance；
-- production verification、broad API smoke、Candidate C、A2 仍需 separate future gates；
+- 推荐新 issue：`GPT-TASK: 6.0-A2 planning package / authorization prepackage gate`；
+- A2 planning gate 只允许定义 scope、evidence requirements、protected surfaces、non-goals、authorization boundaries 与 issue-bundle structure；
+- A2 runtime implementation 必须等待后续显式 GPT advisor + user authorization gate；
+- production verification、broad API smoke、Candidate C、R2 runtime、full v2 skeleton、Flutter / Android / release-chain work 仍需 separate future gates；
 - 任何 future symlink / reload / endpoint verification / server change 仍必须另行明确授权；
 - 不得读取真实 `.env` / `.env.*` 或输出 secrets。
 
-该建议不代表 production verification passed、broad API smoke passed、Candidate C implemented、A1 final acceptance、production ready、full v2 skeleton complete 或 A2 start。
+该建议不代表 production verification passed、broad API smoke passed、Candidate C implemented、production ready、full v2 skeleton complete、R2 runtime complete、A2 runtime start 或 release-chain readiness。
 
-不得把 R1、R2 prepackage 或 Candidate C prepackage 直接扩展为 R2 runtime implementation / endpoint expansion / A2 / Date Drop / Flutter integration / production release。
+不得把 R1、R2 prepackage、Candidate C prepackage 或 #60 A1 acceptance 直接扩展为 R2 runtime implementation / endpoint expansion / A2 runtime / Date Drop runtime / Flutter integration / production release。
 
 ## R1 已验证范围
 

@@ -9,6 +9,17 @@
 - 历史 5.6+ 会话交接稿：`docs/CODEX_HANDOFF_20260511_5_6_PLUS_READY.md`
 - 历史材料统一进入 `docs/archive/legacy_2026-04/`
 
+## 2026-05-19 post-A1 current docs sync / A2 planning decision
+
+- Issue #60 closure review decision is `accepted_with_observations`.
+- A1 acceptance is limited to the narrowed R1 readonly / Option B evidence chain: R1 readonly v2 runtime slice, Option B deployed-code correction, server-localhost readonly verification, user-confirmed public IP readonly verification, and docs sync posture.
+- Issue #61 synchronized the #60 decision into current/status/index/handoff docs.
+- Next recommended gate: `GPT-TASK: 6.0-A2 planning package / authorization prepackage gate`.
+- The A2 planning gate may define scope, evidence requirements, protected surfaces, non-goals, authorization boundaries, and issue-bundle structure only.
+- A2 runtime has not started and must wait for a later explicit GPT advisor + user authorization gate.
+- Do not claim production readiness, production verification, broad API smoke, Candidate C implementation, R2 runtime completion, full v2 skeleton completion, Flutter / Android / release-chain readiness, or A2 runtime start.
+- Production verification, broad API smoke, Candidate C, R2 runtime, full v2 skeleton, Flutter / Android / release-chain work, and A2 runtime remain separate future gates.
+
 ## 2026-05-19 6.0-A1 docs sync / A1 closure planning
 
 - Issue #54 completed Option B deployment / sync for the seven allowlisted R1 readonly v2 files and corrected deployed-code staleness.

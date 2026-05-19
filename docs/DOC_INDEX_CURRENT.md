@@ -16,7 +16,9 @@
 - `docs/version_plans/ELITESYNC_6_0_ALPHA_MASTER_PLAN_2026_05_12.md`：6.0 Alpha 内测准备线主计划
 - `docs/version_plans/v_6_0_A0_Alpha内测准备_商用化底座与路线冻结版_开发计划书_2026_05_12.md`：6.0-A0 planning-only 路线冻结计划书
 - `docs/version_plans/v_6_0_A1_后端v2与位置链路最小闭环_开发计划书_2026_05_12.md`：6.0-A1 顾问计划书；先看 Framework / Runtime Support Gate，不得直接进入 v2 skeleton runtime
-- `docs/version_plans/6.0_A1_HANDOFF_MASTER.md`：6.0-A1 当前默认主交接入口；已同步 R1 readonly v2 runtime slice stage accepted、#54 Option B deployed-code staleness corrected、#55 server-localhost readonly endpoint verification passed、#56 public staging target unclear blocked、#57 user-confirmed public IP readonly endpoint verification passed、#58 gate review `ready_for_docs_sync_and_a1_closure_planning`；不代表 A1 final acceptance complete、production verification passed、broad API smoke passed 或 production ready
+- `docs/version_plans/6.0_A1_HANDOFF_MASTER.md`：6.0-A1 当前默认主交接入口；已同步 #60 closure decision `accepted_with_observations`；acceptance scope limited to R1 readonly v2 runtime slice + Option B deployed-code correction + server-localhost readonly verification + user-confirmed public IP readonly verification + docs sync posture；不代表 production verification passed、broad API smoke passed、Candidate C implementation、R2 runtime completion、full v2 skeleton completion、A2 runtime start、Flutter / Android / release-chain change 或 production ready
+- `docs/version_plans/6.0_A1_POST_ACCEPTANCE_DOCS_SYNC_AND_A2_PLANNING_DECISION_REPORT.md`：Issue #61 post-A1 current docs sync / A2 planning decision report；同步 #60 `accepted_with_observations` 到 current/status/index/handoff docs；下一步建议 `GPT-TASK: 6.0-A2 planning package / authorization prepackage gate`；不代表 A2 runtime start、production verification、broad API smoke、Candidate C implementation、full v2 skeleton completion 或 release-chain readiness
+- `docs/version_plans/6.0_A1_CLOSURE_REVIEW_ACCEPTANCE_REPORT.md`：Issue #60 closure review / acceptance report；decision `accepted_with_observations`；acceptance limited to current narrowed R1 readonly / Option B evidence chain；不代表 production readiness、production verification、broad API smoke、Candidate C implementation、full v2 skeleton completion 或 A2 start
 - `docs/version_plans/6.0_A1_DOCS_SYNC_AND_A1_CLOSURE_PLANNING_REPORT.md`：Issue #59 docs sync / A1 closure planning report；current/status/index/handoff docs 已同步到 #54-#58 evidence chain；下一步建议 `GPT-TASK: 6.0-A1 closure review / acceptance gate`；不代表 A1 final acceptance、production verification、broad API smoke、Candidate C implementation、A2 start 或 full v2 skeleton complete
 - `docs/version_plans/6.0_A1_GATE_REVIEW_AFTER_OPTION_B_PUBLIC_IP_PASS.md`：Issue #58 gate review after Option B public IP pass；结论 `ready_for_docs_sync_and_a1_closure_planning`；production verification、broad API smoke 与 A1 final acceptance 均保持 separate / unclaimed
 - `docs/version_plans/6.0_A1_USER_CONFIRMED_PUBLIC_IP_READONLY_ENDPOINT_VERIFICATION_REPORT.md`：Issue #57 user-confirmed public IP readonly endpoint verification；`http://101.133.161.203` 下三个 R1 readonly endpoints 返回 HTTP 200 JSON；不代表 production verification、broad API smoke 或 A1 final acceptance
@@ -61,45 +63,47 @@
 7. `docs/project_rules/PROJECT_RULE_TEXT_FIRST_EVIDENCE_PACKS.md`
 8. `docs/project_rules/PROJECT_RULE_CLAUDE_HORIZONTAL_REVIEW_ARTIFACTS.md`
 9. `docs/version_plans/6.0_A1_HANDOFF_MASTER.md`
-10. `docs/version_plans/6.0_A1_DOCS_SYNC_AND_A1_CLOSURE_PLANNING_REPORT.md`
-11. `docs/version_plans/6.0_A1_GATE_REVIEW_AFTER_OPTION_B_PUBLIC_IP_PASS.md`
-12. `docs/version_plans/6.0_A1_USER_CONFIRMED_PUBLIC_IP_READONLY_ENDPOINT_VERIFICATION_REPORT.md`
-13. `docs/version_plans/6.0_A1_PUBLIC_STAGING_READONLY_ENDPOINT_VERIFICATION_REPORT.md`
-14. `docs/version_plans/6.0_A1_OPTION_B_LOCALHOST_VERIFICATION_RERUN_REPORT.md`
-15. `docs/version_plans/6.0_A1_OPTION_B_DEPLOYMENT_SYNC_EXECUTION_REPORT.md`
-16. `docs/version_plans/6.0_A1_IP_STAGING_OPTION_B_NARROW_SCAFFOLD_PREFLIGHT_REPORT.md`
-17. `docs/version_plans/6.0_A1_IP_STAGING_AUTHORIZATION_CLAUDE_LIGHTWEIGHT_REVIEW.md`
-18. `docs/version_plans/6.0_A1_IP_STAGING_IMPLEMENTATION_EXECUTION_AUTHORIZATION_PACKAGE.md`
-19. `docs/version_plans/6.0_A1_NGINX_CONFIG_BACKUP_EXECUTION_REPORT.md`
-20. `docs/version_plans/6.0_A1_NGINX_CONFIG_BACKUP_READONLY_PREPACKAGE.md`
-21. `docs/version_plans/6.0_A1_SERVER_INVENTORY_READONLY_EXECUTION_REPORT.md`
-22. `docs/version_plans/6.0_A1_SERVER_INVENTORY_READONLY_PREPACKAGE.md`
-23. `docs/version_plans/6.0_A1_IP_BASED_CONTROLLED_STAGING_IMPLEMENTATION_PREPACKAGE.md`
-24. `docs/version_plans/6.0_A1_IP_BASED_CONTROLLED_STAGING_PLAN.md`
-25. `docs/version_plans/6.0_A1_STAGING_BOUNDARY_BLOCKER_REPORT.md`
-26. `docs/version_plans/6.0_A1_STAGING_READONLY_METADATA_VERIFICATION_AUTHORIZATION_PREPACKAGE.md`
-27. `docs/version_plans/6.0_A1_CANDIDATE_C_CLAUDE_HORIZONTAL_REVIEW_REPORT.md`
-28. `docs/version_plans/6.0_A1_CANDIDATE_C_CLAUDE_HORIZONTAL_REVIEW_PREPACKAGE.md`
-29. `docs/version_plans/6.0_A1_CANDIDATE_C_LOCAL_REPO_ONLY_READONLY_AUDIT_REPORT.md`
-30. `docs/version_plans/6.0_A1_STAGING_PRODUCTION_SPLIT_READONLY_VERIFICATION_PREPACKAGE.md`
-31. `docs/version_plans/6.0_A1_R1_READONLY_RUNTIME_SLICE_STAGE_ACCEPTANCE.md`
-32. `docs/version_plans/6.0_A1_R2_NARROW_READONLY_RUNTIME_SLICE_AUTHORIZATION_PREPACKAGE.md`
-33. `docs/version_plans/6.0_A1_V2_RUNTIME_SLICE_AUTHORIZATION_PACKAGE.md`
-34. `docs/version_plans/6.0_A1_V2_HEALTH_READINESS_LOCATION_CONTRACT_SKELETON_PLAN.md`
-35. `docs/version_plans/6.0_A1_CLAUDE_HORIZONTAL_REVIEW_REPORT.md`
-36. `docs/version_plans/6.0_A1_CLAUDE_REVIEW_RESPONSE.md`
-37. `docs/version_plans/6.0_A1_CLAUDE_HORIZONTAL_REVIEW_INPUT_PACKAGE.md`
-38. `docs/version_plans/v_6_0_A1_后端v2与位置链路最小闭环_开发计划书_2026_05_12.md`
-39. `docs/version_plans/6.0_A1_SKELETON_PRECONDITION_EXECUTION_PLAN.md`
-40. `docs/version_plans/6.0_A1_ENVIRONMENT_SPLIT_PLAN.md`
-41. `docs/version_plans/6.0_A1_LOCATION_CHAIN_RESTRUCTURE.md`
-42. `docs/version_plans/6.0_A1_BACKUP_ROLLBACK_MONITORING_PLAN.md`
-43. `docs/version_plans/6.0_A1_LARAVEL12_STAGING_DRY_RUN_PLAN.md`
-44. `docs/version_plans/6.0_A1_ENV_CACHE_SESSION_CONFIG_UNIFICATION_PLAN.md`
-45. `docs/version_plans/6.0_A1_AUTHENTICATED_READONLY_SMOKE_BATCH2_RERUN_REPORT.md`
-46. `docs/version_plans/6.0_A1_READONLY_SMOKE_BATCH1_PRODUCTION_READONLY_REPORT.md`
-47. `docs/version_plans/6.0_A1_BACKEND_V2_CONTRACT_MAP.md`
-48. `docs/version_plans/6.0_A1_V1_CONTRACT_AUDIT.md`
+10. `docs/version_plans/6.0_A1_POST_ACCEPTANCE_DOCS_SYNC_AND_A2_PLANNING_DECISION_REPORT.md`
+11. `docs/version_plans/6.0_A1_CLOSURE_REVIEW_ACCEPTANCE_REPORT.md`
+12. `docs/version_plans/6.0_A1_DOCS_SYNC_AND_A1_CLOSURE_PLANNING_REPORT.md`
+13. `docs/version_plans/6.0_A1_GATE_REVIEW_AFTER_OPTION_B_PUBLIC_IP_PASS.md`
+14. `docs/version_plans/6.0_A1_USER_CONFIRMED_PUBLIC_IP_READONLY_ENDPOINT_VERIFICATION_REPORT.md`
+15. `docs/version_plans/6.0_A1_PUBLIC_STAGING_READONLY_ENDPOINT_VERIFICATION_REPORT.md`
+16. `docs/version_plans/6.0_A1_OPTION_B_LOCALHOST_VERIFICATION_RERUN_REPORT.md`
+17. `docs/version_plans/6.0_A1_OPTION_B_DEPLOYMENT_SYNC_EXECUTION_REPORT.md`
+18. `docs/version_plans/6.0_A1_IP_STAGING_OPTION_B_NARROW_SCAFFOLD_PREFLIGHT_REPORT.md`
+19. `docs/version_plans/6.0_A1_IP_STAGING_AUTHORIZATION_CLAUDE_LIGHTWEIGHT_REVIEW.md`
+20. `docs/version_plans/6.0_A1_IP_STAGING_IMPLEMENTATION_EXECUTION_AUTHORIZATION_PACKAGE.md`
+21. `docs/version_plans/6.0_A1_NGINX_CONFIG_BACKUP_EXECUTION_REPORT.md`
+22. `docs/version_plans/6.0_A1_NGINX_CONFIG_BACKUP_READONLY_PREPACKAGE.md`
+23. `docs/version_plans/6.0_A1_SERVER_INVENTORY_READONLY_EXECUTION_REPORT.md`
+24. `docs/version_plans/6.0_A1_SERVER_INVENTORY_READONLY_PREPACKAGE.md`
+25. `docs/version_plans/6.0_A1_IP_BASED_CONTROLLED_STAGING_IMPLEMENTATION_PREPACKAGE.md`
+26. `docs/version_plans/6.0_A1_IP_BASED_CONTROLLED_STAGING_PLAN.md`
+27. `docs/version_plans/6.0_A1_STAGING_BOUNDARY_BLOCKER_REPORT.md`
+28. `docs/version_plans/6.0_A1_STAGING_READONLY_METADATA_VERIFICATION_AUTHORIZATION_PREPACKAGE.md`
+29. `docs/version_plans/6.0_A1_CANDIDATE_C_CLAUDE_HORIZONTAL_REVIEW_REPORT.md`
+30. `docs/version_plans/6.0_A1_CANDIDATE_C_CLAUDE_HORIZONTAL_REVIEW_PREPACKAGE.md`
+31. `docs/version_plans/6.0_A1_CANDIDATE_C_LOCAL_REPO_ONLY_READONLY_AUDIT_REPORT.md`
+32. `docs/version_plans/6.0_A1_STAGING_PRODUCTION_SPLIT_READONLY_VERIFICATION_PREPACKAGE.md`
+33. `docs/version_plans/6.0_A1_R1_READONLY_RUNTIME_SLICE_STAGE_ACCEPTANCE.md`
+34. `docs/version_plans/6.0_A1_R2_NARROW_READONLY_RUNTIME_SLICE_AUTHORIZATION_PREPACKAGE.md`
+35. `docs/version_plans/6.0_A1_V2_RUNTIME_SLICE_AUTHORIZATION_PACKAGE.md`
+36. `docs/version_plans/6.0_A1_V2_HEALTH_READINESS_LOCATION_CONTRACT_SKELETON_PLAN.md`
+37. `docs/version_plans/6.0_A1_CLAUDE_HORIZONTAL_REVIEW_REPORT.md`
+38. `docs/version_plans/6.0_A1_CLAUDE_REVIEW_RESPONSE.md`
+39. `docs/version_plans/6.0_A1_CLAUDE_HORIZONTAL_REVIEW_INPUT_PACKAGE.md`
+40. `docs/version_plans/v_6_0_A1_后端v2与位置链路最小闭环_开发计划书_2026_05_12.md`
+41. `docs/version_plans/6.0_A1_SKELETON_PRECONDITION_EXECUTION_PLAN.md`
+42. `docs/version_plans/6.0_A1_ENVIRONMENT_SPLIT_PLAN.md`
+43. `docs/version_plans/6.0_A1_LOCATION_CHAIN_RESTRUCTURE.md`
+44. `docs/version_plans/6.0_A1_BACKUP_ROLLBACK_MONITORING_PLAN.md`
+45. `docs/version_plans/6.0_A1_LARAVEL12_STAGING_DRY_RUN_PLAN.md`
+46. `docs/version_plans/6.0_A1_ENV_CACHE_SESSION_CONFIG_UNIFICATION_PLAN.md`
+47. `docs/version_plans/6.0_A1_AUTHENTICATED_READONLY_SMOKE_BATCH2_RERUN_REPORT.md`
+48. `docs/version_plans/6.0_A1_READONLY_SMOKE_BATCH1_PRODUCTION_READONLY_REPORT.md`
+49. `docs/version_plans/6.0_A1_BACKEND_V2_CONTRACT_MAP.md`
+50. `docs/version_plans/6.0_A1_V1_CONTRACT_AUDIT.md`
 
 ## 6.0 Alpha 当前参考
 
@@ -131,7 +135,7 @@
 - `docs/reference/ELITESYNC_REVIEW_ACTION_MATRIX_2026_05_12.md`
 - `docs/agents/CLAUDE_HORIZONTAL_REVIEW_GATE_RULES.md`
 
-6.0-A1 当前入口提醒：`docs/version_plans/6.0_A1_HANDOFF_MASTER.md` 是当前 A1 默认主交接入口。R1 readonly v2 runtime slice 已 stage accepted。Option B #54-#58 evidence chain 已完成：#54 deployed-code staleness corrected for R1 readonly v2 allowlist；#55 server-localhost `127.0.0.1:8088` 三个 readonly endpoints passed；#56 public staging target unclear correctly blocked before request；#57 user-confirmed public IP `101.133.161.203` 三个 readonly endpoints passed；#58 gate review concluded `ready_for_docs_sync_and_a1_closure_planning`。Issue #59 已用于 docs sync / A1 closure planning posture。当前仍不能标记 A1 final acceptance complete、production ready、R2 runtime complete、Candidate C implemented、Candidate C authorized、production verification passed、broad API smoke passed、full v2 skeleton complete 或 A2 start。production 默认继续 v1，Flutter 默认不切 v2，R1 仍只保持三个 readonly endpoints。下一步建议 `GPT-TASK: 6.0-A1 closure review / acceptance gate`；production verification、broad API smoke、Candidate C、A2 仍是 separate future gates。后续 Codex 导出目录默认固定为 `C:\Users\zcxve\Downloads\`。
+6.0-A1 当前入口提醒：`docs/version_plans/6.0_A1_HANDOFF_MASTER.md` 是当前 A1 默认主交接入口。Issue #60 closure decision 为 `accepted_with_observations`，acceptance scope limited to R1 readonly v2 runtime slice + Option B deployed-code correction + server-localhost readonly verification + user-confirmed public IP readonly verification + docs sync posture。Issue #61 已用于 post-A1 current docs sync / 6.0-A2 planning decision。当前仍不能标记 production ready、production verification passed、broad API smoke passed、Candidate C implemented、R2 runtime complete、full v2 skeleton complete、A2 runtime start 或 release-chain readiness。production 默认继续 v1，Flutter 默认不切 v2，R1 仍只保持三个 readonly endpoints。下一步建议 `GPT-TASK: 6.0-A2 planning package / authorization prepackage gate`；A2 runtime implementation 必须等待后续显式 GPT advisor + user authorization gate。后续 Codex 导出目录默认固定为 `C:\Users\zcxve\Downloads\`。
 
 ## 规则文件 / Agent Rules / Project Rules
 
